@@ -1,0 +1,42 @@
+{
+  "name": "@craft-concept/sol-vscode",
+  "displayName": "Sol Language Support",
+  "description": "Syntax highlighting for the Sol language.",
+  "version": "0.0.1",
+  "publisher": "craft-concept",
+  "license": "MIT",
+  "type": "module",
+  "scripts": {
+    "local": "ln -s $(pwd) ~/.vscode/extensions/"
+  },
+  "engines": {
+    "vscode": "^1.24.0"
+  },
+  "categories": [
+    "Programming Languages"
+  ],
+  "contributes": {
+    "languages": [
+      {
+        "id": "sol",
+        "aliases": [
+          "Sol"
+        ],
+        "extensions": [
+          ".sol"
+        ],
+        "configuration": "./language-configuration.json"
+      }
+    ],
+    "grammars": [
+      {
+        "language": "sol",
+        "scopeName": "source.sol",
+        "path": "./syntaxes/sol.tmLanguage.json"
+      }
+    ]
+  },
+  "dependencies": {
+    "@craft-concept/lib": "^0.0.1"
+  }
+}
