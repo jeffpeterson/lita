@@ -101,10 +101,17 @@
       ]
     },
     "strings": {
-      "name": "string.quoted.double.sol",
-      "begin": "\"",
-      "end": "\"",
-      "patterns": []
+      "patterns": [
+        {
+          "name": "string.quoted.double.sol",
+          "begin": "\"",
+          "end": "\""
+        },
+        {
+          "name": "string.quoted.single.sol",
+          "match": "'[^\\s][^\\s;,)\\]}.]*"
+        }
+      ]
     },
     "digits": {
       "patterns": [
