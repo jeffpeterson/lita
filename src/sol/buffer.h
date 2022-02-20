@@ -9,6 +9,7 @@ typedef struct {
   u8 *bytes;
 } Buffer;
 
+Buffer newBuffer(int len);
 void initBuffer(Buffer *buf);
 void freeBuffer(Buffer *buf);
 

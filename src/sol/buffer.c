@@ -3,6 +3,13 @@
 #include "buffer.h"
 #include "memory.h"
 
+Buffer newBuffer(int len) {
+  Buffer buf;
+  initBuffer(&buf);
+  growBuffer(&buf, len);
+  return buf;
+}
+
 void initBuffer(Buffer *buf) {
   buf->count = 0;
   buf->capacity = 0;
