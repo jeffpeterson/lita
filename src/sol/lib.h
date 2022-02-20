@@ -5,10 +5,12 @@
 
 #include "common.h"
 #include "object.h"
+#include "string.h"
 #include "value.h"
 
 #define TO_STRING(val) toString(val)
 #define obj(o) OBJ_VAL(o)
+#define fmt(f, ...) obj(stringFormat(f, ...))
 
 typedef Value let;
 typedef Value _;
