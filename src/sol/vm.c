@@ -42,6 +42,17 @@ void runtimeError(const char *format, ...) {
   resetStack();
 }
 
+void crash(const char *str) {
+  runtimeError("Crash: %s", str);
+  freeVM();
+  exit(70);
+}
+
+void panic(const char *str) {
+  fprintf(stderr, "Panic: %s", str);
+  exit(70);
+}
+
 Value setGlobal(Value name, Value val) {
   tableSet(&vm.globals, push(name), push(val));
   popn(2);
@@ -66,6 +77,7 @@ void initVM() {
 
   initTable(&vm.globals);
   initTable(&vm.interned);
+  initTable(&vm.keep);
 
   vm.str.init = newString("init");
 

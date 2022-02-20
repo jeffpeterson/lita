@@ -37,6 +37,9 @@ typedef struct VM {
   /** Interned object table. */
   Table interned;
 
+  /** Exempt objects from GC. */
+  Table keep;
+
   /** Static strings. */
   struct str {
     ObjString *init;
@@ -106,5 +109,14 @@ Value getThis();
 ObjClass *classOf(Value v);
 
 void runtimeError(const char *format, ...);
+
+/** Something went wrong. Stop the VM and exit. */
+void crash(const char *str);
+
+/**
+ * Something went terribly wrong.
+ * Memory is unsafe. Exit the process now.
+ */
+void panic(const char *str);
 
 #endif

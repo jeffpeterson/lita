@@ -3,6 +3,7 @@
 
 #include "compiler.h"
 #include "memory.h"
+#include "table.h"
 #include "vm.h"
 
 #if defined(DEBUG_LOG_GC) || defined(DEBUG_LOG_MEM)
@@ -11,6 +12,17 @@
 #endif
 
 #define GC_HEAP_GROW_FACTOR 2
+
+Value keep(Value v) {
+  tableInc(&vm.keep, v, 1);
+  return v;
+}
+
+Value unkeep(Value v) {
+  if (tableInc(&vm.keep, v, -1) == 0)
+    tableDelete(&vm.keep, v);
+  return v;
+}
 
 void *reallocate(void *pointer, size_t oldSize, size_t newSize) {
   vm.bytesAllocated += newSize - oldSize;
@@ -255,6 +267,7 @@ static void markRoots() {
   }
 
   markTable(&vm.globals);
+  markTable(&vm.keep);
   markCompilerRoots();
   markObject((Obj *)vm.str.init);
 }
