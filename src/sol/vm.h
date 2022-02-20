@@ -85,6 +85,8 @@ extern VM vm;
 
 void initVM();
 void freeVM();
+
+InterpretResult runFun(ObjFun *fun);
 InterpretResult interpret(const char *source);
 
 /** Push a value onto the stack. */

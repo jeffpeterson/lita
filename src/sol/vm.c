@@ -733,8 +733,7 @@ static InterpretResult run() {
 #undef BINARY_OP
 }
 
-InterpretResult interpret(const char *source) {
-  ObjFun *fun = compile(source);
+InterpretResult runFun(ObjFun *fun) {
   if (fun == NULL)
     return INTERPRET_COMPILE_ERROR;
 
@@ -745,6 +744,10 @@ InterpretResult interpret(const char *source) {
   call(closure, 0);
 
   return run();
+}
+
+InterpretResult interpret(const char *source) {
+  return runFun(compile(source));
 }
 
 Value intern(Value val) {
