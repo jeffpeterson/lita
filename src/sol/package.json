@@ -1,0 +1,18 @@
+{
+  "name": "@craft-concept/sol",
+  "description": "Craft & Concept Sol language.",
+  "version": "0.0.1",
+  "license": "MIT",
+  "type": "module",
+  "exports": "./index.js",
+  "bin": {
+    "sol": ".bin/sol"
+  },
+  "scripts": {
+    "build": "mkdir -p _build/bin && clang *.c -o _build/bin/sol"
+  },
+  "dependencies": {
+    "@craft-concept/lib": "^0.0.1",
+    "@craft-concept/node": "^0.0.1"
+  }
+}

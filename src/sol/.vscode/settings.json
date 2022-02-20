@@ -1,0 +1,30 @@
+{
+  "files.associations": {
+    "assert.h": "c",
+    "assertmacros.h": "c",
+    "__node_handle": "c",
+    "algorithm": "c",
+    "value.h": "c",
+    "functional": "cpp",
+    "type_traits": "cpp",
+    "memory_resource": "c",
+    "locale": "c",
+    "memory": "c",
+    "string": "c",
+    "vector": "c",
+    "version": "c",
+    "new": "c",
+    "object.h": "c",
+    "stdlib.h": "c",
+    "system.h": "c",
+    "common.h": "c",
+    "string.h": "c",
+    "chunk.h": "c",
+    "unistd.h": "c",
+    "vm.h": "c",
+    "debug.h": "c",
+    "ar.h": "c",
+    "stdint.h": "c",
+    "lib.h": "c"
+  }
+}

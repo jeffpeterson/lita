@@ -1,0 +1,746 @@
+#include <stdarg.h>
+#include <stdio.h>
+#include <string.h>
+
+#include "common.h"
+#include "compiler.h"
+#include "debug.h"
+#include "lib.h"
+#include "memory.h"
+#include "native.h"
+#include "object.h"
+#include "string.h"
+#include "tuple.h"
+#include "vm.h"
+
+VM vm;
+
+static void resetStack() {
+  vm.stackTop = vm.stack;
+  vm.frameCount = 0;
+  vm.openUpvalues = NULL;
+}
+
+void runtimeError(const char *format, ...) {
+  va_list args;
+  va_start(args, format);
+  vfprintf(stderr, format, args);
+  va_end(args);
+  fputs("\n", stderr);
+
+  fprintf(stderr, "%d frames:\n", vm.frameCount);
+  for (int i = vm.frameCount - 1; i >= 0; i--) {
+    CallFrame *frame = &vm.frames[i];
+    ObjFun *fun = frame->closure->fun;
+    size_t instruction = frame->ip - fun->chunk.code - 1;
+    int line = fun->chunk.lines[instruction];
+    fprintf(stderr, "[line %d] in ", line);
+    fprintFunction(stderr, "ObjFun", fun);
+    fprintf(stderr, "\n");
+  }
+
+  resetStack();
+}
+
+Value setGlobal(Value name, Value val) {
+  tableSet(&vm.globals, push(name), push(val));
+  popn(2);
+  return val;
+}
+
+Value global(Value name) {
+  return tableGet(&vm.globals, name, &name) ? name : nil;
+}
+
+void initVM() {
+  resetStack();
+
+  vm.objects = NULL;
+  vm.bytesAllocated = 0;
+  /** Start collecting after 100MB is allocated. */
+  vm.nextGC = 100 * 1024 * 1024;
+
+  vm.grayCount = 0;
+  vm.grayCapacity = 0;
+  vm.grayStack = NULL;
+
+  initTable(&vm.globals);
+  initTable(&vm.interned);
+
+  vm.str.init = newString("init");
+
+  defineNatives();
+
+  inspect(global(string("Any")));
+  inspect(global(string("Object")));
+  inspect(global(string("Number")));
+
+  /** Start collecting after 1MB is allocated. */
+  vm.nextGC = 1024 * 1024;
+}
+
+void freeVM() {
+  vm.str.init = NULL;
+  freeTable(&vm.interned);
+  freeObjects();
+}
+
+Value push(Value value) {
+  *vm.stackTop = value;
+  vm.stackTop++;
+  return value;
+}
+
+static Value peek(int distance) { return vm.stackTop[-1 - distance]; }
+
+Value pop() {
+  vm.stackTop--;
+  return *vm.stackTop;
+}
+
+Value pope(Value val) {
+  pop();
+  return val;
+}
+
+inline Value *popn(uint8_t n) {
+  vm.stackTop -= n;
+  return vm.stackTop;
+}
+
+static void swap(uint8_t a, uint8_t b) {
+  Value aa = peek(a);
+  vm.stackTop[-1 - a] = peek(b);
+  vm.stackTop[-1 - b] = aa;
+}
+
+/**
+ * Invoke a closure with arguments on the stack.
+ *
+ * Returns whether or not the call was successful.
+ */
+static bool call(ObjClosure *closure, int argCount) {
+  ObjFun *fun = closure->fun;
+
+  if (argCount != fun->arity) {
+    runtimeError("Expected %d arguments but got %d.", fun->arity, argCount);
+    return false;
+  }
+
+  if (vm.frameCount == FRAMES_MAX) {
+    runtimeError("Call stack overflow.");
+    return false;
+  }
+
+  CallFrame *frame = &vm.frames[vm.frameCount++];
+  frame->closure = closure;
+  frame->ip = fun->chunk.code; // Start instruction pointer at function's code.
+
+  /**
+   * Account for args and the receiver.
+   * stack: [..., this, arg1, arg2]
+   *     receiver-^               ^-stackTop
+   */
+  frame->slots = vm.stackTop - argCount - 1;
+  return true;
+}
+
+ObjClass *classOf(Value v) {
+  const char *name = NULL;
+
+  if (IS_OBJ(v)) {
+    Obj *obj = AS_OBJ(v);
+
+    if (obj->type == OBJ_INSTANCE)
+      return ((ObjInstance *)obj)->klass;
+
+    name = objInfo[obj->type].className;
+  } else {
+    name = IS_NIL(v)      ? "Nil"
+           : IS_NUMBER(v) ? "Number"
+           : IS_BOOL(v)   ? "Bool"
+                          : "Any";
+  }
+
+  if (name) {
+    Value klass = global(string(name));
+
+    if (IS_CLASS(klass))
+      return AS_CLASS(klass);
+  }
+
+  return NULL;
+}
+
+static bool invokeFromClass(ObjClass *klass, ObjString *name, int argCount);
+
+/**
+ * Invoke some Value as a function.
+ *
+ * Returns whether or not the call was successful.
+ */
+static bool callValue(Value callee, int argCount) {
+  if (IS_OBJ(callee)) {
+    switch (OBJ_TYPE(callee)) {
+    case OBJ_BOUND: {
+      ObjBound *bound = AS_BOUND(callee);
+      vm.stackTop[-argCount - 1] = bound->receiver;
+      return call(bound->method, argCount);
+    }
+
+    case OBJ_CLASS: {
+      ObjClass *klass = AS_CLASS(callee);
+      vm.stackTop[-argCount - 1] = OBJ_VAL(newInstance(klass));
+
+      Value init;
+      if (tableGet(&klass->methods, OBJ_VAL(vm.str.init), &init)) {
+        return call(AS_CLOSURE(init), argCount);
+      } else if (argCount != 0) {
+        runtimeError("Expected 0 arguments but got %d.", argCount);
+        return false;
+      }
+
+      return true;
+    }
+
+    case OBJ_CLOSURE:
+      return call(AS_CLOSURE(callee), argCount);
+
+    case OBJ_NATIVE: {
+      ObjNative *native = AS_NATIVE(callee);
+
+      if (argCount < native->arity) {
+        runtimeError("Expected %d arguments but got %d.", native->arity,
+                     argCount);
+        return false;
+      }
+
+      Value result =
+          native->fun(peek(argCount), argCount, vm.stackTop - argCount);
+      vm.stackTop -= argCount + 1;
+      push(result);
+      return true;
+    }
+
+    default:
+      break; // Non-callable object type.
+    }
+  }
+
+  if (argCount == 1) {
+    let b = pop();
+    let a = pop();
+    push(multiply(a, b));
+    return true;
+  }
+
+  return false;
+  // invokeFromClass(classOf(callee), newString("*"), argCount);
+}
+
+static bool invokeFromClass(ObjClass *klass, ObjString *name, int argCount) {
+  Value method;
+
+  if (!tableGet(&klass->methods, OBJ_VAL(name), &method)) {
+    return false;
+  }
+
+  if (IS_CLOSURE(method))
+    return call(AS_CLOSURE(method), argCount);
+  else
+    return callValue(method, argCount);
+}
+
+static bool invoke(ObjString *name, int argCount) {
+  Value receiver = peek(argCount);
+
+  if (IS_INSTANCE(receiver)) {
+    ObjInstance *inst = AS_INSTANCE(receiver);
+
+    Value value;
+    if (tableGet(&inst->fields, OBJ_VAL(name), &value)) {
+      vm.stackTop[-argCount - 1] = value;
+      return callValue(value, argCount);
+    }
+  }
+
+  ObjClass *klass = classOf(receiver);
+  // printf("invoke: %s_%s()\n", klass->name->chars, name->chars);
+  if (!invokeFromClass(klass, name, argCount)) {
+    runtimeError("Undefined property '%s' on %s.", name->chars,
+                 klass->name->chars);
+    return false;
+  }
+
+  return true;
+}
+
+static bool bindMethod(ObjClass *klass, ObjString *name) {
+  Value method;
+  if (!tableGet(&klass->methods, OBJ_VAL(name), &method)) {
+    // Todo: store error in case of `!` postfix operator.
+    return false;
+  }
+
+  ObjBound *bound = newBound(peek(0), AS_CLOSURE(method));
+
+  pop();
+  push(OBJ_VAL(bound));
+  return true;
+}
+
+static ObjUpvalue *captureUpvalue(Value *local) {
+  ObjUpvalue *prevUpvalue = NULL;
+  ObjUpvalue *upvalue = vm.openUpvalues;
+
+  while (upvalue != NULL && upvalue->location > local) {
+    prevUpvalue = upvalue;
+    upvalue = upvalue->next;
+  }
+
+  if (upvalue != NULL && upvalue->location == local)
+    return upvalue;
+
+  ObjUpvalue *createdUpvalue = newUpvalue(local);
+  createdUpvalue->next = upvalue;
+
+  if (prevUpvalue == NULL)
+    vm.openUpvalues = createdUpvalue;
+  else
+    prevUpvalue->next = createdUpvalue;
+
+  return createdUpvalue;
+}
+
+/**
+ * Takes a pointer to the stack and closes all upvalues pointing to values
+ * above this pointer.
+ */
+static void closeUpvalues(Value *last) {
+  while (vm.openUpvalues != NULL && vm.openUpvalues->location >= last) {
+    ObjUpvalue *upvalue = vm.openUpvalues;
+
+    // Move the existing value into `closed`.
+    upvalue->closed = *upvalue->location;
+
+    // Point `location` to the new `closed` value.
+    upvalue->location = &upvalue->closed;
+
+    // Remove this upvalue from the VM's list of open upvalues.
+    vm.openUpvalues = upvalue->next;
+  }
+}
+
+static void defineMethod(ObjString *name) {
+  Value method = peek(0);
+  ObjClass *klass = AS_CLASS(peek(1));
+  tableSet(&klass->methods, OBJ_VAL(name), method);
+  pop();
+}
+
+static bool isFalsey(Value value) {
+  return IS_NIL(value) || (IS_BOOL(value) && !AS_BOOL(value));
+}
+
+static void tuple(uint8_t length) {
+  ObjTuple *tuple = copyTuple(vm.stackTop - length, length);
+  popn(length);
+  push(OBJ_VAL(tuple));
+}
+
+static InterpretResult run() {
+  CallFrame *frame = &vm.frames[vm.frameCount - 1];
+
+#define READ_BYTE() (*frame->ip++)
+
+#define READ_SHORT()                                                           \
+  (frame->ip += 2, (uint16_t)((frame->ip[-2] << 8) | frame->ip[-1]))
+
+#define READ_CONSTANT()                                                        \
+  (frame->closure->fun->chunk.constants.values[READ_BYTE()])
+#define READ_STRING() AS_STRING(READ_CONSTANT())
+
+#define BINARY_OP(valueType, op)                                               \
+  do {                                                                         \
+    if (!IS_NUMBER(peek(0)) || !IS_NUMBER(peek(1))) {                          \
+      runtimeError("Operands must be numbers.");                               \
+      return INTERPRET_RUNTIME_ERROR;                                          \
+    }                                                                          \
+    double b = AS_NUMBER(pop());                                               \
+    double a = AS_NUMBER(pop());                                               \
+    push(valueType(a op b));                                                   \
+  } while (false)
+
+  for (;;) {
+#ifdef DEBUG_TRACE_EXECUTION
+    fprintf(stderr, "   |    |-> ");
+    for (Value *slot = vm.stack; slot < vm.stackTop; slot++) {
+      fprintf(stderr, "[ ");
+      fprintValue(stderr, *slot);
+      fprintf(stderr, " ]");
+    }
+    fprintf(stderr, "\e[2m\n");
+    disassembleInstruction(&frame->closure->fun->chunk,
+                           (int)(frame->ip - frame->closure->fun->chunk.code));
+    fprintf(stderr, "\e[22m");
+#endif
+
+    uint8_t instruction;
+    switch (instruction = READ_BYTE()) {
+
+    case OP_CONSTANT: {
+      Value constant = READ_CONSTANT();
+      push(constant);
+      break;
+    }
+    case OP_NIL:
+      push(NIL_VAL);
+      break;
+    case OP_TRUE:
+      push(BOOL_VAL(true));
+      break;
+    case OP_FALSE:
+      push(BOOL_VAL(false));
+      break;
+
+    case OP_PEEK:
+      push(peek(READ_BYTE()));
+      break;
+    case OP_POP:
+      pop();
+      break;
+    case OP_POPN:
+      popn(READ_BYTE());
+      break;
+    case OP_SWAP: {
+      uint8_t args = READ_BYTE();
+      swap(args & 0x0f, args >> 4);
+      break;
+    }
+    case OP_DEFAULT:
+      if (IS_NIL(peek(0))) {
+        pop();
+        push(READ_CONSTANT());
+      } else {
+        // Skip constant byte.
+        frame->ip++;
+      }
+      break;
+
+    case OP_RANGE: {
+      Value b = pop();
+      Value a = pop();
+      push(OBJ_VAL(makeRange(a, b)));
+      break;
+    }
+
+    case OP_TUPLE:
+      tuple(READ_BYTE());
+      break;
+
+    case OP_DEFINE_GLOBAL: {
+      Value name = READ_CONSTANT();
+      tableSet(&vm.globals, name, peek(0));
+      pop();
+      break;
+    }
+    // Todo: store globals without a hash table
+    case OP_GET_GLOBAL: {
+      Value name = READ_CONSTANT();
+      Value value;
+
+      if (!tableGet(&vm.globals, name, &value)) {
+        runtimeError("Undefined variable '%s'.", AS_STRING(name)->chars);
+        return INTERPRET_RUNTIME_ERROR;
+      }
+      push(value);
+      break;
+    }
+    case OP_SET_GLOBAL: {
+      Value name = READ_CONSTANT();
+      if (tableSet(&vm.globals, name, peek(0))) {
+        tableDelete(&vm.globals, name);
+        runtimeError("Undefined variable '%s'.", AS_STRING(name)->chars);
+        return INTERPRET_RUNTIME_ERROR;
+      }
+      break;
+    }
+
+    case OP_GET_LOCAL: {
+      uint8_t slot = READ_BYTE();
+      push(frame->slots[slot]);
+      break;
+    }
+    case OP_SET_LOCAL: {
+      uint8_t slot = READ_BYTE();
+      frame->slots[slot] = peek(0);
+      break;
+    }
+
+    case OP_GET_PROPERTY: {
+      // Peek to prevent collection of inst.
+      let receiver = peek(0);
+      Value name = READ_CONSTANT();
+
+      if (IS_INSTANCE(receiver)) {
+        ObjInstance *inst = AS_INSTANCE(receiver);
+
+        Value value;
+        if (tableGet(&inst->fields, name, &value)) {
+          pop(); // Instance
+          push(value);
+
+          break;
+        }
+      }
+
+      // } else if (!bindMethod(inst->klass, AS_STRING(name))) {
+      // Call when accessed.
+      if (!invokeFromClass(classOf(receiver), AS_STRING(name), 0)) {
+        // return INTERPRET_RUNTIME_ERROR;
+        pop();
+        push(NIL_VAL);
+      }
+
+      break;
+    }
+
+    case OP_SET_PROPERTY: {
+      if (!IS_INSTANCE(peek(1))) {
+        runtimeError("Only instances have properties.");
+        return INTERPRET_RUNTIME_ERROR;
+      }
+
+      ObjInstance *inst = AS_INSTANCE(peek(1));
+
+      // Keep on stack to prevent GC collection.
+      Value value = peek(0);
+
+      // Assigning 'nil' is deletion.
+      if (IS_NIL(value))
+        tableDelete(&inst->fields, READ_CONSTANT());
+      else
+        tableSet(&inst->fields, READ_CONSTANT(), value);
+
+      popn(2);
+      push(value);
+      break;
+    }
+
+    case OP_GET_UPVALUE: {
+      uint8_t slot = READ_BYTE();
+      push(*frame->closure->upvalues[slot]->location);
+      break;
+    }
+
+    case OP_SET_UPVALUE: {
+      uint8_t slot = READ_BYTE();
+      *frame->closure->upvalues[slot]->location = peek(0);
+      break;
+    }
+
+    case OP_EQUAL: {
+      Value b = pop();
+      Value a = pop();
+      push(BOOL_VAL(valuesEqual(a, b)));
+      break;
+    }
+    case OP_GREATER:
+      BINARY_OP(BOOL_VAL, >);
+      break;
+    case OP_LESS:
+      BINARY_OP(BOOL_VAL, <);
+      break;
+
+    case OP_ADD: {
+      Value b = peek(0);
+      Value a = peek(1);
+
+      Value result = add(a, b);
+      if (IS_NIL(result))
+        return INTERPRET_RUNTIME_ERROR;
+
+      popn(2);
+      push(result);
+      break;
+    }
+    case OP_SUBTRACT:
+      BINARY_OP(NUMBER_VAL, -);
+      break;
+    case OP_MULTIPLY:
+      BINARY_OP(NUMBER_VAL, *);
+      break;
+    case OP_DIVIDE:
+      BINARY_OP(NUMBER_VAL, /);
+      break;
+    case OP_NOT:
+      push(BOOL_VAL(isFalsey(pop())));
+      break;
+    case OP_NEGATE:
+      if (!IS_NUMBER(peek(0))) {
+        runtimeError("Operand must be a number.");
+        return INTERPRET_RUNTIME_ERROR;
+      }
+      push(NUMBER_VAL(-AS_NUMBER(pop())));
+      break;
+
+    case OP_JUMP: {
+      uint16_t offset = READ_SHORT();
+      frame->ip += offset;
+      break;
+    }
+    case OP_JUMP_IF_FALSE: {
+      uint16_t offset = READ_SHORT();
+      if (isFalsey(peek(0)))
+        frame->ip += offset;
+      break;
+    }
+    case OP_LOOP: {
+      uint16_t offset = READ_SHORT();
+      frame->ip -= offset;
+      break;
+    }
+
+    case OP_CALL: {
+      int argCount = READ_BYTE();
+      if (!callValue(peek(argCount), argCount))
+        return INTERPRET_RUNTIME_ERROR;
+
+      frame = &vm.frames[vm.frameCount - 1];
+      break;
+    }
+
+    case OP_CLASS:
+      push(OBJ_VAL(newClass(READ_STRING())));
+      break;
+
+    case OP_INHERIT: {
+      if (!IS_CLASS(peek(1))) {
+        runtimeError("Superclass must be a class.");
+        return INTERPRET_RUNTIME_ERROR;
+      }
+
+      ObjClass *superclass = AS_CLASS(peek(1));
+      ObjClass *subclass = AS_CLASS(peek(0));
+      subclass->parent = superclass;
+      tableAddAll(&superclass->methods, &subclass->methods);
+      pop(); // Subclass
+      break;
+    }
+
+    case OP_GET_SUPER: {
+      ObjString *name = READ_STRING();
+      ObjClass *superclass = AS_CLASS(pop());
+
+      if (!bindMethod(superclass, name))
+        return INTERPRET_RUNTIME_ERROR;
+      break;
+    }
+
+    case OP_METHOD:
+      defineMethod(READ_STRING());
+      break;
+
+    case OP_INVOKE: {
+      ObjString *method = READ_STRING();
+      int argCount = READ_BYTE();
+      if (!invoke(method, argCount))
+        return INTERPRET_RUNTIME_ERROR;
+
+      frame = &vm.frames[vm.frameCount - 1];
+      break;
+    }
+
+    case OP_SUPER_INVOKE: {
+      ObjString *method = READ_STRING();
+      int argCount = READ_BYTE();
+      ObjClass *superclass = AS_CLASS(pop());
+
+      if (!invokeFromClass(superclass, method, argCount))
+        return INTERPRET_RUNTIME_ERROR;
+
+      frame = &vm.frames[vm.frameCount - 1];
+      break;
+    }
+
+    case OP_CLOSURE: {
+      ObjFun *fun = AS_FUN(READ_CONSTANT());
+      ObjClosure *closure = newClosure(fun);
+      push(OBJ_VAL(closure));
+
+      for (int i = 0; i < closure->upvalueCount; i++) {
+        uint8_t isLocal = READ_BYTE();
+        uint8_t index = READ_BYTE();
+
+        if (isLocal)
+          closure->upvalues[i] = captureUpvalue(frame->slots + index);
+        else
+          closure->upvalues[i] = frame->closure->upvalues[index];
+      }
+
+      break;
+    }
+
+    case OP_CLOSE_UPVALUE:
+      closeUpvalues(vm.stackTop - 1);
+      pop();
+      break;
+
+    case OP_PRINT:
+      fprintValue(stdout, pop());
+      printf("\n");
+      break;
+
+    case OP_RETURN: {
+      Value result = pop(); // Pop return value off stack.
+      closeUpvalues(frame->slots);
+      vm.frameCount--;
+
+      if (vm.frameCount == 0) {
+        pop(); // Pop <script> function off stack.
+        return INTERPRET_OK;
+      }
+
+      vm.stackTop = frame->slots;
+      push(result);
+      frame = &vm.frames[vm.frameCount - 1];
+      break;
+    }
+
+    default:
+      runtimeError("Error: Instruction not implemented: 0x%02x.", instruction);
+      return INTERPRET_RUNTIME_ERROR;
+    }
+  }
+
+#undef READ_BYTE
+#undef READ_SHORT
+#undef READ_CONSTANT
+#undef READ_STRING
+#undef BINARY_OP
+}
+
+InterpretResult interpret(const char *source) {
+  ObjFun *fun = compile(source);
+  if (fun == NULL)
+    return INTERPRET_COMPILE_ERROR;
+
+  push(OBJ_VAL(fun));
+  ObjClosure *closure = newClosure(fun);
+  pop();
+  push(OBJ_VAL(closure));
+  call(closure, 0);
+
+  return run();
+}
+
+Value intern(Value val) {
+  push(val);
+  tableSet(&vm.interned, val, TRUE_VAL);
+  return pop();
+}
+
+Obj *getInterned(Hash *hash, ObjType type, const char *bytes, int length) {
+  *hash = hashBytes(bytes, length);
+  return tableFindObj(&vm.interned, type, bytes, length, *hash);
+}

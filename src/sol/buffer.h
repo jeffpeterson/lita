@@ -1,0 +1,20 @@
+#ifndef sol_buffer_h
+#define sol_buffer_h
+
+#include "common.h"
+
+typedef struct {
+  u32 count;
+  u32 capacity;
+  u8 *bytes;
+} Buffer;
+
+void initBuffer(Buffer *buf);
+void freeBuffer(Buffer *buf);
+
+void growBuffer(Buffer *buf, u32 count);
+u32 readBuffer(Buffer *buf, u32 offset, u8 *bytes, u32 count);
+u32 writeBuffer(Buffer *buf, u32 offset, u8 *bytes, u32 count);
+u32 appendBuffer(Buffer *buf, u8 *bytes, u32 count);
+
+#endif
