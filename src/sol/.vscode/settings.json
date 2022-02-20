@@ -25,7 +25,16 @@
     "debug.h": "c",
     "ar.h": "c",
     "stdint.h": "c",
-    "lib.h": "c"
+    "lib.h": "c",
+    "__bit_reference": "c",
+    "__hash_table": "c",
+    "__split_buffer": "c",
+    "array": "c",
+    "iterator": "c",
+    "hash_map": "c",
+    "list": "c",
+    "string_view": "c",
+    "unordered_map": "c"
   },
   "C_Cpp.default.includePath": [".."],
   "C_Cpp.default.compilerArgs": ["-Wall", "-Werror"],

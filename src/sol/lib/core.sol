@@ -1,2 +1,2 @@
-class Foo
-	bar() => 1;
+class Core
+	exists() => true;

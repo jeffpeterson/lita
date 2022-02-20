@@ -52,6 +52,12 @@ void *reallocate(void *pointer, size_t oldSize, size_t newSize) {
   return result;
 }
 
+void *cloneMemory(void *src, usize size) {
+  void *dst = ALLOCATE(u8, size);
+  memcpy(dst, src, size);
+  return dst;
+}
+
 void markObject(Obj *obj) {
   if (obj == NULL)
     return;

@@ -10,18 +10,7 @@ int currentId = 0;
 Table ids;
 
 static void dumpValue(FILE *io, Value v) {
-  if (IS_NUMBER(v)) {
-    fprintf(io, "num(%g)", AS_NUMBER(v));
-    return;
-  }
-
   if (IS_NIL(v)) {
-    fputs("nil", io);
-    return;
-  }
-
-  if (IS_VOID(v)) {
-    // Not reachable.
     fputs("nil", io);
     return;
   }
@@ -32,7 +21,7 @@ static void dumpValue(FILE *io, Value v) {
   }
 
   if (!IS_OBJ(v)) {
-    fputs("error(\"value should be obj\")", io);
+    fprintf(io, "%#llx", v);
     return;
   }
 
@@ -96,7 +85,7 @@ static int dumpFn(FILE *io, ObjFun *fun) {
           "  ValueArray vals;\n"
           "  initValueArray(&vals);\n"
           "  vals.count = vals.capacity = %d;\n"
-          "  vals.values = (Value[]){\n"
+          "  Value values[] = {\n"
           "    ",
           name->chars, id, values.count);
 
@@ -107,6 +96,7 @@ static int dumpFn(FILE *io, ObjFun *fun) {
 
   fprintf(io, "\n"
               "  };\n"
+              "  vals.values = cloneMemory(values, sizeof(values));\n"
               "  return vals;\n"
               "}\n\n");
 
@@ -116,7 +106,7 @@ static int dumpFn(FILE *io, ObjFun *fun) {
           "  initChunk(&c);\n"
           "  c.count = %d;\n"
           "  c.capacity = %d;\n"
-          "  c.code = (u8[]){\n"
+          "  u8 code[] = {\n"
           "    ",
           name->chars, id, chunk.count, chunk.count);
 
@@ -126,7 +116,7 @@ static int dumpFn(FILE *io, ObjFun *fun) {
 
   fprintf(io, "\n"
               "  };\n"
-              "  c.lines = (int[]){\n"
+              "  int lines[] = {\n"
               "    ");
 
   for (int i = 0; i < chunk.count; i++) {
@@ -136,6 +126,8 @@ static int dumpFn(FILE *io, ObjFun *fun) {
   fprintf(io,
           "\n"
           "  };\n"
+          "  c.code = cloneMemory(code, sizeof(code));\n"
+          "  c.lines = cloneMemory(lines, sizeof(lines));\n"
           "  c.constants = %sConstants%d();\n"
           "\n"
           "  return c;\n"
@@ -180,6 +172,7 @@ void dumpModule(FILE *io, ObjString *path, ObjFun *fun) {
           "#include \"sol/chunk.h\"\n"
           "#include \"sol/common.h\"\n"
           "#include \"sol/lib.h\"\n"
+          "#include \"sol/memory.h\"\n"
           "#include \"sol/string.h\"\n"
           "\n",
           path->chars);

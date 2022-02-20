@@ -23,6 +23,7 @@ Value keep(Value val);
 Value unkeep(Value val);
 
 void *reallocate(void *pointer, size_t oldSize, size_t newSize);
+void *cloneMemory(void *src, usize size);
 void markObject(Obj *obj);
 void markValue(Value value);
 void collectGarbage();

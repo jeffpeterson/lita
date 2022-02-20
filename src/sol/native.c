@@ -78,6 +78,8 @@ static _ Number_star(_ this, int argc, _ *args) {
   return error("Cannot multiply these values.");
 }
 
+ObjFun *core_sol();
+
 void defineNatives() {
   defineNative("clock", 0, nativeClock);
   defineNative("hash", 1, nativeHash);
@@ -111,4 +113,6 @@ void defineNatives() {
   globalClass("String", "Object");
   globalClass("Table", "Object");
   globalClass("Tuple", "Object");
+
+  runFun(core_sol());
 }
