@@ -106,6 +106,15 @@ bool tableSet(Table *table, Value key, Value value) {
   return isNewKey;
 }
 
+double tableInc(Table *table, Value key, double amt) {
+  Value count;
+  if (tableGet(table, key, &count) && IS_NUMBER(count)) {
+    amt += AS_NUMBER(count);
+  }
+  tableSet(table, key, NUMBER_VAL(amt));
+  return amt;
+}
+
 bool tableDelete(Table *table, Value key) {
   if (table->count == 0)
     return false;
@@ -175,7 +184,7 @@ void tableRemoveWhite(Table *table) {
 void markTable(Table *table) {
   for (int i = 0; i < table->capacity; i++) {
     Entry *entry = &table->entries[i];
-    markObject((Obj *)entry->key);
+    markValue(entry->key);
     markValue(entry->value);
   }
 }
