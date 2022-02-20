@@ -5,8 +5,10 @@
 
 #include "chunk.h"
 #include "common.h"
+#include "object.h"
 #include "value.h"
 
-void dumpChunk(FILE *io, const char *name, Chunk *chunk);
+void dumpChunk(FILE *io, ObjString *name, Chunk *chunk);
+void dumpModule(FILE *io, ObjString *name, ObjFun *fun);
 
 #endif

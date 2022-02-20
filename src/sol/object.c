@@ -148,10 +148,6 @@ void fprintObjType(FILE *io, ObjType type) {
 }
 
 void fprintFunction(FILE *io, const char *kind, ObjFun *fun) {
-  if (fun->name == NULL) {
-    fprintf(io, "\e[35m%s\e[39m", "<script>");
-    return;
-  }
   fprintf(io, "\e[35m<%s %s\e[39m/\e[35m%d>\e[39m", kind, fun->name->chars,
           fun->arity);
 }

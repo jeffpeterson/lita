@@ -279,7 +279,9 @@ static void initCompiler(Compiler *compiler, FunType type) {
   compiler->fun = newFunction();
   current = compiler;
 
-  if (type != TYPE_SCRIPT) {
+  if (type == TYPE_SCRIPT) {
+    current->fun->name = newString("_script_");
+  } else {
     current->fun->name =
         copyString(parser.previous.start, parser.previous.length);
   }

@@ -1,3 +1,4 @@
+#include <assert.h>
 #include <string.h>
 
 #include "lib.h"
@@ -9,6 +10,7 @@
 
 _ hash(_ val) { return NUMBER_VAL(hashValue(val)); }
 
+bool isBool(_ x) { return IS_BOOL(x); }
 bool isClass(_ x) { return IS_CLASS(x); }
 bool isFn(_ x) { return IS_CLOSURE(x); }
 bool isInst(_ x) { return IS_INSTANCE(x); }
@@ -19,6 +21,51 @@ bool isObj(_ x) { return IS_OBJ(x); }
 bool isRange(_ x) { return IS_RANGE(x); }
 bool isStr(_ x) { return IS_STRING(x); }
 bool isTuple(_ x) { return IS_TUPLE(x); }
+
+bool asBool(_ x) {
+  assert(isBool(x));
+  return AS_BOOL(x);
+}
+ObjClass *asClass(_ x) {
+  assert(isClass(x));
+  return AS_CLASS(x);
+}
+ObjClosure *asFn(_ x) {
+  assert(isFn(x));
+  return AS_CLOSURE(x);
+}
+ObjInstance *asInst(_ x) {
+  assert(isInst(x));
+  return AS_INSTANCE(x);
+}
+ObjBound *asMethod(_ x) {
+  assert(isMethod(x));
+  return AS_BOUND(x);
+}
+ObjNative *asNative(_ x) {
+  assert(isNative(x));
+  return AS_NATIVE(x);
+}
+double asNum(_ x) {
+  assert(isNum(x));
+  return AS_NUMBER(x);
+}
+Obj *asObj(_ x) {
+  assert(isObj(x));
+  return AS_OBJ(x);
+}
+ObjRange *asRange(_ x) {
+  assert(isRange(x));
+  return AS_RANGE(x);
+}
+ObjString *asStr(_ x) {
+  assert(isStr(x));
+  return AS_STRING(x);
+}
+ObjTuple *asTuple(_ x) {
+  assert(isTuple(x));
+  return AS_TUPLE(x);
+}
 
 _ error(const char *msg) { return obj(newError(newString(msg))); }
 _ fn(const char *name, int arity, NativeFn fun) {

@@ -76,7 +76,6 @@ void initChunk(Chunk *chunk);
 void freeChunk(Chunk *chunk);
 void growChunk(Chunk *chunk, int capacity);
 void writeChunk(Chunk *chunk, u8 byte, int line);
-void dumpChunk(FILE *io, const char *name, Chunk *chunk);
 int addConstant(Chunk *chunk, Value value);
 
 #endif

@@ -24,6 +24,18 @@ bool isRange(_ x);
 bool isStr(_ x);
 bool isTuple(_ x);
 
+bool asBool(_ x);
+ObjClass *asClass(_ x);
+ObjClosure *asFn(_ x);
+ObjInstance *asInst(_ x);
+ObjBound *asMethod(_ x);
+ObjNative *asNative(_ x);
+double asNum(_ x);
+Obj *asObj(_ x);
+ObjRange *asRange(_ x);
+ObjString *asStr(_ x);
+ObjTuple *asTuple(_ x);
+
 _ error(const char *msg);
 _ fn(const char *name, int arity, NativeFn fun);
 _ memory(u8 *bytes, int length);
