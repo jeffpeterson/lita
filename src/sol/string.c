@@ -73,14 +73,10 @@ ObjString *stringf(const char *fmt, ...) {
   return takeString(str, len);
 }
 
-ObjString *stringFormat(const char *fmt, ...) {
+ObjString *vstringFormat(const char *fmt, va_list args) {
   Buffer buf = newBuffer(8);
-  enum { A_NONE, A_PRINT, A_DEBUG, A_SHOW, A_ESCAPE } action = A_NONE;
   int offset = 0;
   int i = 0;
-
-  va_list args;
-  va_start(args, fmt);
 
   for (i = 0; fmt[i] != '\0'; i++) {
     char c = fmt[i];
@@ -90,7 +86,7 @@ ObjString *stringFormat(const char *fmt, ...) {
       switch (c2) {
       case '{':
         // Print string up to the first bracket
-        appendBuffer(&buf, fmt + offset, i - offset);
+        appendBuffer(&buf, (u8 *)fmt + offset, i - offset);
         // Skip the second bracket.
         offset += ++i;
         break;
@@ -98,7 +94,7 @@ ObjString *stringFormat(const char *fmt, ...) {
         i++;
         Value v = va_arg(args, Value);
         ObjString *show = asStr(toString(v));
-        appendBuffer(&buf, show->chars, show->length);
+        appendBuffer(&buf, (u8 *)show->chars, show->length);
         break;
       }
 
@@ -109,11 +105,26 @@ ObjString *stringFormat(const char *fmt, ...) {
       }
     }
   }
-  va_end(args);
 
   // Append rest of fmt including null byte.
-  appendBuffer(&buf, fmt + offset, i - offset);
+  appendBuffer(&buf, (u8 *)fmt + offset, i - offset);
 
   growBuffer(&buf, buf.count);
-  return takeString(&buf.bytes, buf.count);
+  return takeString((char *)buf.bytes, buf.count);
+}
+
+ObjString *stringFormat(const char *fmt, ...) {
+  va_list args;
+  va_start(args, fmt);
+  ObjString *str = vstringFormat(fmt, args);
+  va_end(args);
+  return str;
+}
+
+int fstringFormat(FILE *io, const char *fmt, ...) {
+  va_list args;
+  va_start(args, fmt);
+  ObjString *str = vstringFormat(fmt, args);
+  va_end(args);
+  return fwrite(str->chars, sizeof(char), str->length, io);
 }

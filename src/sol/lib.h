@@ -30,6 +30,7 @@ bool asBool(_ x);
 ObjClass *asClass(_ x);
 ObjClosure *asFn(_ x);
 ObjInstance *asInst(_ x);
+int asInt(_ x);
 ObjBound *asMethod(_ x);
 ObjNative *asNative(_ x);
 double asNum(_ x);

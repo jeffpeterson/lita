@@ -38,6 +38,7 @@ ObjInstance *asInst(_ x) {
   assert(isInst(x));
   return AS_INSTANCE(x);
 }
+int asInt(_ x) { return (int)asNum(x); }
 ObjBound *asMethod(_ x) {
   assert(isMethod(x));
   return AS_BOUND(x);

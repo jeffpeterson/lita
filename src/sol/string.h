@@ -20,6 +20,9 @@ ObjString *takeString(char *chars, int length);
 ObjString *copyString(const char *chars, int length);
 ObjString *concatStrings(ObjString *a, ObjString *b);
 ObjString *stringf(const char *fmt, ...);
+
+ObjString *vstringFormat(const char *fmt, va_list args);
 ObjString *stringFormat(const char *fmt, ...);
+int fstringFormat(FILE *io, const char *fmt, ...);
 
 #endif
