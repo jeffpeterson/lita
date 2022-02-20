@@ -1,5 +1,7 @@
 #include <stdarg.h>
 
+#include "buffer.h"
+#include "lib.h"
 #include "memory.h"
 #include "string.h"
 #include "table.h"
@@ -69,4 +71,49 @@ ObjString *stringf(const char *fmt, ...) {
     return copyString("", 0);
 
   return takeString(str, len);
+}
+
+ObjString *stringFormat(const char *fmt, ...) {
+  Buffer buf = newBuffer(8);
+  enum { A_NONE, A_PRINT, A_DEBUG, A_SHOW, A_ESCAPE } action = A_NONE;
+  int offset = 0;
+  int i = 0;
+
+  va_list args;
+  va_start(args, fmt);
+
+  for (i = 0; fmt[i] != '\0'; i++) {
+    char c = fmt[i];
+
+    if (c == '{') {
+      char c2 = fmt[i + 1];
+      switch (c2) {
+      case '{':
+        // Print string up to the first bracket
+        appendBuffer(&buf, fmt + offset, i - offset);
+        // Skip the second bracket.
+        offset += ++i;
+        break;
+      case '}': {
+        i++;
+        Value v = va_arg(args, Value);
+        ObjString *show = asStr(toString(v));
+        appendBuffer(&buf, show->chars, show->length);
+        break;
+      }
+
+      default:
+        // Format error
+        runtimeError("Invalid format: %s", fmt);
+        crash("format");
+      }
+    }
+  }
+  va_end(args);
+
+  // Append rest of fmt including null byte.
+  appendBuffer(&buf, fmt + offset, i - offset);
+
+  growBuffer(&buf, buf.count);
+  return takeString(&buf.bytes, buf.count);
 }

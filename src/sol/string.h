@@ -20,5 +20,6 @@ ObjString *takeString(char *chars, int length);
 ObjString *copyString(const char *chars, int length);
 ObjString *concatStrings(ObjString *a, ObjString *b);
 ObjString *stringf(const char *fmt, ...);
+ObjString *stringFormat(const char *fmt, ...);
 
 #endif
