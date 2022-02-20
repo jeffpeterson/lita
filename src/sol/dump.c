@@ -1,10 +1,12 @@
+#include <libgen.h>
+
 #include "dump.h"
 #include "lib.h"
 #include "object.h"
 #include "string.h"
 #include "value.h"
 
-static int currentId = 0;
+int currentId = 0;
 Table ids;
 
 static void dumpValue(FILE *io, Value v) {
@@ -39,9 +41,13 @@ static void dumpValue(FILE *io, Value v) {
   switch (obj->type) {
   case OBJ_FUN: {
     Value id;
-    tableGet(&ids, v, &id);
     ObjFun *fun = AS_FUN(v);
-    fprintf(io, "%sFn%d()", fun->name->chars, asInt(id));
+
+    if (tableGet(&ids, v, &id)) {
+      fprintf(io, "%sFn%g()", fun->name->chars, asNum(id));
+    } else {
+      fprintf(io, "error(\"Could not find fn %s\")", fun->name->chars);
+    }
     return;
   }
 
@@ -67,11 +73,16 @@ static void dumpValue(FILE *io, Value v) {
 }
 
 static int dumpFn(FILE *io, ObjFun *fun) {
+  Value vid;
+  if (tableGet(&ids, obj(fun), &vid)) {
+    return asInt(vid);
+  }
   int id = currentId++;
-  tableSet(&ids, obj(fun), num(id));
+  vid = num(id);
+  tableSet(&ids, obj(fun), vid);
+
   ObjString *name = fun->name;
   Chunk chunk = fun->chunk;
-
   ValueArray values = chunk.constants;
 
   for (int i = 0; i < values.count; i++) {
@@ -94,7 +105,8 @@ static int dumpFn(FILE *io, ObjFun *fun) {
     fprintf(io, ", ");
   }
 
-  fprintf(io, "  };\n"
+  fprintf(io, "\n"
+              "  };\n"
               "  return vals;\n"
               "}\n\n");
 
@@ -145,14 +157,32 @@ static int dumpFn(FILE *io, ObjFun *fun) {
   return id;
 }
 
-void dumpModule(FILE *io, ObjString *name, ObjFun *fun) {
+static char *parameterize(char *str) {
+  for (int i = 0; str[i] != '\0'; i++) {
+    char c = str[i];
+    if ((c >= '0' && c <= '9') || (c >= 'a' && c <= 'z') ||
+        (c >= 'A' && c <= 'Z') || c == '_') {
+    } else
+      str[i] = '_';
+  }
+
+  return str;
+}
+
+void dumpModule(FILE *io, ObjString *path, ObjFun *fun) {
   initTable(&ids);
 
-  fprintf(io, "#include \"sol/chunk.h\"\n"
-              "#include \"sol/common.h\"\n"
-              "#include \"sol/lib.h\"\n"
-              "#include \"sol/string.h\"\n"
-              "\n");
+  ObjString *name = newString(parameterize(basename(path->chars)));
+
+  fprintf(io,
+          "// clang-format off\n"
+          "// sol -c %s\n"
+          "#include \"sol/chunk.h\"\n"
+          "#include \"sol/common.h\"\n"
+          "#include \"sol/lib.h\"\n"
+          "#include \"sol/string.h\"\n"
+          "\n",
+          path->chars);
 
   int id = dumpFn(io, fun);
 

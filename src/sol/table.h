@@ -18,8 +18,9 @@ typedef struct Table {
 
 void initTable(Table *table);
 void freeTable(Table *table);
-bool tableGet(Table *table, Value key, Value *value);
 
+bool tableHas(Table *table, Value key);
+bool tableGet(Table *table, Value key, Value *value);
 /**
  * Returns whether key is new.
  */

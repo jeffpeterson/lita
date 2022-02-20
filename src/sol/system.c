@@ -1,4 +1,3 @@
-#include <libgen.h>
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -72,18 +71,6 @@ void runFile(ObjString *path) {
     exit(70);
 }
 
-static char *parameterize(char *str) {
-  for (int i = 0; str[i] != '\0'; i++) {
-    char c = str[i];
-    if ((c >= '0' && c <= '9') || (c >= 'a' && c <= 'z') ||
-        (c >= 'A' && c <= 'Z') || c == '_') {
-    } else
-      str[i] = '_';
-  }
-
-  return str;
-}
-
 void compileFile(ObjString *path) {
   ObjString *source = readFile(path);
   ObjFun *fun = compile(source->chars);
@@ -91,9 +78,8 @@ void compileFile(ObjString *path) {
   if (fun == NULL)
     exit(65);
 
-  ObjString *name = newString(parameterize(basename(path->chars)));
   ObjString *dst = concatStrings(path, newString(".c"));
   FILE *io = openFile(dst, "w");
-  dumpModule(io, name, fun);
+  dumpModule(io, path, fun);
   fclose(io);
 }

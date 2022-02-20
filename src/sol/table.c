@@ -78,6 +78,11 @@ static void adjustCapacity(Table *table, int capacity) {
   table->capacity = capacity;
 }
 
+bool tableHas(Table *table, Value key) {
+  Value v;
+  return tableGet(table, key, &v);
+}
+
 bool tableGet(Table *table, Value key, Value *value) {
   if (table->count == 0)
     return false;

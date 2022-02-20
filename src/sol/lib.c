@@ -38,7 +38,7 @@ ObjInstance *asInst(_ x) {
   assert(isInst(x));
   return AS_INSTANCE(x);
 }
-int asInt(_ x) { return (int)asNum(x); }
+int asInt(_ x) { return asNum(x); }
 ObjBound *asMethod(_ x) {
   assert(isMethod(x));
   return AS_BOUND(x);
@@ -75,7 +75,7 @@ _ fn(const char *name, int arity, NativeFn fun) {
 _ memory(u8 *bytes, int length) {
   return obj(copyString((char *)bytes, length));
 }
-_ num(double num) { return AS_NUMBER(num); }
+_ num(double num) { return NUMBER_VAL(num); }
 _ str(const char *str) { return obj(newString(str)); }
 _ string(const char *str) { return obj(newString(str)); }
 
