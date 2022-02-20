@@ -28,7 +28,7 @@ int main(int argc, char *argv[]) {
   initVM();
 
   int opt;
-  bool noFiles = false;
+  bool noFiles = true;
   bool startRepl = false;
   enum { COMPILE, INTERPRET } mode = INTERPRET;
 
@@ -49,7 +49,7 @@ int main(int argc, char *argv[]) {
       }
     }
 
-    noFiles |= optind >= argc;
+    noFiles = noFiles && optind >= argc;
 
     for (int i = optind; i < argc; i++) {
       if (argv[i][0] == '-') {
