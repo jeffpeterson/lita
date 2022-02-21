@@ -12,13 +12,22 @@ OBJECTS := $(patsubst ./%.c,_build/%.o, $(SOURCES))
 TARG_O  := $(filter-out %_test.o,$(OBJECTS))
 TEST_O  := $(filter-out %/main.o,$(OBJECTS))
 
-.PHONY: default all clean core
+.PHONY: default all clean test core run demo
 .PRECIOUS: $(TARGET)
 .SUFFIXES: # disable crazy built-in rules that append .c
 
 default: $(TARGET) $(TEST) core
 all: default
 core: $(SOL_C)
+
+run: $(TARGET)
+	@$(TARGET) examples/basics.sol
+
+demo: $(TARGET)
+	@$(TARGET) examples/demo.sol
+
+test: $(TARGET)
+	@$(TEST)
 
 $(TARGET): $(TARG_O)
 	@mkdir -p $(dir $@)

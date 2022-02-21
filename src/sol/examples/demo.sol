@@ -9,7 +9,7 @@ let x = 42;
 print 3(x);
 
 print hash("abcd");
-print read("Readme.md");
+print read("Makefile");
 print write("tmp/demo.txt", "It runs!");
 // write("output to sdout");
 // pp((42, "meaning of life"));

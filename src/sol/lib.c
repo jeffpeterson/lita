@@ -12,6 +12,7 @@ bool isBool(_ x) { return IS_BOOL(x); }
 bool isClass(_ x) { return IS_CLASS(x); }
 bool isFn(_ x) { return IS_CLOSURE(x); }
 bool isInst(_ x) { return IS_INSTANCE(x); }
+bool isInt(_ x) { return isNum(x) && num(asInt(x)) == asNum(x); }
 bool isMethod(_ x) { return IS_BOUND(x); }
 bool isNative(_ x) { return IS_NATIVE(x); }
 bool isNum(_ x) { return IS_NUMBER(x); }
@@ -88,6 +89,50 @@ _ t7(_ a, _ b, _ c, _ d, _ e, _ f, _ g) {
   return t(7, (_[]){a, b, c, d, e, f, g});
 }
 
+_ class(_ name) {
+  if (!isStr(name))
+    return nil;
+
+  return pope(OBJ_VAL(newClass(AS_STRING(push(name)))));
+}
+
+_ subClass(_ name, _ parent) {
+  if (!isClass(parent))
+    return nil;
+
+  _ klass = class(name);
+  ObjClass *klassObj = AS_CLASS(klass);
+  ObjClass *parentObj = AS_CLASS(parent);
+
+  klassObj->parent = parentObj;
+  tableAddAll(&parentObj->methods, &klassObj->methods);
+  return klass;
+}
+
+_ method(_ klass, _ fun) {
+  if (!isClass(klass))
+    return nil;
+
+  ObjString *name;
+
+  if (IS_FUN(fun)) {
+    name = AS_FUN(fun)->name;
+  } else if (IS_NATIVE(fun)) {
+    name = AS_NATIVE(fun)->name;
+  } else if (IS_CLOSURE(fun)) {
+    name = AS_CLOSURE(fun)->fun->name;
+  } else if (IS_BOUND(fun)) {
+    name = AS_BOUND(fun)->method->fun->name;
+  } else {
+    return error("Method must be callable.");
+  }
+
+  tableSet(&AS_CLASS(klass)->methods, push(OBJ_VAL(name)), fun);
+  pop();
+
+  return fun;
+}
+
 _ add(_ a, _ b) {
   if (IS_NUMBER(a) && IS_NUMBER(b))
     return NUMBER_VAL(AS_NUMBER(a) + AS_NUMBER(b));
@@ -151,6 +196,132 @@ _ multiply(_ a, _ b) {
     return NIL_VAL;
 
   return OBJ_VAL(out);
+}
+
+_ get(_ self, _ key) {
+  _ value;
+  if (isInst(self) && tableGet(&asInst(self)->fields, key, &value))
+    return value;
+
+  ObjClass *klass = classOf(self);
+
+  if (tableGet(&klass->methods, key, &value))
+    return OBJ_VAL(newBound(self, AS_CLOSURE(value)));
+
+  return nil;
+}
+
+_ set(_ self, _ key, _ value) { return error("Not implemented."); }
+
+_ hash(_ val) { return NUMBER_VAL(hashValue(val)); }
+
+_ len(_ x) {
+  if (!isObj(x))
+    return nil;
+
+  switch (asObj(x)->type) {
+  case OBJ_BOUND:
+    return len(obj(asMethod(x)->method));
+
+  case OBJ_CLASS:
+  case OBJ_CLOSURE:
+  case OBJ_ERR:
+  case OBJ_FUN:
+  case OBJ_INSTANCE:
+  case OBJ_NATIVE:
+  case OBJ_UPVALUE:
+
+  case OBJ_RANGE:
+    return subtract(asRange(x)->end, asRange(x)->start);
+
+  case OBJ_STRING:
+  case OBJ_TUPLE:
+  default:
+    return nil;
+  }
+}
+
+_ name(_ self) { return error("Not implemented."); }
+
+_ read(_ path) {
+  if (!isStr(path))
+    return error("path must be a string.");
+
+  return obj(readFile(AS_STRING(path)));
+}
+
+_ write(_ path, _ content) {
+  if (!isStr(path))
+    return error("path must be a string.");
+
+  let data = toStr(content);
+
+  if (!writeFile(AS_STRING(path), AS_STRING(data)))
+    return error("Could not write to file.");
+
+  return data;
+}
+
+_ append(_ path, _ content) {
+  if (!isStr(path))
+    return error("path must be a string.");
+
+  let data = toStr(content);
+
+  if (!appendFile(AS_STRING(path), AS_STRING(data)))
+    return error("Could not append to file.");
+
+  return data;
+}
+
+_ toStr(_ v) { return toString(v); }
+
+_ toString(_ val) {
+  if (isInt(val))
+    return OBJ_VAL(stringf("%d", asInt(val)));
+
+  if (IS_NUMBER(val))
+    return OBJ_VAL(stringf("%g", AS_NUMBER(val)));
+
+  if (IS_BOOL(val))
+    return string(AS_BOOL(val) ? "true" : "false");
+
+  if (IS_NIL(val))
+    return string("nil");
+
+  if (IS_OBJ(val)) {
+    switch (OBJ_TYPE(val)) {
+    case OBJ_BOUND:
+      return OBJ_VAL(AS_BOUND(val)->method->fun->name);
+    case OBJ_CLASS:
+      return OBJ_VAL(AS_CLASS(val)->name);
+    case OBJ_CLOSURE:
+      return toString(OBJ_VAL(AS_CLOSURE(val)->fun));
+    case OBJ_ERR:
+      return OBJ_VAL(AS_ERR(val)->msg);
+    case OBJ_FUN:
+      return OBJ_VAL(AS_FUN(val)->name);
+    case OBJ_INSTANCE:
+      // get(val, string("toString"));
+      return toString(OBJ_VAL(AS_INSTANCE(val)->klass));
+    case OBJ_NATIVE:
+      return OBJ_VAL(AS_NATIVE(val)->name);
+
+    case OBJ_RANGE: {
+      ObjRange *range = AS_RANGE(val);
+      return OBJ_VAL(
+          stringf("%s..%s", toString(range->start), toString(range->end)));
+    }
+
+    case OBJ_STRING:
+      return val;
+
+    default:
+      return str(objInfo[OBJ_TYPE(val)].inspect);
+    }
+  }
+
+  return obj(stringf("<unknown type %64x>", val));
 }
 
 _ fprint(FILE *io, _ x) {
@@ -223,171 +394,4 @@ _ inspect(_ val) {
   }
 
   return toString(val);
-}
-
-_ get(_ self, _ key) {
-  _ value;
-  if (isInst(self) && tableGet(&asInst(self)->fields, key, &value))
-    return value;
-
-  ObjClass *klass = classOf(self);
-
-  if (tableGet(&klass->methods, key, &value))
-    return OBJ_VAL(newBound(self, AS_CLOSURE(value)));
-
-  return nil;
-}
-
-_ set(_ self, _ key, _ value) { return error("Not implemented."); }
-
-_ hash(_ val) { return NUMBER_VAL(hashValue(val)); }
-
-_ len(_ x) {
-  if (!isObj(x))
-    return nil;
-
-  switch (asObj(x)->type) {
-  case OBJ_BOUND:
-    return len(obj(asMethod(x)->method));
-
-  case OBJ_CLASS:
-  case OBJ_CLOSURE:
-  case OBJ_ERR:
-  case OBJ_FUN:
-  case OBJ_INSTANCE:
-  case OBJ_NATIVE:
-  case OBJ_UPVALUE:
-
-  case OBJ_RANGE:
-    return subtract(asRange(x)->end, asRange(x)->start);
-
-  case OBJ_STRING:
-  case OBJ_TUPLE:
-  default:
-    return nil;
-  }
-}
-
-_ name(_ self) { return error("Not implemented."); }
-
-_ toStr(_ v) { return toString(v); }
-
-_ toString(_ val) {
-  if (IS_NUMBER(val))
-    return OBJ_VAL(stringf("%g", AS_NUMBER(val)));
-
-  if (IS_BOOL(val))
-    return string(AS_BOOL(val) ? "true" : "false");
-
-  if (IS_NIL(val))
-    return string("nil");
-
-  if (IS_OBJ(val)) {
-    switch (OBJ_TYPE(val)) {
-    case OBJ_BOUND:
-      return OBJ_VAL(AS_BOUND(val)->method->fun->name);
-    case OBJ_CLASS:
-      return OBJ_VAL(AS_CLASS(val)->name);
-    case OBJ_CLOSURE:
-      return toString(OBJ_VAL(AS_CLOSURE(val)->fun));
-    case OBJ_ERR:
-      return OBJ_VAL(AS_ERR(val)->msg);
-    case OBJ_FUN:
-      return OBJ_VAL(AS_FUN(val)->name);
-    case OBJ_INSTANCE:
-      // get(val, string("toString"));
-      return toString(OBJ_VAL(AS_INSTANCE(val)->klass));
-    case OBJ_NATIVE:
-      return OBJ_VAL(AS_NATIVE(val)->name);
-
-    case OBJ_RANGE: {
-      ObjRange *range = AS_RANGE(val);
-      return OBJ_VAL(
-          stringf("%s..%s", toString(range->start), toString(range->end)));
-    }
-
-    case OBJ_STRING:
-      return val;
-
-    default:
-      return str(objInfo[OBJ_TYPE(val)].inspect);
-    }
-  }
-
-  return obj(stringf("<unknown type %64x>", val));
-}
-
-_ class(_ name) {
-  if (!isStr(name))
-    return nil;
-
-  return pope(OBJ_VAL(newClass(AS_STRING(push(name)))));
-}
-
-_ subClass(_ name, _ parent) {
-  if (!isClass(parent))
-    return nil;
-
-  _ klass = class(name);
-  ObjClass *klassObj = AS_CLASS(klass);
-  ObjClass *parentObj = AS_CLASS(parent);
-
-  klassObj->parent = parentObj;
-  tableAddAll(&parentObj->methods, &klassObj->methods);
-  return klass;
-}
-
-_ method(_ klass, _ fun) {
-  if (!isClass(klass))
-    return nil;
-
-  ObjString *name;
-
-  if (IS_FUN(fun)) {
-    name = AS_FUN(fun)->name;
-  } else if (IS_NATIVE(fun)) {
-    name = AS_NATIVE(fun)->name;
-  } else if (IS_CLOSURE(fun)) {
-    name = AS_CLOSURE(fun)->fun->name;
-  } else if (IS_BOUND(fun)) {
-    name = AS_BOUND(fun)->method->fun->name;
-  } else {
-    return error("Method must be callable.");
-  }
-
-  tableSet(&AS_CLASS(klass)->methods, push(OBJ_VAL(name)), fun);
-  pop();
-
-  return fun;
-}
-
-_ read(_ path) {
-  if (!isStr(path))
-    return error("path must be a string.");
-
-  return obj(readFile(AS_STRING(path)));
-}
-
-_ write(_ path, _ content) {
-  if (!isStr(path))
-    return error("path must be a string.");
-
-  let data = toStr(content);
-
-  if (!writeFile(AS_STRING(path), AS_STRING(data)))
-    return error("Could not write to file.");
-
-  return data;
-}
-
-_ append(_ path, _ content) {
-  if (!isStr(path))
-    return error("path must be a string.");
-
-  let data = toStr(content);
-
-  if (!appendFile(AS_STRING(path), AS_STRING(data)))
-    return error("Could not append to file.");
-
-  return data;
 }
