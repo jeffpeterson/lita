@@ -1,5 +1,5 @@
 // clang-format off
-// sol -c src/sol/lib/core.sol
+// sol -c lib/core.sol
 #include "sol/chunk.h"
 #include "sol/common.h"
 #include "sol/lib.h"
