@@ -65,37 +65,24 @@ enum ObjType {
 
 struct Obj {
   ObjType type;
-
-  /** Is marked by GC in the current mark cycle. */
-  bool isMarked;
-
-  /** Linked list of objects used for GC. */
-  struct Obj *next;
-
-  /** All objects have a static hash value. */
-  Hash hash;
+  bool isMarked;    /** Is marked by GC in the current mark cycle. */
+  struct Obj *next; /** Linked list of objects used for GC. */
+  Hash hash;        /** All objects have a static hash value. */
 };
 
 /**
  * Tracks a closed-over variable by keeping a pointer to its
  * location in memory.
  *
+ * "Open" upvalues point to values on the VM's stack.
+ *
  * Todo: rename to ObjRef?
  */
 typedef struct ObjUpvalue {
   Obj obj;
-
-  /** Pointer to this upvalue's Value. */
-  Value *location;
-
-  /**
-   * Used to store this upvalue's Value once it has been "closed".
-   * "Open" upvalues point to values on the VM's stack.
-   */
-  Value closed;
-
-  /** Linked list of all upvalues tracked by VM. */
-  struct ObjUpvalue *next;
+  Value closed;    /** Stores this upvalue's Value once it has been "closed". */
+  Value *location; /** Pointer to this upvalue's Value. */
+  struct ObjUpvalue *next; /** Linked list of all upvalues tracked by VM. */
 } ObjUpvalue;
 
 typedef struct ObjErr {
@@ -111,19 +98,15 @@ typedef struct ObjFun {
   ObjString *name;
 } ObjFun;
 
+/**
+ * upvalueCount is duplicated from ObjFun because we need it during GC and the
+ * ObjFun might get GC'd first.
+ */
 typedef struct ObjClosure {
   Obj obj;
   ObjFun *fun;
-
-  /** Pointer to an array of upvalue pointers that are being closed-over. */
-  ObjUpvalue **upvalues;
-
-  /**
-   * Number of closed-over upvalues.
-   *
-   * Duplicated from ObjFun because the ObjFun might get GC'd first.
-   */
-  int upvalueCount;
+  int upvalueCount;      /** Number of closed-over upvalues. */
+  ObjUpvalue **upvalues; /** Array of upvalue pointers being closed-over. */
 } ObjClosure;
 
 typedef struct ObjClass {
@@ -136,26 +119,14 @@ typedef struct ObjClass {
 typedef struct ObjInstance {
   Obj obj;
   ObjClass *klass;
-
-  /**
-   * Fields assigned to this instance.
-   *
-   * Todo: Optimize this to prevent runtime name lookups.
-   */
-  Table fields;
+  Table fields; /** Fields assigned to this instance. */
 } ObjInstance;
 
-/**
- * A closure bound to a receiver.
- */
+/** A closure bound to a receiver.  */
 typedef struct ObjBound {
   Obj obj;
-
-  /** Bound `this` value. */
-  Value receiver;
-
-  /** Method being bound. */
-  ObjClosure *method;
+  Value receiver;     /** Bound `this` value. */
+  ObjClosure *method; /** Method being bound. */
 } ObjBound;
 
 typedef Value (*NativeFn)(Value this_, int argCount, Value *args);
@@ -173,7 +144,6 @@ typedef struct ObjRange {
   Value end;
 } ObjRange;
 
-// Todo: UTF-8 strings
 struct ObjString {
   Obj obj;
   int length;
