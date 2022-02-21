@@ -8,8 +8,6 @@
 #include "tuple.h"
 #include "vm.h"
 
-_ hash(_ val) { return NUMBER_VAL(hashValue(val)); }
-
 bool isBool(_ x) { return IS_BOOL(x); }
 bool isClass(_ x) { return IS_CLASS(x); }
 bool isFn(_ x) { return IS_CLOSURE(x); }
@@ -118,9 +116,18 @@ _ add(_ a, _ b) {
   return OBJ_VAL(out);
 }
 
+_ subtract(_ a, _ b) {
+  if (isNum(a) && isNum(b))
+    return num(asNum(a) - asNum(b));
+
+  // if (isStr(a) && isStr(b))
+  //   remove b from end of a
+  return nil;
+}
+
 _ multiply(_ a, _ b) {
-  if (IS_NUMBER(a) && IS_NUMBER(b))
-    return NUMBER_VAL(AS_NUMBER(a) * AS_NUMBER(b));
+  if (isNum(a) && isNum(b))
+    return num(asNum(a) * asNum(b));
 
   if (!IS_OBJ(a)) {
     runtimeError("This type cannot be multiplied.");
@@ -219,23 +226,49 @@ _ inspect(_ val) {
 }
 
 _ get(_ self, _ key) {
-  if (!IS_INSTANCE(self))
-    return nil;
-
-  if (!IS_STRING(key))
-    return nil;
-
-  // Peek to prevent collection of inst.
-  ObjInstance *inst = AS_INSTANCE(self);
-
   _ value;
-  if (tableGet(&inst->fields, key, &value))
+  if (isInst(self) && tableGet(&asInst(self)->fields, key, &value))
     return value;
-  else if (tableGet(&inst->klass->methods, key, &value))
+
+  ObjClass *klass = classOf(self);
+
+  if (tableGet(&klass->methods, key, &value))
     return OBJ_VAL(newBound(self, AS_CLOSURE(value)));
-  else
-    return NIL_VAL;
+
+  return nil;
 }
+
+_ set(_ self, _ key, _ value) { return error("Not implemented."); }
+
+_ hash(_ val) { return NUMBER_VAL(hashValue(val)); }
+
+_ len(_ x) {
+  if (!isObj(x))
+    return nil;
+
+  switch (asObj(x)->type) {
+  case OBJ_BOUND:
+    return len(obj(asMethod(x)->method));
+
+  case OBJ_CLASS:
+  case OBJ_CLOSURE:
+  case OBJ_ERR:
+  case OBJ_FUN:
+  case OBJ_INSTANCE:
+  case OBJ_NATIVE:
+  case OBJ_UPVALUE:
+
+  case OBJ_RANGE:
+    return subtract(asRange(x)->end, asRange(x)->start);
+
+  case OBJ_STRING:
+  case OBJ_TUPLE:
+  default:
+    return nil;
+  }
+}
+
+_ name(_ self) { return error("Not implemented."); }
 
 _ toStr(_ v) { return toString(v); }
 

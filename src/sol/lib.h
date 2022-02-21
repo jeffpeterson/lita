@@ -53,10 +53,16 @@ _ t(int len, _ *vals);
 _ toStr(_ val);
 _ toString(_ val);
 
+_ get(_ self, _ key);
+_ set(_ self, _ key, _ value);
+
 _ add(_ a, _ b);
+_ subtract(_ a, _ b);
 _ multiply(_ a, _ b);
 
 _ hash(_ val);
+_ len(_ val);
+_ name(_ val);
 
 _ class(_ name);
 _ subClass(_ name, _ parent);

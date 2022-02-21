@@ -10,9 +10,7 @@ static ValueArray existsConstants1() {
   ValueArray vals;
   initValueArray(&vals);
   vals.count = vals.capacity = 0;
-  Value values[] = {
-
-  };
+  Value values[] = {};
   vals.values = cloneMemory(values, sizeof(values));
   return vals;
 }

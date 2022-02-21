@@ -81,46 +81,52 @@ static int dumpFn(FILE *io, ObjFun *fun) {
   }
 
   fprintf(io,
+          "\n"
           "static ValueArray %sConstants%d() {\n"
           "  ValueArray vals;\n"
           "  initValueArray(&vals);\n"
           "  vals.count = vals.capacity = %d;\n"
-          "  Value values[] = {\n"
-          "    ",
+          "  Value values[] = {",
           name->chars, id, values.count);
 
-  for (int i = 0; i < values.count; i++) {
-    dumpValue(io, values.values[i]);
-    fprintf(io, ", ");
+  if (values.count > 0) {
+    fputs("\n   ", io);
+
+    for (int i = 0; i < values.count; i++) {
+      fputs(" ", io);
+      dumpValue(io, values.values[i]);
+      fputs(",", io);
+    }
+    fputs("\n  ", io);
   }
 
-  fprintf(io, "\n"
-              "  };\n"
+  fprintf(io, "};\n"
               "  vals.values = cloneMemory(values, sizeof(values));\n"
               "  return vals;\n"
-              "}\n\n");
+              "}\n");
 
   fprintf(io,
+          "\n"
           "static Chunk %sChunk%d() {\n"
           "  Chunk c;\n"
           "  initChunk(&c);\n"
           "  c.count = %d;\n"
           "  c.capacity = %d;\n"
           "  u8 code[] = {\n"
-          "    ",
+          "   ",
           name->chars, id, chunk.count, chunk.count);
 
   for (int i = 0; i < chunk.count; i++) {
-    fprintf(io, "%d, ", chunk.code[i]);
+    fprintf(io, " %d,", chunk.code[i]);
   }
 
   fprintf(io, "\n"
               "  };\n"
               "  int lines[] = {\n"
-              "    ");
+              "   ");
 
   for (int i = 0; i < chunk.count; i++) {
-    fprintf(io, "%d, ", chunk.lines[i]);
+    fprintf(io, " %d,", chunk.lines[i]);
   }
 
   fprintf(io,
@@ -131,10 +137,11 @@ static int dumpFn(FILE *io, ObjFun *fun) {
           "  c.constants = %sConstants%d();\n"
           "\n"
           "  return c;\n"
-          "};\n\n",
+          "};\n",
           name->chars, id);
 
   fprintf(io,
+          "\n"
           "static Value %sFn%d() {\n"
           "  ObjFun *f = newFunction();"
           "  f->arity = %d;\n"
@@ -142,7 +149,7 @@ static int dumpFn(FILE *io, ObjFun *fun) {
           "  f->name = newString(\"%s\");\n"
           "  f->chunk = %sChunk%d();\n"
           "  return obj(f);\n"
-          "}\n\n",
+          "}\n",
           name->chars, id, fun->arity, fun->upvalueCount, name->chars,
           name->chars, id);
 
@@ -174,15 +181,16 @@ void dumpModule(FILE *io, ObjString *path, ObjFun *fun) {
           "#include \"sol/lib.h\"\n"
           "#include \"sol/memory.h\"\n"
           "#include \"sol/string.h\"\n"
-          "\n",
+          "",
           path->chars);
 
   int id = dumpFn(io, fun);
 
   fprintf(io,
+          "\n"
           "ObjFun *%s() {\n"
           "  return AS_FUN(%sFn%d());\n"
-          "}\n\n",
+          "}\n",
           name->chars, fun->name->chars, id);
 
   freeTable(&ids);
