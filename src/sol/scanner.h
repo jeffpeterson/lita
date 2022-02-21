@@ -23,17 +23,10 @@ typedef enum {
   TOKEN_ARROW,     // ->
   TOKEN_FAT_ARROW, // =>
 
-  TOKEN_MINUS,
   TOKEN_MINUS_EQUAL,
-  TOKEN_PLUS,
   TOKEN_PLUS_EQUAL,
-  TOKEN_SLASH,
   TOKEN_SLASH_EQUAL,
-  TOKEN_STAR,
   TOKEN_STAR_EQUAL,
-
-  TOKEN_MINUS_MINUS,
-  TOKEN_PLUS_PLUS,
 
   // One or two character tokens.
   TOKEN_BANG,
@@ -45,13 +38,20 @@ typedef enum {
   TOKEN_LESS,
   TOKEN_LESS_EQUAL,
 
+  // All tokens below IDENTIFIER are valid field names.
+  TOKEN_IDENTIFIER,
+
   // Literals.
   TOKEN_NUMBER,
   TOKEN_STRING,
   TOKEN_SYMBOL,
 
-  // All tokens below IDENTIFIER are valid field names.
-  TOKEN_IDENTIFIER,
+  TOKEN_MINUS,
+  TOKEN_PLUS,
+  TOKEN_SLASH,
+  TOKEN_STAR,
+  TOKEN_MINUS_MINUS,
+  TOKEN_PLUS_PLUS,
 
   // Keywords.
   TOKEN_AND,

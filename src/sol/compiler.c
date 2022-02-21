@@ -168,6 +168,19 @@ static void consume(TokenType type, const char *message) {
   errorAtCurrent(message);
 }
 
+static void consumeAtLeast(TokenType type, const char *message) {
+  if (parser.current.type >= type) {
+    advance();
+    return;
+  }
+
+  errorAtCurrent(message);
+}
+
+static void consumeIdent(const char *message) {
+  return consumeAtLeast(TOKEN_IDENTIFIER, message);
+}
+
 static bool check(TokenType type) { return parser.current.type == type; }
 
 static bool match(TokenType type) {
@@ -622,7 +635,7 @@ static void comma(bool canAssign) {
 }
 
 static void dot(bool canAssign) {
-  consume(TOKEN_IDENTIFIER, "Expect property name after '.'.");
+  consumeIdent("Expect property name after '.'.");
 
   uint8_t name = identifierConstant(&parser.previous);
 
@@ -913,7 +926,7 @@ static void function(FunType type) {
 }
 
 static void method() {
-  consume(TOKEN_IDENTIFIER, "Expect method name.");
+  consumeIdent("Expect method name.");
 
   uint8_t constant = identifierConstant(&parser.previous);
   FunType type = TYPE_METHOD;
