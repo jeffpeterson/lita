@@ -255,7 +255,10 @@ static bool invokeFromClass(ObjClass *klass, ObjString *name, int argCount) {
   Value method;
 
   if (!tableGet(&klass->methods, OBJ_VAL(name), &method)) {
-    return false;
+    if (!klass->parent)
+      return false;
+
+    return invokeFromClass(klass->parent, name, argCount);
   }
 
   if (IS_CLOSURE(method))
@@ -636,7 +639,7 @@ static InterpretResult run() {
       ObjClass *superclass = AS_CLASS(peek(1));
       ObjClass *subclass = AS_CLASS(peek(0));
       subclass->parent = superclass;
-      tableAddAll(&superclass->methods, &subclass->methods);
+      // tableAddAll(&superclass->methods, &subclass->methods);
       pop(); // Subclass
       break;
     }
