@@ -53,8 +53,8 @@ typedef struct VM {
 
 typedef enum InterpretResult {
   INTERPRET_OK,
+  INTERPRET_RUNTIME_ERROR,
   INTERPRET_COMPILE_ERROR,
-  INTERPRET_RUNTIME_ERROR
 } InterpretResult;
 
 extern VM vm;

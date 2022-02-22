@@ -268,8 +268,10 @@ static bool invokeFromClass(ObjClass *klass, ObjString *name, int argCount) {
     return callValue(method, argCount);
 }
 
-static bool invoke(ObjString *name, int argCount) {
+static InterpretResult opInvoke(Value name, int argCount) {
   Value receiver = peek(argCount);
+
+  // Value value = find(receiver, name);
 
   if (IS_INSTANCE(receiver)) {
     ObjInstance *inst = AS_INSTANCE(receiver);
@@ -277,19 +279,18 @@ static bool invoke(ObjString *name, int argCount) {
     Value value;
     if (tableGet(&inst->fields, OBJ_VAL(name), &value)) {
       vm.stackTop[-argCount - 1] = value;
-      return callValue(value, argCount);
+      return !callValue(value, argCount);
     }
   }
 
   ObjClass *klass = valueClass(receiver);
   // printf("invoke: %s_%s()\n", klass->name->chars, name->chars);
-  if (!invokeFromClass(klass, name, argCount)) {
-    runtimeError("Undefined property '%s' on %s.", name->chars,
-                 klass->name->chars);
-    return false;
+  if (!invokeFromClass(klass, asStr(name), argCount)) {
+    return runtimeError("Undefined property '%s' on %s.", asStr(name)->chars,
+                        klass->name->chars);
   }
 
-  return true;
+  return INTERPRET_OK;
 }
 
 static bool bindMethod(ObjClass *klass, ObjString *name) {
@@ -365,26 +366,41 @@ static void tuple(uint8_t length) {
   push(OBJ_VAL(tuple));
 }
 
-static void opGet(_ name) {
+static InterpretResult opAdd() {
+  Value b = peek(0);
+  Value a = peek(1);
+  Value res = nil;
+
+  if (isNum(a) && isNum(b))
+    res = num(AS_NUMBER(a) + AS_NUMBER(b));
+
+  if (isNil(res))
+    return opInvoke(string("+"), 1);
+
+  popn(2);
+  push(res);
+  return INTERPRET_OK;
+}
+
+static InterpretResult opGet(_ name) {
   let v = get(pop(), name);
   // if (arity(v) == 0)
   //   opCall(v);
   // else
   push(v);
+  return INTERPRET_OK;
 }
 
 static InterpretResult run() {
-  CallFrame *frame = &vm.frames[vm.frameCount - 1];
+  register CallFrame *frame = &vm.frames[vm.frameCount - 1];
 
 #define READ_BYTE() (*frame->ip++)
-
+#define SYNC_FRAME() (frame = &vm.frames[vm.frameCount - 1])
 #define READ_SHORT()                                                           \
   (frame->ip += 2, (uint16_t)((frame->ip[-2] << 8) | frame->ip[-1]))
-
 #define READ_CONSTANT()                                                        \
   (frame->closure->fun->chunk.constants.values[READ_BYTE()])
 #define READ_STRING() AS_STRING(READ_CONSTANT())
-
 #define BINARY_OP(valueType, op)                                               \
   do {                                                                         \
     if (!IS_NUMBER(peek(0)) || !IS_NUMBER(peek(1))) {                          \
@@ -397,7 +413,6 @@ static InterpretResult run() {
   } while (false)
 
   for (;;) {
-
 #ifdef DEBUG_TRACE_EXECUTION
     fprintf(stderr, "   |    |-> ");
     for (Value *slot = vm.stack; slot < vm.stackTop; slot++) {
@@ -413,6 +428,7 @@ static InterpretResult run() {
 
     vm.stackHigh = vm.stackTop;
 
+    InterpretResult err;
     uint8_t instruction;
     switch (instruction = READ_BYTE()) {
 
@@ -475,8 +491,7 @@ static InterpretResult run() {
       Value value;
 
       if (!tableGet(&vm.globals, name, &value)) {
-        runtimeError("Undefined variable '%s'.", AS_STRING(name)->chars);
-        return INTERPRET_RUNTIME_ERROR;
+        return runtimeError("Undefined variable '%s'.", AS_STRING(name)->chars);
       }
       push(value);
       break;
@@ -486,8 +501,7 @@ static InterpretResult run() {
       if (tableSet(&vm.globals, name, peek(0))) {
         // This is a new key and hasn't been defined.
         tableDelete(&vm.globals, name);
-        runtimeError("Undefined variable '%s'.", AS_STRING(name)->chars);
-        return INTERPRET_RUNTIME_ERROR;
+        return runtimeError("Undefined variable '%s'.", AS_STRING(name)->chars);
       }
       break;
     }
@@ -509,8 +523,7 @@ static InterpretResult run() {
     }
     case OP_SET_PROPERTY: {
       if (!IS_INSTANCE(peek(1))) {
-        runtimeError("Only instances have properties.");
-        return INTERPRET_RUNTIME_ERROR;
+        return runtimeError("Only instances have properties.");
       }
 
       ObjInstance *inst = AS_INSTANCE(peek(1));
@@ -554,18 +567,11 @@ static InterpretResult run() {
       BINARY_OP(BOOL_VAL, <);
       break;
 
-    case OP_ADD: {
-      Value b = peek(0);
-      Value a = peek(1);
-
-      Value result = add(a, b);
-      if (IS_NIL(result))
-        return INTERPRET_RUNTIME_ERROR;
-
-      popn(2);
-      push(result);
+    case OP_ADD:
+      if ((err = opAdd()))
+        return err;
+      SYNC_FRAME();
       break;
-    }
     case OP_SUBTRACT:
       BINARY_OP(NUMBER_VAL, -);
       break;
@@ -607,8 +613,7 @@ static InterpretResult run() {
       int argCount = READ_BYTE();
       if (!callValue(peek(argCount), argCount))
         return INTERPRET_RUNTIME_ERROR;
-
-      frame = &vm.frames[vm.frameCount - 1];
+      SYNC_FRAME();
       break;
     }
 
@@ -644,24 +649,19 @@ static InterpretResult run() {
       break;
 
     case OP_INVOKE: {
-      ObjString *method = READ_STRING();
-      int argCount = READ_BYTE();
-      if (!invoke(method, argCount))
-        return INTERPRET_RUNTIME_ERROR;
-
-      frame = &vm.frames[vm.frameCount - 1];
+      if ((err = opInvoke(READ_CONSTANT(), READ_BYTE())))
+        return err;
+      SYNC_FRAME();
       break;
     }
 
     case OP_SUPER_INVOKE: {
-      ObjString *method = READ_STRING();
-      int argCount = READ_BYTE();
       ObjClass *superclass = AS_CLASS(pop());
 
-      if (!invokeFromClass(superclass, method, argCount))
+      if (!invokeFromClass(superclass, READ_STRING(), READ_BYTE()))
         return INTERPRET_RUNTIME_ERROR;
 
-      frame = &vm.frames[vm.frameCount - 1];
+      SYNC_FRAME();
       break;
     }
 
@@ -705,7 +705,7 @@ static InterpretResult run() {
 
       vm.stackTop = frame->slots;
       push(result);
-      frame = &vm.frames[vm.frameCount - 1];
+      SYNC_FRAME();
       break;
     }
 
@@ -720,6 +720,7 @@ static InterpretResult run() {
 #undef READ_CONSTANT
 #undef READ_STRING
 #undef BINARY_OP
+#undef SYNC_FRAME
 }
 
 InterpretResult runFun(ObjFun *fun) {

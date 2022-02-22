@@ -128,12 +128,12 @@ _ method(_ klass, _ fun) {
 }
 
 _ add(_ a, _ b) {
-  if (IS_NUMBER(a) && IS_NUMBER(b))
-    return NUMBER_VAL(AS_NUMBER(a) + AS_NUMBER(b));
+  if (isNum(a) && isNum(b))
+    return num(AS_NUMBER(a) + AS_NUMBER(b));
 
-  if (!IS_OBJ(a)) {
+  if (!isObj(a)) {
     runtimeError("This type cannot be added.");
-    return NIL_VAL;
+    return nil;
   }
 
   Obj *out;
@@ -146,13 +146,13 @@ _ add(_ a, _ b) {
     break;
   default:
     runtimeError("Values cannot be added.");
-    return NIL_VAL;
+    return nil;
   }
 
   if (out == NULL)
-    return NIL_VAL;
+    return nil;
 
-  return OBJ_VAL(out);
+  return obj(out);
 }
 
 _ subtract(_ a, _ b) {

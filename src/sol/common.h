@@ -11,8 +11,8 @@
 
 // #define DEBUG_PRINT_CODE "Log each chunk to stderr after it is compiled."
 
-// #define DEBUG_TRACE_EXECUTION                                                  \
-//   "Log each instruction as it is executed by the VM."
+#define DEBUG_TRACE_EXECUTION                                                  \
+  "Log each instruction as it is executed by the VM."
 
 // #define DEBUG_LOG_MEM "Enable memory (de)allocation logging."
 
