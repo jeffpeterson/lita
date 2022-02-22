@@ -6,6 +6,7 @@
 #include "scanner.h"
 #include "term.h"
 #include "value.h"
+#include "vm.h"
 
 typedef enum OpType {
   SIMPLE = BLUE,
@@ -102,18 +103,21 @@ int disassembleInstruction(Chunk *chunk, int offset) {
   if (offset > 0 && chunk->lines[offset] == chunk->lines[offset - 1])
     fprintf(stderr, "   | ");
   else
-    fprintf(stderr, "\e[36m%4d\e[39m ", chunk->lines[offset]);
+    fprintf(stderr, FG_CYAN "%4d " FG_DEFAULT, chunk->lines[offset]);
 
   uint8_t instruction = code[offset++];
   OpInfo info = infos[instruction];
 
-  fprintf(stderr, "%02x\e[2m->\e[22m", instruction);
+  fprintf(stderr, "%02x" DIM "->" NO_DIM, instruction);
   if (info.name == NULL) {
     fprintf(stderr, "Unknown opcode %02x\n", instruction);
     return offset;
   }
 
-  fprintf(stderr, "\e[3%dm%-16s\e[39m", info.type, info.name);
+  fprintf(stderr,
+          "\e[3%dm"
+          "%-16s" FG_DEFAULT,
+          info.type, info.name);
 
   switch (info.type) {
   case SIMPLE:
@@ -151,7 +155,7 @@ int disassembleInstruction(Chunk *chunk, int offset) {
 
     uint16_t jump = (uint16_t)(code[offset++] << 8);
     jump |= code[offset++];
-    fprintf(stderr, "\e[4m%04x\e[24m", offset + sign * jump);
+    fprintf(stderr, UNDERLINE "%04x" NO_UNDERLINE, offset + sign * jump);
     break;
   }
   }
@@ -211,5 +215,38 @@ void debugTokens() {
     if (token.type == TOKEN_SEMICOLON)
       fprintf(stderr, "\n");
   } while (token.type != TOKEN_EOF);
-  style(FG_DEFAULT);
+  fprintf(stderr, FG_DEFAULT);
+}
+
+void debugExecution() {
+  int stackSize = vm.stackTop - vm.stack;
+  int offsets[stackSize];
+  // int frameIndex = 0;
+
+  fprintf(stderr, DIM "        |  -->" NO_DIM);
+  for (int i = 0; i < stackSize; i++) {
+
+    offsets[i] = fprintf(stderr, "[ ") + fprintValue(stderr, vm.stack[i]) +
+                 fprintf(stderr, " ]");
+  }
+  // int frameSizes[vm.frameCount];
+
+  // for (int i = 0; i <= vm.frameCount - 1; i++) {
+  //   int frameSize = vm.frames[i + 1].slots - vm.frames[i].slots;
+  //   fprintf(stderr, "[ Frame %-*d ]", frameSize *, i);
+  // }
+
+  // frameSizes[vm.frameCount - 1] =
+  //     vm.stackTop - vm.frames[vm.frameCount - 1].slots;
+
+  // fprintf(stderr, "\n            ");
+  // for (int i = 0; i < stackSize; i++) {
+  //   fprintf(stderr, "[ %-*d ]", offsets[i] - 4, i);
+  // }
+
+  CallFrame *frame = vm.frames + vm.frameCount - 1;
+  fprintf(stderr, DIM "\n");
+  disassembleInstruction(&frame->closure->fun->chunk,
+                         (int)(frame->ip - frame->closure->fun->chunk.code));
+  fprintf(stderr, NO_DIM);
 }

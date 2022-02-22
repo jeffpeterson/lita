@@ -171,7 +171,7 @@ ObjClosure *newClosure(ObjFun *fun);
 ObjErr *newError(ObjString *msg);
 
 ObjFun *newFunction();
-void fprintFunction(FILE *io, const char *kind, ObjFun *fun);
+int fprintFunction(FILE *io, const char *kind, ObjFun *fun);
 
 ObjInstance *newInstance(ObjClass *klass);
 ObjNative *newNative(ObjString *name, int arity, NativeFn fun);
@@ -183,8 +183,8 @@ ObjUpvalue *newUpvalue(Value *slot);
 const char *objectBytes(Obj *obj, int length);
 ObjClass *objClass(Obj *obj);
 
-void fprintObjType(FILE *io, ObjType type);
-void fprintObject(FILE *io, Obj *obj);
+int fprintObjType(FILE *io, ObjType type);
+int fprintObject(FILE *io, Obj *obj);
 
 int cmpObjects(Obj *a, Obj *b);
 static inline bool isObjType(Value value, ObjType type) {

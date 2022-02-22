@@ -5,6 +5,7 @@
 #include "memory.h"
 #include "object.h"
 #include "table.h"
+#include "term.h"
 #include "value.h"
 #include "vm.h"
 
@@ -143,82 +144,76 @@ const char *objectBytes(Obj *obj, int length) {
   }
 }
 
-void fprintObjType(FILE *io, ObjType type) {
-  fprintf(io, "%s", objInfo[type].inspect);
+int fprintObjType(FILE *io, ObjType type) {
+  return fprintf(io, "%s", objInfo[type].inspect);
 }
 
-void fprintFunction(FILE *io, const char *kind, ObjFun *fun) {
-  fprintf(io, "\e[35m<%s %s\e[39m/\e[35m%d>\e[39m", kind, fun->name->chars,
-          fun->arity);
+int fprintFunction(FILE *io, const char *kind, ObjFun *fun) {
+  return fprintf(io,
+                 FG_MAGENTA "<%s %s" FG_DEFAULT "/" FG_MAGENTA "%d>" FG_DEFAULT,
+                 kind, fun->name->chars, fun->arity) -
+         20;
 }
 
-void fprintObject(FILE *io, Obj *obj) {
+int fprintObject(FILE *io, Obj *obj) {
   switch (obj->type) {
   case OBJ_BOUND: {
-    fprintFunction(io, "bound", ((ObjBound *)obj)->method->fun);
-    break;
+    return fprintFunction(io, "bound", ((ObjBound *)obj)->method->fun);
   }
 
   case OBJ_CLASS: {
     ObjClass *klass = (ObjClass *)obj;
-    fprintf(io, "%s", klass->name->chars);
-    fprintTable(io, &klass->methods);
-    break;
+    return fprintf(io, "%s { ", klass->name->chars) +
+           fprintTable(io, &klass->methods) + fputs(" }", io);
   }
 
   case OBJ_CLOSURE:
-    fprintFunction(io, "fn", ((ObjClosure *)obj)->fun);
-    break;
+    return fprintFunction(io, "fn", ((ObjClosure *)obj)->fun);
 
   case OBJ_ERR:
-    fprintf(io, "Error: %s", ((ObjErr *)obj)->msg->chars);
-    break;
+    return fprintf(io, "Error: %s", ((ObjErr *)obj)->msg->chars);
 
   case OBJ_FUN:
-    fprintFunction(io, "ObjFun", (ObjFun *)obj);
-    break;
+    return fprintFunction(io, "ObjFun", (ObjFun *)obj);
 
-  case OBJ_INSTANCE:
-    fprintf(io, "<%s instance>", ((ObjInstance *)obj)->klass->name->chars);
-    break;
-
+  case OBJ_INSTANCE: {
+    ObjInstance *inst = (ObjInstance *)obj;
+    return fprintf(io, "%s(", inst->klass->name->chars) +
+           fprintTable(io, &inst->fields) + fprintf(io, ")");
+  }
   case OBJ_NATIVE: {
     ObjNative *native = (ObjNative *)obj;
-    fprintf(io, "\e[35m<native %s/%d>\e[39m", native->name->chars,
-            native->arity);
-    break;
+    return fprintf(io, FG_MAGENTA "<native %s/%d>" FG_DEFAULT,
+                   native->name->chars, native->arity) -
+           10;
   }
 
   case OBJ_RANGE: {
     ObjRange *range = (ObjRange *)obj;
-    fprintValue(io, range->start);
-    fprintf(io, "..");
-    fprintValue(io, range->end);
-    break;
+    return fprintValue(io, range->start) + fprintf(io, "..") +
+           fprintValue(io, range->end);
   }
 
   case OBJ_STRING:
-    fprintf(io, "\e[32m\"%s\"\e[39m", ((ObjString *)obj)->chars);
-    break;
+    return fprintf(io, FG_GREEN "\"%s\"" FG_DEFAULT,
+                   ((ObjString *)obj)->chars) -
+           10;
 
   case OBJ_TUPLE: {
     ObjTuple *tuple = (ObjTuple *)obj;
-    fprintf(io, "(");
+    int tot = fprintf(io, "(");
     for (int i = 0; i < tuple->length; i++) {
       if (i > 0)
-        fprintf(io, ", ");
-      fprintValue(io, tuple->values[i]);
+        tot += fprintf(io, ", ");
+      tot += fprintValue(io, tuple->values[i]);
     }
-    fprintf(io, ")");
-    break;
+    return fprintf(io, ")") + tot;
   }
 
   case OBJ_UPVALUE: {
     ObjUpvalue *up = (ObjUpvalue *)obj;
-    fprintf(io, "<upvalue -> ");
-    fprintValue(io, *up->location);
-    fprintf(io, ">");
-    break;
+    return fprintf(io, "<upvalue -> ") + fprintValue(io, *up->location) +
+           fprintf(io, ">");
   }
   }
 }

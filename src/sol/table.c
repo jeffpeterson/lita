@@ -4,13 +4,14 @@
 #include "memory.h"
 #include "object.h"
 #include "table.h"
+#include "term.h"
 #include "value.h"
 
 #define TABLE_MAX_LOAD 0.75
 
 void initTable(Table *table) {
-  // Todo: Cache the table's size without tombstones.
-  table->count = 0;
+  table->len = 0;
+  table->total = 0;
   table->capacity = 0;
   table->entries = NULL;
 }
@@ -61,7 +62,7 @@ static void adjustCapacity(Table *table, int capacity) {
     entries[i].value = NIL_VAL;
   }
 
-  table->count = 0;
+  table->total = 0;
   for (int i = 0; i < table->capacity; i++) {
     Entry *entry = &table->entries[i];
     if (IS_VOID(entry->key))
@@ -70,7 +71,7 @@ static void adjustCapacity(Table *table, int capacity) {
     Entry *dest = findEntry(entries, capacity, entry->key);
     dest->key = entry->key;
     dest->value = entry->value;
-    table->count++;
+    table->total++;
   }
 
   FREE_ARRAY(Entry, table->entries, table->capacity);
@@ -79,12 +80,15 @@ static void adjustCapacity(Table *table, int capacity) {
 }
 
 bool tableHas(Table *table, Value key) {
+  if (table->len == 0)
+    return false;
+
   Value v;
   return tableGet(table, key, &v);
 }
 
 bool tableGet(Table *table, Value key, Value *value) {
-  if (table->count == 0)
+  if (table->len == 0)
     return false;
 
   Entry *entry = findEntry(table->entries, table->capacity, key);
@@ -96,7 +100,7 @@ bool tableGet(Table *table, Value key, Value *value) {
 }
 
 bool tableSet(Table *table, Value key, Value value) {
-  if (table->count + 1 > table->capacity * TABLE_MAX_LOAD) {
+  if (table->total + 1 > table->capacity * TABLE_MAX_LOAD) {
     int capacity = GROW_CAPACITY(table->capacity);
     adjustCapacity(table, capacity);
   }
@@ -104,7 +108,7 @@ bool tableSet(Table *table, Value key, Value value) {
   Entry *entry = findEntry(table->entries, table->capacity, key);
   bool isNewKey = IS_VOID(entry->key);
   if (isNewKey && IS_NIL(entry->value))
-    table->count++;
+    table->total++, table->len++;
 
   entry->key = key;
   entry->value = value;
@@ -121,7 +125,7 @@ double tableInc(Table *table, Value key, double amt) {
 }
 
 bool tableDelete(Table *table, Value key) {
-  if (table->count == 0)
+  if (table->len == 0)
     return false;
 
   // Find the entry.
@@ -132,6 +136,7 @@ bool tableDelete(Table *table, Value key) {
   // Place a tombstone in the entry.
   entry->key = VOID_VAL;
   entry->value = BOOL_VAL(true);
+  table->len--;
   return true;
 }
 
@@ -145,7 +150,7 @@ void tableAddAll(Table *from, Table *to) {
 
 Obj *tableFindObj(Table *table, ObjType type, const char *bytes, int length,
                   Hash hash) {
-  if (table->count == 0)
+  if (table->total == 0)
     return NULL;
 
   uint32_t index =
@@ -194,18 +199,40 @@ void markTable(Table *table) {
   }
 }
 
-void fprintTable(FILE *io, Table *table) {
-  fprintf(io, " (%d entries) {\n", table->count);
+int fprintTable(FILE *io, Table *table) {
+  int out = 0;
+  int idx = 0;
+  for (int i = 0; i < table->capacity; i++) {
+    Entry *entry = &table->entries[i];
+
+    if (IS_VOID(entry->key))
+      continue;
+
+    if (IS_STRING(entry->key)) {
+      out += (idx > 0 ? fputs(", ", io) : 0) +
+             fprintf(io, FG_GREEN "%s" FG_DEFAULT ": ",
+                     AS_STRING(entry->key)->chars) +
+             fprintValue(io, entry->value);
+    } else {
+      out += fprintf(io, " ") + fprintValue(io, entry->key) +
+             fprintf(io, " => ") + fprintValue(io, entry->value);
+    }
+    idx++;
+  }
+
+  return out;
+}
+
+int fprintTableVerbose(FILE *io, Table *table) {
+  int out = fprintf(io, " (%d entries) {\n", table->len);
   for (int i = 0; i < table->capacity; i++) {
     Entry *entry = &table->entries[i];
 
     if (!IS_VOID(entry->key)) {
-      fprintf(io, "  ");
-      fprintValue(io, entry->key);
-      fprintf(io, " => ");
-      fprintValue(io, entry->value);
-      fprintf(io, "\n");
+      out += fprintf(io, "  ") + fprintValue(io, entry->key) +
+             fprintf(io, " => ") + fprintValue(io, entry->value) +
+             fprintf(io, "\n");
     }
   }
-  fprintf(io, "}");
+  return fprintf(io, "}") + out;
 }

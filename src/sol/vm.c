@@ -414,16 +414,7 @@ static InterpretResult run() {
 
   for (;;) {
 #ifdef DEBUG_TRACE_EXECUTION
-    fprintf(stderr, "   |    |-> ");
-    for (Value *slot = vm.stack; slot < vm.stackTop; slot++) {
-      fprintf(stderr, "[ ");
-      fprintValue(stderr, *slot);
-      fprintf(stderr, " ]");
-    }
-    fprintf(stderr, "\e[2m\n");
-    disassembleInstruction(&frame->closure->fun->chunk,
-                           (int)(frame->ip - frame->closure->fun->chunk.code));
-    fprintf(stderr, "\e[22m");
+    debugExecution();
 #endif
 
     vm.stackHigh = vm.stackTop;

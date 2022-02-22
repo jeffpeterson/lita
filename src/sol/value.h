@@ -119,7 +119,7 @@ int cmpValues(Value a, Value b);
 void initValueArray(ValueArray *array);
 void writeValueArray(ValueArray *array, Value value);
 void freeValueArray(ValueArray *array);
-void fprintValue(FILE *io, Value value);
+int fprintValue(FILE *io, Value value);
 
 typedef uint32_t Hash;
 

@@ -23,5 +23,7 @@ class Point
 let p1 = Point(4, 5);
 let p2 = Point(6, 7);
 
-pp(p1.+(p2));
-pp(p1 + p2);
+print Point;
+
+print(p1.+(p2));
+print(p1 + p2);

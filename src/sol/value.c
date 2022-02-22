@@ -2,6 +2,7 @@
 
 #include "memory.h"
 #include "object.h"
+#include "term.h"
 #include "value.h"
 
 Value nil = NIL_VAL;
@@ -29,16 +30,15 @@ void freeValueArray(ValueArray *array) {
   initValueArray(array);
 }
 
-void fprintValue(FILE *io, Value val) {
-
-  if (IS_BOOL(val))
-    fprintf(io, "\e[33m%s\e[39m", AS_BOOL(val) ? "true" : "false");
-  else if (IS_NIL(val))
-    fprintf(io, "\e[35m%s\e[39m", "nil");
-  else if (IS_NUMBER(val))
-    fprintf(io, "\e[34m%g\e[39m", AS_NUMBER(val));
-  else if (IS_OBJ(val))
-    fprintObject(io, AS_OBJ(val));
+int fprintValue(FILE *io, Value val) {
+  return IS_BOOL(val) ? fprintf(io, FG_YELLOW "%s" FG_DEFAULT,
+                                AS_BOOL(val) ? "true" : "false") -
+                            10
+         : IS_NIL(val) ? fprintf(io, FG_MAGENTA "%s" FG_DEFAULT, "nil") - 10
+         : IS_NUMBER(val)
+             ? fprintf(io, FG_BLUE "%g" FG_DEFAULT, AS_NUMBER(val)) - 10
+         : IS_OBJ(val) ? fprintObject(io, AS_OBJ(val))
+                       : 0;
 }
 
 bool valuesEqual(Value a, Value b) {
