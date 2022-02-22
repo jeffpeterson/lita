@@ -15,11 +15,13 @@ bool isInst(_ x) { return IS_INSTANCE(x); }
 bool isInt(_ x) { return isNum(x) && num(asInt(x)) == asNum(x); }
 bool isMethod(_ x) { return IS_BOUND(x); }
 bool isNative(_ x) { return IS_NATIVE(x); }
+bool isNil(_ x) { return IS_NIL(x); }
 bool isNum(_ x) { return IS_NUMBER(x); }
 bool isObj(_ x) { return IS_OBJ(x); }
 bool isRange(_ x) { return IS_RANGE(x); }
 bool isStr(_ x) { return IS_STRING(x); }
 bool isTuple(_ x) { return IS_TUPLE(x); }
+bool notNil(_ x) { return !IS_NIL(x); }
 
 bool asBool(_ x) {
   assert(isBool(x));
@@ -75,6 +77,7 @@ _ memory(u8 *bytes, int length) {
   return obj(copyString((char *)bytes, length));
 }
 _ num(double num) { return NUMBER_VAL(num); }
+_ range(_ start, _ end) { return obj(makeRange(start, end)); }
 _ str(const char *str) { return obj(newString(str)); }
 _ string(const char *str) { return obj(newString(str)); }
 
@@ -113,22 +116,13 @@ _ method(_ klass, _ fun) {
   if (!isClass(klass))
     return nil;
 
-  ObjString *name;
+  let key = name(fun);
 
-  if (IS_FUN(fun)) {
-    name = AS_FUN(fun)->name;
-  } else if (IS_NATIVE(fun)) {
-    name = AS_NATIVE(fun)->name;
-  } else if (IS_CLOSURE(fun)) {
-    name = AS_CLOSURE(fun)->fun->name;
-  } else if (IS_BOUND(fun)) {
-    name = AS_BOUND(fun)->method->fun->name;
-  } else {
+  if (isNil(key)) {
     return error("Method must be callable.");
   }
 
-  tableSet(&AS_CLASS(klass)->methods, push(OBJ_VAL(name)), fun);
-  pop();
+  tableSet(&AS_CLASS(klass)->methods, key, fun);
 
   return fun;
 }
@@ -198,19 +192,44 @@ _ multiply(_ a, _ b) {
   return OBJ_VAL(out);
 }
 
-_ get(_ self, _ key) {
-  _ value;
-  if (isInst(self) && tableGet(&asInst(self)->fields, key, &value))
-    return value;
+int arity(_ fun) {
+  if (isMethod(fun))
+    return asMethod(fun)->method->fun->arity;
 
-  ObjClass *klass = classOf(self);
+  if (isFn(fun))
+    return asFn(fun)->fun->arity;
 
-  if (tableGet(&klass->methods, key, &value))
-    return OBJ_VAL(newBound(self, AS_CLOSURE(value)));
-
-  return nil;
+  return -1;
 }
 
+_ classOf(_ self) { return obj(valueClass(self)); }
+
+_ superOf(_ klass) { return obj(asClass(klass)->parent); }
+
+_ bind(_ self, _ fun) {
+  if (isFn(fun))
+    return obj(newBound(self, asFn(fun)));
+
+  return fun;
+}
+
+_ findMethod(_ klass, _ name) {
+  Value fun = nil;
+  while (isClass(klass) && !tableGet(&asClass(klass)->methods, name, &fun))
+    klass = superOf(klass);
+
+  return fun;
+}
+
+_ find(_ self, _ key) {
+  _ val;
+  if (isInst(self) && tableGet(&asInst(self)->fields, key, &val))
+    return val;
+
+  return findMethod(classOf(self), key);
+}
+
+_ get(_ self, _ key) { return bind(self, find(self, key)); }
 _ set(_ self, _ key, _ value) { return error("Not implemented."); }
 
 _ hash(_ val) { return NUMBER_VAL(hashValue(val)); }
@@ -241,7 +260,22 @@ _ len(_ x) {
   }
 }
 
-_ name(_ self) { return error("Not implemented."); }
+_ name(_ self) {
+  switch (asObj(self)->type) {
+  case OBJ_CLASS:
+    return obj(AS_CLASS(self)->name);
+  case OBJ_FUN:
+    return obj(AS_FUN(self)->name);
+  case OBJ_NATIVE:
+    return obj(AS_NATIVE(self)->name);
+  case OBJ_CLOSURE:
+    return obj(AS_CLOSURE(self)->fun->name);
+  case OBJ_BOUND:
+    return obj(AS_BOUND(self)->method->fun->name);
+  default:
+    return nil;
+  }
+}
 
 _ read(_ path) {
   if (!isStr(path))

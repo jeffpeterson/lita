@@ -24,7 +24,7 @@ class Ainu
 	kind() => 'Ainu;
 
 class Maia < Ainu
-	kind() => '"Maia < " + super.kind();
+	kind() => "Maia < " + super.kind();
 
 class Istar < Maia
 	kind() => "Istar < " + super.kind();

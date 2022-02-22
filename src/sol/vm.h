@@ -9,58 +9,29 @@
 #define STACK_MAX (FRAMES_MAX * UINT8_COUNT)
 
 typedef struct CallFrame {
-  ObjClosure *closure;
-
-  /** Current instruction pointer. */
-  uint8_t *ip;
-
-  /** Points into the VM's value stack. */
-  Value *slots;
+  ObjClosure *closure; /** Fn containing the code. */
+  uint8_t *ip;         /** Current instruction pointer. */
+  Value *slots;        /** Points into the VM's value stack. */
 } CallFrame;
 
 typedef struct VM {
-  /** Our function call stack. */
-  CallFrame frames[FRAMES_MAX];
+  CallFrame frames[FRAMES_MAX]; /** Our function call stack. */
+  int frameCount;               /** Current depth of the function call stack. */
 
-  /** Current depth of the function call stack. */
-  int frameCount;
+  Value stack[STACK_MAX]; /** Stack of values referenced by our call frames. */
+  Value *stackTop;        /** Pointer to the top of the value stack. */
+  Value *stackHigh;       /** The highest point the stack has been this tick. */
 
-  /** The stack of values referenced by our call frames. */
-  Value stack[STACK_MAX];
+  Table globals;  /** Global variables hashed by name. */
+  Table interned; /** Interned object table. */
+  Table keep;     /** Exempt objects from GC. */
 
-  /** Pointer to the top of the value stack. */
-  Value *stackTop;
-
-  /** Global variables hashed by name. */
-  Table globals;
-
-  /** Interned object table. */
-  Table interned;
-
-  /** Exempt objects from GC. */
-  Table keep;
-
-  /** Static strings. */
-  struct str {
+  struct str { /** Static strings. */
     ObjString *init;
   } str;
 
-  ObjUpvalue *openUpvalues;
-
-  /** A chain of allocated objects. */
-  Obj *objects;
-
-  /** Total memory we have allocated. */
-  size_t bytesAllocated;
-
-  /** Threshold to trigger the next garbage collection. */
-  size_t nextGC;
-
-  /** Number of entries in `grayStack`. */
-  int grayCount;
-
-  /** Capacity allocated for `grayStack`. */
-  int grayCapacity;
+  ObjUpvalue *openUpvalues; /** Unclosed upvalues. */
+  Obj *objects;             /** A chain of allocated objects. */
 
   /**
    * Stack of objects marked "gray".
@@ -73,6 +44,11 @@ typedef struct VM {
    * Garbage collect all remaining white objects.
    */
   Obj **grayStack;
+  int grayCount;         /** Number of entries in `grayStack`. */
+  int grayCapacity;      /** Capacity allocated for `grayStack`. */
+  size_t bytesAllocated; /** Total memory we have allocated. */
+  size_t nextGC;         /** Threshold to trigger the next GC. */
+
 } VM;
 
 typedef enum InterpretResult {
@@ -108,9 +84,9 @@ Value intern(Value val);
 Obj *getInterned(Hash *hash, ObjType type, const char *bytes, int length);
 
 Value getThis();
-ObjClass *classOf(Value v);
+ObjClass *valueClass(Value v);
 
-void runtimeError(const char *format, ...);
+InterpretResult runtimeError(const char *format, ...);
 
 /** Something went wrong. Stop the VM and exit. */
 void crash(const char *str);

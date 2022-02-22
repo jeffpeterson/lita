@@ -11,13 +11,17 @@ print 3(x);
 print hash("abcd");
 print read("Makefile");
 print write("tmp/demo.txt", "It runs!");
-// write("output to sdout");
-// pp((42, "meaning of life"));
-// print "abc".hash;
-// print clock();
-// print clock();
-// print clock();
-// print clock();
-// print 10;
-// // pp((19).toString);
-// pp(19);
+
+class Point
+	init(x, y)
+		this.x = x;
+		this.y = y;
+
+	+ (point)
+		return Point(this.x + point.x, this.y + point.y);
+
+let p1 = Point(4, 5);
+let p2 = Point(6, 7);
+
+pp(p1.+(p2));
+pp(p1 + p2);

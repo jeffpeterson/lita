@@ -1,7 +1,7 @@
+#include <getopt.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <unistd.h>
 
 #include "chunk.h"
 #include "common.h"
@@ -28,45 +28,35 @@ int main(int argc, char *argv[]) {
   initVM();
 
   int opt;
-  bool noFiles = true;
   bool startRepl = false;
   enum { COMPILE, INTERPRET } mode = INTERPRET;
 
-  while (optind < argc) {
-    while ((opt = getopt(argc, argv, "cir")) != -1) {
-      switch (opt) {
-      case 'c':
-        mode = COMPILE;
-        break;
-      case 'i':
-        mode = INTERPRET;
-        break;
-      case 'r':
-        startRepl = true;
-        break;
-      default:
-        exit(1);
-      }
+  while ((opt = getopt(argc, argv, "cir")) != -1) {
+    switch (opt) {
+    case 'c':
+      mode = COMPILE;
+      break;
+    case 'i':
+      mode = INTERPRET;
+      break;
+    case 'r':
+      startRepl = true;
+      break;
+    case '?':
+      exit(1);
     }
+  }
 
-    noFiles = noFiles && optind >= argc;
+  bool noFiles = optind >= argc;
 
-    for (int i = optind; i < argc; i++) {
-      if (argv[i][0] == '-') {
-        optreset = 1;
-        break;
-      }
+  for (int i = optind; i < argc; i++) {
+    ObjString *path = newString(argv[i]);
 
-      optind = i + 1;
+    if (mode == INTERPRET)
+      runFile(path);
 
-      ObjString *path = newString(argv[i]);
-
-      if (mode == INTERPRET)
-        runFile(path);
-
-      if (mode == COMPILE)
-        compileFile(path);
-    }
+    if (mode == COMPILE)
+      compileFile(path);
   }
 
   if (startRepl || noFiles)

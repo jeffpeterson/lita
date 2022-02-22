@@ -17,12 +17,12 @@
 VM vm;
 
 static void resetStack() {
-  vm.stackTop = vm.stack;
+  vm.stackTop = vm.stackHigh = vm.stack;
   vm.frameCount = 0;
   vm.openUpvalues = NULL;
 }
 
-void runtimeError(const char *format, ...) {
+InterpretResult runtimeError(const char *format, ...) {
   va_list args;
   va_start(args, format);
   vfprintf(stderr, format, args);
@@ -41,6 +41,7 @@ void runtimeError(const char *format, ...) {
   }
 
   resetStack();
+  return INTERPRET_RUNTIME_ERROR;
 }
 
 void crash(const char *str) {
@@ -101,6 +102,10 @@ void freeVM() {
 Value push(Value value) {
   *vm.stackTop = value;
   vm.stackTop++;
+
+  if (vm.stackTop > vm.stackHigh)
+    vm.stackHigh = vm.stackTop;
+
   return value;
 }
 
@@ -158,7 +163,7 @@ static bool call(ObjClosure *closure, int argCount) {
   return true;
 }
 
-ObjClass *classOf(Value v) {
+ObjClass *valueClass(Value v) {
   const char *name = NULL;
 
   if (IS_OBJ(v)) {
@@ -185,8 +190,6 @@ ObjClass *classOf(Value v) {
   return NULL;
 }
 
-static bool invokeFromClass(ObjClass *klass, ObjString *name, int argCount);
-
 /**
  * Invoke some Value as a function.
  *
@@ -202,15 +205,14 @@ static bool callValue(Value callee, int argCount) {
     }
 
     case OBJ_CLASS: {
-      ObjClass *klass = AS_CLASS(callee);
-      vm.stackTop[-argCount - 1] = OBJ_VAL(newInstance(klass));
+      vm.stackTop[-argCount - 1] = OBJ_VAL(newInstance(AS_CLASS(callee)));
 
-      Value init;
-      if (tableGet(&klass->methods, OBJ_VAL(vm.str.init), &init)) {
-        return call(AS_CLOSURE(init), argCount);
+      let init = findMethod(callee, obj(vm.str.init));
+
+      if (notNil(init)) {
+        return call(asFn(init), argCount);
       } else if (argCount != 0) {
-        runtimeError("Expected 0 arguments but got %d.", argCount);
-        return false;
+        return !runtimeError("Expected 0 arguments but got %d.", argCount);
       }
 
       return true;
@@ -248,7 +250,6 @@ static bool callValue(Value callee, int argCount) {
   }
 
   return false;
-  // invokeFromClass(classOf(callee), newString("*"), argCount);
 }
 
 static bool invokeFromClass(ObjClass *klass, ObjString *name, int argCount) {
@@ -280,7 +281,7 @@ static bool invoke(ObjString *name, int argCount) {
     }
   }
 
-  ObjClass *klass = classOf(receiver);
+  ObjClass *klass = valueClass(receiver);
   // printf("invoke: %s_%s()\n", klass->name->chars, name->chars);
   if (!invokeFromClass(klass, name, argCount)) {
     runtimeError("Undefined property '%s' on %s.", name->chars,
@@ -364,6 +365,14 @@ static void tuple(uint8_t length) {
   push(OBJ_VAL(tuple));
 }
 
+static void opGet(_ name) {
+  let v = get(pop(), name);
+  // if (arity(v) == 0)
+  //   opCall(v);
+  // else
+  push(v);
+}
+
 static InterpretResult run() {
   CallFrame *frame = &vm.frames[vm.frameCount - 1];
 
@@ -388,6 +397,7 @@ static InterpretResult run() {
   } while (false)
 
   for (;;) {
+
 #ifdef DEBUG_TRACE_EXECUTION
     fprintf(stderr, "   |    |-> ");
     for (Value *slot = vm.stack; slot < vm.stackTop; slot++) {
@@ -401,12 +411,13 @@ static InterpretResult run() {
     fprintf(stderr, "\e[22m");
 #endif
 
+    vm.stackHigh = vm.stackTop;
+
     uint8_t instruction;
     switch (instruction = READ_BYTE()) {
 
     case OP_CONSTANT: {
-      Value constant = READ_CONSTANT();
-      push(constant);
+      push(READ_CONSTANT());
       break;
     }
     case OP_NIL:
@@ -444,9 +455,9 @@ static InterpretResult run() {
       break;
 
     case OP_RANGE: {
-      Value b = pop();
-      Value a = pop();
-      push(OBJ_VAL(makeRange(a, b)));
+      let b = pop();
+      let a = pop();
+      push(range(a, b));
       break;
     }
 
@@ -455,12 +466,10 @@ static InterpretResult run() {
       break;
 
     case OP_DEFINE_GLOBAL: {
-      Value name = READ_CONSTANT();
-      tableSet(&vm.globals, name, peek(0));
-      pop();
+      tableSet(&vm.globals, READ_CONSTANT(), pop());
       break;
     }
-    // Todo: store globals without a hash table
+
     case OP_GET_GLOBAL: {
       Value name = READ_CONSTANT();
       Value value;
@@ -475,6 +484,7 @@ static InterpretResult run() {
     case OP_SET_GLOBAL: {
       Value name = READ_CONSTANT();
       if (tableSet(&vm.globals, name, peek(0))) {
+        // This is a new key and hasn't been defined.
         tableDelete(&vm.globals, name);
         runtimeError("Undefined variable '%s'.", AS_STRING(name)->chars);
         return INTERPRET_RUNTIME_ERROR;
@@ -494,33 +504,9 @@ static InterpretResult run() {
     }
 
     case OP_GET_PROPERTY: {
-      // Peek to prevent collection of inst.
-      let receiver = peek(0);
-      Value name = READ_CONSTANT();
-
-      if (IS_INSTANCE(receiver)) {
-        ObjInstance *inst = AS_INSTANCE(receiver);
-
-        Value value;
-        if (tableGet(&inst->fields, name, &value)) {
-          pop(); // Instance
-          push(value);
-
-          break;
-        }
-      }
-
-      // } else if (!bindMethod(inst->klass, AS_STRING(name))) {
-      // Call when accessed.
-      if (!invokeFromClass(classOf(receiver), AS_STRING(name), 0)) {
-        // return INTERPRET_RUNTIME_ERROR;
-        pop();
-        push(NIL_VAL);
-      }
-
+      opGet(READ_CONSTANT());
       break;
     }
-
     case OP_SET_PROPERTY: {
       if (!IS_INSTANCE(peek(1))) {
         runtimeError("Only instances have properties.");
@@ -627,7 +613,7 @@ static InterpretResult run() {
     }
 
     case OP_CLASS:
-      push(OBJ_VAL(newClass(READ_STRING())));
+      push(class(READ_CONSTANT()));
       break;
 
     case OP_INHERIT: {

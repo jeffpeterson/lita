@@ -20,11 +20,13 @@ bool isFn(_ x);
 bool isInst(_ x);
 bool isMethod(_ x);
 bool isNative(_ x);
+bool isNil(_ x);
 bool isNum(_ x);
 bool isObj(_ x);
 bool isRange(_ x);
 bool isStr(_ x);
 bool isTuple(_ x);
+bool notNil(_ x);
 
 bool asBool(_ x);
 ObjClass *asClass(_ x);
@@ -43,6 +45,7 @@ _ error(const char *msg);
 _ fn(const char *name, int arity, NativeFn fun);
 _ memory(u8 *bytes, int length);
 _ num(double num);
+_ range(_ start, _ end);
 _ str(const char *str);
 _ string(const char *str);
 _ t2(_ a, _ b);
@@ -52,6 +55,12 @@ _ t(int len, _ *vals);
 
 _ toStr(_ val);
 _ toString(_ val);
+
+_ classOf(_ self);
+_ superOf(_ klass);
+_ bind(_ self, _ fun);
+_ findMethod(_ klass, _ name);
+_ find(_ self, _ name);
 
 _ get(_ self, _ key);
 _ set(_ self, _ key, _ value);

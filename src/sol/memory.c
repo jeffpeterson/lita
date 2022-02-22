@@ -259,7 +259,7 @@ static void freeObject(Obj *obj) {
 }
 
 static void markRoots() {
-  for (Value *slot = vm.stack; slot < vm.stackTop; slot++) {
+  for (Value *slot = vm.stack; slot < vm.stackHigh; slot++) {
     markValue(*slot);
   }
 

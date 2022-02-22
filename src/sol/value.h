@@ -17,8 +17,8 @@ typedef struct ObjString ObjString;
 /** Set only for objects. */
 #define SIGN_BIT ((uint64_t)0x8000000000000000)
 
-#define TAG_VOID 1 // 01.
-#define TAG_NIL 2  // 10.
+#define TAG_VOID 1   // 01.
+#define TAG_UNUSED 2 // 10.
 // true must be odd and false+1
 #define TAG_FALSE 4 // 100.
 #define TAG_TRUE 5  // 101.
@@ -29,7 +29,7 @@ typedef uint64_t Value;
 #define IS_NIL(val) ((val) == NIL_VAL)
 #define IS_VOID(val) ((val) == VOID_VAL)
 #define IS_NUMBER(val) (((val)&QNAN) != QNAN)
-#define IS_OBJ(val) (((val) & (QNAN | SIGN_BIT)) == (QNAN | SIGN_BIT))
+#define IS_OBJ(val) valueIsObj(val)
 
 #define AS_BOOL(val) ((val) == TRUE_VAL)
 #define AS_NUMBER(val) valueToNum(val)
@@ -38,7 +38,7 @@ typedef uint64_t Value;
 #define BOOL_VAL(b) ((b) ? TRUE_VAL : FALSE_VAL)
 #define FALSE_VAL ((Value)(uint64_t)(QNAN | TAG_FALSE))
 #define TRUE_VAL ((Value)(uint64_t)(QNAN | TAG_TRUE))
-#define NIL_VAL ((Value)(uint64_t)(QNAN | TAG_NIL))
+#define NIL_VAL OBJ_VAL(NULL)
 /** Used internally. Not accessible from language. */
 #define VOID_VAL ((Value)(uint64_t)(QNAN | TAG_VOID))
 #define NUMBER_VAL(num) numToValue(num)
@@ -54,6 +54,10 @@ static inline Value numToValue(double num) {
   Value value;
   memcpy(&value, &num, sizeof(double));
   return value;
+}
+
+static inline bool valueIsObj(Value val) {
+  return !IS_NIL(val) && (val & (QNAN | SIGN_BIT)) == (QNAN | SIGN_BIT);
 }
 
 #else // else if !NAN_BOXING

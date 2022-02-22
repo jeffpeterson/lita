@@ -47,7 +47,7 @@ static _ nativeAppend(_ this, int argc, _ *args) {
   return append(path, args[argc - 1]);
 }
 
-static _ Any_class(_ this, int argc, _ *args) { return OBJ_VAL(classOf(this)); }
+static _ Any_class(_ this, int argc, _ *args) { return classOf(this); }
 static _ Any_hash(_ this, int argc, _ *args) { return hashValue(this); }
 static _ Any_toString(_ this, int argc, _ *args) { return toString(this); }
 
