@@ -5,23 +5,16 @@
 #include "scanner.h"
 
 typedef struct Indent {
-  /** The previous indent level at which text was parsed. */
-  int prev;
-
-  /** The current number of indents we have parsed. */
-  int cur;
-
-  /** True when within an unbroken series of indents following a newline. */
-  bool indenting;
+  int prev;       /** The previous indent level at which text was parsed. */
+  int cur;        /** The current number of indents we have parsed. */
+  bool indenting; /** When within a series of indents following a newline. */
 } Indent;
 
 typedef struct {
-  const char *start;
-  const char *current;
-  int line;
-
-  Indent indent;
-
+  const char *start;   /** Start of the current token. */
+  const char *current; /** Current char being scanned. */
+  int line;            /** Current line number. */
+  Indent indent;       /** Indent status. */
   const char *data;
   unsigned int dataLength;
 } Scanner;
@@ -94,8 +87,9 @@ static Token errorToken(const char *message) {
   return token;
 }
 
-static void skipWhitespace() {
+static bool skipWhitespace() {
   Indent *in = &scanner.indent;
+  bool newline = false;
 
   for (;;) {
     char c = peek();
@@ -109,6 +103,7 @@ static void skipWhitespace() {
 
     case '\n':
       scanner.line++;
+      newline = true;
       in->indenting = true;
       in->cur = 0;
       advance();
@@ -117,7 +112,7 @@ static void skipWhitespace() {
       if (in->indenting) {
         // Consume indents up until the current level.
         if (in->cur >= in->prev)
-          return; // This indent is meaningful, return.
+          return false; // This indent is meaningful, return and ignore newline.
 
         in->cur++;
       } // else skip the tab like other whitespace
@@ -131,13 +126,14 @@ static void skipWhitespace() {
         while (peek() != '\n' && !isAtEnd())
           advance();
       } else
-        return;
+        return newline;
       break;
 
     default:
-      return;
+      return newline;
     }
   }
+  return newline;
 }
 
 static TokenType checkKeyword(int start, int length, const char *rest,
@@ -280,7 +276,11 @@ static Token symbol() {
 }
 
 Token scanToken() {
-  skipWhitespace();
+  scanner.start = scanner.current;
+  if (skipWhitespace()) {
+    return makeToken(TOKEN_NEWLINE);
+  }
+
   scanner.start = scanner.current;
   Indent *in = &scanner.indent;
 

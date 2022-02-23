@@ -8,7 +8,7 @@
 #include "scanner.h"
 #include "string.h"
 
-#ifdef DEBUG_PRINT_CODE
+#if defined(DEBUG_PRINT_CODE) || defined(DEBUG_TOKENS)
 #include "debug.h"
 #endif
 
@@ -158,6 +158,16 @@ static void advance() {
   }
 }
 
+static bool check(TokenType type) { return parser.current.type == type; }
+
+static bool match(TokenType type) {
+  if (!check(type))
+    return false;
+
+  advance();
+  return true;
+}
+
 static void consume(TokenType type, const char *message) {
   if (parser.current.type == type) {
     advance();
@@ -180,14 +190,12 @@ static void consumeIdent(const char *message) {
   return consumeAtLeast(TOKEN_IDENTIFIER, message);
 }
 
-static bool check(TokenType type) { return parser.current.type == type; }
+static void consumeTerminator(const char *message) {
+  if (!match(TOKEN_NEWLINE))
+    consume(TOKEN_SEMICOLON, message);
 
-static bool match(TokenType type) {
-  if (!check(type))
-    return false;
-
-  advance();
-  return true;
+  while (match(TOKEN_NEWLINE) || match(TOKEN_SEMICOLON)) {
+  }
 }
 
 static void emitByte(uint8_t byte) {
@@ -910,7 +918,7 @@ static void function(FunType type) {
   if (match(TOKEN_FAT_ARROW)) {
     expression();
     emitByte(OP_RETURN);
-    consume(TOKEN_SEMICOLON, "Expect ';' after arrow function.");
+    consumeTerminator("Expect newline or ';' after arrow function.");
   } else if (match(TOKEN_INDENT)) {
     block();
   }
@@ -999,7 +1007,7 @@ static void varDeclaration() {
     emitByte(OP_NIL);
   }
 
-  consume(TOKEN_SEMICOLON, "Expect ';' after variable declaration.");
+  consumeTerminator("Expect newline or ';' after variable declaration.");
 
   defineVariable(global);
 }
@@ -1007,9 +1015,9 @@ static void varDeclaration() {
 static void expressionStatement() {
   expression();
 
-  // consume(TOKEN_SEMICOLON, "Expect ';' after expression");
-  // Better in the REPL.
-  emitByte(match(TOKEN_SEMICOLON) ? OP_POP : OP_PRINT);
+  consumeTerminator("Expect newline or ';' after expression");
+  // // Better in the REPL.
+  // emitByte(match(TOKEN_SEMICOLON) ? OP_POP : OP_PRINT);
 }
 
 // for ;;i++:
@@ -1091,7 +1099,7 @@ static void ifStatement() {
 
 static void printStatement() {
   expression();
-  consume(TOKEN_SEMICOLON, "Expect ';' after value.");
+  consumeTerminator("Expect newline or ';' after value.");
   emitByte(OP_PRINT);
 }
 
@@ -1100,7 +1108,7 @@ static void returnStatement() {
   // if (current->type == TYPE_SCRIPT)
   //   error("Can't return from top-level code.");
 
-  if (match(TOKEN_SEMICOLON))
+  if (match(TOKEN_SEMICOLON) || match(TOKEN_NEWLINE))
     emitReturn();
   else {
     if (current->type == TYPE_INIT) {
@@ -1108,7 +1116,7 @@ static void returnStatement() {
     }
 
     expression();
-    consume(TOKEN_SEMICOLON, "Expect ';' after return value.");
+    consumeTerminator("Expect newline or ';' after return value.");
     emitByte(OP_RETURN);
   }
 }
@@ -1194,6 +1202,7 @@ ObjFun *compile(const char *source) {
 #ifdef DEBUG_TOKENS
   initScanner(source);
   debugTokens();
+  return NULL;
 #endif
 
   initScanner(source);

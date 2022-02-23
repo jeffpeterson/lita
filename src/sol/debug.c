@@ -191,9 +191,16 @@ int disassembleInstruction(Chunk *chunk, int offset) {
   return offset;
 }
 
+static void printIndents(int indent) {
+  for (int i = 0; i < indent; i++) {
+    fputs("\t", stderr);
+  }
+}
+
 void debugTokens() {
   Token token;
   Color color = RED;
+  int indent = 0;
 
   fprintf(stderr, "\n");
 
@@ -203,17 +210,35 @@ void debugTokens() {
     token = scanToken();
 
     if (token.type == TOKEN_INDENT) {
-      fprintf(stderr, "\n\t");
-
+      fprintf(stderr, "\n[ind]\t");
       while ((token = scanToken()).type == TOKEN_INDENT) {
-        fprintf(stderr, "\t");
+        indent++;
+        fprintf(stderr, "[ind]\t");
       }
+      printIndents(indent++);
     }
 
-    fg(color);
-    fprintf(stderr, "%.*s ", token.length, token.start);
-    if (token.type == TOKEN_SEMICOLON)
-      fprintf(stderr, "\n");
+    switch (token.type) {
+    case TOKEN_NEWLINE:
+      fprintf(stderr, "[newline]\n");
+      printIndents(indent);
+      break;
+    case TOKEN_DEDENT:
+      fputs("[dedent]\n", stderr);
+      printIndents(--indent);
+      break;
+    case TOKEN_ERROR:
+      fprintf(stderr, "[error: %.*s]\n", token.length, token.start);
+      printIndents(indent);
+      break;
+    case TOKEN_EOF:
+      fputs("[EOF]\n", stderr);
+      break;
+    default:
+      fg(color);
+      fprintf(stderr, "%.*s ", token.length, token.start);
+    }
+
   } while (token.type != TOKEN_EOF);
   fprintf(stderr, FG_DEFAULT);
 }

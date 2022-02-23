@@ -5,6 +5,7 @@ typedef enum {
   TOKEN_ERROR,
   TOKEN_EOF,
 
+  TOKEN_NEWLINE,
   TOKEN_INDENT,
   TOKEN_DEDENT,
 
