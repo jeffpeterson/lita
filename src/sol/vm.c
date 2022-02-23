@@ -614,8 +614,7 @@ static InterpretResult run() {
 
     case OP_INHERIT: {
       if (!IS_CLASS(peek(1))) {
-        runtimeError("Superclass must be a class.");
-        return INTERPRET_RUNTIME_ERROR;
+        return runtimeError("Superclass must be a class.");
       }
 
       ObjClass *superclass = AS_CLASS(peek(1));
