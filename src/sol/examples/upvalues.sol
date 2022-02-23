@@ -1,18 +1,18 @@
 fn outer()
-	let x = "third";
+	let x = "third"
 	fn middle()
 		fn inner()
-			print x;
+			print x
 
-		print "second";
-		return inner;
+		print "second"
+		return inner
 
-	print "first";
-	return middle;
+	print "first"
+	return middle
 
-let mid = outer();
-let inn = mid();
-inn();
+let mid = outer()
+let inn = mid()
+inn()
 
 __END__
 "first"

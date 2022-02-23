@@ -1,55 +1,55 @@
-print clock();
-print "✓ first";
-print "✓ " + 'second;
-print ("✓ third", "✓ tuple");
-print 2 + 2;
-print '0 + '5;
+print clock()
+print "✓ first"
+print "✓ " + 'second
+print ("✓ third", "✓ tuple")
+print 2 + 2
+print '0 + '5
 
-let a = 2;
-let b = 4;
+let a = 2
+let b = 4
 
-print a + b;
-print b = 7;
-print 8..9;
+print a + b
+print b = 7
+print 8..9
 
 for let i = a; i < b; i++
-	let x = i + 8;
-	let y = i - 1;
-	print ("✓", x, y);
+	let x = i + 8
+	let y = i - 1
+	print ("✓", x, y)
 
 class Ainu
 	init(name)
-		this.name = name;
+		this.name = name
 
-	kind() => 'Ainu;
+	kind() => 'Ainu
 
 class Maia < Ainu
-	kind() => "Maia < " + super.kind();
+	kind() => "Maia < " + super.kind()
 
 class Istar < Maia
-	kind() => "Istar < " + super.kind();
+	kind() => "Istar < " + super.kind()
 
-let Gandalf = Istar('Gandalf);
+let Gandalf = Istar('Gandalf)
 
-print Gandalf.kind();
+print Gandalf.kind()
 
 class MyClass
-	myMethod() => 20;
+	myMethod() => 20
 
-print MyClass;
+print MyClass
 
-let inst = MyClass();
+let inst = MyClass()
 
-print inst;
+print inst
 
-inst.x = 17;
-print inst.x++;
-print inst.x;
-print inst.x += 1;
-print inst.myMethod;
-print inst.myMethod();
+inst.x = 17
+print inst.x++
+print inst.x
+print inst.x += 1
+print inst.myMethod
+print inst.myMethod()
 
-// print inst.toString();
+// print inst.toString()
 
 // nil values default to 0
 print inst.missing++; // 0
@@ -57,9 +57,9 @@ print inst.missing; // 1
 print inst.missing; // 2
 print inst.missing2 += 1; // 1
 
-let empty;
-print empty++;
-// print 20.toString();
+let empty
+print empty++
+// print 20.toString()
 
 __END__
 ✓ first

@@ -1,2 +1,2 @@
 class Core
-	exists() => true;
+	exists() => true
