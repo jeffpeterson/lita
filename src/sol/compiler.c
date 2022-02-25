@@ -21,6 +21,7 @@ typedef struct {
 
 typedef enum {
   PREC_NONE,
+  PREC_SEMI,       // ; NEWLINE
   PREC_COMMA,      // ,
   PREC_ASSIGNMENT, // = += -= /= *=
   PREC_OR,         // or
@@ -40,31 +41,21 @@ typedef void (*ParseFn)(bool canAssign);
 
 typedef struct {
   ParseFn prefix;
-  ParseFn infix; // also postfix
+  ParseFn infix; // AKA "postfix"
   Precedence precedence;
 } ParseRule;
 
-/**
- * A variabled defined below the global scope.
- */
+/** A variable defined below the global scope. */
 typedef struct {
-  /** Name of the variable. */
-  Token name;
-
-  /** How many scopes deep this variable is. */
-  int depth;
-
-  /** Has a closure captured this local variable? */
-  bool isCaptured;
+  Token name;      /** Name of the variable. */
+  int depth;       /** How many scopes deep this variable is. */
+  bool isCaptured; /** Has a closure captured this local variable? */
 } Local;
 
-/**
- * A local variable that has been closed over by a function.
- */
+/** A local variable that has been closed over by a function. */
 typedef struct {
-  /** The local slot being closed over. */
-  uint8_t index;
-  bool isLocal;
+  uint8_t index; /** The local slot being closed over. */
+  bool isLocal;  /** Local slot or enclosing upvalue? */
 } Upvalue;
 
 typedef enum FunType {
@@ -76,18 +67,12 @@ typedef enum FunType {
 
 /**
  * Every function gets its own Compiler.
- *
  * The root compiler gets an anonymous function with name "".
  */
 typedef struct Compiler {
-  /** The compiler of the function enclosing this one. */
-  struct Compiler *enclosing;
-
-  /** The function being compiled. */
-  ObjFun *fun;
-
-  /** Regular function or a script (root-level anon function). */
-  FunType type;
+  struct Compiler *enclosing; /** Compiler of the scope enclosing this one. */
+  ObjFun *fun;                /** The function being compiled. */
+  FunType type; /** Regular function or a script (root-level anon function). */
 
   /**
    * Stack of local variables.
@@ -97,20 +82,12 @@ typedef struct Compiler {
    * and we can share offsets directly.
    */
   Local locals[UINT8_COUNT];
-
-  /** Number of locals currently in scope. */
-  int localCount;
-
-  /** Array of variables this compiler's function has closed over. */
-  Upvalue upvalues[UINT8_COUNT];
-
-  /** How many times beginScope() has been called. */
-  int scopeDepth;
+  int localCount;                /** Number of locals currently in scope. */
+  Upvalue upvalues[UINT8_COUNT]; /** Variables this compiler has closed over. */
+  int scopeDepth; /** How many times beginScope() has been called. */
 } Compiler;
 
-/**
- * The current, innermost class being compiled.
- */
+/** The current, innermost class being compiled. */
 typedef struct ClassCompiler {
   struct ClassCompiler *enclosing;
 } ClassCompiler;
@@ -158,8 +135,10 @@ static void advance() {
   }
 }
 
+/** Is this the type of the previous token? */
 static bool check(TokenType type) { return parser.current.type == type; }
 
+/** Check the previous token and consume if it matches. */
 static bool match(TokenType type) {
   if (!check(type))
     return false;
@@ -168,6 +147,7 @@ static bool match(TokenType type) {
   return true;
 }
 
+/** The previous token must be this type, otherwise error. */
 static void consume(TokenType type, const char *message) {
   if (parser.current.type == type) {
     advance();
@@ -175,6 +155,11 @@ static void consume(TokenType type, const char *message) {
   }
 
   errorAtCurrent(message);
+}
+
+static void skipTerminators() {
+  while (match(TOKEN_NEWLINE) || match(TOKEN_SEMICOLON)) {
+  }
 }
 
 static void consumeAtLeast(TokenType type, const char *message) {
@@ -194,8 +179,7 @@ static void consumeTerminator(const char *message) {
   if (!match(TOKEN_NEWLINE))
     consume(TOKEN_SEMICOLON, message);
 
-  while (match(TOKEN_NEWLINE) || match(TOKEN_SEMICOLON)) {
-  }
+  skipTerminators();
 }
 
 static void emitByte(uint8_t byte) {
@@ -241,16 +225,14 @@ static void emitSwap(uint8_t a, uint8_t b) {
 
 static void emitReturn() {
   if (current->type == TYPE_INIT)
-    emitBytes(OP_GET_LOCAL, 0);
+    emitBytes(OP_GET_LOCAL, 0); // init() methods always return self.
   else
     emitByte(OP_NIL);
 
   emitByte(OP_RETURN);
 }
 
-/**
- * Puts the given value in the constant table and returns its index.
- */
+/** Puts the given value in the constant table and returns its index. */
 static uint8_t makeConstant(Value value) {
   int constant = addConstant(currentChunk(), value);
   if (constant > UINT8_MAX) {
@@ -291,31 +273,29 @@ static void patchJump(int offset) {
 }
 
 static void initCompiler(Compiler *compiler, FunType type) {
-  compiler->enclosing = current;
   compiler->fun = NULL;
+  compiler->fun = newFunction();
   compiler->type = type;
   compiler->localCount = 0;
   compiler->scopeDepth = 0;
-  compiler->fun = newFunction();
+  compiler->enclosing = current;
   current = compiler;
 
-  if (type == TYPE_SCRIPT) {
-    current->fun->name = newString("_script_");
-  } else {
-    current->fun->name =
-        copyString(parser.previous.start, parser.previous.length);
-  }
+  current->fun->name = type == TYPE_SCRIPT ? newString("_script_")
+                                           : copyString(parser.previous.start,
+                                                        parser.previous.length);
 
   // Reserve first local for `this`.
-  Local *local = &current->locals[current->localCount++];
-  local->depth = 0;
-  local->isCaptured = false;
+  Local *self = &current->locals[current->localCount++];
+  self->depth = 0;
+  self->isCaptured = false;
+
   if (type != TYPE_FUNCTION) {
-    local->name.start = "this";
-    local->name.length = 4;
+    self->name.start = "this";
+    self->name.length = 4;
   } else {
-    local->name.start = "";
-    local->name.length = 0;
+    self->name.start = "";
+    self->name.length = 0;
   }
 }
 
@@ -360,6 +340,7 @@ static uint8_t identifierConstant(Token *name) {
   return makeConstant(OBJ_VAL(copyString(name->start, name->length)));
 }
 
+/** Do these tokens have the same source string? */
 static bool identifiersEqual(Token *a, Token *b) {
   if (a->length != b->length)
     return false;
@@ -435,6 +416,7 @@ static int resolveUpvalue(Compiler *compiler, Token *name) {
   return -1;
 }
 
+/** Adds a local variable with the given name to the current compiler scope. */
 static void addLocal(Token name) {
   if (current->localCount == UINT8_COUNT) {
     error("Too many local variables in function.");
@@ -447,6 +429,10 @@ static void addLocal(Token name) {
   local->isCaptured = false;
 }
 
+/**
+ * Creates a local variable named by the previous token.
+ * Errors if the name shadows an existing variable.
+ */
 static void declareVariable() {
   if (current->scopeDepth == 0)
     return; // We're in the global scope.
@@ -1077,9 +1063,8 @@ static void forStatement() {
 }
 
 static void ifStatement() {
-  // consume(TOKEN_LEFT_PAREN, "Expect '(' after 'if'.");
   expression();
-  // consume(TOKEN_RIGHT_PAREN, "Expect ')' after condition.");
+
   if (!check(TOKEN_INDENT))
     consume(TOKEN_COLON, "Expect ':' or block after condition.");
 
