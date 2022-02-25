@@ -52,10 +52,10 @@ print inst.myMethod()
 // print inst.toString()
 
 // nil values default to 0
-print inst.missing++; // 0
-print inst.missing; // 1
-print inst.missing; // 2
-print inst.missing2 += 1; // 1
+print inst.missing++ // 0
+print inst.missing // 1
+print inst.missing // 2
+print inst.missing2 += 1 // 1
 
 let empty
 print empty++
