@@ -37,3 +37,10 @@ get "/foo" (foo, bar, baz) // Tuples still need them
 foo bar, foo baz // (foo bar), (foo baz)
 add 1 2
 ```
+
+---
+
+`{}` defines a tag-set. Indexed by tag.
+`x: 1` tags `1` with `x:`.
+`Path "/etc"` tags `"/etc"` with `Path`.
+`{x: 1, y: 2}`

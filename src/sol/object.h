@@ -113,12 +113,14 @@ typedef struct ObjClass {
   Obj obj;
   ObjString *name;
   struct ObjClass *parent;
+  // ValueArray children; /** Classes of child values. */
   Table methods;
 } ObjClass;
 
 typedef struct ObjInstance {
   Obj obj;
   ObjClass *klass;
+  // Value *children; /** Child values. */
   Table fields; /** Fields assigned to this instance. */
 } ObjInstance;
 
