@@ -462,6 +462,7 @@ static uint8_t parseVariable(const char *errorMessage) {
   return identifierConstant(&parser.previous);
 }
 
+/** Initialize the most recently declared variable. */
 static void markInitialized() {
   if (current->scopeDepth == 0)
     return;
@@ -469,6 +470,10 @@ static void markInitialized() {
   current->locals[current->localCount - 1].depth = current->scopeDepth;
 }
 
+/**
+ * If in global scope, define the global identified by the given constant id.
+ * Otherwise, define the most recently declared local.
+ */
 static void defineVariable(uint8_t global) {
   if (current->scopeDepth > 0) {
     markInitialized();
@@ -945,6 +950,7 @@ static void classDeclaration() {
   currentClass = &classCompiler;
 
   if (match(TOKEN_LESS)) {
+    // expression();
     consume(TOKEN_IDENTIFIER, "Expect superclass name.");
     variable(false);
 
@@ -959,7 +965,7 @@ static void classDeclaration() {
   addLocal(syntheticToken("super"));
   defineVariable(0);
 
-  namedVariable(className, false); // Superclasss
+  namedVariable(className, false); // Superclass
   emitByte(OP_INHERIT);
 
   // Put the class back on the stack.
