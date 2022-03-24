@@ -976,6 +976,8 @@ static void classDeclaration() {
       method();
 
     consume(TOKEN_DEDENT, "Expect dedent after class body.");
+  } else {
+    skipTerminators();
   }
 
   emitByte(OP_POP); // Pop the class
@@ -1193,7 +1195,6 @@ ObjFun *compile(const char *source) {
 #ifdef DEBUG_TOKENS
   initScanner(source);
   debugTokens();
-  return NULL;
 #endif
 
   initScanner(source);
