@@ -85,9 +85,10 @@ void initVM() {
 
   defineNatives();
 
-  inspect(global(string("Any")));
-  inspect(global(string("Object")));
-  inspect(global(string("Number")));
+  // pp(global(str("hash")));
+  // pp(global(str("Any")));
+  // pp(global(str("Object")));
+  // pp(global(str("Number")));
 
   /** Start collecting after 1MB is allocated. */
   vm.nextGC = 1024 * 1024;
@@ -613,6 +614,11 @@ static InterpretResult run() {
       break;
 
     case OP_INHERIT: {
+      if (IS_NIL(peek(1))) {
+        pop();
+        break;
+      }
+
       if (!IS_CLASS(peek(1))) {
         return runtimeError("Superclass must be a class.");
       }

@@ -7,7 +7,7 @@
 
 #define NAN_BOXING "Cram all Value types into 64-bits."
 
-// #define DEBUG_TOKENS "Log tokens."
+#define DEBUG_TOKENS "Log tokens."
 
 // #define DEBUG_PRINT_CODE "Log each chunk to stderr after it is compiled."
 

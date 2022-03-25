@@ -10,10 +10,10 @@ bool defineNative(const char *name, int arity, NativeFn fun) {
   return setGlobal(string(name), fn(name, arity, fun));
 }
 
-static _ globalClass(const char *name, const char *parent) {
-  let n = str(name);
-  return setGlobal(n, subClass(n, global(str(parent))));
-}
+// static _ globalClass(const char *name, const char *parent) {
+//   let n = str(name);
+//   return setGlobal(n, subClass(n, global(str(parent))));
+// }
 
 /// Native global functions
 
@@ -78,6 +78,11 @@ static _ Number_star(_ this, int argc, _ *args) {
   return error("Cannot multiply these values.");
 }
 
+static _ String_plus(_ this, int argc, _ *args) {
+  let other = toString(args[0]);
+  return obj(concatStrings(asStr(this), asStr(other)));
+}
+
 ObjFun *core_sol();
 
 void defineNatives() {
@@ -88,31 +93,40 @@ void defineNatives() {
   defineNative("write", 1, nativeWrite);
   defineNative("append", 1, nativeAppend);
 
-  let Any = setGlobal(str("Any"), class(str("Any")));
+  setGlobal(str("Any"), class(str("Any")));
+
+  runFun(core_sol());
+
+  let Any = global(str("Any"));
+  let Number = global(str("Number"));
+  let Function = global(str("Function"));
+  let String = global(str("String"));
+
   method(Any, fn("class", 0, Any_class));
   method(Any, fn("hash", 0, Any_hash));
   method(Any, fn("toString", 0, Any_toString));
+  method(Any, fn("string", 0, Any_toString));
 
-  globalClass("Nil", "Any");
-  globalClass("Object", "Any");
+  // globalClass("Nil", "Any");
+  // globalClass("Object", "Any");
 
-  globalClass("Bool", "Object");
-  globalClass("Class", "Object");
-  let Number = globalClass("Number", "Object");
+  // globalClass("Bool", "Object");
+  // globalClass("Class", "Object");
+  // let Number = globalClass("Number", "Object");
   method(Number, fn("*", 1, Number_star));
 
-  globalClass("Error", "Object");
+  // globalClass("Error", "Object");
 
-  let Function = globalClass("Function", "Object");
+  // let Function = globalClass("Function", "Object");
   method(Function, fn("bytes", 0, Function_bytes));         // getter
   method(Function, fn("byteCount", 0, Function_byteCount)); // getter
 
-  globalClass("Method", "Function");
-  globalClass("NativeFunction", "Function");
-  globalClass("Range", "Object");
-  globalClass("String", "Object");
-  globalClass("Table", "Object");
-  globalClass("Tuple", "Object");
+  method(String, fn("+", 1, String_plus));
 
-  runFun(core_sol());
+  //   globalClass("Method", "Function");
+  //   globalClass("NativeFunction", "Function");
+  //   globalClass("Range", "Object");
+  //   globalClass("String", "Object");
+  //   globalClass("Table", "Object");
+  //   globalClass("Tuple", "Object");
 }
