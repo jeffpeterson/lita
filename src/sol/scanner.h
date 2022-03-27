@@ -1,6 +1,8 @@
 #ifndef sol_scanner_h
 #define sol_scanner_h
 
+#include "common.h"
+
 typedef enum {
   TOKEN_ERROR,
   TOKEN_EOF,
@@ -81,7 +83,25 @@ typedef struct {
   int line;
 } Token;
 
+typedef struct Indent {
+  int prev;       /** The previous indent level at which text was parsed. */
+  int cur;        /** The current number of indents we have parsed. */
+  bool indenting; /** When within a series of indents following a newline. */
+} Indent;
+
+typedef struct {
+  const char *source;  /** Start of current source. */
+  const char *start;   /** Start of the current token. */
+  const char *current; /** Current char being scanned. */
+  int line;            /** Current line number. */
+  Indent indent;       /** Indent status. */
+  const char *data;
+  unsigned int dataLength;
+} Scanner;
+
+Scanner scanner;
 void initScanner(const char *source);
+void resetScanner();
 Token scanToken();
 
 #endif

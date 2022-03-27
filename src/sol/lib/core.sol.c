@@ -117,12 +117,49 @@ static Value stringFn3() {
   return obj(f);
 }
 
+static ValueArray inspectConstants4() {
+  ValueArray vals;
+  initValueArray(&vals);
+  vals.count = vals.capacity = 2;
+  Value values[] = {
+    str("{"), str("}"),
+  };
+  vals.values = cloneMemory(values, sizeof(values));
+  return vals;
+}
+
+static Chunk inspectChunk4() {
+  Chunk c;
+  initChunk(&c);
+  c.count = 8;
+  c.capacity = 8;
+  u8 code[] = {
+    0, 0, 0, 1, 24, 40, 1, 40,
+  };
+  int lines[] = {
+    32, 32, 32, 32, 32, 34, 34, 34,
+  };
+  c.code = cloneMemory(code, sizeof(code));
+  c.lines = cloneMemory(lines, sizeof(lines));
+  c.constants = inspectConstants4();
+
+  return c;
+};
+
+static Value inspectFn4() {
+  ObjFun *f = newFunction();  f->arity = 0;
+  f->upvalueCount = 0;
+  f->name = newString("inspect");
+  f->chunk = inspectChunk4();
+  return obj(f);
+}
+
 static ValueArray _script_Constants0() {
   ValueArray vals;
   initValueArray(&vals);
-  vals.count = vals.capacity = 20;
+  vals.count = vals.capacity = 21;
   Value values[] = {
-    str("Nil"), str("Any"), str("Object"), str("Bool"), str("Error"), str("Number"), str("Range"), str("init"), initFn1(), str("inspect"), inspectFn2(), str("string"), stringFn3(), str("String"), str("Table"), str("Tuple"), str("Function"), str("Method"), str("NativeFunction"), str("Class"),
+    str("Nil"), str("Any"), str("Object"), str("Bool"), str("Error"), str("Number"), str("Range"), str("init"), initFn1(), str("inspect"), inspectFn2(), str("string"), stringFn3(), str("String"), str("Table"), inspectFn4(), str("Tuple"), str("Function"), str("Method"), str("NativeFunction"), str("Class"),
   };
   vals.values = cloneMemory(values, sizeof(values));
   return vals;
@@ -131,13 +168,13 @@ static ValueArray _script_Constants0() {
 static Chunk _script_Chunk0() {
   Chunk c;
   initChunk(&c);
-  c.count = 183;
-  c.capacity = 183;
+  c.count = 187;
+  c.capacity = 187;
   u8 code[] = {
-    34, 0, 11, 0, 12, 1, 12, 0, 35, 12, 0, 7, 7, 34, 2, 11, 2, 12, 1, 12, 2, 35, 12, 2, 7, 7, 34, 3, 11, 3, 12, 2, 12, 3, 35, 12, 3, 7, 7, 34, 4, 11, 4, 12, 2, 12, 4, 35, 12, 4, 7, 7, 34, 5, 11, 5, 12, 2, 12, 5, 35, 12, 5, 7, 7, 34, 6, 11, 6, 12, 2, 12, 6, 35, 12, 6, 37, 8, 36, 7, 37, 10, 36, 9, 37, 12, 36, 11, 7, 7, 34, 13, 11, 13, 12, 2, 12, 13, 35, 12, 13, 7, 7, 34, 14, 11, 14, 12, 2, 12, 14, 35, 12, 14, 7, 7, 34, 15, 11, 15, 12, 2, 12, 15, 35, 12, 15, 7, 7, 34, 16, 11, 16, 12, 2, 12, 16, 35, 12, 16, 7, 7, 34, 17, 11, 17, 12, 16, 12, 17, 35, 12, 17, 7, 7, 34, 18, 11, 18, 12, 16, 12, 18, 35, 12, 18, 7, 7, 34, 19, 11, 19, 12, 16, 12, 19, 35, 12, 19, 7, 7, 1, 40,
+    34, 0, 11, 0, 12, 1, 12, 0, 35, 12, 0, 7, 7, 34, 2, 11, 2, 12, 1, 12, 2, 35, 12, 2, 7, 7, 34, 3, 11, 3, 12, 2, 12, 3, 35, 12, 3, 7, 7, 34, 4, 11, 4, 12, 2, 12, 4, 35, 12, 4, 7, 7, 34, 5, 11, 5, 12, 2, 12, 5, 35, 12, 5, 7, 7, 34, 6, 11, 6, 12, 2, 12, 6, 35, 12, 6, 37, 8, 36, 7, 37, 10, 36, 9, 37, 12, 36, 11, 7, 7, 34, 13, 11, 13, 12, 2, 12, 13, 35, 12, 13, 7, 7, 34, 14, 11, 14, 12, 2, 12, 14, 35, 12, 14, 37, 15, 36, 9, 7, 7, 34, 16, 11, 16, 12, 2, 12, 16, 35, 12, 16, 7, 7, 34, 17, 11, 17, 12, 2, 12, 17, 35, 12, 17, 7, 7, 34, 18, 11, 18, 12, 17, 12, 18, 35, 12, 18, 7, 7, 34, 19, 11, 19, 12, 17, 12, 19, 35, 12, 19, 7, 7, 34, 20, 11, 20, 12, 17, 12, 20, 35, 12, 20, 7, 7, 1, 40,
   };
   int lines[] = {
-    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 23, 23, 23, 23, 26, 26, 26, 26, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 35, 35, 35, 35, 35, 35, 35, 35, 35, 35, 35, 35, 35, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 38, 38, 38, 38, 38, 38, 38, 38, 38, 38, 38, 38, 38, 39, 39, 39, 39,
+    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 23, 23, 23, 23, 26, 26, 26, 26, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 34, 34, 34, 34, 34, 34, 34, 34, 34, 34, 34, 34, 34, 34, 34, 34, 34, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 38, 38, 38, 38, 38, 38, 38, 38, 38, 38, 38, 38, 38, 39, 39, 39, 39, 39, 39, 39, 39, 39, 39, 39, 39, 39, 41, 41, 41, 41, 41, 41, 41, 41, 41, 41, 41, 41, 41, 42, 42, 42, 42,
   };
   c.code = cloneMemory(code, sizeof(code));
   c.lines = cloneMemory(lines, sizeof(lines));

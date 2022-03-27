@@ -23,7 +23,7 @@ lib: $(SOL_C)
 %: examples/%.sol $(TARGET)
 	@$(TARGET) $<
 
-test: $(TARGET)
+test: $(TEST)
 	@$(TEST)
 
 $(TARGET): $(TARG_O)

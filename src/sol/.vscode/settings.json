@@ -41,5 +41,6 @@
   "C_Cpp.default.compilerArgs": ["-Wall", "-Werror"],
   "C_Cpp.errorSquiggles": "Enabled",
   "C_Cpp.loggingLevel": "Warning",
-  "clang.cflags": ["-Wall", "-I${workspaceRoot}/.."]
+  "clang.cflags": ["-Wall", "-I${workspaceRoot}/.."],
+  "editor.formatOnSave": true
 }

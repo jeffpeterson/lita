@@ -1,27 +1,14 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "common.h"
 #include "scanner.h"
-
-typedef struct Indent {
-  int prev;       /** The previous indent level at which text was parsed. */
-  int cur;        /** The current number of indents we have parsed. */
-  bool indenting; /** When within a series of indents following a newline. */
-} Indent;
-
-typedef struct {
-  const char *start;   /** Start of the current token. */
-  const char *current; /** Current char being scanned. */
-  int line;            /** Current line number. */
-  Indent indent;       /** Indent status. */
-  const char *data;
-  unsigned int dataLength;
-} Scanner;
 
 Scanner scanner;
 
+static bool skipWhitespace();
+
 void initScanner(const char *source) {
+  scanner.source = source;
   scanner.start = source;
   scanner.current = source;
   scanner.line = 1;
@@ -32,7 +19,11 @@ void initScanner(const char *source) {
 
   scanner.data = NULL;
   scanner.dataLength = 0;
+
+  skipWhitespace();
 }
+
+void resetScanner() { initScanner(scanner.source); }
 
 static bool isAlpha(char c) {
   return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || c == '_';

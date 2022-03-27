@@ -28,6 +28,9 @@ class Range // (start, end)
 
 class String
 class Table
+	inspect()
+		return "{" + "}"
+
 class Tuple
 
 class Function

@@ -1192,12 +1192,12 @@ static void statement() {
 }
 
 ObjFun *compile(const char *source) {
-#ifdef DEBUG_TOKENS
   initScanner(source);
+
+#ifdef DEBUG_TOKENS
   debugTokens();
 #endif
 
-  initScanner(source);
   Compiler compiler;
   initCompiler(&compiler, TYPE_SCRIPT);
 

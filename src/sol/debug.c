@@ -241,6 +241,7 @@ void debugTokens() {
 
   } while (token.type != TOKEN_EOF);
   fprintf(stderr, FG_DEFAULT);
+  resetScanner();
 }
 
 void debugExecution() {
