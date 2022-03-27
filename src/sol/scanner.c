@@ -94,7 +94,12 @@ static bool skipWhitespace() {
 
     case '\n':
       scanner.line++;
-      newline = true;
+      if (in->indenting && in->cur > 0) {
+        // Done indenting.
+        in->prev = in->cur;
+      } else {
+        newline = true;
+      }
       in->indenting = true;
       in->cur = 0;
       advance();

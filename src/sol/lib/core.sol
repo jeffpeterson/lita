@@ -14,8 +14,8 @@ class Bool
 class Error
 class Number
 
-// let start, end
 class Range // (start, end)
+	// let start, end
 	init(start, end)
 		this.start = start
 		this.end = end

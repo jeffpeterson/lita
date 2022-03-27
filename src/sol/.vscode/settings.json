@@ -35,7 +35,16 @@
     "list": "c",
     "string_view": "c",
     "unordered_map": "c",
-    "getopt.h": "c"
+    "getopt.h": "c",
+    "__functional_base": "c",
+    "__functional_base_03": "c",
+    "__tuple": "c",
+    "chrono": "c",
+    "cstddef": "c",
+    "limits": "c",
+    "ratio": "c",
+    "tuple": "c",
+    "utility": "c"
   },
   "C_Cpp.default.includePath": [".."],
   "C_Cpp.default.compilerArgs": ["-Wall", "-Werror"],

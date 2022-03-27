@@ -26,7 +26,7 @@ static Chunk initChunk1() {
     14, 0, 14, 1, 17, 0, 14, 0, 40,
   };
   int lines[] = {
-    3, 3, 3, 3, 3, 3, 21, 21, 21,
+    20, 20, 20, 20, 20, 20, 21, 21, 21,
   };
   c.code = cloneMemory(code, sizeof(code));
   c.lines = cloneMemory(lines, sizeof(lines));
@@ -63,7 +63,7 @@ static Chunk _script_Chunk0() {
     34, 0, 11, 0, 12, 1, 12, 0, 35, 12, 0, 37, 3, 36, 2, 7, 7, 1, 40,
   };
   int lines[] = {
-    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 21, 21, 21, 21, 21, 21, 21, 21,
+    18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 21, 21, 21, 21, 21, 21, 21, 21,
   };
   c.code = cloneMemory(code, sizeof(code));
   c.lines = cloneMemory(lines, sizeof(lines));

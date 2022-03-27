@@ -4,28 +4,82 @@
 #include "lib.h"
 #include "scanner.h"
 
-static void assertToken(TokenType type) { assert(scanToken().type == type); }
-
-static void assertTokens(TokenType *types) {
-  do {
-    assertToken(*types);
-  } while (*(types++) != TOKEN_EOF);
-}
+#define expect(token) assert(scanToken().type == token)
 
 void scanner_test() {
   initScanner("");
-  assertTokens((TokenType[]){TOKEN_EOF});
+  expect(TOKEN_EOF);
 
   initScanner("let x = 1");
-  assertTokens((TokenType[]){TOKEN_LET, TOKEN_IDENTIFIER, TOKEN_EQUAL,
-                             TOKEN_NUMBER, TOKEN_EOF});
+  expect(TOKEN_LET);
+  expect(TOKEN_IDENTIFIER);
+  expect(TOKEN_EQUAL);
+  expect(TOKEN_NUMBER);
+  expect(TOKEN_EOF);
 
-  initScanner("while true\n\tfoo()\n");
-  assertTokens((TokenType[]){
-      TOKEN_WHILE, TOKEN_TRUE, TOKEN_INDENT, TOKEN_IDENTIFIER, TOKEN_LEFT_PAREN,
-      TOKEN_RIGHT_PAREN, TOKEN_NEWLINE, TOKEN_DEDENT, TOKEN_EOF});
+  initScanner("while true\n"
+              "\tfoo()\n");
+  expect(TOKEN_WHILE);
+  expect(TOKEN_TRUE);
+  expect(TOKEN_INDENT);
+  expect(TOKEN_IDENTIFIER);
+  expect(TOKEN_LEFT_PAREN);
+  expect(TOKEN_RIGHT_PAREN);
+  expect(TOKEN_NEWLINE);
+  expect(TOKEN_DEDENT);
+  expect(TOKEN_EOF);
 
-  initScanner("\n\nfoo()\n");
-  assertTokens((TokenType[]){TOKEN_IDENTIFIER, TOKEN_LEFT_PAREN,
-                             TOKEN_RIGHT_PAREN, TOKEN_NEWLINE, TOKEN_EOF});
+  initScanner("\n"
+              "\n"
+              "foo()\n");
+  expect(TOKEN_IDENTIFIER);
+  expect(TOKEN_LEFT_PAREN);
+  expect(TOKEN_RIGHT_PAREN);
+  expect(TOKEN_NEWLINE);
+  expect(TOKEN_EOF);
+
+  initScanner("class Foo\n"
+              "\tbar");
+  expect(TOKEN_CLASS);
+  expect(TOKEN_IDENTIFIER);
+  expect(TOKEN_INDENT);
+  expect(TOKEN_IDENTIFIER);
+  expect(TOKEN_DEDENT);
+  expect(TOKEN_EOF);
+
+  initScanner("class Foo\n"
+              "\t\n"
+              "\tbar");
+  expect(TOKEN_CLASS);
+  expect(TOKEN_IDENTIFIER);
+  expect(TOKEN_INDENT);
+  expect(TOKEN_IDENTIFIER);
+  expect(TOKEN_DEDENT);
+  expect(TOKEN_EOF);
+
+  initScanner("// comment\n"
+              "\t// comment\n");
+  expect(TOKEN_INDENT);
+  expect(TOKEN_DEDENT);
+  expect(TOKEN_EOF);
+
+  initScanner("class Foo\n"
+              "\n"
+              "\tbar");
+  expect(TOKEN_CLASS);
+  expect(TOKEN_IDENTIFIER);
+  expect(TOKEN_INDENT);
+  expect(TOKEN_IDENTIFIER);
+  expect(TOKEN_DEDENT);
+  expect(TOKEN_EOF);
+
+  initScanner("class Foo\n"
+              "\t// comment\n"
+              "\tbar");
+  expect(TOKEN_CLASS);
+  expect(TOKEN_IDENTIFIER);
+  expect(TOKEN_INDENT);
+  expect(TOKEN_IDENTIFIER);
+  expect(TOKEN_DEDENT);
+  expect(TOKEN_EOF);
 }

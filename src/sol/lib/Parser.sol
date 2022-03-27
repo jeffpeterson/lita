@@ -1,7 +1,3 @@
-class Parser
-	init(source)
-		this.source = source
-
 // class Precedence
 // 	class None
 // 	class Semi       // ; NEWLINE
@@ -18,3 +14,7 @@ class Parser
 // 	class Postfix    // ++ --
 // 	class Call       // . ()
 // 	class Primary
+
+class Parser
+	init(source)
+		this.source = source
