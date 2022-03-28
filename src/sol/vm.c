@@ -473,10 +473,9 @@ static InterpretResult run() {
       tuple(READ_BYTE());
       break;
 
-    case OP_DEFINE_GLOBAL: {
+    case OP_DEFINE_GLOBAL:
       tableSet(&vm.globals, READ_CONSTANT(), pop());
       break;
-    }
 
     case OP_GET_GLOBAL: {
       Value name = READ_CONSTANT();

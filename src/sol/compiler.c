@@ -335,9 +335,13 @@ static void declaration();
 static ParseRule *getRule(TokenType type);
 static void parsePrecedence(Precedence precedence);
 
+static Value identifierValue(Token *name) {
+  return OBJ_VAL(copyString(name->start, name->length));
+}
+
 /** Adds the token to the constants table. */
 static uint8_t identifierConstant(Token *name) {
-  return makeConstant(OBJ_VAL(copyString(name->start, name->length)));
+  return makeConstant(identifierValue(name));
 }
 
 /** Do these tokens have the same source string? */
@@ -431,11 +435,13 @@ static void addLocal(Token name) {
 
 /**
  * Creates a local variable named by the previous token.
- * Errors if the name shadows an existing variable.
+ * Errors if the name shadows an existing local variable.
+ *
+ * Returns false if the variable is global.
  */
-static void declareVariable() {
+static bool declareVariable() {
   if (current->scopeDepth == 0)
-    return; // We're in the global scope.
+    return false; // We're in the global scope.
 
   Token *name = &parser.previous;
 
@@ -450,8 +456,15 @@ static void declareVariable() {
   }
 
   addLocal(*name);
+  return true;
 }
 
+/**
+ * Parse a variable name and _declare_ it.
+ *
+ * _Declaring_ a local variable reserves its slot in the compiler, but
+ * referencing it before it is _defined_ is an error.
+ */
 static uint8_t parseVariable(const char *errorMessage) {
   consume(TOKEN_IDENTIFIER, errorMessage);
 
@@ -462,8 +475,11 @@ static uint8_t parseVariable(const char *errorMessage) {
   return identifierConstant(&parser.previous);
 }
 
-/** Initialize the most recently declared variable. */
-static void markInitialized() {
+/**
+ * Mark the most recently _declared_ local variable as _defined_.
+ * Global variables are _defined_ at runtime via OP_DEFINE_GLOBAL.
+ */
+static void markDefined() {
   if (current->scopeDepth == 0)
     return;
 
@@ -471,12 +487,17 @@ static void markInitialized() {
 }
 
 /**
- * If in global scope, define the global identified by the given constant id.
+ * _Defines_ a variable using the most recent stack value.
+ *
+ * In the global scope, define the global identified by the given constant id.
  * Otherwise, define the most recently declared local.
+ *
+ * At runtime, local variables point to that value on the stack, and global
+ * variables pop the value and put in the the globals table.
  */
 static void defineVariable(uint8_t global) {
   if (current->scopeDepth > 0) {
-    markInitialized();
+    markDefined();
     return;
   }
   emitBytes(OP_DEFINE_GLOBAL, global);
@@ -940,10 +961,16 @@ static void method() {
 static void classDeclaration() {
   consume(TOKEN_IDENTIFIER, "Expect class name.");
   Token className = parser.previous;
-  uint8_t nameConstant = identifierConstant(&parser.previous);
-  declareVariable();
-  emitBytes(OP_CLASS, nameConstant);
-  defineVariable(nameConstant);
+  Value name = identifierValue(&className);
+  uint8_t nameConstant = makeConstant(name);
+
+  if (declareVariable() || !tableHas(&vm.globals, name)) {
+    emitBytes(OP_CLASS, nameConstant);
+    defineVariable(nameConstant);
+  } else {
+    // Re-open existing global classes.
+    emitBytes(OP_GET_GLOBAL, nameConstant);
+  }
 
   ClassCompiler classCompiler;
   classCompiler.enclosing = currentClass;
@@ -987,7 +1014,7 @@ static void classDeclaration() {
 
 static void funDeclaration() {
   uint8_t global = parseVariable("Expect function name.");
-  markInitialized();
+  markDefined();
   function(TYPE_FUNCTION);
   defineVariable(global);
 }
