@@ -131,12 +131,12 @@ typedef struct ObjBound {
   ObjClosure *method; /** Method being bound. */
 } ObjBound;
 
-typedef Value (*NativeFn)(Value this_, int argCount, Value *args);
+typedef Value NativeFn(Value self, int argCount, Value *args);
 
 typedef struct ObjNative {
   Obj obj;
   int arity;
-  NativeFn fun;
+  NativeFn *fun;
   ObjString *name;
 } ObjNative;
 
