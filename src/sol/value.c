@@ -41,6 +41,15 @@ int fprintValue(FILE *io, Value val) {
                        : 0;
 }
 
+int trace(const char *label, Value value) {
+#ifdef DEBUG_TRACE
+  return fprintf(stderr, "%s: ", label) + fprintValue(stderr, value) +
+         fprintf(stderr, "\n");
+#else
+  return 0;
+#endif
+}
+
 bool valuesEqual(Value a, Value b) {
 #ifdef NAN_BOXING
   if (IS_NUMBER(a) && IS_NUMBER(b))

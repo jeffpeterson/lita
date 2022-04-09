@@ -120,6 +120,7 @@ void initValueArray(ValueArray *array);
 void writeValueArray(ValueArray *array, Value value);
 void freeValueArray(ValueArray *array);
 int fprintValue(FILE *io, Value value);
+int trace(const char *label, Value value);
 
 typedef uint32_t Hash;
 
