@@ -49,7 +49,8 @@ static _ nativeAppend(_ this, int argc, _ *args) {
 
 static _ Any_class(_ this, int argc, _ *args) { return classOf(this); }
 static _ Any_hash(_ this, int argc, _ *args) { return hashValue(this); }
-static _ Any_toString(_ this, int argc, _ *args) { return toString(this); }
+static _ Any_inspect(_ this, int argc, _ *args) { return inspect(this); }
+static _ Any_string(_ this, int argc, _ *args) { return toString(this); }
 
 static _ Function_bytes(_ this, int argc, _ *args) {
   if (!isFn(this))
@@ -116,8 +117,9 @@ InterpretResult defineNatives() {
 
   method(vm.Any, fn("class", 0, Any_class));
   method(vm.Any, fn("hash", 0, Any_hash));
-  method(vm.Any, fn("toString", 0, Any_toString));
-  method(vm.Any, fn("string", 0, Any_toString));
+  method(vm.Any, fn("inspect", 0, Any_inspect));
+  method(vm.Any, fn("toString", 0, Any_string));
+  method(vm.Any, fn("string", 0, Any_string));
 
   // let Number = globalClass("Number", "Object");
   method(vm.Number, fn("*", 1, Number_star));

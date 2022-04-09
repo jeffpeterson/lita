@@ -31,7 +31,7 @@ int main(int argc, char *argv[]) {
   bool startRepl = false;
   enum { COMPILE, INTERPRET } mode = INTERPRET;
 
-  while ((opt = getopt(argc, argv, "cir")) != -1) {
+  while ((opt = getopt(argc, argv, "cire:")) != -1) {
     switch (opt) {
     case 'c':
       mode = COMPILE;
@@ -41,6 +41,9 @@ int main(int argc, char *argv[]) {
       break;
     case 'r':
       startRepl = true;
+      break;
+    case 'e':
+      assertOkResult(interpret(optarg));
       break;
     case '?':
       exit(1);

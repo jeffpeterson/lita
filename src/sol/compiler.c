@@ -994,6 +994,7 @@ static void classDeclaration() {
   defineVariable(0);
 
   emitByte(OP_INHERIT);
+  emitSwap(0, 1);
 
   if (match(TOKEN_INDENT)) {
     while (!check(TOKEN_DEDENT) && !check(TOKEN_EOF))

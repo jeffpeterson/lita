@@ -1,7 +1,6 @@
 class Nil < Any
 class Object < Any
 
-
 // class Bytes(str)
 // class Inspect(String)
 // class Literal(String)
