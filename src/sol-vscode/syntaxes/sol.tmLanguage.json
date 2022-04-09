@@ -31,7 +31,7 @@
         },
         {
           "name": "variable.language.this.sol",
-          "match": "\\b(this)\\b"
+          "match": "\\b(this|self)\\b"
         },
         {
           "name": "variable.language.super.sol",
