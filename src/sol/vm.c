@@ -180,7 +180,7 @@ static bool call(ObjClosure *closure, int argCount) {
   frame->ip = fun->chunk.code; // Start instruction pointer at function's code.
 
   /**
-   * Account for args and the receiver.
+   * Account for args and the receiver (if method).
    * stack: [..., this, arg1, arg2]
    *     receiver-^               ^-stackTop
    */
@@ -293,6 +293,7 @@ static bool invokeFromClass(ObjClass *klass, ObjString *name, int argCount) {
     return callValue(method, argCount);
 }
 
+/** [argCount self][0 ...args] */
 static InterpretResult opInvoke(Value name, int argCount) {
   Value receiver = peek(argCount);
 
@@ -385,12 +386,14 @@ static bool isFalsey(Value value) {
   return IS_NIL(value) || (IS_BOOL(value) && !AS_BOOL(value));
 }
 
-static void tuple(uint8_t length) {
+/** [length ...args][0 arg] -> [0 tuple] */
+static void opTuple(uint8_t length) {
   ObjTuple *tuple = copyTuple(vm.stackTop - length, length);
   popn(length);
   push(OBJ_VAL(tuple));
 }
 
+/** [1 a][0 b] -> [0 result] */
 static InterpretResult opAdd() {
   Value b = peek(0);
   Value a = peek(1);
@@ -407,6 +410,7 @@ static InterpretResult opAdd() {
   return INTERPRET_OK;
 }
 
+// [0 self] -> [0 value]
 static InterpretResult opGet(_ name) {
   let v = get(pop(), name);
   // if (arity(v) == 0)
@@ -494,7 +498,7 @@ static InterpretResult run() {
     }
 
     case OP_TUPLE:
-      tuple(READ_BYTE());
+      opTuple(READ_BYTE());
       break;
 
     case OP_DEFINE_GLOBAL:
@@ -538,7 +542,9 @@ static InterpretResult run() {
       opGet(READ_CONSTANT());
       break;
     }
-    case OP_SET_PROPERTY: {
+    case OP_SET_PROPERTY: { // [1 self][0 value] -> [0 value]
+      let name = READ_CONSTANT();
+
       if (!IS_INSTANCE(peek(1))) {
         return runtimeError("Only instances have properties.");
       }
@@ -550,9 +556,9 @@ static InterpretResult run() {
 
       // Assigning 'nil' is deletion.
       if (IS_NIL(value))
-        tableDelete(&inst->fields, READ_CONSTANT());
+        tableDelete(&inst->fields, name);
       else
-        tableSet(&inst->fields, READ_CONSTANT(), value);
+        tableSet(&inst->fields, name, value);
 
       popn(2);
       push(value);
@@ -626,7 +632,7 @@ static InterpretResult run() {
       break;
     }
 
-    case OP_CALL: {
+    case OP_CALL: { // [argc fn][1 arg1][0 ...args ]
       int argCount = READ_BYTE();
       if (!callValue(peek(argCount), argCount))
         return INTERPRET_RUNTIME_ERROR;
@@ -634,7 +640,7 @@ static InterpretResult run() {
       break;
     }
 
-    case OP_CLASS: {
+    case OP_CLASS: { // []
       let name = READ_CONSTANT();
       bool isLocal = (bool)READ_BYTE();
       let klass;
@@ -671,12 +677,14 @@ static InterpretResult run() {
       break;
     }
 
-    case OP_METHOD:
+    case OP_METHOD: // [1 class][0 closure] -> [0 class]
       defineMethod(READ_STRING());
       break;
 
-    case OP_INVOKE: {
-      if ((err = opInvoke(READ_CONSTANT(), READ_BYTE())))
+    case OP_INVOKE: { // [n self][0 ...args]
+      let name = READ_CONSTANT();
+      u8 argc = READ_BYTE();
+      if ((err = opInvoke(name, argc)))
         return err;
       SYNC_FRAME();
       break;

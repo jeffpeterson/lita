@@ -90,6 +90,7 @@ typedef struct Compiler {
 /** The current, innermost class being compiled. */
 typedef struct ClassCompiler {
   struct ClassCompiler *enclosing;
+  Table fields;
 } ClassCompiler;
 
 Parser parser;
@@ -97,7 +98,17 @@ Compiler *current = NULL;
 ClassCompiler *currentClass = NULL;
 Chunk *compilingChunk;
 
+static void initClassCompiler(ClassCompiler *comp) {
+  comp->enclosing = currentClass;
+  initTable(&comp->fields);
+  currentClass = comp;
+}
+
 static Chunk *currentChunk() { return &current->fun->chunk; }
+
+static Value identifierValue(Token *name) {
+  return OBJ_VAL(copyString(name->start, name->length));
+}
 
 static void errorAt(Token *token, const char *message) {
   if (parser.panicMode)
@@ -171,8 +182,9 @@ static void consumeAtLeast(TokenType type, const char *message) {
   errorAtCurrent(message);
 }
 
-static void consumeIdent(const char *message) {
-  return consumeAtLeast(TOKEN_IDENTIFIER, message);
+static Value consumeIdent(const char *message) {
+  consumeAtLeast(TOKEN_IDENTIFIER, message);
+  return identifierValue(&parser.previous);
 }
 
 static void consumeTerminator(const char *message) {
@@ -282,6 +294,7 @@ static void initCompiler(Compiler *compiler, FunType type) {
   current = compiler;
 
   current->fun->name = type == TYPE_SCRIPT ? newString("_script_")
+                       : type == TYPE_INIT ? newString("init")
                                            : copyString(parser.previous.start,
                                                         parser.previous.length);
 
@@ -334,10 +347,6 @@ static void statement();
 static void declaration();
 static ParseRule *getRule(TokenType type);
 static void parsePrecedence(Precedence precedence);
-
-static Value identifierValue(Token *name) {
-  return OBJ_VAL(copyString(name->start, name->length));
-}
 
 /** Adds the token to the constants table. */
 static uint8_t identifierConstant(Token *name) {
@@ -505,6 +514,7 @@ static void defineVariable(uint8_t global) {
   emitBytes(OP_DEFINE_GLOBAL, global);
 }
 
+/** Parse arguments being passed to a function. */
 static uint8_t argumentList() {
   uint8_t argCount = 0;
   if (!check(TOKEN_RIGHT_PAREN)) {
@@ -658,9 +668,7 @@ static void comma(bool canAssign) {
 }
 
 static void dot(bool canAssign) {
-  consumeIdent("Expect property name after '.'.");
-
-  uint8_t name = identifierConstant(&parser.previous);
+  uint8_t name = makeConstant(consumeIdent("Expect property name after '.'."));
 
   if (canAssign && assignment(OP_GET_PROPERTY, OP_SET_PROPERTY, name, true))
     return;
@@ -720,6 +728,12 @@ static void symbol(bool canAssign) {
       copyString(parser.previous.start + 1, parser.previous.length - 1)));
 }
 
+/**
+ * Emits bytecode to read the variable with the given Token name from the
+ * current scope.
+ *
+ * Will also parse any following assignment operators if canAssign is true.
+ */
 static void namedVariable(Token name, bool canAssign) {
   uint8_t getOp, setOp;
   int arg = resolveLocal(current, &name);
@@ -929,7 +943,18 @@ static void function(FunType type) {
     consume(TOKEN_RIGHT_PAREN, "Expect ')' after parameters.");
   }
 
-  if (match(TOKEN_FAT_ARROW)) {
+  if (type == TYPE_INIT) {
+    // Inline init
+    for (int i = 1; i < current->localCount; i++) {
+      Value name = identifierValue(&current->locals[i].name);
+      u8 constant = makeConstant(name);
+      tableSet(&currentClass->fields, name, TRUE_VAL);
+      emitBytes(OP_GET_LOCAL, 0); // self
+      emitBytes(OP_GET_LOCAL, i); // value
+      emitBytes(OP_SET_PROPERTY, constant);
+      emitByte(OP_POP); // Pop the value
+    }
+  } else if (match(TOKEN_FAT_ARROW)) {
     expression();
     emitByte(OP_RETURN);
     consumeTerminator("Expect newline or ';' after arrow function.");
@@ -961,9 +986,8 @@ static void method() {
 }
 
 static void classDeclaration() {
-  consume(TOKEN_IDENTIFIER, "Expect class name.");
+  Value name = consumeIdent("Expect class name.");
   Token className = parser.previous;
-  Value name = identifierValue(&className);
   uint8_t nameConstant = makeConstant(name);
 
   bool isLocal = declareVariable();
@@ -974,8 +998,14 @@ static void classDeclaration() {
     markDefined();
 
   ClassCompiler classCompiler;
-  classCompiler.enclosing = currentClass;
-  currentClass = &classCompiler;
+  initClassCompiler(&classCompiler);
+
+  // Parse inline init
+  if (match(TOKEN_LEFT_PAREN)) {
+    function(TYPE_INIT);
+    Value init = OBJ_VAL(newString("init"));
+    emitBytes(OP_METHOD, makeConstant(init));
+  }
 
   if (match(TOKEN_LESS)) {
     // expression();
