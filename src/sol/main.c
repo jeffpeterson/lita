@@ -49,11 +49,15 @@ int main(int argc, char *argv[]) {
 
   bool noFiles = optind >= argc;
 
+  if (mode == INTERPRET)
+    assertOkResult(bootVM());
+
   for (int i = optind; i < argc; i++) {
     ObjString *path = newString(argv[i]);
 
-    if (mode == INTERPRET)
+    if (mode == INTERPRET) {
       runFile(path);
+    }
 
     if (mode == COMPILE)
       compileFile(path);

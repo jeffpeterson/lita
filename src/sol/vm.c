@@ -44,6 +44,14 @@ InterpretResult runtimeError(const char *format, ...) {
   return INTERPRET_RUNTIME_ERROR;
 }
 
+void assertOkResult(InterpretResult result) {
+  if (result == INTERPRET_COMPILE_ERROR)
+    exit(65);
+
+  if (result == INTERPRET_RUNTIME_ERROR)
+    exit(70);
+}
+
 void crash(const char *str) {
   runtimeError("Crash: %s", str);
   freeVM();
@@ -83,8 +91,22 @@ void initVM() {
 
   vm.str.init = newString("init");
 
-  defineNatives();
+  vm.Any = nil;
+  vm.Bool = nil;
+  vm.Class = nil;
+  vm.Error = nil;
+  vm.Function = nil;
+  vm.Method = nil;
+  vm.NativeFunction = nil;
+  vm.Nil = nil;
+  vm.Number = nil;
+  vm.Object = nil;
+  vm.Range = nil;
+  vm.String = nil;
+  vm.Table = nil;
+  vm.Tuple = nil;
 
+  // fprintTable(stderr, &vm.globals);
   // pp(global(str("hash")));
   // pp(global(str("Any")));
   // pp(global(str("Object")));
@@ -93,6 +115,8 @@ void initVM() {
   /** Start collecting after 1MB is allocated. */
   vm.nextGC = 1024 * 1024;
 }
+
+InterpretResult bootVM() { return defineNatives(); }
 
 void freeVM() {
   vm.str.init = NULL;
@@ -482,7 +506,8 @@ static InterpretResult run() {
       Value value;
 
       if (!tableGet(&vm.globals, name, &value)) {
-        return runtimeError("Undefined variable '%s'.", AS_STRING(name)->chars);
+        return runtimeError("Cannot get undefined variable '%s'.",
+                            AS_STRING(name)->chars);
       }
       push(value);
       break;
@@ -492,7 +517,8 @@ static InterpretResult run() {
       if (tableSet(&vm.globals, name, peek(0))) {
         // This is a new key and hasn't been defined.
         tableDelete(&vm.globals, name);
-        return runtimeError("Undefined variable '%s'.", AS_STRING(name)->chars);
+        return runtimeError("Cannot set undefined variable '%s'.",
+                            AS_STRING(name)->chars);
       }
       break;
     }
@@ -608,25 +634,31 @@ static InterpretResult run() {
       break;
     }
 
-    case OP_CLASS:
-      push(class(READ_CONSTANT()));
-      break;
+    case OP_CLASS: {
+      let name = READ_CONSTANT();
+      bool isLocal = (bool)READ_BYTE();
+      let klass;
 
-    case OP_INHERIT: {
-      if (IS_NIL(peek(1))) {
-        pop();
-        break;
+      // Re-open existing global classes
+      if (isLocal || !tableGet(&vm.globals, name, &klass)) {
+        klass = class(name);
+        if (!isLocal)
+          tableSet(&vm.globals, name, klass);
       }
 
-      if (!IS_CLASS(peek(1))) {
+      push(klass);
+      break;
+    }
+
+    case OP_INHERIT: { // [1 class ][0 superclass ]
+      if (!IS_CLASS(peek(0))) {
         return runtimeError("Superclass must be a class.");
       }
 
-      ObjClass *superclass = AS_CLASS(peek(1));
-      ObjClass *subclass = AS_CLASS(peek(0));
+      ObjClass *superclass = AS_CLASS(peek(0));
+      ObjClass *subclass = AS_CLASS(peek(1));
       subclass->parent = superclass;
       // tableAddAll(&superclass->methods, &subclass->methods);
-      pop(); // Subclass
       break;
     }
 

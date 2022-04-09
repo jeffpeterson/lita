@@ -44,7 +44,9 @@
     "limits": "c",
     "ratio": "c",
     "tuple": "c",
-    "utility": "c"
+    "utility": "c",
+    "compiler.h": "c",
+    "table.h": "c"
   },
   "C_Cpp.default.includePath": [".."],
   "C_Cpp.default.compilerArgs": ["-Wall", "-Werror"],

@@ -85,7 +85,7 @@ static _ String_plus(_ this, int argc, _ *args) {
 
 ObjFun *core_sol();
 
-void defineNatives() {
+InterpretResult defineNatives() {
   defineNative("clock", 0, nativeClock);
   defineNative("hash", 1, nativeHash);
   defineNative("pp", 1, nativePrettyPrint);
@@ -93,35 +93,42 @@ void defineNatives() {
   defineNative("write", 1, nativeWrite);
   defineNative("append", 1, nativeAppend);
 
-  setGlobal(str("Any"), class(str("Any")));
+  vm.Any = setGlobal(str("Any"), class(str("Any")));
 
-  runFun(core_sol());
+  InterpretResult result = runFun(core_sol());
 
-  let Any = global(str("Any"));
-  let Number = global(str("Number"));
-  let Function = global(str("Function"));
-  let String = global(str("String"));
+  if (result)
+    return result;
 
-  method(Any, fn("class", 0, Any_class));
-  method(Any, fn("hash", 0, Any_hash));
-  method(Any, fn("toString", 0, Any_toString));
-  method(Any, fn("string", 0, Any_toString));
+  vm.Bool = global(str("Bool"));
+  vm.Class = global(str("Class"));
+  vm.Error = global(str("Error"));
+  vm.Function = global(str("Function"));
+  vm.Method = global(str("Method"));
+  vm.NativeFunction = global(str("NativeFunction"));
+  vm.Nil = global(str("Nil"));
+  vm.Number = global(str("Number"));
+  vm.Object = global(str("Object"));
+  vm.Range = global(str("Range"));
+  vm.String = global(str("String"));
+  vm.Table = global(str("Table"));
+  vm.Tuple = global(str("Tuple"));
 
-  // globalClass("Nil", "Any");
-  // globalClass("Object", "Any");
+  method(vm.Any, fn("class", 0, Any_class));
+  method(vm.Any, fn("hash", 0, Any_hash));
+  method(vm.Any, fn("toString", 0, Any_toString));
+  method(vm.Any, fn("string", 0, Any_toString));
 
-  // globalClass("Bool", "Object");
-  // globalClass("Class", "Object");
   // let Number = globalClass("Number", "Object");
-  method(Number, fn("*", 1, Number_star));
+  method(vm.Number, fn("*", 1, Number_star));
 
   // globalClass("Error", "Object");
 
   // let Function = globalClass("Function", "Object");
-  method(Function, fn("bytes", 0, Function_bytes));         // getter
-  method(Function, fn("byteCount", 0, Function_byteCount)); // getter
+  method(vm.Function, fn("bytes", 0, Function_bytes));         // getter
+  method(vm.Function, fn("byteCount", 0, Function_byteCount)); // getter
 
-  method(String, fn("+", 1, String_plus));
+  method(vm.String, fn("+", 1, String_plus));
 
   //   globalClass("Method", "Function");
   //   globalClass("NativeFunction", "Function");
@@ -129,4 +136,6 @@ void defineNatives() {
   //   globalClass("String", "Object");
   //   globalClass("Table", "Object");
   //   globalClass("Tuple", "Object");
+
+  return result;
 }

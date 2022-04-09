@@ -45,11 +45,11 @@ typedef struct {
   Precedence precedence;
 } ParseRule;
 
-/** A variable defined below the global scope. */
+/** A variable defined deeper than the global scope. */
 typedef struct {
-  Token name;      /** Name of the variable. */
-  int depth;       /** How many scopes deep this variable is. */
-  bool isCaptured; /** Has a closure captured this local variable? */
+  Token name;      /** Name of the local variable. */
+  int depth;       /** How many scopes deep this local is. -1 until defined. */
+  bool isCaptured; /** Has a closure captured this local? */
 } Local;
 
 /** A local variable that has been closed over by a function. */
@@ -478,6 +478,8 @@ static uint8_t parseVariable(const char *errorMessage) {
 /**
  * Mark the most recently _declared_ local variable as _defined_.
  * Global variables are _defined_ at runtime via OP_DEFINE_GLOBAL.
+ *
+ * Undefined locals have a depth of -1.
  */
 static void markDefined() {
   if (current->scopeDepth == 0)
@@ -964,13 +966,12 @@ static void classDeclaration() {
   Value name = identifierValue(&className);
   uint8_t nameConstant = makeConstant(name);
 
-  if (declareVariable() || !tableHas(&vm.globals, name)) {
-    emitBytes(OP_CLASS, nameConstant);
-    defineVariable(nameConstant);
-  } else {
-    // Re-open existing global classes.
-    emitBytes(OP_GET_GLOBAL, nameConstant);
-  }
+  bool isLocal = declareVariable();
+  emitBytes(OP_CLASS, nameConstant);
+  emitByte(isLocal);
+
+  if (isLocal)
+    markDefined();
 
   ClassCompiler classCompiler;
   classCompiler.enclosing = currentClass;
@@ -992,11 +993,7 @@ static void classDeclaration() {
   addLocal(syntheticToken("super"));
   defineVariable(0);
 
-  namedVariable(className, false); // Superclass
   emitByte(OP_INHERIT);
-
-  // Put the class back on the stack.
-  namedVariable(className, false);
 
   if (match(TOKEN_INDENT)) {
     while (!check(TOKEN_DEDENT) && !check(TOKEN_EOF))

@@ -1,6 +1,6 @@
 class Nil < Any
-
 class Object < Any
+
 
 // class Bytes(str)
 // class Inspect(String)
@@ -15,7 +15,6 @@ class Error
 class Number
 
 class Range // (start, end)
-	// let start, end
 	init(start, end)
 		this.start = start
 		this.end = end

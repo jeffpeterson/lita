@@ -62,13 +62,7 @@ bool appendFile(ObjString *path, ObjString *content) {
 
 void runFile(ObjString *path) {
   ObjString *source = readFile(path);
-  InterpretResult result = interpret(source->chars);
-
-  if (result == INTERPRET_COMPILE_ERROR)
-    exit(65);
-
-  if (result == INTERPRET_RUNTIME_ERROR)
-    exit(70);
+  assertOkResult(interpret(source->chars));
 }
 
 void compileFile(ObjString *path) {
