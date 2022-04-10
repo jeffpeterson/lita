@@ -117,8 +117,7 @@ static Value identifierValue(Token *name) {
 }
 
 static void errorAt(Token *token, const char *message) {
-  if (parser.panicMode)
-    return;
+  if (parser.panicMode) return;
 
   parser.panicMode = true;
   fprintf(stderr, "[line %d] Error", token->line);
@@ -145,8 +144,7 @@ static void advance() {
   parser.previous = parser.current;
   for (;;) {
     parser.current = scanToken();
-    if (parser.current.type != TOKEN_ERROR)
-      break;
+    if (parser.current.type != TOKEN_ERROR) break;
 
     errorAtCurrent(parser.current.start);
   }
@@ -157,8 +155,7 @@ static bool check(TokenType type) { return parser.current.type == type; }
 
 /** Check the previous token and consume if it matches. */
 static bool match(TokenType type) {
-  if (!check(type))
-    return false;
+  if (!check(type)) return false;
 
   advance();
   return true;
@@ -194,8 +191,7 @@ static Value consumeIdent(const char *message) {
 }
 
 static void consumeTerminator(const char *message) {
-  if (!match(TOKEN_NEWLINE))
-    consume(TOKEN_SEMICOLON, message);
+  if (!match(TOKEN_NEWLINE)) consume(TOKEN_SEMICOLON, message);
 
   skipTerminators();
 }
@@ -212,8 +208,7 @@ static void emitBytes(uint8_t byte1, uint8_t byte2) {
 static void emitLoop(int loopStart) {
   emitByte(OP_LOOP);
   int offset = currentChunk()->count - loopStart + 2;
-  if (offset > UINT16_MAX)
-    error("Loop body too large.");
+  if (offset > UINT16_MAX) error("Loop body too large.");
 
   emitBytes((offset >> 8) & 0xff, offset & 0xff);
 }
@@ -348,8 +343,7 @@ static void endScope() {
          current->locals[current->localCount - 1].depth > current->scopeDepth) {
     if (current->locals[current->localCount - 1].isCaptured)
       emitByte(OP_CLOSE_UPVALUE);
-    else
-      emitByte(OP_POP);
+    else emitByte(OP_POP);
     current->localCount--;
   }
 }
@@ -367,8 +361,7 @@ static uint8_t identifierConstant(Token *name) {
 
 /** Do these tokens have the same source string? */
 static bool identifiersEqual(Token *a, Token *b) {
-  if (a->length != b->length)
-    return false;
+  if (a->length != b->length) return false;
 
   return memcmp(a->start, b->start, a->length) == 0;
 }
@@ -400,8 +393,7 @@ static int addUpvalue(Compiler *compiler, uint8_t index, bool isLocal) {
   // Re-use existing upvalues referring to the same slot index.
   for (int i = 0; i < upvalueCount; i++) {
     Upvalue *upvalue = &compiler->upvalues[i];
-    if (upvalue->index == index && upvalue->isLocal == isLocal)
-      return i;
+    if (upvalue->index == index && upvalue->isLocal == isLocal) return i;
   }
 
   if (upvalueCount == UINT8_COUNT) {
@@ -422,8 +414,7 @@ static int addUpvalue(Compiler *compiler, uint8_t index, bool isLocal) {
  */
 static int resolveUpvalue(Compiler *compiler, Token *name) {
   // Root compiler has no locals or upvalues. Exit.
-  if (compiler->enclosing == NULL)
-    return -1;
+  if (compiler->enclosing == NULL) return -1;
 
   // Close over a local variable in the enclosing scope.
   int local = resolveLocal(compiler->enclosing, name);
@@ -434,8 +425,7 @@ static int resolveUpvalue(Compiler *compiler, Token *name) {
 
   // Close over an upvalue in the enclosing scope.
   int upvalue = resolveUpvalue(compiler->enclosing, name);
-  if (upvalue != -1)
-    return addUpvalue(compiler, (uint8_t)upvalue, false);
+  if (upvalue != -1) return addUpvalue(compiler, (uint8_t)upvalue, false);
 
   // Not found, must be global.
   return -1;
@@ -461,15 +451,13 @@ static void addLocal(Token name) {
  * Returns false if the variable is global.
  */
 static bool declareVariable() {
-  if (current->scopeDepth == 0)
-    return false; // We're in the global scope.
+  if (current->scopeDepth == 0) return false; // We're in the global scope.
 
   Token *name = &parser.previous;
 
   for (int i = current->localCount - 1; i >= 0; i--) {
     Local *local = &current->locals[i];
-    if (local->depth != -1 && local->depth < current->scopeDepth)
-      break;
+    if (local->depth != -1 && local->depth < current->scopeDepth) break;
 
     if (identifiersEqual(name, &local->name)) {
       error("Already a variable with this name in this scope.");
@@ -490,8 +478,7 @@ static uint8_t parseVariable(const char *errorMessage) {
   consume(TOKEN_IDENTIFIER, errorMessage);
 
   declareVariable();
-  if (current->scopeDepth > 0)
-    return 0;
+  if (current->scopeDepth > 0) return 0;
 
   return identifierConstant(&parser.previous);
 }
@@ -503,8 +490,7 @@ static uint8_t parseVariable(const char *errorMessage) {
  * Undefined locals have a depth of -1.
  */
 static void markDefined() {
-  if (current->scopeDepth == 0)
-    return;
+  if (current->scopeDepth == 0) return;
 
   current->locals[current->localCount - 1].depth = current->scopeDepth;
 }
@@ -532,8 +518,7 @@ static uint8_t argumentList() {
   if (!check(TOKEN_RIGHT_PAREN)) {
     do {
       parsePrecedence(PREC_ASSIGNMENT);
-      if (argCount == 255)
-        error("Can't have more than 255 arguments.");
+      if (argCount == 255) error("Can't have more than 255 arguments.");
       argCount++;
     } while (match(TOKEN_COMMA));
   }
@@ -593,8 +578,7 @@ static bool assignment(OpCode getOp, OpCode setOp, uint8_t arg, bool binary) {
   case TOKEN_STAR_EQUAL:
     advance();
 
-    if (binary)
-      emitBytes(OP_PEEK, 0);
+    if (binary) emitBytes(OP_PEEK, 0);
 
     emitBytes(getOp, arg);
     emitDefault(NUMBER_VAL(0));
@@ -689,8 +673,7 @@ static void dot(bool canAssign) {
     uint8_t argCount = argumentList();
     emitBytes(OP_INVOKE, name);
     emitByte(argCount);
-  } else
-    emitBytes(OP_GET_PROPERTY, name);
+  } else emitBytes(OP_GET_PROPERTY, name);
 }
 
 static void literal(bool canAssign) {
@@ -730,14 +713,17 @@ static void or_(bool canAssign) {
 }
 
 static void string(bool canAssign) {
-  // Todo: translate escape sequences (\n ...)
-  emitConstant(OBJ_VAL(
-      copyString(parser.previous.start + 1, parser.previous.length - 2)));
+  Token token = parser.previous;
+  ObjString *str = copyString(token.start + 1, token.length - 2);
+  if (token.escape) str = escapeString(str);
+  emitConstant(OBJ_VAL(str));
 }
 
 static void symbol(bool canAssign) {
-  emitConstant(OBJ_VAL(
-      copyString(parser.previous.start + 1, parser.previous.length - 1)));
+  Token token = parser.previous;
+  ObjString *str = copyString(token.start + 1, token.length - 1);
+  if (token.escape) str = escapeString(str);
+  emitConstant(OBJ_VAL(str));
 }
 
 /**
@@ -762,8 +748,7 @@ static void namedVariable(Token name, bool canAssign) {
     setOp = OP_SET_GLOBAL;
   }
 
-  if (canAssign && assignment(getOp, setOp, arg, false))
-    return;
+  if (canAssign && assignment(getOp, setOp, arg, false)) return;
 
   emitBytes(getOp, arg);
 }
@@ -1009,8 +994,7 @@ static void classDeclaration() {
   emitBytes(OP_CLASS, nameConstant);
   emitByte(isLocal);
 
-  if (isLocal)
-    markDefined();
+  if (isLocal) markDefined();
 
   ClassCompiler classCompiler;
   pushClassCompiler(&classCompiler);
@@ -1154,8 +1138,7 @@ static void ifStatement() {
   patchJump(thenJump);
   emitByte(OP_POP);
 
-  if (match(TOKEN_ELSE))
-    statement();
+  if (match(TOKEN_ELSE)) statement();
 
   patchJump(elseJump);
 }
@@ -1171,8 +1154,7 @@ static void returnStatement() {
   // if (current->type == TYPE_SCRIPT)
   //   error("Can't return from top-level code.");
 
-  if (match(TOKEN_SEMICOLON) || match(TOKEN_NEWLINE))
-    emitReturn();
+  if (match(TOKEN_SEMICOLON) || match(TOKEN_NEWLINE)) emitReturn();
   else {
     if (current->type == TYPE_INIT) {
       error("Can't return a value from init().");
@@ -1203,11 +1185,9 @@ static void synchronize() {
   parser.panicMode = false;
 
   while (parser.current.type != TOKEN_EOF) {
-    if (parser.previous.type == TOKEN_SEMICOLON)
-      return;
+    if (parser.previous.type == TOKEN_SEMICOLON) return;
 
-    if (parser.previous.type == TOKEN_NEWLINE)
-      return;
+    if (parser.previous.type == TOKEN_NEWLINE) return;
 
     switch (parser.current.type) {
     case TOKEN_CLASS:
@@ -1237,8 +1217,7 @@ static void declaration() {
     statement();
   }
 
-  if (parser.panicMode)
-    synchronize();
+  if (parser.panicMode) synchronize();
 }
 
 static void statement() {

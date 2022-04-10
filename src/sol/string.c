@@ -51,13 +51,47 @@ ObjString *copyString(const char *chars, int length) {
   ObjString *interned =
       (ObjString *)getInterned(&hash, OBJ_STRING, chars, length);
 
-  if (interned != NULL)
-    return interned;
+  if (interned != NULL) return interned;
 
   char *heapChars = ALLOCATE(char, length + 1);
   memcpy(heapChars, chars, length);
   heapChars[length] = '\0';
   return allocateString(heapChars, length, hash);
+}
+
+ObjString *escapeString(ObjString *str) {
+  // char *start = str->chars;
+  char *out = ALLOCATE(char, str->length + 1);
+  int len = 0;
+  bool escape = false;
+
+  for (int i = 0; i < str->length; i++) {
+    char ch = str->chars[i];
+    if (escape) {
+      escape = false;
+      out[len++] = ch >= '0' && ch <= '9' ? ch - '0'
+                   : ch == 'a'            ? '\a'
+                   : ch == 'b'            ? '\b'
+                   : ch == 'e'            ? '\e'
+                   : ch == 'f'            ? '\f'
+                   : ch == 'n'            ? '\n'
+                   : ch == 'r'            ? '\r'
+                   : ch == 's'            ? ' '
+                   : ch == 't'            ? '\t'
+                   : ch == '\\'           ? '\\'
+                   : ch == '\''           ? '\''
+                   : ch == '"'            ? '"'
+                                          : ch;
+      continue;
+    }
+
+    if (ch == '\\') escape = true;
+    else out[len++] = ch;
+  }
+
+  out[len] = '\0';
+
+  return takeString(GROW_ARRAY(char, out, str->length + 1, len + 1), len);
 }
 
 ObjString *stringf(const char *fmt, ...) {
@@ -67,8 +101,7 @@ ObjString *stringf(const char *fmt, ...) {
   int len = vasprintf(&str, fmt, args);
   va_end(args);
 
-  if (len < 0)
-    return copyString("", 0);
+  if (len < 0) return copyString("", 0);
 
   return takeString(str, len);
 }

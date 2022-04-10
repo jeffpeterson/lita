@@ -63,6 +63,7 @@ static bool match(char expected) {
 static Token makeToken(TokenType type) {
   Token token;
   token.type = type;
+  token.escape = false;
   token.start = scanner.start;
   token.length = (int)(scanner.current - scanner.start);
   token.line = scanner.line;
@@ -104,6 +105,7 @@ static bool skipWhitespace() {
       in->cur = 0;
       advance();
       break;
+
     case '\t':
       if (in->indenting) {
         // Consume indents up until the current level.
@@ -116,20 +118,29 @@ static bool skipWhitespace() {
       advance();
       break;
 
+    case '\\':
+      if (peekNext() == '\n') {
+        scanner.line++;
+        advance();
+        advance();
+        break;
+      } else {
+        return newline;
+      }
+
     case '/':
       if (peekNext() == '/') {
         // A comment goes until the end of the line.
         while (peek() != '\n' && !isAtEnd())
           advance();
+        break;
       } else
         return newline;
-      break;
 
     default:
       return newline;
     }
   }
-  return newline;
 }
 
 static TokenType checkKeyword(int start, int length, const char *rest,
@@ -240,9 +251,19 @@ static Token number() {
 }
 
 static Token string() {
-  while (peek() != '"' && !isAtEnd()) {
-    if (peek() == '\n')
+  bool escape = false;
+
+  while (!isAtEnd()) {
+    char ch = peek();
+
+    if (ch == '"' && scanner.current[-1] != '\\')
+      break;
+
+    if (ch == '\n')
       scanner.line++;
+    if (ch == '\\')
+      escape = true;
+
     advance();
   }
 
@@ -251,10 +272,15 @@ static Token string() {
 
   // The closing quote.
   advance();
-  return makeToken(TOKEN_STRING);
+
+  Token token = makeToken(TOKEN_STRING);
+  token.escape = escape;
+  return token;
 }
 
 static Token symbol() {
+  bool escape = false;
+
   if (isAtEnd() || isWhitespace(peek()))
     return errorToken("Expected non-whitespace character follow single quote.");
 
@@ -262,13 +288,19 @@ static Token symbol() {
   char c = advance();
 
   if (c == '"') {
-    string();
+    Token token = string();
+    escape = token.escape;
+    if (token.type == TOKEN_ERROR)
+      return token;
+
   } else {
     while (!isAtEnd() && !isTokenEnding(peek()))
       advance();
   }
 
-  return makeToken(TOKEN_SYMBOL);
+  Token token = makeToken(TOKEN_SYMBOL);
+  token.escape = escape;
+  return token;
 }
 
 Token scanToken() {
