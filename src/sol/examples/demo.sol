@@ -12,11 +12,7 @@ print hash("abcd")
 print read("Makefile")
 print write("tmp/demo.txt", "It runs!")
 
-class Point // Point(x, y)
-	init(x, y)
-		this.x = x
-		this.y = y
-
+class Point(x, y)
 	+ (point)
 		return Point(this.x + point.x, this.y + point.y)
 

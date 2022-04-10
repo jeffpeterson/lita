@@ -192,12 +192,16 @@ _ multiply(_ a, _ b) {
   return OBJ_VAL(out);
 }
 
+/** Returns arity of fun, -1 if not callable. */
 int arity(_ fun) {
   if (isMethod(fun))
     return asMethod(fun)->method->fun->arity;
 
   if (isFn(fun))
     return asFn(fun)->fun->arity;
+
+  if (isNative(fun))
+    return asNative(fun)->arity;
 
   return -1;
 }

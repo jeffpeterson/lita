@@ -56,6 +56,8 @@ _ t(int len, _ *vals);
 _ toStr(_ val);
 _ toString(_ val);
 
+int arity(_ fun);
+
 _ classOf(_ self);
 _ superOf(_ klass);
 _ bind(_ self, _ fun);

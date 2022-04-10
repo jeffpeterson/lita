@@ -10,11 +10,6 @@ bool defineNative(const char *name, int arity, NativeFn fun) {
   return setGlobal(string(name), fn(name, arity, fun));
 }
 
-// static _ globalClass(const char *name, const char *parent) {
-//   let n = str(name);
-//   return setGlobal(n, subClass(n, global(str(parent))));
-// }
-
 /// Native global functions
 
 static _ nativeClock(_ this, int argc, _ *args) {
@@ -46,6 +41,8 @@ static _ nativeAppend(_ this, int argc, _ *args) {
   let path = argc == 1 ? str("/dev/stdout") : args[0];
   return append(path, args[argc - 1]);
 }
+
+/// Native methods
 
 static _ Any_class(_ this, int argc, _ *args) { return classOf(this); }
 static _ Any_hash(_ this, int argc, _ *args) { return hashValue(this); }

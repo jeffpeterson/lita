@@ -24,14 +24,14 @@ class Ainu
 	kind() => 'Ainu
 
 class Maia < Ainu
-	kind() => "Maia < " + super.kind()
+	kind() => "Maia < " + super.kind
 
 class Istar < Maia
-	kind() => "Istar < " + super.kind()
+	kind() => "Istar < " + super.kind
 
 let Gandalf = Istar('Gandalf)
 
-print Gandalf.kind()
+print Gandalf.kind
 
 class MyClass
 	myMethod() => 20
@@ -47,7 +47,6 @@ print inst.x++
 print inst.x
 print inst.x += 1
 print inst.myMethod
-print inst.myMethod()
 
 // print inst.toString()
 

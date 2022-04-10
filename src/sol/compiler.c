@@ -949,7 +949,6 @@ static void function(FunType type) {
 
         uint8_t constant = parseVariable("Expect parameter name.");
         defineVariable(constant);
-        trace("parameter", NUMBER_VAL(constant));
 
       } while (match(TOKEN_COMMA));
     }
@@ -958,13 +957,10 @@ static void function(FunType type) {
   }
 
   if (type == TYPE_CLASS) {
-    trace("TYPE_CLASS", TRUE_VAL);
-    trace("localCount", NUMBER_VAL(current->localCount));
     // Inline init
     for (int i = 1; i < current->localCount; i++) {
 
       Value name = identifierValue(&current->locals[i].name);
-      trace("local", name);
       u8 constant = makeConstant(name);
       tableSet(&currentClass->fields, name, TRUE_VAL);
       emitBytes(OP_GET_LOCAL, 0); // self

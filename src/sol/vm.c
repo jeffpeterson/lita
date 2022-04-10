@@ -410,20 +410,20 @@ static InterpretResult opAdd() {
   return INTERPRET_OK;
 }
 
+static InterpretResult opCall(int argc) {
+  return callValue(peek(argc), argc) ? INTERPRET_OK : INTERPRET_RUNTIME_ERROR;
+}
+
 // [0 self] -> [0 value]
 static InterpretResult opGet(_ name) {
-  let v = get(pop(), name);
-  // if (arity(v) == 0)
-  //   opCall(v);
-  // else
-  push(v);
-  return INTERPRET_OK;
+  return arity(push(get(pop(), name))) == 0 ? opCall(0) : INTERPRET_OK;
 }
 
 static InterpretResult run() {
   register CallFrame *frame = &vm.frames[vm.frameCount - 1];
 
 #define READ_BYTE() (*frame->ip++)
+/** Update the cached frame variable. Idempotent. */
 #define SYNC_FRAME() (frame = &vm.frames[vm.frameCount - 1])
 #define READ_SHORT()                                                           \
   (frame->ip += 2, (uint16_t)((frame->ip[-2] << 8) | frame->ip[-1]))
@@ -540,6 +540,7 @@ static InterpretResult run() {
 
     case OP_GET_PROPERTY: {
       opGet(READ_CONSTANT());
+      SYNC_FRAME();
       break;
     }
     case OP_SET_PROPERTY: { // [1 self][0 value] -> [0 value]
@@ -632,13 +633,10 @@ static InterpretResult run() {
       break;
     }
 
-    case OP_CALL: { // [argc fn][1 arg1][0 ...args ]
-      int argCount = READ_BYTE();
-      if (!callValue(peek(argCount), argCount))
-        return INTERPRET_RUNTIME_ERROR;
+    case OP_CALL: // [argc fn][1 arg1][0 ...args ]
+      opCall(READ_BYTE());
       SYNC_FRAME();
       break;
-    }
 
     case OP_CLASS: { // []
       let name = READ_CONSTANT();
