@@ -58,6 +58,7 @@ typedef enum {
 
   // Keywords.
   TOKEN_AND,
+  TOKEN_ASSERT,
   TOKEN_CLASS,
   TOKEN_ELSE,
   TOKEN_FALSE,

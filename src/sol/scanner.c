@@ -46,16 +46,13 @@ static char advance() {
 static char peek() { return *scanner.current; }
 
 static char peekNext() {
-  if (isAtEnd())
-    return '\0';
+  if (isAtEnd()) return '\0';
   return scanner.current[1];
 }
 
 static bool match(char expected) {
-  if (isAtEnd())
-    return false;
-  if (*scanner.current != expected)
-    return false;
+  if (isAtEnd()) return false;
+  if (*scanner.current != expected) return false;
   scanner.current++;
   return true;
 }
@@ -134,8 +131,7 @@ static bool skipWhitespace() {
         while (peek() != '\n' && !isAtEnd())
           advance();
         break;
-      } else
-        return newline;
+      } else return newline;
 
     default:
       return newline;
@@ -159,7 +155,15 @@ static TokenType checkKeyword(int start, int length, const char *rest,
 static TokenType identifierType() {
   switch (scanner.start[0]) {
   case 'a':
-    return checkKeyword(1, 2, "nd", TOKEN_AND);
+    if (scanner.current - scanner.start > 1) {
+      switch (scanner.start[1]) {
+      case 'n':
+        return checkKeyword(2, 1, "d", TOKEN_AND);
+      case 's':
+        return checkKeyword(2, 4, "sert", TOKEN_ASSERT);
+      }
+    }
+    break;
   case 'c':
     return checkKeyword(1, 4, "lass", TOKEN_CLASS);
   case 'e':
@@ -256,19 +260,15 @@ static Token string() {
   while (!isAtEnd()) {
     char ch = peek();
 
-    if (ch == '"' && scanner.current[-1] != '\\')
-      break;
+    if (ch == '"' && scanner.current[-1] != '\\') break;
 
-    if (ch == '\n')
-      scanner.line++;
-    if (ch == '\\')
-      escape = true;
+    if (ch == '\n') scanner.line++;
+    if (ch == '\\') escape = true;
 
     advance();
   }
 
-  if (isAtEnd())
-    return errorToken("Unterminated string.");
+  if (isAtEnd()) return errorToken("Unterminated string.");
 
   // The closing quote.
   advance();
@@ -290,8 +290,7 @@ static Token symbol() {
   if (c == '"') {
     Token token = string();
     escape = token.escape;
-    if (token.type == TOKEN_ERROR)
-      return token;
+    if (token.type == TOKEN_ERROR) return token;
 
   } else {
     while (!isAtEnd() && !isTokenEnding(peek()))
@@ -339,11 +338,9 @@ Token scanToken() {
     in->prev = in->cur;
   }
 
-  if (isAlpha(c))
-    return identifier();
+  if (isAlpha(c)) return identifier();
 
-  if (isDigit(c))
-    return number();
+  if (isDigit(c)) return number();
 
   switch (c) {
   case '(':

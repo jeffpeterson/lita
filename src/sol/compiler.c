@@ -863,6 +863,7 @@ ParseRule rules[] = {
     [TOKEN_NUMBER] = {number, NULL, PREC_NONE},
 
     [TOKEN_AND] = {NULL, and_, PREC_AND},
+    [TOKEN_ASSERT] = {NULL, NULL, PREC_NONE},
     [TOKEN_CLASS] = {NULL, NULL, PREC_NONE},
     [TOKEN_ELSE] = {NULL, NULL, PREC_NONE},
     [TOKEN_FALSE] = {literal, NULL, PREC_NONE},
@@ -1060,6 +1061,17 @@ static void varDeclaration() {
   defineVariable(global);
 }
 
+static void assertStatement() {
+  const char *start = parser.previous.start;
+  expression();
+  int length = start - parser.previous.start + parser.previous.length;
+
+  emitByte(OP_NOT);
+  int jmp = emitJump(OP_JUMP_IF_FALSE);
+  consumeTerminator("Expect newline or ';' after assertion.");
+  emitByte(OP_PRINT);
+}
+
 static void expressionStatement() {
   expression();
 
@@ -1190,6 +1202,7 @@ static void synchronize() {
     if (parser.previous.type == TOKEN_NEWLINE) return;
 
     switch (parser.current.type) {
+    case TOKEN_ASSERT:
     case TOKEN_CLASS:
     case TOKEN_FN:
     case TOKEN_LET:
@@ -1221,7 +1234,9 @@ static void declaration() {
 }
 
 static void statement() {
-  if (match(TOKEN_PRINT)) {
+  if (match(TOKEN_ASSERT)) {
+    assertStatement();
+  } else if (match(TOKEN_PRINT)) {
     printStatement();
   } else if (match(TOKEN_INDENT)) {
     beginScope();
