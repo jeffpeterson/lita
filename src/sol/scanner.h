@@ -105,5 +105,6 @@ Scanner scanner;
 void initScanner(const char *source);
 void resetScanner();
 Token scanToken();
+Token syntheticToken(const char *text);
 
 #endif

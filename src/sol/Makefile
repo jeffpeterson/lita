@@ -1,5 +1,5 @@
 CC = clang
-CFLAGS := -g -Werror -Wall -Wno-error=unused-variable -I..
+CFLAGS := -g -Werror -Wall -Wno-error=unused-variable -Wno-error=unused-function -I..
 
 TARGET := .bin/sol
 TEST := $(TARGET)-test

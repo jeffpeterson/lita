@@ -34,9 +34,10 @@ typedef enum {     // Lower precedence
   PREC_NONE,       //
   PREC_SEMI,       // ; NEWLINE
   PREC_COMMA,      // ,
-  PREC_ASSIGNMENT, // = += -= /= *=
   PREC_OR,         // or
   PREC_AND,        // and
+  PREC_EVAL,       // (x y z)
+  PREC_ASSIGNMENT, // = += -= /= *=
   PREC_EQUALITY,   // == !=
   PREC_COMPARISON, // < > <= >=
   PREC_TERM,       // + -
@@ -48,11 +49,16 @@ typedef enum {     // Lower precedence
   PREC_PRIMARY     //
 } Precedence;      // Higher Precedence
 
-typedef void (*ParseFn)(bool canAssign);
+typedef struct Ctx {
+  Precedence precedence; /** The current precedence. */
+  bool canAssign;        /** If we can parse assignments. */
+} Ctx;
+
+typedef void ParseFn(Ctx *ctx);
 
 typedef struct {
-  ParseFn prefix;
-  ParseFn infix; // AKA "postfix"
+  ParseFn *prefix;
+  ParseFn *infix; // AKA "postfix"
   Precedence precedence;
 } ParseRule;
 
@@ -525,27 +531,30 @@ static ParseRule *getRule(TokenType type) { return &rules[type]; }
  *
  * Usually used for right-associative (grouped right-to-left) or for prefix
  * operators.
+ *
+ * Returns true if successful.
  */
 static void parseAt(Precedence precedence) {
   advance();
   ParseRule *rule = getRule(parser.previous.type);
-  ParseFn prefix = rule->prefix;
+  ParseFn *prefix = rule->prefix;
   if (prefix == NULL) {
     error("No prefix operator.");
     return;
   }
 
-  // Todo: Get rid of `canAssign`.
-  bool canAssign = precedence <= PREC_ASSIGNMENT;
-  prefix(canAssign);
+  Ctx ctx;
+  ctx.precedence = precedence;
+  ctx.canAssign = precedence <= PREC_ASSIGNMENT;
+  prefix(&ctx);
 
   while (precedence <= getRule(parser.current.type)->precedence) {
     advance();
-    ParseFn infix = getRule(parser.previous.type)->infix;
-    infix(canAssign);
+    ParseFn *infix = getRule(parser.previous.type)->infix;
+    infix(&ctx);
   }
 
-  if (canAssign && match(TOKEN_EQUAL)) {
+  if (ctx.canAssign && match(TOKEN_EQUAL)) {
     error("Invalid assignment target.");
   }
 }
@@ -578,20 +587,13 @@ static uint8_t argumentList() {
 }
 
 /**
- * Left-associative, but parsed in reverse.
- */
-static void and_(bool canAssign) {
-  int endJump = emitJump(OP_JUMP_IF_FALSE);
-  emitByte(OP_POP);
-  parseAt(PREC_AND);
-  patchJump(endJump);
-}
-
-/**
  * `binary` means the setOp and getOp require the current value
  * on the stack to function properly.
  */
-static bool assignment(OpCode getOp, OpCode setOp, uint8_t arg, bool binary) {
+static bool assignment(Ctx *ctx, OpCode getOp, OpCode setOp, uint8_t arg,
+                       bool binary) {
+  if (!ctx->canAssign) return false;
+
   TokenType type = parser.current.type;
 
   switch (type) {
@@ -655,9 +657,19 @@ static bool assignment(OpCode getOp, OpCode setOp, uint8_t arg, bool binary) {
 }
 
 /**
+ * Left-associative, but parsed in reverse.
+ */
+static void and_(Ctx *ctx) {
+  int endJump = emitJump(OP_JUMP_IF_FALSE);
+  emitByte(OP_POP);
+  parseAt(PREC_AND);
+  patchJump(endJump);
+}
+
+/**
  * Left-associative.
  */
-static void binary(bool canAssign) {
+static void binary(Ctx *ctx) {
   TokenType operatorType = parser.previous.type;
   ParseRule *rule = getRule(operatorType);
   parseAbove(rule->precedence);
@@ -703,13 +715,13 @@ static void binary(bool canAssign) {
   }
 }
 
-static void call(bool canAssign) {
+static void call(Ctx *ctx) {
   uint8_t argCount = argumentList();
   emitBytes(OP_CALL, argCount);
 }
 
 /** Evaluates but discards the second argument. */
-static void semi(bool canAssign) {
+static void semi(Ctx *ctx) {
   parseAbove(PREC_SEMI);
   emitByte(OP_POP);
 }
@@ -717,7 +729,7 @@ static void semi(bool canAssign) {
 /**
  * Left-associative.
  */
-static void tuple(bool canAssign) {
+static void tuple(Ctx *ctx) {
   uint8_t length = 1;
   do {
     parseAbove(PREC_COMMA);
@@ -727,11 +739,10 @@ static void tuple(bool canAssign) {
   emitBytes(OP_TUPLE, length);
 }
 
-static void dot(bool canAssign) {
+static void dot(Ctx *ctx) {
   uint8_t name = makeConstant(consumeIdent("Expect property name after '.'."));
 
-  if (canAssign && assignment(OP_GET_PROPERTY, OP_SET_PROPERTY, name, true))
-    return;
+  if (assignment(ctx, OP_GET_PROPERTY, OP_SET_PROPERTY, name, true)) return;
 
   else if (match(TOKEN_LEFT_PAREN)) {
     uint8_t argCount = argumentList();
@@ -740,7 +751,7 @@ static void dot(bool canAssign) {
   } else emitBytes(OP_GET_PROPERTY, name);
 }
 
-static void literal(bool canAssign) {
+static void literal(Ctx *ctx) {
   switch (parser.previous.type) {
   case TOKEN_FALSE:
     emitByte(OP_FALSE);
@@ -756,12 +767,16 @@ static void literal(bool canAssign) {
   }
 }
 
-static void grouping(bool canAssign) {
+static void grouping(Ctx *ctx) {
   expression();
   consume(TOKEN_RIGHT_PAREN, "Expect ')' after expression.");
 }
 
-static void number(bool canAssign) {
+static void newline(Ctx *ctx) {
+  // emitByte(OP_POP);
+}
+
+static void number(Ctx *ctx) {
   double value = strtod(parser.previous.start, NULL);
   emitConstant(NUMBER_VAL(value));
 }
@@ -769,7 +784,7 @@ static void number(bool canAssign) {
 /**
  * Left-associative, but parsed in reverse.
  */
-static void or_(bool canAssign) {
+static void or_(Ctx *ctx) {
   int elseJump = emitJump(OP_JUMP_IF_FALSE);
   int endJump = emitJump(OP_JUMP);
 
@@ -779,14 +794,14 @@ static void or_(bool canAssign) {
   patchJump(endJump);
 }
 
-static void string(bool canAssign) {
+static void string(Ctx *ctx) {
   Token token = parser.previous;
   ObjString *str = copyString(token.start + 1, token.length - 2);
   if (token.escape) str = escapeString(str);
   emitConstant(OBJ_VAL(str));
 }
 
-static void symbol(bool canAssign) {
+static void symbol(Ctx *ctx) {
   Token token = parser.previous;
   ObjString *str = copyString(token.start + 1, token.length - 1);
   if (token.escape) str = escapeString(str);
@@ -799,7 +814,7 @@ static void symbol(bool canAssign) {
  *
  * Will also parse any following assignment operators if canAssign is true.
  */
-static void namedVariable(Token name, bool canAssign) {
+static void namedVariable(Token name, Ctx *ctx) {
   uint8_t getOp, setOp;
   int arg = resolveLocal(current, &name);
 
@@ -815,23 +830,17 @@ static void namedVariable(Token name, bool canAssign) {
     setOp = OP_SET_GLOBAL;
   }
 
-  if (canAssign && assignment(getOp, setOp, arg, false)) return;
+  if (assignment(ctx, getOp, setOp, arg, false)) return;
 
   emitBytes(getOp, arg);
 }
 
-static void variable(bool canAssign) {
-  namedVariable(parser.previous, canAssign);
+static void variable(Ctx *ctx) {
+  namedVariable(parser.previous, ctx);
+  if (check(TOKEN_LEFT_PAREN)) call(ctx);
 }
 
-static Token syntheticToken(const char *text) {
-  Token token;
-  token.start = text;
-  token.length = (int)strlen(text);
-  return token;
-}
-
-static void super_(bool canAssign) {
+static void super_(Ctx *ctx) {
   if (currentClass == NULL) {
     error("Can't use 'super' outside of a class.");
   }
@@ -841,31 +850,31 @@ static void super_(bool canAssign) {
   consume(TOKEN_IDENTIFIER, "Expect superclass method name.");
   uint8_t name = identifierConstant(&parser.previous);
 
-  namedVariable(syntheticToken("this"), false);
+  namedVariable(syntheticToken("this"), ctx);
 
   if (match(TOKEN_LEFT_PAREN)) {
     uint8_t argCount = argumentList();
-    namedVariable(syntheticToken("super"), false);
+    namedVariable(syntheticToken("super"), ctx);
     emitBytes(OP_SUPER_INVOKE, name);
     emitByte(argCount);
   } else {
-    namedVariable(syntheticToken("super"), false);
+    namedVariable(syntheticToken("super"), ctx);
     emitBytes(OP_GET_SUPER, name);
   }
 }
 
-static void this_(bool canAssign) {
+static void this_(Ctx *ctx) {
   if (currentClass == NULL) {
     error("Can't use 'this' outside of a class.");
     return;
   }
-  variable(false);
+  variable(ctx);
 }
 
 /**
  * Right-associative.
  */
-static void prefix(bool canAssign) {
+static void prefix(Ctx *ctx) {
   TokenType operatorType = parser.previous.type;
 
   // Compile the operand.
@@ -884,7 +893,7 @@ static void prefix(bool canAssign) {
   }
 }
 
-static void postfix(bool canAssign) {
+static void postfix(Ctx *ctx) {
   TokenType operatorType = parser.previous.type;
 
   switch (operatorType) {
@@ -969,7 +978,7 @@ static void method() {
   emitBytes(OP_METHOD, constant);
 }
 
-static void classDeclaration(bool canAssign) {
+static void classDeclaration(Ctx *ctx) {
   Value name = consumeIdent("Expect class name.");
   Token className = parser.previous;
   uint8_t nameConstant = makeConstant(name);
@@ -993,13 +1002,13 @@ static void classDeclaration(bool canAssign) {
   if (match(TOKEN_LESS)) {
     // expression();
     consume(TOKEN_IDENTIFIER, "Expect superclass name.");
-    variable(false);
+    variable(ctx);
 
     if (identifiersEqual(&className, &parser.previous)) {
       error("A class can't inherit from itself.");
     }
   } else {
-    namedVariable(syntheticToken("Object"), false);
+    namedVariable(syntheticToken("Object"), ctx);
   }
 
   beginScope();
@@ -1271,7 +1280,9 @@ void markCompilerRoots() {
 }
 
 ParseRule rules[] = {
-    //                   {prefix, infix, precedence}
+
+    //                {prefix, infix, precedence}
+    [TOKEN_NEWLINE] = {NULL, NULL, PREC_EVAL},
     [TOKEN_LEFT_PAREN] = {grouping, call, PREC_CALL},
     [TOKEN_RIGHT_PAREN] = {NULL, NULL, PREC_NONE},
     [TOKEN_LEFT_BRACE] = {NULL, NULL, PREC_NONE},

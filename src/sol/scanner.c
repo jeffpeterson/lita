@@ -57,6 +57,13 @@ static bool match(char expected) {
   return true;
 }
 
+Token syntheticToken(const char *text) {
+  Token token;
+  token.start = text;
+  token.length = (int)strlen(text);
+  return token;
+}
+
 static Token makeToken(TokenType type) {
   Token token;
   token.type = type;
