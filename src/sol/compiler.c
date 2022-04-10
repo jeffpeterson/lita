@@ -19,6 +19,17 @@ typedef struct {
   bool panicMode;
 } Parser;
 
+/**
+ * 1 == 1 -> 1
+ * 1 == 2 -> nil
+ * 1 != 2 -> 2
+ * 1 == 0 -> nil
+ * 1 == 0 == nil
+ * a < b == b
+ * (1 < 2) < 3 == 3
+ * 3 > 2 > 1 == 1
+ */
+
 typedef enum {     // Lower precedence
   PREC_NONE,       //
   PREC_SEMI,       // ; NEWLINE
@@ -44,6 +55,8 @@ typedef struct {
   ParseFn infix; // AKA "postfix"
   Precedence precedence;
 } ParseRule;
+
+ParseRule rules[];
 
 /** A variable defined deeper than the global scope. */
 typedef struct {
@@ -347,13 +360,6 @@ static void endScope() {
   }
 }
 
-static void expression();
-static void statement();
-static void declaration();
-static ParseRule *getRule(TokenType type);
-static void parseAt(Precedence precedence);
-static void parseAbove(Precedence precedence);
-
 /** Adds the token to the constants table. */
 static uint8_t identifierConstant(Token *name) {
   return makeConstant(identifierValue(name));
@@ -512,6 +518,51 @@ static void defineVariable(uint8_t global) {
   emitBytes(OP_DEFINE_GLOBAL, global);
 }
 
+static ParseRule *getRule(TokenType type) { return &rules[type]; }
+
+/**
+ * Parse at this precedence or above.
+ *
+ * Usually used for right-associative (grouped right-to-left) or for prefix
+ * operators.
+ */
+static void parseAt(Precedence precedence) {
+  advance();
+  ParseRule *rule = getRule(parser.previous.type);
+  ParseFn prefix = rule->prefix;
+  if (prefix == NULL) {
+    error("Expect expression.");
+    return;
+  }
+
+  // Todo: Get rid of `canAssign`.
+  bool canAssign = precedence <= PREC_ASSIGNMENT;
+  prefix(canAssign);
+
+  while (precedence <= getRule(parser.current.type)->precedence) {
+    advance();
+    ParseFn infix = getRule(parser.previous.type)->infix;
+    infix(canAssign);
+  }
+
+  if (canAssign && match(TOKEN_EQUAL)) {
+    error("Invalid assignment target.");
+  }
+}
+
+/**
+ * Parse one or more above the given precedence.
+ * Usually used for left-associative (grouped left-to-right) operators.
+ */
+static void parseAbove(Precedence precedence) {
+  return parseAt(precedence + 1);
+}
+
+static void expression() { parseAbove(PREC_NONE); }
+
+static void statement();
+static void declaration();
+
 /** Parse arguments being passed to a function. */
 static uint8_t argumentList() {
   uint8_t argCount = 0;
@@ -526,10 +577,13 @@ static uint8_t argumentList() {
   return argCount;
 }
 
+/**
+ * Left-associative, but parsed in reverse.
+ */
 static void and_(bool canAssign) {
   int endJump = emitJump(OP_JUMP_IF_FALSE);
   emitByte(OP_POP);
-  parseAt(PREC_AND); // Right-associative
+  parseAt(PREC_AND);
   patchJump(endJump);
 }
 
@@ -600,23 +654,24 @@ static bool assignment(OpCode getOp, OpCode setOp, uint8_t arg, bool binary) {
   return false;
 }
 
+/**
+ * Left-associative.
+ */
 static void binary(bool canAssign) {
   TokenType operatorType = parser.previous.type;
   ParseRule *rule = getRule(operatorType);
-  parseAbove(rule->precedence); // left-associative
+  parseAbove(rule->precedence);
 
   switch (operatorType) {
   case TOKEN_DOT_DOT:
     emitByte(OP_RANGE);
     break;
-
   case TOKEN_BANG_EQUAL:
     emitBytes(OP_EQUAL, OP_NOT);
     break;
   case TOKEN_EQUAL_EQUAL:
     emitByte(OP_EQUAL);
     break;
-
   case TOKEN_GREATER:
     emitByte(OP_GREATER);
     break;
@@ -659,10 +714,13 @@ static void semi(bool canAssign) {
   emitByte(OP_POP);
 }
 
+/**
+ * Left-associative.
+ */
 static void tuple(bool canAssign) {
   uint8_t length = 1;
   do {
-    parseAbove(PREC_COMMA); // Left-associative
+    parseAbove(PREC_COMMA);
     length++;
   } while (match(TOKEN_COMMA));
 
@@ -708,13 +766,16 @@ static void number(bool canAssign) {
   emitConstant(NUMBER_VAL(value));
 }
 
+/**
+ * Left-associative, but parsed in reverse.
+ */
 static void or_(bool canAssign) {
   int elseJump = emitJump(OP_JUMP_IF_FALSE);
   int endJump = emitJump(OP_JUMP);
 
   patchJump(elseJump);
   emitByte(OP_POP);
-  parseAt(PREC_OR); // Right-associative
+  parseAt(PREC_OR);
   patchJump(endJump);
 }
 
@@ -801,12 +862,14 @@ static void this_(bool canAssign) {
   variable(false);
 }
 
-// aka unary()
+/**
+ * Right-associative.
+ */
 static void prefix(bool canAssign) {
   TokenType operatorType = parser.previous.type;
 
   // Compile the operand.
-  parseAt(PREC_PREFIX); // Right-associative
+  parseAt(PREC_PREFIX);
 
   // Emit the operator instruction.
   switch (operatorType) {
@@ -831,107 +894,6 @@ static void postfix(bool canAssign) {
     return;
   }
 }
-
-ParseRule rules[] = {
-    //                   {prefix, infix, precedence}
-    [TOKEN_LEFT_PAREN] = {grouping, call, PREC_CALL},
-    [TOKEN_RIGHT_PAREN] = {NULL, NULL, PREC_NONE},
-    [TOKEN_LEFT_BRACE] = {NULL, NULL, PREC_NONE},
-    [TOKEN_RIGHT_BRACE] = {NULL, NULL, PREC_NONE},
-    [TOKEN_COMMA] = {NULL, tuple, PREC_COMMA},
-    [TOKEN_DOT] = {NULL, dot, PREC_CALL},
-    [TOKEN_DOT_DOT] = {NULL, binary, PREC_RANGE},
-    [TOKEN_SEMICOLON] = {NULL, semi, PREC_NONE},
-
-    [TOKEN_MINUS] = {prefix, binary, PREC_TERM},
-    [TOKEN_MINUS_EQUAL] = {NULL, NULL, PREC_ASSIGNMENT},
-    [TOKEN_PLUS] = {NULL, binary, PREC_TERM},
-    [TOKEN_PLUS_EQUAL] = {NULL, NULL, PREC_ASSIGNMENT},
-    [TOKEN_SLASH] = {NULL, binary, PREC_FACTOR},
-    [TOKEN_SLASH_EQUAL] = {NULL, NULL, PREC_ASSIGNMENT},
-    [TOKEN_STAR] = {NULL, binary, PREC_FACTOR},
-    [TOKEN_STAR_EQUAL] = {NULL, NULL, PREC_ASSIGNMENT},
-
-    [TOKEN_PLUS_PLUS] = {prefix, postfix, PREC_NONE},
-    [TOKEN_MINUS_MINUS] = {prefix, postfix, PREC_NONE},
-
-    [TOKEN_BANG] = {prefix, NULL, PREC_NONE},
-    [TOKEN_BANG_EQUAL] = {NULL, binary, PREC_EQUALITY},
-    [TOKEN_EQUAL] = {NULL, NULL, PREC_NONE},
-    [TOKEN_EQUAL_EQUAL] = {NULL, binary, PREC_EQUALITY},
-    [TOKEN_GREATER] = {NULL, binary, PREC_COMPARISON},
-    [TOKEN_GREATER_EQUAL] = {NULL, binary, PREC_COMPARISON},
-    [TOKEN_LESS] = {NULL, binary, PREC_COMPARISON},
-    [TOKEN_LESS_EQUAL] = {NULL, binary, PREC_COMPARISON},
-
-    [TOKEN_IDENTIFIER] = {variable, NULL, PREC_NONE},
-    [TOKEN_STRING] = {string, NULL, PREC_NONE},
-    [TOKEN_SYMBOL] = {symbol, NULL, PREC_NONE},
-    [TOKEN_NUMBER] = {number, NULL, PREC_NONE},
-
-    [TOKEN_AND] = {NULL, and_, PREC_AND},
-    [TOKEN_ASSERT] = {NULL, NULL, PREC_NONE},
-    [TOKEN_CLASS] = {NULL, NULL, PREC_NONE},
-    [TOKEN_ELSE] = {NULL, NULL, PREC_NONE},
-    [TOKEN_FALSE] = {literal, NULL, PREC_NONE},
-    [TOKEN_FOR] = {NULL, NULL, PREC_NONE},
-    [TOKEN_FN] = {NULL, NULL, PREC_NONE},
-    [TOKEN_IF] = {NULL, NULL, PREC_NONE},
-    [TOKEN_NIL] = {literal, NULL, PREC_NONE},
-    [TOKEN_OR] = {NULL, or_, PREC_OR},
-    [TOKEN_PRINT] = {NULL, NULL, PREC_NONE},
-    [TOKEN_RETURN] = {NULL, NULL, PREC_NONE},
-    [TOKEN_SUPER] = {super_, NULL, PREC_NONE},
-    [TOKEN_THIS] = {this_, NULL, PREC_NONE},
-    [TOKEN_TRUE] = {literal, NULL, PREC_NONE},
-    [TOKEN_LET] = {NULL, NULL, PREC_NONE},
-    [TOKEN_WHILE] = {NULL, NULL, PREC_NONE},
-
-    [TOKEN_ERROR] = {NULL, NULL, PREC_NONE},
-    [TOKEN_EOF] = {NULL, NULL, PREC_NONE},
-};
-
-/**
- * Parse at this precedence or above.
- *
- * Usually used for right-associative (grouped right-to-left) or for prefix
- * operators.
- */
-static void parseAt(Precedence precedence) {
-  advance();
-  ParseRule *rule = getRule(parser.previous.type);
-  ParseFn prefix = rule->prefix;
-  if (prefix == NULL) {
-    error("Expect expression.");
-    return;
-  }
-
-  // Todo: Get rid of `canAssign`.
-  bool canAssign = precedence <= PREC_ASSIGNMENT;
-  prefix(canAssign);
-
-  while (precedence <= getRule(parser.current.type)->precedence) {
-    advance();
-    ParseFn infix = getRule(parser.previous.type)->infix;
-    infix(canAssign);
-  }
-
-  if (canAssign && match(TOKEN_EQUAL)) {
-    error("Invalid assignment target.");
-  }
-}
-
-/**
- * Parse one or more above the given precedence.
- * Usually used for left-associative (grouped left-to-right) operators.
- */
-static void parseAbove(Precedence precedence) {
-  return parseAt(precedence + 1);
-}
-
-static ParseRule *getRule(TokenType type) { return &rules[type]; }
-
-static void expression() { parseAbove(PREC_NONE); }
 
 // Todo: Block-as-expression + yield/break keyword
 static void block() {
@@ -1007,7 +969,7 @@ static void method() {
   emitBytes(OP_METHOD, constant);
 }
 
-static void classDeclaration() {
+static void classDeclaration(bool canAssign) {
   Value name = consumeIdent("Expect class name.");
   Token className = parser.previous;
   uint8_t nameConstant = makeConstant(name);
@@ -1086,7 +1048,6 @@ static void assertStatement() {
   const char *start = parser.previous.start;
   expression();
   int length = start - parser.previous.start + parser.previous.length;
-
   emitByte(OP_NOT);
   int jmp = emitJump(OP_JUMP_IF_FALSE);
   consumeTerminator("Expect newline or ';' after assertion.");
@@ -1241,9 +1202,7 @@ static void synchronize() {
 }
 
 static void declaration() {
-  if (match(TOKEN_CLASS)) {
-    classDeclaration();
-  } else if (match(TOKEN_FN)) {
+  if (match(TOKEN_FN)) {
     funDeclaration();
   } else if (match(TOKEN_LET)) {
     varDeclaration();
@@ -1310,3 +1269,62 @@ void markCompilerRoots() {
     compiler = compiler->enclosing;
   }
 }
+
+ParseRule rules[] = {
+    //                   {prefix, infix, precedence}
+    [TOKEN_LEFT_PAREN] = {grouping, call, PREC_CALL},
+    [TOKEN_RIGHT_PAREN] = {NULL, NULL, PREC_NONE},
+    [TOKEN_LEFT_BRACE] = {NULL, NULL, PREC_NONE},
+    [TOKEN_RIGHT_BRACE] = {NULL, NULL, PREC_NONE},
+    [TOKEN_COMMA] = {NULL, tuple, PREC_COMMA},
+    [TOKEN_DOT] = {NULL, dot, PREC_CALL},
+    [TOKEN_DOT_DOT] = {NULL, binary, PREC_RANGE},
+    [TOKEN_SEMICOLON] = {NULL, semi, PREC_NONE},
+
+    [TOKEN_MINUS] = {prefix, binary, PREC_TERM},
+    [TOKEN_MINUS_EQUAL] = {NULL, NULL, PREC_ASSIGNMENT},
+    [TOKEN_PLUS] = {NULL, binary, PREC_TERM},
+    [TOKEN_PLUS_EQUAL] = {NULL, NULL, PREC_ASSIGNMENT},
+    [TOKEN_SLASH] = {NULL, binary, PREC_FACTOR},
+    [TOKEN_SLASH_EQUAL] = {NULL, NULL, PREC_ASSIGNMENT},
+    [TOKEN_STAR] = {NULL, binary, PREC_FACTOR},
+    [TOKEN_STAR_EQUAL] = {NULL, NULL, PREC_ASSIGNMENT},
+
+    [TOKEN_PLUS_PLUS] = {prefix, postfix, PREC_NONE},
+    [TOKEN_MINUS_MINUS] = {prefix, postfix, PREC_NONE},
+
+    [TOKEN_BANG] = {prefix, NULL, PREC_NONE},
+    [TOKEN_BANG_EQUAL] = {NULL, binary, PREC_EQUALITY},
+    [TOKEN_EQUAL] = {NULL, NULL, PREC_NONE},
+    [TOKEN_EQUAL_EQUAL] = {NULL, binary, PREC_EQUALITY},
+    [TOKEN_GREATER] = {NULL, binary, PREC_COMPARISON},
+    [TOKEN_GREATER_EQUAL] = {NULL, binary, PREC_COMPARISON},
+    [TOKEN_LESS] = {NULL, binary, PREC_COMPARISON},
+    [TOKEN_LESS_EQUAL] = {NULL, binary, PREC_COMPARISON},
+
+    [TOKEN_IDENTIFIER] = {variable, NULL, PREC_NONE},
+    [TOKEN_STRING] = {string, NULL, PREC_NONE},
+    [TOKEN_SYMBOL] = {symbol, NULL, PREC_NONE},
+    [TOKEN_NUMBER] = {number, NULL, PREC_NONE},
+
+    [TOKEN_AND] = {NULL, and_, PREC_AND},
+    [TOKEN_ASSERT] = {NULL, NULL, PREC_NONE},
+    [TOKEN_CLASS] = {classDeclaration, NULL, PREC_NONE},
+    [TOKEN_ELSE] = {NULL, NULL, PREC_NONE},
+    [TOKEN_FALSE] = {literal, NULL, PREC_NONE},
+    [TOKEN_FOR] = {NULL, NULL, PREC_NONE},
+    [TOKEN_FN] = {NULL, NULL, PREC_NONE},
+    [TOKEN_IF] = {NULL, NULL, PREC_NONE},
+    [TOKEN_NIL] = {literal, NULL, PREC_NONE},
+    [TOKEN_OR] = {NULL, or_, PREC_OR},
+    [TOKEN_PRINT] = {NULL, NULL, PREC_NONE},
+    [TOKEN_RETURN] = {NULL, NULL, PREC_NONE},
+    [TOKEN_SUPER] = {super_, NULL, PREC_NONE},
+    [TOKEN_THIS] = {this_, NULL, PREC_NONE},
+    [TOKEN_TRUE] = {literal, NULL, PREC_NONE},
+    [TOKEN_LET] = {NULL, NULL, PREC_NONE},
+    [TOKEN_WHILE] = {NULL, NULL, PREC_NONE},
+
+    [TOKEN_ERROR] = {NULL, NULL, PREC_NONE},
+    [TOKEN_EOF] = {NULL, NULL, PREC_NONE},
+};
