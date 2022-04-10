@@ -48,7 +48,9 @@
     "compiler.h": "c",
     "table.h": "c",
     "mutex": "c",
-    "optional": "c"
+    "optional": "c",
+    "__locale": "c",
+    "ios": "c"
   },
   "C_Cpp.default.includePath": [".."],
   "C_Cpp.default.compilerArgs": ["-Wall", "-Werror"],

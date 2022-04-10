@@ -19,8 +19,8 @@ typedef struct {
   bool panicMode;
 } Parser;
 
-typedef enum {
-  PREC_NONE,
+typedef enum {     // Lower precedence
+  PREC_NONE,       //
   PREC_SEMI,       // ; NEWLINE
   PREC_COMMA,      // ,
   PREC_ASSIGNMENT, // = += -= /= *=
@@ -34,8 +34,8 @@ typedef enum {
   PREC_PREFIX,     // ! - ++ -- aka PREC_UNARY
   PREC_POSTFIX,    // ++ --
   PREC_CALL,       // . ()
-  PREC_PRIMARY
-} Precedence;
+  PREC_PRIMARY     //
+} Precedence;      // Higher Precedence
 
 typedef void (*ParseFn)(bool canAssign);
 
@@ -171,8 +171,8 @@ static void consume(TokenType type, const char *message) {
   errorAtCurrent(message);
 }
 
-static void skipTerminators() {
-  while (match(TOKEN_NEWLINE) || match(TOKEN_SEMICOLON)) {
+static void skipNewlines() {
+  while (match(TOKEN_NEWLINE)) {
   }
 }
 
@@ -191,9 +191,8 @@ static Value consumeIdent(const char *message) {
 }
 
 static void consumeTerminator(const char *message) {
-  if (!match(TOKEN_NEWLINE)) consume(TOKEN_SEMICOLON, message);
-
-  skipTerminators();
+  consume(TOKEN_NEWLINE, message);
+  skipNewlines();
 }
 
 static void emitByte(uint8_t byte) {
@@ -352,7 +351,8 @@ static void expression();
 static void statement();
 static void declaration();
 static ParseRule *getRule(TokenType type);
-static void parsePrecedence(Precedence precedence);
+static void parseAt(Precedence precedence);
+static void parseAbove(Precedence precedence);
 
 /** Adds the token to the constants table. */
 static uint8_t identifierConstant(Token *name) {
@@ -517,7 +517,7 @@ static uint8_t argumentList() {
   uint8_t argCount = 0;
   if (!check(TOKEN_RIGHT_PAREN)) {
     do {
-      parsePrecedence(PREC_ASSIGNMENT);
+      parseAbove(PREC_COMMA);
       if (argCount == 255) error("Can't have more than 255 arguments.");
       argCount++;
     } while (match(TOKEN_COMMA));
@@ -529,7 +529,7 @@ static uint8_t argumentList() {
 static void and_(bool canAssign) {
   int endJump = emitJump(OP_JUMP_IF_FALSE);
   emitByte(OP_POP);
-  parsePrecedence(PREC_AND);
+  parseAt(PREC_AND); // Right-associative
   patchJump(endJump);
 }
 
@@ -603,7 +603,7 @@ static bool assignment(OpCode getOp, OpCode setOp, uint8_t arg, bool binary) {
 static void binary(bool canAssign) {
   TokenType operatorType = parser.previous.type;
   ParseRule *rule = getRule(operatorType);
-  parsePrecedence((Precedence)(rule->precedence + 1));
+  parseAbove(rule->precedence); // left-associative
 
   switch (operatorType) {
   case TOKEN_DOT_DOT:
@@ -653,10 +653,16 @@ static void call(bool canAssign) {
   emitBytes(OP_CALL, argCount);
 }
 
-static void comma(bool canAssign) {
+/** Evaluates but discards the second argument. */
+static void semi(bool canAssign) {
+  parseAbove(PREC_SEMI);
+  emitByte(OP_POP);
+}
+
+static void tuple(bool canAssign) {
   uint8_t length = 1;
   do {
-    parsePrecedence(PREC_ASSIGNMENT);
+    parseAbove(PREC_COMMA); // Left-associative
     length++;
   } while (match(TOKEN_COMMA));
 
@@ -708,7 +714,7 @@ static void or_(bool canAssign) {
 
   patchJump(elseJump);
   emitByte(OP_POP);
-  parsePrecedence(PREC_OR);
+  parseAt(PREC_OR); // Right-associative
   patchJump(endJump);
 }
 
@@ -800,7 +806,7 @@ static void prefix(bool canAssign) {
   TokenType operatorType = parser.previous.type;
 
   // Compile the operand.
-  parsePrecedence(PREC_PREFIX);
+  parseAt(PREC_PREFIX); // Right-associative
 
   // Emit the operator instruction.
   switch (operatorType) {
@@ -827,14 +833,15 @@ static void postfix(bool canAssign) {
 }
 
 ParseRule rules[] = {
+    //                   {prefix, infix, precedence}
     [TOKEN_LEFT_PAREN] = {grouping, call, PREC_CALL},
     [TOKEN_RIGHT_PAREN] = {NULL, NULL, PREC_NONE},
     [TOKEN_LEFT_BRACE] = {NULL, NULL, PREC_NONE},
     [TOKEN_RIGHT_BRACE] = {NULL, NULL, PREC_NONE},
-    [TOKEN_COMMA] = {NULL, comma, PREC_COMMA},
+    [TOKEN_COMMA] = {NULL, tuple, PREC_COMMA},
     [TOKEN_DOT] = {NULL, dot, PREC_CALL},
     [TOKEN_DOT_DOT] = {NULL, binary, PREC_RANGE},
-    [TOKEN_SEMICOLON] = {NULL, NULL, PREC_NONE},
+    [TOKEN_SEMICOLON] = {NULL, semi, PREC_NONE},
 
     [TOKEN_MINUS] = {prefix, binary, PREC_TERM},
     [TOKEN_MINUS_EQUAL] = {NULL, NULL, PREC_ASSIGNMENT},
@@ -884,7 +891,13 @@ ParseRule rules[] = {
     [TOKEN_EOF] = {NULL, NULL, PREC_NONE},
 };
 
-static void parsePrecedence(Precedence precedence) {
+/**
+ * Parse at this precedence or above.
+ *
+ * Usually used for right-associative (grouped right-to-left) or for prefix
+ * operators.
+ */
+static void parseAt(Precedence precedence) {
   advance();
   ParseRule *rule = getRule(parser.previous.type);
   ParseFn prefix = rule->prefix;
@@ -908,9 +921,17 @@ static void parsePrecedence(Precedence precedence) {
   }
 }
 
+/**
+ * Parse one or more above the given precedence.
+ * Usually used for left-associative (grouped left-to-right) operators.
+ */
+static void parseAbove(Precedence precedence) {
+  return parseAt(precedence + 1);
+}
+
 static ParseRule *getRule(TokenType type) { return &rules[type]; }
 
-static void expression() { parsePrecedence(PREC_COMMA); }
+static void expression() { parseAbove(PREC_NONE); }
 
 // Todo: Block-as-expression + yield/break keyword
 static void block() {
@@ -1032,7 +1053,7 @@ static void classDeclaration() {
 
     consume(TOKEN_DEDENT, "Expect dedent after class body.");
   } else {
-    skipTerminators();
+    skipNewlines();
   }
 
   emitByte(OP_POP); // Pop the class
