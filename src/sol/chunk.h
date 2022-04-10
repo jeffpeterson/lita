@@ -5,7 +5,7 @@
 #include "value.h"
 
 typedef enum OpCode {
-  OP_CONSTANT,      /** (n) [] -> [0 x] */
+  OP_CONSTANT,      /** (x) [] -> [0 x] */
                     /**/
   OP_NIL,           /** [] -> [0 nil] */
   OP_TRUE,          /** [] -> [0 true] */
@@ -17,7 +17,7 @@ typedef enum OpCode {
   OP_PEEK,          /** (n) [...] -> [...][0 peek(n)] */
   OP_POP,           /** [0 x] -> [] */
   OP_POPN,          /** [n x][...] -> [] */
-  OP_SWAP,          /** (a, b) [a x][b y] -> [a y][b x] */
+  OP_SWAP,          /** (ab) [a x][b y] -> [a y][b x] */
   OP_DEFAULT,       /** (x) [] -> [0 x] */
                     /**/
   OP_DEFINE_GLOBAL, /** (name) [0 value] -> [] */
@@ -54,7 +54,7 @@ typedef enum OpCode {
   OP_CALL,          /** (argc) [] -> [] */
   OP_CLASS,         /** (name) [] -> [0 class] */
   OP_INHERIT,       /** [1 class][0 super] */
-  OP_METHOD,        /** [1 class][0 closure] -> [0 class] */
+  OP_METHOD,        /** (name) [1 class][0 closure] -> [0 class] */
   OP_CLOSURE,       /** (fn) [] -> [0 closure] */
   OP_CLOSE_UPVALUE, /** [0 upvalue] -> [] */
   OP_PRINT,         /** [0 x] -> [] */

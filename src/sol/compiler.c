@@ -59,6 +59,7 @@ typedef struct {
 } Upvalue;
 
 typedef enum FunType {
+  TYPE_CLASS,
   TYPE_FUNCTION,
   TYPE_INIT,
   TYPE_METHOD,
@@ -98,10 +99,15 @@ Compiler *current = NULL;
 ClassCompiler *currentClass = NULL;
 Chunk *compilingChunk;
 
-static void initClassCompiler(ClassCompiler *comp) {
+static void pushClassCompiler(ClassCompiler *comp) {
   comp->enclosing = currentClass;
   initTable(&comp->fields);
   currentClass = comp;
+}
+
+static void popClassCompiler() {
+  freeTable(&currentClass->fields);
+  currentClass = currentClass->enclosing;
 }
 
 static Chunk *currentChunk() { return &current->fun->chunk; }
@@ -236,10 +242,14 @@ static void emitSwap(uint8_t a, uint8_t b) {
 }
 
 static void emitReturn() {
-  if (current->type == TYPE_INIT)
+  switch (current->type) {
+  case TYPE_INIT:
+  case TYPE_CLASS:
     emitBytes(OP_GET_LOCAL, 0); // init() methods always return self.
-  else
+    break;
+  default:
     emitByte(OP_NIL);
+  }
 
   emitByte(OP_RETURN);
 }
@@ -293,10 +303,12 @@ static void initCompiler(Compiler *compiler, FunType type) {
   compiler->enclosing = current;
   current = compiler;
 
-  current->fun->name = type == TYPE_SCRIPT ? newString("_script_")
-                       : type == TYPE_INIT ? newString("init")
-                                           : copyString(parser.previous.start,
-                                                        parser.previous.length);
+  current->fun->name =
+      // Todo: Pass in name
+      type == TYPE_SCRIPT ? newString("_script_")
+      : type == TYPE_CLASS
+          ? newString("init")
+          : copyString(parser.previous.start, parser.previous.length);
 
   // Reserve first local for `this`.
   Local *self = &current->locals[current->localCount++];
@@ -937,16 +949,22 @@ static void function(FunType type) {
 
         uint8_t constant = parseVariable("Expect parameter name.");
         defineVariable(constant);
+        trace("parameter", NUMBER_VAL(constant));
+
       } while (match(TOKEN_COMMA));
     }
 
     consume(TOKEN_RIGHT_PAREN, "Expect ')' after parameters.");
   }
 
-  if (type == TYPE_INIT) {
+  if (type == TYPE_CLASS) {
+    trace("TYPE_CLASS", TRUE_VAL);
+    trace("localCount", NUMBER_VAL(current->localCount));
     // Inline init
     for (int i = 1; i < current->localCount; i++) {
+
       Value name = identifierValue(&current->locals[i].name);
+      trace("local", name);
       u8 constant = makeConstant(name);
       tableSet(&currentClass->fields, name, TRUE_VAL);
       emitBytes(OP_GET_LOCAL, 0); // self
@@ -962,6 +980,7 @@ static void function(FunType type) {
     block();
   }
 
+  // no endScope(). Compiler will be deallocated.
   ObjFun *fun = endCompiler();
   emitBytes(OP_CLOSURE, makeConstant(OBJ_VAL(fun)));
 
@@ -998,11 +1017,11 @@ static void classDeclaration() {
     markDefined();
 
   ClassCompiler classCompiler;
-  initClassCompiler(&classCompiler);
+  pushClassCompiler(&classCompiler);
 
   // Parse inline init
-  if (match(TOKEN_LEFT_PAREN)) {
-    function(TYPE_INIT);
+  if (check(TOKEN_LEFT_PAREN)) {
+    function(TYPE_CLASS);
     Value init = OBJ_VAL(newString("init"));
     emitBytes(OP_METHOD, makeConstant(init));
   }
@@ -1024,7 +1043,7 @@ static void classDeclaration() {
   defineVariable(0);
 
   emitByte(OP_INHERIT);
-  emitSwap(0, 1);
+  emitSwap(0, 1); // [1 class][0 super] -> [1 super][0 class]
 
   if (match(TOKEN_INDENT)) {
     while (!check(TOKEN_DEDENT) && !check(TOKEN_EOF))
@@ -1037,7 +1056,7 @@ static void classDeclaration() {
 
   emitByte(OP_POP); // Pop the class
   endScope();       // Pops local vars, including "super"
-  currentClass = currentClass->enclosing;
+  popClassCompiler();
 }
 
 static void funDeclaration() {
@@ -1189,6 +1208,9 @@ static void synchronize() {
 
   while (parser.current.type != TOKEN_EOF) {
     if (parser.previous.type == TOKEN_SEMICOLON)
+      return;
+
+    if (parser.previous.type == TOKEN_NEWLINE)
       return;
 
     switch (parser.current.type) {

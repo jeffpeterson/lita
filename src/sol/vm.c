@@ -656,7 +656,7 @@ static InterpretResult run() {
       break;
     }
 
-    case OP_INHERIT: { // [1 class ][0 superclass ]
+    case OP_INHERIT: { // [1 class][0 super]
       if (!IS_CLASS(peek(0))) {
         return runtimeError("Superclass must be a class.");
       }
@@ -677,7 +677,7 @@ static InterpretResult run() {
       break;
     }
 
-    case OP_METHOD: // [1 class][0 closure] -> [0 class]
+    case OP_METHOD: // (name) [1 class][0 closure] -> [0 class]
       defineMethod(READ_STRING());
       break;
 

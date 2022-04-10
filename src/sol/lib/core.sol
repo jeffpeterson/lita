@@ -13,11 +13,7 @@ class Bool
 class Error
 class Number
 
-class Range // (start, end)
-	init(start, end)
-		this.start = start
-		this.end = end
-
+class Range(start, end)
 	inspect()
 		return this.start.inspect() + ".." + this.end.inspect()
 

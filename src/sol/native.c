@@ -121,23 +121,11 @@ InterpretResult defineNatives() {
   method(vm.Any, fn("toString", 0, Any_string));
   method(vm.Any, fn("string", 0, Any_string));
 
-  // let Number = globalClass("Number", "Object");
   method(vm.Number, fn("*", 1, Number_star));
 
-  // globalClass("Error", "Object");
-
-  // let Function = globalClass("Function", "Object");
   method(vm.Function, fn("bytes", 0, Function_bytes));         // getter
   method(vm.Function, fn("byteCount", 0, Function_byteCount)); // getter
 
   method(vm.String, fn("+", 1, String_plus));
-
-  //   globalClass("Method", "Function");
-  //   globalClass("NativeFunction", "Function");
-  //   globalClass("Range", "Object");
-  //   globalClass("String", "Object");
-  //   globalClass("Table", "Object");
-  //   globalClass("Tuple", "Object");
-
   return result;
 }

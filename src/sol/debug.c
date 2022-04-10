@@ -14,6 +14,7 @@ typedef enum OpType {
   CONSTANT = GREEN,
   INVOKE = MAGENTA,
   JUMP = RED,
+  CONSTANT_BYTE = CYAN,
 } OpType;
 
 typedef struct OpInfo {
@@ -44,7 +45,7 @@ OpInfo infos[] = {
     [OP_INHERIT] = {"OP_INHERIT", SIMPLE},
 
     [OP_POP] = {"OP_POP", SIMPLE},
-    [OP_POPN] = {"OP_POPN", SIMPLE},
+    [OP_POPN] = {"OP_POPN", BYTE},
     [OP_CLOSE_UPVALUE] = {"OP_CLOSE_UPVALUE", SIMPLE},
 
     [OP_SWAP] = {"OP_SWAP", BYTE},
@@ -66,7 +67,7 @@ OpInfo infos[] = {
     [OP_SET_PROPERTY] = {"OP_SET_PROPERTY", CONSTANT},
 
     [OP_GET_SUPER] = {"OP_GET_SUPER", CONSTANT},
-    [OP_CLASS] = {"OP_CLASS", CONSTANT},
+    [OP_CLASS] = {"OP_CLASS", CONSTANT_BYTE},
     [OP_CONSTANT] = {"OP_CONSTANT", CONSTANT},
     [OP_DEFAULT] = {"OP_DEFAULT", CONSTANT},
     [OP_METHOD] = {"OP_METHOD", CONSTANT},
@@ -132,6 +133,15 @@ int disassembleInstruction(Chunk *chunk, int offset) {
     byte(arg);
     arrow();
     fprintValue(stderr, chunk->constants.values[arg]);
+    break;
+  }
+
+  case CONSTANT_BYTE: {
+    u8 cnst = code[offset++];
+    byte(cnst);
+    byte(code[offset++]);
+    arrow();
+    fprintValue(stderr, chunk->constants.values[cnst]);
     break;
   }
 
