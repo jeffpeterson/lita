@@ -1,6 +1,6 @@
 print clock()
-print "✓ first"
-print "✓ " + 'second
+print "✓\tfirst"
+print "✓\t" + 'second
 print ("✓ third", "✓ tuple")
 print 2 + 2
 print '0 + '5
