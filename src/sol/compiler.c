@@ -118,6 +118,10 @@ Compiler *current = NULL;
 ClassCompiler *currentClass = NULL;
 Chunk *compilingChunk;
 
+static Ctx newCtx() {
+  return (Ctx){.precedence = PREC_NONE, .canAssign = false};
+}
+
 static void pushClassCompiler(ClassCompiler *comp) {
   comp->enclosing = currentClass;
   initTable(&comp->fields);
@@ -210,7 +214,7 @@ static Value consumeIdent(const char *message) {
 }
 
 static void consumeTerminator(const char *message) {
-  consume(TOKEN_NEWLINE, message);
+  if (!match(TOKEN_SEMICOLON)) consume(TOKEN_NEWLINE, message);
   skipNewlines();
 }
 
@@ -551,6 +555,10 @@ static void parseAt(Precedence precedence) {
   while (precedence <= getRule(parser.current.type)->precedence) {
     advance();
     ParseFn *infix = getRule(parser.previous.type)->infix;
+    if (infix == NULL) {
+      error("No infix operator.");
+      return;
+    }
     infix(&ctx);
   }
 
@@ -837,7 +845,7 @@ static void namedVariable(Token name, Ctx *ctx) {
 
 static void variable(Ctx *ctx) {
   namedVariable(parser.previous, ctx);
-  if (check(TOKEN_LEFT_PAREN)) call(ctx);
+  // if (match(TOKEN_LEFT_PAREN)) call(ctx);
 }
 
 static void super_(Ctx *ctx) {
@@ -1211,7 +1219,11 @@ static void synchronize() {
 }
 
 static void declaration() {
-  if (match(TOKEN_FN)) {
+  Ctx ctx = newCtx();
+
+  if (match(TOKEN_CLASS)) {
+    classDeclaration(&ctx);
+  } else if (match(TOKEN_FN)) {
     funDeclaration();
   } else if (match(TOKEN_LET)) {
     varDeclaration();
@@ -1282,7 +1294,7 @@ void markCompilerRoots() {
 ParseRule rules[] = {
 
     //                {prefix, infix, precedence}
-    [TOKEN_NEWLINE] = {NULL, NULL, PREC_EVAL},
+    // [TOKEN_NEWLINE] = {NULL, NULL, PREC_EVAL},
     [TOKEN_LEFT_PAREN] = {grouping, call, PREC_CALL},
     [TOKEN_RIGHT_PAREN] = {NULL, NULL, PREC_NONE},
     [TOKEN_LEFT_BRACE] = {NULL, NULL, PREC_NONE},
@@ -1320,7 +1332,7 @@ ParseRule rules[] = {
 
     [TOKEN_AND] = {NULL, and_, PREC_AND},
     [TOKEN_ASSERT] = {NULL, NULL, PREC_NONE},
-    [TOKEN_CLASS] = {classDeclaration, NULL, PREC_NONE},
+    [TOKEN_CLASS] = {NULL, NULL, PREC_NONE},
     [TOKEN_ELSE] = {NULL, NULL, PREC_NONE},
     [TOKEN_FALSE] = {literal, NULL, PREC_NONE},
     [TOKEN_FOR] = {NULL, NULL, PREC_NONE},
