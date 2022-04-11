@@ -12,13 +12,15 @@ OBJECTS := $(patsubst ./%.c,_build/%.o, $(SOURCES))
 TARG_O  := $(filter-out %_test.o,$(OBJECTS))
 TEST_O  := $(filter-out %/main.o,$(OBJECTS))
 
-.PHONY: default all clean test
+.PHONY: default all clean test db
 .PRECIOUS: $(TARGET)
 .SUFFIXES: # disable crazy built-in rules that append .c
 
 default: $(TARGET) $(TEST) lib
 all: default
 lib: $(SOL_C)
+db/%: $(TARGET)
+	@lldb sol examples/$*.sol
 
 %: examples/%.sol $(TARGET)
 	@$(TARGET) $<

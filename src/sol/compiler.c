@@ -531,7 +531,7 @@ static void parseAt(Precedence precedence) {
   ParseRule *rule = getRule(parser.previous.type);
   ParseFn prefix = rule->prefix;
   if (prefix == NULL) {
-    error("Expect expression.");
+    error("No prefix operator.");
     return;
   }
 
