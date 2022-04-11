@@ -27,7 +27,7 @@
         },
         {
           "name": "support.function.builtin.sol",
-          "match": "\\b(print)\\b"
+          "match": "\\b(print|assert)\\b"
         },
         {
           "name": "variable.language.this.sol",
