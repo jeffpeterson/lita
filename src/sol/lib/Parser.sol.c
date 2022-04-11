@@ -57,13 +57,13 @@ static ValueArray _script_Constants0() {
 static Chunk _script_Chunk0() {
   Chunk c;
   initChunk(&c);
-  c.count = 19;
-  c.capacity = 19;
+  c.count = 16;
+  c.capacity = 16;
   u8 code[] = {
-    34, 0, 11, 0, 12, 1, 12, 0, 35, 12, 0, 37, 3, 36, 2, 7, 7, 1, 40,
+    34, 0, 0, 12, 1, 35, 9, 1, 37, 3, 36, 2, 7, 7, 1, 40,
   };
   int lines[] = {
-    18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 21, 21, 21, 21, 21, 21, 21, 21,
+    18, 18, 18, 18, 18, 18, 18, 18, 21, 21, 21, 21, 21, 21, 21, 21,
   };
   c.code = cloneMemory(code, sizeof(code));
   c.lines = cloneMemory(lines, sizeof(lines));

@@ -42,7 +42,7 @@ _build/%.o: ./%.c $(HEADERS)
 	@mkdir -p $(dir $@)
 	$(CC) $(CFLAGS) -c -o $@ $<
 
-%.sol.c: %.sol
+%.sol.c: %.sol $(TARGET)
 	sol -c $<
 
 clean:
