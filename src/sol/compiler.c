@@ -1064,11 +1064,10 @@ static void varDeclaration() {
 static void assertStatement() {
   const char *start = parser.previous.start;
   expression();
-  int length = start - parser.previous.start + parser.previous.length;
-  emitByte(OP_NOT);
-  int jmp = emitJump(OP_JUMP_IF_FALSE);
+  int length = parser.previous.start + parser.previous.length - start;
+  Value source = OBJ_VAL(copyString(start, length));
+  emitBytes(OP_ASSERT, makeConstant(source));
   consumeTerminator("Expect newline or ';' after assertion.");
-  emitByte(OP_PRINT);
 }
 
 static void expressionStatement() {

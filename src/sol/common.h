@@ -9,6 +9,8 @@
 
 #define DEBUG_TRACE "Log trace calls."
 
+#define DEBUG_ASSERTS "Log assert calls."
+
 // #define DEBUG_TOKENS "Log tokens."
 
 // #define DEBUG_PRINT_CODE "Log each chunk to stderr after it is compiled."

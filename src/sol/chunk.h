@@ -62,6 +62,7 @@ typedef enum OpCode {
                     /**/
   OP_INVOKE,        /** (name, n) [n self][0 ...args] -> [] */
   OP_SUPER_INVOKE,  /** (name, n) [n+1 self][1 ...args][0 super] -> [] */
+  OP_ASSERT,        /** [0 value] -> [] */
 } OpCode;
 
 typedef struct {

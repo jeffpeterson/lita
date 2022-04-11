@@ -27,7 +27,7 @@ db/%: $(TARGET)
 	@$(TARGET) $<
 
 lib: $(SOL_O)
-test: $(TEST)
+test: $(TEST) assertions
 	@$(TEST)
 
 $(TARGET): $(TARG_O)

@@ -11,6 +11,7 @@
 #include "native.h"
 #include "object.h"
 #include "string.h"
+#include "term.h"
 #include "tuple.h"
 #include "vm.h"
 
@@ -45,11 +46,9 @@ InterpretResult runtimeError(const char *format, ...) {
 }
 
 void assertOkResult(InterpretResult result) {
-  if (result == INTERPRET_COMPILE_ERROR)
-    exit(65);
+  if (result == INTERPRET_COMPILE_ERROR) exit(65);
 
-  if (result == INTERPRET_RUNTIME_ERROR)
-    exit(70);
+  if (result == INTERPRET_RUNTIME_ERROR) exit(70);
 }
 
 void crash(const char *str) {
@@ -128,8 +127,7 @@ Value push(Value value) {
   *vm.stackTop = value;
   vm.stackTop++;
 
-  if (vm.stackTop > vm.stackHigh)
-    vm.stackHigh = vm.stackTop;
+  if (vm.stackTop > vm.stackHigh) vm.stackHigh = vm.stackTop;
 
   return value;
 }
@@ -194,8 +192,7 @@ ObjClass *valueClass(Value v) {
   if (IS_OBJ(v)) {
     Obj *obj = AS_OBJ(v);
 
-    if (obj->type == OBJ_INSTANCE)
-      return ((ObjInstance *)obj)->klass;
+    if (obj->type == OBJ_INSTANCE) return ((ObjInstance *)obj)->klass;
 
     name = objInfo[obj->type].className;
   } else {
@@ -208,8 +205,7 @@ ObjClass *valueClass(Value v) {
   if (name) {
     Value klass = global(string(name));
 
-    if (IS_CLASS(klass))
-      return AS_CLASS(klass);
+    if (IS_CLASS(klass)) return AS_CLASS(klass);
   }
 
   return NULL;
@@ -281,16 +277,13 @@ static bool invokeFromClass(ObjClass *klass, ObjString *name, int argCount) {
   Value method;
 
   if (!tableGet(&klass->methods, OBJ_VAL(name), &method)) {
-    if (!klass->parent)
-      return false;
+    if (!klass->parent) return false;
 
     return invokeFromClass(klass->parent, name, argCount);
   }
 
-  if (IS_CLOSURE(method))
-    return call(AS_CLOSURE(method), argCount);
-  else
-    return callValue(method, argCount);
+  if (IS_CLOSURE(method)) return call(AS_CLOSURE(method), argCount);
+  else return callValue(method, argCount);
 }
 
 /** [argCount self][0 ...args] */
@@ -342,16 +335,13 @@ static ObjUpvalue *captureUpvalue(Value *local) {
     upvalue = upvalue->next;
   }
 
-  if (upvalue != NULL && upvalue->location == local)
-    return upvalue;
+  if (upvalue != NULL && upvalue->location == local) return upvalue;
 
   ObjUpvalue *createdUpvalue = newUpvalue(local);
   createdUpvalue->next = upvalue;
 
-  if (prevUpvalue == NULL)
-    vm.openUpvalues = createdUpvalue;
-  else
-    prevUpvalue->next = createdUpvalue;
+  if (prevUpvalue == NULL) vm.openUpvalues = createdUpvalue;
+  else prevUpvalue->next = createdUpvalue;
 
   return createdUpvalue;
 }
@@ -399,14 +389,30 @@ static InterpretResult opAdd() {
   Value a = peek(1);
   Value res = nil;
 
-  if (isNum(a) && isNum(b))
-    res = num(AS_NUMBER(a) + AS_NUMBER(b));
+  if (isNum(a) && isNum(b)) res = num(AS_NUMBER(a) + AS_NUMBER(b));
 
-  if (isNil(res))
-    return opInvoke(string("+"), 1);
+  if (isNil(res)) return opInvoke(string("+"), 1);
 
   popn(2);
   push(res);
+  return INTERPRET_OK;
+}
+
+static InterpretResult opAssert(let src) {
+  let value = pop();
+  if (isFalsey(value)) {
+    fprintf(stderr, "\n\n");
+    fprintValue(stderr, src);
+    fprintf(stderr, " //=> ");
+    fprintValue(stderr, value);
+    printf("\n");
+    return runtimeError(FG_RED "Assertion failed." FG_DEFAULT);
+  }
+
+#ifdef DEBUG_ASSERTS
+  fprintf(stderr, "%s", FG_GREEN "." FG_DEFAULT);
+#endif
+
   return INTERPRET_OK;
 }
 
@@ -556,10 +562,8 @@ static InterpretResult run() {
       Value value = peek(0);
 
       // Assigning 'nil' is deletion.
-      if (IS_NIL(value))
-        tableDelete(&inst->fields, name);
-      else
-        tableSet(&inst->fields, name, value);
+      if (IS_NIL(value)) tableDelete(&inst->fields, name);
+      else tableSet(&inst->fields, name, value);
 
       popn(2);
       push(value);
@@ -592,8 +596,7 @@ static InterpretResult run() {
       break;
 
     case OP_ADD:
-      if ((err = opAdd()))
-        return err;
+      if ((err = opAdd())) return err;
       SYNC_FRAME();
       break;
     case OP_SUBTRACT:
@@ -623,8 +626,7 @@ static InterpretResult run() {
     }
     case OP_JUMP_IF_FALSE: {
       uint16_t offset = READ_SHORT();
-      if (isFalsey(peek(0)))
-        frame->ip += offset;
+      if (isFalsey(peek(0))) frame->ip += offset;
       break;
     }
     case OP_LOOP: {
@@ -646,8 +648,7 @@ static InterpretResult run() {
       // Re-open existing global classes
       if (isLocal || !tableGet(&vm.globals, name, &klass)) {
         klass = class(name);
-        if (!isLocal)
-          tableSet(&vm.globals, name, klass);
+        if (!isLocal) tableSet(&vm.globals, name, klass);
       }
 
       push(klass);
@@ -670,8 +671,7 @@ static InterpretResult run() {
       ObjString *name = READ_STRING();
       ObjClass *superclass = AS_CLASS(pop());
 
-      if (!bindMethod(superclass, name))
-        return INTERPRET_RUNTIME_ERROR;
+      if (!bindMethod(superclass, name)) return INTERPRET_RUNTIME_ERROR;
       break;
     }
 
@@ -682,8 +682,7 @@ static InterpretResult run() {
     case OP_INVOKE: { // [n self][0 ...args]
       let name = READ_CONSTANT();
       u8 argc = READ_BYTE();
-      if ((err = opInvoke(name, argc)))
-        return err;
+      if ((err = opInvoke(name, argc))) return err;
       SYNC_FRAME();
       break;
     }
@@ -709,8 +708,7 @@ static InterpretResult run() {
 
         if (isLocal)
           closure->upvalues[i] = captureUpvalue(frame->slots + index);
-        else
-          closure->upvalues[i] = frame->closure->upvalues[index];
+        else closure->upvalues[i] = frame->closure->upvalues[index];
       }
 
       break;
@@ -719,6 +717,10 @@ static InterpretResult run() {
     case OP_CLOSE_UPVALUE:
       closeUpvalues(vm.stackTop - 1);
       pop();
+      break;
+
+    case OP_ASSERT:
+      if ((err = opAssert(READ_CONSTANT()))) return err;
       break;
 
     case OP_PRINT:
@@ -757,8 +759,7 @@ static InterpretResult run() {
 }
 
 InterpretResult runFun(ObjFun *fun) {
-  if (fun == NULL)
-    return INTERPRET_COMPILE_ERROR;
+  if (fun == NULL) return INTERPRET_COMPILE_ERROR;
 
   push(OBJ_VAL(fun));
   ObjClosure *closure = newClosure(fun);

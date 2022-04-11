@@ -12,7 +12,6 @@
 #define obj(o) OBJ_VAL(o)
 #define fmt(f, ...) obj(stringFormat(f, ...))
 
-typedef Value let;
 typedef Value _;
 
 bool isClass(_ x);

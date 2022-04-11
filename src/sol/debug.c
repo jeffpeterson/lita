@@ -27,6 +27,7 @@ OpInfo infos[] = {
     [OP_TRUE] = {"OP_TRUE", SIMPLE},
     [OP_FALSE] = {"OP_FALSE", SIMPLE},
 
+    [OP_ASSERT] = {"OP_ASSERT", CONSTANT},
     [OP_NOT] = {"OP_NOT", SIMPLE},
     [OP_NEGATE] = {"OP_NEGATE", SIMPLE},
     [OP_PRINT] = {"OP_PRINT", SIMPLE},
@@ -103,8 +104,7 @@ int disassembleInstruction(Chunk *chunk, int offset) {
 
   if (offset > 0 && chunk->lines[offset] == chunk->lines[offset - 1])
     fprintf(stderr, "   | ");
-  else
-    fprintf(stderr, FG_CYAN "%4d " FG_DEFAULT, chunk->lines[offset]);
+  else fprintf(stderr, FG_CYAN "%4d " FG_DEFAULT, chunk->lines[offset]);
 
   uint8_t instruction = code[offset++];
   OpInfo info = infos[instruction];
