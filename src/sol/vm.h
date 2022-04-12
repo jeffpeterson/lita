@@ -113,4 +113,10 @@ void crash(const char *str);
  */
 void panic(const char *str);
 
+InterpretResult vm_add();
+InterpretResult vm_assert(Value src);
+InterpretResult vm_call(int argc);
+InterpretResult vm_get(Value name);
+void vm_tuple(u8 length);
+
 #endif

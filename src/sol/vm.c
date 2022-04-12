@@ -287,7 +287,7 @@ static bool invokeFromClass(ObjClass *klass, ObjString *name, int argCount) {
 }
 
 /** [argCount self][0 ...args] */
-static InterpretResult opInvoke(Value name, int argCount) {
+static InterpretResult vm_invoke(Value name, int argCount) {
   Value receiver = peek(argCount);
 
   // Value value = find(receiver, name);
@@ -376,29 +376,22 @@ static bool isFalsey(Value value) {
   return IS_NIL(value) || (IS_BOOL(value) && !AS_BOOL(value));
 }
 
-/** [length ...args][0 arg] -> [0 tuple] */
-static void opTuple(uint8_t length) {
-  ObjTuple *tuple = copyTuple(vm.stackTop - length, length);
-  popn(length);
-  push(OBJ_VAL(tuple));
-}
-
 /** [1 a][0 b] -> [0 result] */
-static InterpretResult opAdd() {
+InterpretResult vm_add() {
   Value b = peek(0);
   Value a = peek(1);
   Value res = nil;
 
   if (isNum(a) && isNum(b)) res = num(AS_NUMBER(a) + AS_NUMBER(b));
 
-  if (isNil(res)) return opInvoke(string("+"), 1);
+  if (isNil(res)) return vm_invoke(string("+"), 1);
 
   popn(2);
   push(res);
   return INTERPRET_OK;
 }
 
-static InterpretResult opAssert(let src) {
+InterpretResult vm_assert(let src) {
   let value = pop();
   if (isFalsey(value)) {
     fprintf(stderr, "\n\n");
@@ -416,13 +409,20 @@ static InterpretResult opAssert(let src) {
   return INTERPRET_OK;
 }
 
-static InterpretResult opCall(int argc) {
+InterpretResult vm_call(int argc) {
   return callValue(peek(argc), argc) ? INTERPRET_OK : INTERPRET_RUNTIME_ERROR;
 }
 
 // [0 self] -> [0 value]
-static InterpretResult opGet(_ name) {
-  return arity(push(get(pop(), name))) == 0 ? opCall(0) : INTERPRET_OK;
+InterpretResult vm_get(_ name) {
+  return arity(push(get(pop(), name))) == 0 ? vm_call(0) : INTERPRET_OK;
+}
+
+/** [length ...args][0 arg] -> [0 tuple] */
+void vm_tuple(uint8_t length) {
+  ObjTuple *tuple = copyTuple(vm.stackTop - length, length);
+  popn(length);
+  push(OBJ_VAL(tuple));
 }
 
 static InterpretResult run() {
@@ -504,7 +504,7 @@ static InterpretResult run() {
     }
 
     case OP_TUPLE:
-      opTuple(READ_BYTE());
+      vm_tuple(READ_BYTE());
       break;
 
     case OP_DEFINE_GLOBAL:
@@ -545,7 +545,7 @@ static InterpretResult run() {
     }
 
     case OP_GET_PROPERTY: {
-      opGet(READ_CONSTANT());
+      vm_get(READ_CONSTANT());
       SYNC_FRAME();
       break;
     }
@@ -596,7 +596,7 @@ static InterpretResult run() {
       break;
 
     case OP_ADD:
-      if ((err = opAdd())) return err;
+      if ((err = vm_add())) return err;
       SYNC_FRAME();
       break;
     case OP_SUBTRACT:
@@ -636,7 +636,7 @@ static InterpretResult run() {
     }
 
     case OP_CALL: // [argc fn][1 arg1][0 ...args ]
-      opCall(READ_BYTE());
+      vm_call(READ_BYTE());
       SYNC_FRAME();
       break;
 
@@ -682,7 +682,7 @@ static InterpretResult run() {
     case OP_INVOKE: { // [n self][0 ...args]
       let name = READ_CONSTANT();
       u8 argc = READ_BYTE();
-      if ((err = opInvoke(name, argc))) return err;
+      if ((err = vm_invoke(name, argc))) return err;
       SYNC_FRAME();
       break;
     }
@@ -720,7 +720,7 @@ static InterpretResult run() {
       break;
 
     case OP_ASSERT:
-      if ((err = opAssert(READ_CONSTANT()))) return err;
+      if ((err = vm_assert(READ_CONSTANT()))) return err;
       break;
 
     case OP_PRINT:
