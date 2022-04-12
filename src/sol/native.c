@@ -21,8 +21,7 @@ static _ nativeHash(_ this, int argc, _ *args) {
 }
 
 static _ nativePrettyPrint(_ this, int argc, _ *args) {
-  if (argc == 1)
-    return pp(args[0]);
+  if (argc == 1) return pp(args[0]);
 
   return pp(t(argc, args));
 }
@@ -49,9 +48,10 @@ static _ Any_hash(_ this, int argc, _ *args) { return hashValue(this); }
 static _ Any_inspect(_ this, int argc, _ *args) { return inspect(this); }
 static _ Any_string(_ this, int argc, _ *args) { return toString(this); }
 
+static _ Function_arity(_ this, int argc, _ *args) { return arity(this); }
+
 static _ Function_bytes(_ this, int argc, _ *args) {
-  if (!isFn(this))
-    return error("Only Fns have bytes.");
+  if (!isFn(this)) return error("Only Fns have bytes.");
 
   ObjFun *fn = AS_FUN(this);
 
@@ -59,8 +59,7 @@ static _ Function_bytes(_ this, int argc, _ *args) {
 }
 
 static _ Function_byteCount(_ this, int argc, _ *args) {
-  if (!isFn(this))
-    return error("Only Fns have bytes.");
+  if (!isFn(this)) return error("Only Fns have bytes.");
 
   ObjFun *fn = AS_FUN(this);
 
@@ -70,8 +69,7 @@ static _ Function_byteCount(_ this, int argc, _ *args) {
 static _ Number_star(_ this, int argc, _ *args) {
   let arg = args[0];
 
-  if (isNum(arg))
-    return AS_NUMBER(this) * AS_NUMBER(arg);
+  if (isNum(arg)) return AS_NUMBER(this) * AS_NUMBER(arg);
 
   return error("Cannot multiply these values.");
 }
@@ -95,8 +93,7 @@ InterpretResult defineNatives() {
 
   InterpretResult result = runFun(core_sol());
 
-  if (result)
-    return result;
+  if (result) return result;
 
   vm.Bool = global(str("Bool"));
   vm.Class = global(str("Class"));
@@ -120,6 +117,7 @@ InterpretResult defineNatives() {
 
   method(vm.Number, fn("*", 1, Number_star));
 
+  method(vm.Function, fn("arity", 0, Function_arity));         // getter
   method(vm.Function, fn("bytes", 0, Function_bytes));         // getter
   method(vm.Function, fn("byteCount", 0, Function_byteCount)); // getter
 

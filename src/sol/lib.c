@@ -93,15 +93,13 @@ _ t7(_ a, _ b, _ c, _ d, _ e, _ f, _ g) {
 }
 
 _ class(_ name) {
-  if (!isStr(name))
-    return nil;
+  if (!isStr(name)) return nil;
 
   return pope(OBJ_VAL(newClass(AS_STRING(push(name)))));
 }
 
 _ subClass(_ name, _ parent) {
-  if (!isClass(parent))
-    return nil;
+  if (!isClass(parent)) return nil;
 
   _ klass = class(name);
   ObjClass *klassObj = AS_CLASS(klass);
@@ -113,8 +111,7 @@ _ subClass(_ name, _ parent) {
 }
 
 _ method(_ klass, _ fun) {
-  if (!isClass(klass))
-    return nil;
+  if (!isClass(klass)) return nil;
 
   let key = name(fun);
 
@@ -128,8 +125,7 @@ _ method(_ klass, _ fun) {
 }
 
 _ add(_ a, _ b) {
-  if (isNum(a) && isNum(b))
-    return num(AS_NUMBER(a) + AS_NUMBER(b));
+  if (isNum(a) && isNum(b)) return num(AS_NUMBER(a) + AS_NUMBER(b));
 
   if (!isObj(a)) {
     runtimeError("This type cannot be added.");
@@ -149,15 +145,13 @@ _ add(_ a, _ b) {
     return nil;
   }
 
-  if (out == NULL)
-    return nil;
+  if (out == NULL) return nil;
 
   return obj(out);
 }
 
 _ subtract(_ a, _ b) {
-  if (isNum(a) && isNum(b))
-    return num(asNum(a) - asNum(b));
+  if (isNum(a) && isNum(b)) return num(asNum(a) - asNum(b));
 
   // if (isStr(a) && isStr(b))
   //   remove b from end of a
@@ -165,8 +159,7 @@ _ subtract(_ a, _ b) {
 }
 
 _ multiply(_ a, _ b) {
-  if (isNum(a) && isNum(b))
-    return num(asNum(a) * asNum(b));
+  if (isNum(a) && isNum(b)) return num(asNum(a) * asNum(b));
 
   if (!IS_OBJ(a)) {
     runtimeError("This type cannot be multiplied.");
@@ -186,22 +179,18 @@ _ multiply(_ a, _ b) {
     return NIL_VAL;
   }
 
-  if (out == NULL)
-    return NIL_VAL;
+  if (out == NULL) return NIL_VAL;
 
   return OBJ_VAL(out);
 }
 
 /** Returns arity of fun, -1 if not callable. */
 int arity(_ fun) {
-  if (isMethod(fun))
-    return asMethod(fun)->method->fun->arity;
+  if (isMethod(fun)) return asMethod(fun)->method->fun->arity;
 
-  if (isFn(fun))
-    return asFn(fun)->fun->arity;
+  if (isFn(fun)) return asFn(fun)->fun->arity;
 
-  if (isNative(fun))
-    return asNative(fun)->arity;
+  if (isNative(fun)) return asNative(fun)->arity;
 
   return -1;
 }
@@ -211,8 +200,7 @@ _ classOf(_ self) { return obj(valueClass(self)); }
 _ superOf(_ klass) { return obj(asClass(klass)->parent); }
 
 _ bind(_ self, _ fun) {
-  if (isFn(fun))
-    return obj(newBound(self, asFn(fun)));
+  if (isFn(fun)) return obj(newBound(self, asFn(fun)));
 
   return fun;
 }
@@ -227,8 +215,7 @@ _ findMethod(_ klass, _ name) {
 
 _ find(_ self, _ key) {
   _ val;
-  if (isInst(self) && tableGet(&asInst(self)->fields, key, &val))
-    return val;
+  if (isInst(self) && tableGet(&asInst(self)->fields, key, &val)) return val;
 
   return findMethod(classOf(self), key);
 }
@@ -239,8 +226,7 @@ _ set(_ self, _ key, _ value) { return error("Not implemented."); }
 _ hash(_ val) { return NUMBER_VAL(hashValue(val)); }
 
 _ len(_ x) {
-  if (!isObj(x))
-    return nil;
+  if (!isObj(x)) return nil;
 
   switch (asObj(x)->type) {
   case OBJ_BOUND:
@@ -282,15 +268,13 @@ _ name(_ self) {
 }
 
 _ read(_ path) {
-  if (!isStr(path))
-    return error("path must be a string.");
+  if (!isStr(path)) return error("path must be a string.");
 
   return obj(readFile(AS_STRING(path)));
 }
 
 _ write(_ path, _ content) {
-  if (!isStr(path))
-    return error("path must be a string.");
+  if (!isStr(path)) return error("path must be a string.");
 
   let data = toStr(content);
 
@@ -301,8 +285,7 @@ _ write(_ path, _ content) {
 }
 
 _ append(_ path, _ content) {
-  if (!isStr(path))
-    return error("path must be a string.");
+  if (!isStr(path)) return error("path must be a string.");
 
   let data = toStr(content);
 
@@ -315,17 +298,13 @@ _ append(_ path, _ content) {
 _ toStr(_ v) { return toString(v); }
 
 _ toString(_ val) {
-  if (isInt(val))
-    return OBJ_VAL(stringf("%d", asInt(val)));
+  if (isInt(val)) return OBJ_VAL(stringf("%d", asInt(val)));
 
-  if (IS_NUMBER(val))
-    return OBJ_VAL(stringf("%g", AS_NUMBER(val)));
+  if (IS_NUMBER(val)) return OBJ_VAL(stringf("%g", AS_NUMBER(val)));
 
-  if (IS_BOOL(val))
-    return string(AS_BOOL(val) ? "true" : "false");
+  if (IS_BOOL(val)) return string(AS_BOOL(val) ? "true" : "false");
 
-  if (IS_NIL(val))
-    return string("nil");
+  if (IS_NIL(val)) return string("nil");
 
   if (IS_OBJ(val)) {
     switch (OBJ_TYPE(val)) {
@@ -377,8 +356,7 @@ _ pp(_ x) {
 }
 
 _ inspect(_ val) {
-  if (IS_BOOL(val) || IS_NUMBER(val) || IS_NIL(val))
-    return toStr(val);
+  if (IS_BOOL(val) || IS_NUMBER(val) || IS_NIL(val)) return toStr(val);
 
   if (IS_OBJ(val)) {
     switch (OBJ_TYPE(val)) {
@@ -416,8 +394,7 @@ _ inspect(_ val) {
     case OBJ_TUPLE: {
       ObjTuple *tuple = AS_TUPLE(val);
 
-      if (tuple->length < 1)
-        return str("");
+      if (tuple->length < 1) return str("");
 
       let out = inspect(tuple->values[0]);
       for (int i = 1; i < tuple->length; i++) {

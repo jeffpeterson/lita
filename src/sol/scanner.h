@@ -32,17 +32,18 @@ typedef enum {
   TOKEN_STAR_EQUAL,
 
   // One or two character tokens.
+  TOKEN_EQUAL,
+
+  // All tokens below IDENTIFIER are valid field names.
+  TOKEN_IDENTIFIER,
+
   TOKEN_BANG,
   TOKEN_BANG_EQUAL,
-  TOKEN_EQUAL,
   TOKEN_EQUAL_EQUAL,
   TOKEN_GREATER,
   TOKEN_GREATER_EQUAL,
   TOKEN_LESS,
   TOKEN_LESS_EQUAL,
-
-  // All tokens below IDENTIFIER are valid field names.
-  TOKEN_IDENTIFIER,
 
   // Literals.
   TOKEN_NUMBER,

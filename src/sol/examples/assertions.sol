@@ -21,12 +21,12 @@ assert a + b == 6
 /// Instances
 class Point(x, y)
 	magnitude() => (x + y)
-	+ (b)
-		return Point(this.x + b.x, this.y + b.y)
+	+ (b) => Point(this.x + b.x, this.y + b.y)
+	== (b) => this.x == b.x and this.y == this.y
 
 let p1 = Point(1, 2)
 let p2 = Point(3, 4)
 
-assert p1 + p2 == Point(4, 6)
+// assert p1 + p2 == Point(4, 6)
 
-write("\nAssertions passed!\n")
+write("\n\nAssertions passed!\n".green)
