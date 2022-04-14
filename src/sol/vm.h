@@ -78,7 +78,7 @@ void initVM();
 void freeVM();
 InterpretResult bootVM();
 InterpretResult runFun(ObjFun *fun);
-InterpretResult interpret(const char *source);
+InterpretResult interpret(const char *source, ObjString *name);
 
 /** Push a value onto the stack. */
 Value push(Value value);

@@ -62,15 +62,14 @@ bool appendFile(ObjString *path, ObjString *content) {
 
 void runFile(ObjString *path) {
   ObjString *source = readFile(path);
-  assertOkResult(interpret(source->chars));
+  assertOkResult(interpret(source->chars, path));
 }
 
 void compileFile(ObjString *path) {
   ObjString *source = readFile(path);
-  ObjFun *fun = compile(source->chars);
+  ObjFun *fun = compile(source->chars, path);
 
-  if (fun == NULL)
-    exit(65);
+  if (fun == NULL) exit(65);
 
   ObjString *dst = concatStrings(path, newString(".c"));
   FILE *io = openFile(dst, "w");

@@ -311,21 +311,15 @@ static void patchJump(int offset) {
   patchBytes((jump >> 8) & 0xff, jump & 0xff, offset);
 }
 
-static void initCompiler(Compiler *compiler, FunType type) {
+static void initCompiler(Compiler *compiler, FunType type, ObjString *name) {
   compiler->fun = NULL;
   compiler->fun = newFunction();
+  compiler->fun->name = name;
   compiler->type = type;
   compiler->localCount = 0;
   compiler->scopeDepth = 0;
   compiler->enclosing = current;
   current = compiler;
-
-  current->fun->name =
-      // Todo: Pass in name
-      type == TYPE_SCRIPT ? newString("_script_")
-      : type == TYPE_CLASS
-          ? newString("init")
-          : copyString(parser.previous.start, parser.previous.length);
 
   // Reserve first local for `this`.
   Local *self = &current->locals[current->localCount++];
@@ -923,7 +917,11 @@ static void block() {
 
 static void function(FunType type) {
   Compiler compiler;
-  initCompiler(&compiler, type);
+  ObjString *name = type == TYPE_CLASS ? newString("init")
+                                       : copyString(parser.previous.start,
+                                                    parser.previous.length);
+
+  initCompiler(&compiler, type, name);
   beginScope();
 
   if (match(TOKEN_LEFT_PAREN)) {
@@ -1258,7 +1256,7 @@ static void statement() {
   // Todo: continue statement
 }
 
-ObjFun *compile(const char *source) {
+ObjFun *compile(const char *source, ObjString *name) {
   initScanner(source);
 
 #ifdef DEBUG_TOKENS
@@ -1266,7 +1264,8 @@ ObjFun *compile(const char *source) {
 #endif
 
   Compiler compiler;
-  initCompiler(&compiler, TYPE_SCRIPT);
+  name = stringToCIdent(name);
+  initCompiler(&compiler, TYPE_SCRIPT, name);
 
   parser.hadError = false;
   parser.panicMode = false;

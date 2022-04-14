@@ -60,7 +60,6 @@ ObjString *copyString(const char *chars, int length) {
 }
 
 ObjString *escapeString(ObjString *str) {
-  // char *start = str->chars;
   char *out = ALLOCATE(char, str->length + 1);
   int len = 0;
   bool escape = false;
@@ -92,6 +91,28 @@ ObjString *escapeString(ObjString *str) {
   out[len] = '\0';
 
   return takeString(GROW_ARRAY(char, out, str->length + 1, len + 1), len);
+}
+
+ObjString *stringToCIdent(ObjString *str) {
+  // Extra byte in case of leading "_"
+  char *out = ALLOCATE(char, str->length + 2);
+  int len = 0;
+
+  for (int i = 0; i < str->length; i++) {
+    char ch = str->chars[i];
+    bool isAlpha = (ch >= 'a' && ch <= 'z') || (ch >= 'A' && ch >= 'Z');
+    bool isWord = isAlpha || ch == '_';
+    bool isDigit = ch >= '0' && ch <= '9';
+
+    if (i == 0 && !isWord) out[len++] = '_';
+    if (!isWord && !isDigit) ch = '_';
+
+    out[len++] = ch;
+  }
+
+  out[len] = '\0';
+
+  return takeString(GROW_ARRAY(char, out, str->length + 2, len + 1), len);
 }
 
 ObjString *stringf(const char *fmt, ...) {

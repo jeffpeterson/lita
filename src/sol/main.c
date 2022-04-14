@@ -11,6 +11,7 @@
 #include "vm.h"
 
 static void repl() {
+  ObjString *name = newString("REPL");
   char line[1024];
   for (;;) {
     printf("> ");
@@ -20,7 +21,7 @@ static void repl() {
       break;
     }
 
-    interpret(line);
+    interpret(line, name);
   }
 }
 
@@ -43,7 +44,7 @@ int main(int argc, char *argv[]) {
       startRepl = true;
       break;
     case 'e':
-      assertOkResult(interpret(optarg));
+      assertOkResult(interpret(optarg, newString("eval flag")));
       break;
     case '?':
       exit(1);
@@ -52,8 +53,7 @@ int main(int argc, char *argv[]) {
 
   bool noFiles = optind >= argc;
 
-  if (mode == INTERPRET)
-    assertOkResult(bootVM());
+  if (mode == INTERPRET) assertOkResult(bootVM());
 
   for (int i = optind; i < argc; i++) {
     ObjString *path = newString(argv[i]);
@@ -62,12 +62,10 @@ int main(int argc, char *argv[]) {
       runFile(path);
     }
 
-    if (mode == COMPILE)
-      compileFile(path);
+    if (mode == COMPILE) compileFile(path);
   }
 
-  if (startRepl || noFiles)
-    repl();
+  if (startRepl || noFiles) repl();
 
   freeVM();
   return 0;

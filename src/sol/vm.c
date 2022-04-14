@@ -779,8 +779,8 @@ InterpretResult runFun(ObjFun *fun) {
   return run();
 }
 
-InterpretResult interpret(const char *source) {
-  return runFun(compile(source));
+InterpretResult interpret(const char *source, ObjString *name) {
+  return runFun(compile(source, name));
 }
 
 Value intern(Value val) {

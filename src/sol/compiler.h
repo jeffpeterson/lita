@@ -3,7 +3,7 @@
 
 #include "object.h"
 
-ObjFun *compile(const char *source);
+ObjFun *compile(const char *source, ObjString *name);
 void markCompilerRoots();
 
 #endif

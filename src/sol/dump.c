@@ -76,8 +76,7 @@ static int dumpFn(FILE *io, ObjFun *fun) {
 
   for (int i = 0; i < values.count; i++) {
     Value v = values.values[i];
-    if (IS_FUN(v))
-      dumpFn(io, AS_FUN(v));
+    if (IS_FUN(v)) dumpFn(io, AS_FUN(v));
   }
 
   fprintf(io,
@@ -161,8 +160,7 @@ static char *parameterize(char *str) {
     char c = str[i];
     if ((c >= '0' && c <= '9') || (c >= 'a' && c <= 'z') ||
         (c >= 'A' && c <= 'Z') || c == '_') {
-    } else
-      str[i] = '_';
+    } else str[i] = '_';
   }
 
   return str;
