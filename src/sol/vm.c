@@ -144,12 +144,12 @@ Value pope(Value val) {
   return val;
 }
 
-inline Value *popn(uint8_t n) {
+inline Value *popn(u8 n) {
   vm.stackTop -= n;
   return vm.stackTop;
 }
 
-static void swap(uint8_t a, uint8_t b) {
+void vm_swap(u8 a, u8 b) {
   Value aa = peek(a);
   vm.stackTop[-1 - a] = peek(b);
   vm.stackTop[-1 - b] = aa;
@@ -391,7 +391,7 @@ InterpretResult vm_add() {
   return INTERPRET_OK;
 }
 
-InterpretResult vm_assert(let src) {
+InterpretResult vm_assert(Value src) {
   let value = pop();
   if (isFalsey(value)) {
     fprintf(stderr, "\n\n");
@@ -414,12 +414,31 @@ InterpretResult vm_call(int argc) {
 }
 
 // [0 self] -> [0 value]
-InterpretResult vm_get(_ name) {
+InterpretResult vm_get(Value name) {
   return arity(push(get(pop(), name))) == 0 ? vm_call(0) : INTERPRET_OK;
 }
 
+// [0 self] -> [0 value]
+InterpretResult vm_get_global(Value name) {
+  let value;
+
+  if (!tableGet(&vm.globals, name, &value)) {
+    return runtimeError("Cannot get undefined variable '%s'.",
+                        AS_STRING(name)->chars);
+  }
+  push(value);
+  return INTERPRET_OK;
+}
+
+/** [1 start][0 end] -> [0 range] */
+void vm_range() {
+  let b = pop();
+  let a = pop();
+  push(range(a, b));
+}
+
 /** [length ...args][0 arg] -> [0 tuple] */
-void vm_tuple(uint8_t length) {
+void vm_tuple(u8 length) {
   ObjTuple *tuple = copyTuple(vm.stackTop - length, length);
   popn(length);
   push(OBJ_VAL(tuple));
@@ -483,7 +502,7 @@ static InterpretResult run() {
       break;
     case OP_SWAP: {
       uint8_t args = READ_BYTE();
-      swap(args & 0x0f, args >> 4);
+      vm_swap(args & 0x0f, args >> 4);
       break;
     }
     case OP_DEFAULT:
@@ -496,12 +515,9 @@ static InterpretResult run() {
       }
       break;
 
-    case OP_RANGE: {
-      let b = pop();
-      let a = pop();
-      push(range(a, b));
+    case OP_RANGE:
+      vm_range();
       break;
-    }
 
     case OP_TUPLE:
       vm_tuple(READ_BYTE());
@@ -511,17 +527,10 @@ static InterpretResult run() {
       tableSet(&vm.globals, READ_CONSTANT(), pop());
       break;
 
-    case OP_GET_GLOBAL: {
-      Value name = READ_CONSTANT();
-      Value value;
-
-      if (!tableGet(&vm.globals, name, &value)) {
-        return runtimeError("Cannot get undefined variable '%s'.",
-                            AS_STRING(name)->chars);
-      }
-      push(value);
+    case OP_GET_GLOBAL:
+      if ((err = vm_get_global(READ_CONSTANT()))) return err;
       break;
-    }
+
     case OP_SET_GLOBAL: {
       Value name = READ_CONSTANT();
       if (tableSet(&vm.globals, name, peek(0))) {

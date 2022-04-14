@@ -117,6 +117,9 @@ InterpretResult vm_add();
 InterpretResult vm_assert(Value src);
 InterpretResult vm_call(int argc);
 InterpretResult vm_get(Value name);
+InterpretResult vm_get_global(Value name);
+void vm_range();
+void vm_swap(u8 a, u8 b);
 void vm_tuple(u8 length);
 
 #endif
