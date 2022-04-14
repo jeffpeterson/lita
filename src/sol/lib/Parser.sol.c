@@ -43,7 +43,7 @@ static Value initFn1() {
   return obj(f);
 }
 
-static ValueArray _script_Constants0() {
+static ValueArray lib_Parser_solConstants0() {
   ValueArray vals;
   initValueArray(&vals);
   vals.count = vals.capacity = 4;
@@ -54,7 +54,7 @@ static ValueArray _script_Constants0() {
   return vals;
 }
 
-static Chunk _script_Chunk0() {
+static Chunk lib_Parser_solChunk0() {
   Chunk c;
   initChunk(&c);
   c.count = 16;
@@ -67,19 +67,19 @@ static Chunk _script_Chunk0() {
   };
   c.code = cloneMemory(code, sizeof(code));
   c.lines = cloneMemory(lines, sizeof(lines));
-  c.constants = _script_Constants0();
+  c.constants = lib_Parser_solConstants0();
 
   return c;
 };
 
-static Value _script_Fn0() {
+static Value lib_Parser_solFn0() {
   ObjFun *f = newFunction();  f->arity = 0;
   f->upvalueCount = 0;
-  f->name = newString("_script_");
-  f->chunk = _script_Chunk0();
+  f->name = newString("lib_Parser_sol");
+  f->chunk = lib_Parser_solChunk0();
   return obj(f);
 }
 
 ObjFun *Parser_sol() {
-  return AS_FUN(_script_Fn0());
+  return AS_FUN(lib_Parser_solFn0());
 }

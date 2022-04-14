@@ -100,7 +100,7 @@ ObjString *stringToCIdent(ObjString *str) {
 
   for (int i = 0; i < str->length; i++) {
     char ch = str->chars[i];
-    bool isAlpha = (ch >= 'a' && ch <= 'z') || (ch >= 'A' && ch >= 'Z');
+    bool isAlpha = (ch >= 'a' && ch <= 'z') || (ch >= 'A' && ch <= 'Z');
     bool isWord = isAlpha || ch == '_';
     bool isDigit = ch >= '0' && ch <= '9';
 
