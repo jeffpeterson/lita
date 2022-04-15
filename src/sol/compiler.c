@@ -214,7 +214,7 @@ static Value consumeIdent(const char *message) {
 }
 
 static void consumeTerminator(const char *message) {
-  if (!match(TOKEN_SEMICOLON)) consume(TOKEN_NEWLINE, message);
+  consume(TOKEN_NEWLINE, message);
   skipNewlines();
 }
 
@@ -728,9 +728,7 @@ static void semi(Ctx *ctx) {
   emitByte(OP_POP);
 }
 
-/**
- * Left-associative.
- */
+/** Left-associative. */
 static void tuple(Ctx *ctx) {
   uint8_t length = 1;
   do {
@@ -933,7 +931,6 @@ static void function(FunType type) {
 
         uint8_t constant = parseVariable("Expect parameter name.");
         defineVariable(constant);
-
       } while (match(TOKEN_COMMA));
     }
 
@@ -1153,7 +1150,7 @@ static void ifStatement() {
 
 static void printStatement() {
   expression();
-  consumeTerminator("Expect newline or ';' after value.");
+  consumeTerminator("Expect newline after value.");
   emitByte(OP_PRINT);
 }
 
@@ -1162,14 +1159,14 @@ static void returnStatement() {
   // if (current->type == TYPE_SCRIPT)
   //   error("Can't return from top-level code.");
 
-  if (match(TOKEN_SEMICOLON) || match(TOKEN_NEWLINE)) emitReturn();
+  if (match(TOKEN_NEWLINE)) emitReturn();
   else {
     if (current->type == TYPE_INIT) {
       error("Can't return a value from init().");
     }
 
     expression();
-    consumeTerminator("Expect newline or ';' after return value.");
+    consumeTerminator("Expect newline after return value.");
     emitByte(OP_RETURN);
   }
 }
@@ -1300,7 +1297,7 @@ ParseRule rules[] = {
     [TOKEN_COMMA] = {NULL, tuple, PREC_COMMA},
     [TOKEN_DOT] = {NULL, dot, PREC_CALL},
     [TOKEN_DOT_DOT] = {NULL, binary, PREC_RANGE},
-    [TOKEN_SEMICOLON] = {NULL, semi, PREC_NONE},
+    [TOKEN_SEMICOLON] = {NULL, semi, PREC_SEMI},
 
     [TOKEN_MINUS] = {prefix, binary, PREC_TERM},
     [TOKEN_MINUS_EQUAL] = {NULL, NULL, PREC_ASSIGNMENT},

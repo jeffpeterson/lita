@@ -7,6 +7,7 @@ assert 0..9
 /// Natives
 assert clock()
 // assert pp(1)
+assert (3; 4) == 3
 
 /// Math
 assert 2 + 2 == 4
