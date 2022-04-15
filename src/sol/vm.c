@@ -392,7 +392,7 @@ InterpretResult vm_add() {
 }
 
 InterpretResult vm_assert(Value src) {
-  let value = pop();
+  let value = peek(0);
   if (isFalsey(value)) {
     fprintf(stderr, "\n\n");
     fprintValue(stderr, src);

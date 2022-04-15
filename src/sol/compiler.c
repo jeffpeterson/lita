@@ -532,44 +532,46 @@ static ParseRule *getRule(TokenType type) { return &rules[type]; }
  *
  * Returns true if successful.
  */
-static void parseAt(Precedence precedence) {
-  advance();
-  ParseRule *rule = getRule(parser.previous.type);
+static bool parseAt(Precedence precedence) {
+  ParseRule *rule = getRule(parser.current.type);
   ParseFn *prefix = rule->prefix;
-  if (prefix == NULL) {
-    error("No prefix operator.");
-    return;
-  }
+  if (prefix == NULL) return false;
+
+  advance();
 
   Ctx ctx;
   ctx.precedence = precedence;
   ctx.canAssign = precedence <= PREC_ASSIGNMENT;
   prefix(&ctx);
 
-  while (precedence <= getRule(parser.current.type)->precedence) {
+  while ((rule = getRule(parser.current.type)) &&
+         precedence <= rule->precedence) {
     advance();
-    ParseFn *infix = getRule(parser.previous.type)->infix;
+    ParseFn *infix = rule->infix;
     if (infix == NULL) {
       error("No infix operator.");
-      return;
+      return false;
     }
     infix(&ctx);
   }
 
   if (ctx.canAssign && match(TOKEN_EQUAL)) {
     error("Invalid assignment target.");
+    return false;
   }
+
+  return true;
 }
 
 /**
  * Parse one or more above the given precedence.
  * Usually used for left-associative (grouped left-to-right) operators.
  */
-static void parseAbove(Precedence precedence) {
+static bool parseAbove(Precedence precedence) {
   return parseAt(precedence + 1);
 }
 
-static void expression() { parseAbove(PREC_NONE); }
+static bool expression() { return parseAbove(PREC_NONE); }
 
 static void statement();
 static void declaration();
@@ -1056,21 +1058,18 @@ static void varDeclaration() {
   defineVariable(global);
 }
 
-static void assertStatement() {
+static void assert() {
   const char *start = parser.previous.start;
   expression();
   int length = parser.previous.start + parser.previous.length - start;
   Value source = OBJ_VAL(copyString(start, length));
   emitBytes(OP_ASSERT, makeConstant(source));
-  consumeTerminator("Expect newline or ';' after assertion.");
 }
 
 static void expressionStatement() {
   expression();
-
+  emitByte(OP_POP);
   consumeTerminator("Expect newline or ';' after expression");
-  // // Better in the REPL.
-  // emitByte(match(TOKEN_SEMICOLON) ? OP_POP : OP_PRINT);
 }
 
 // for ;;i++:
@@ -1229,9 +1228,7 @@ static void declaration() {
 }
 
 static void statement() {
-  if (match(TOKEN_ASSERT)) {
-    assertStatement();
-  } else if (match(TOKEN_PRINT)) {
+  if (match(TOKEN_PRINT)) {
     printStatement();
   } else if (match(TOKEN_INDENT)) {
     beginScope();
@@ -1326,7 +1323,7 @@ ParseRule rules[] = {
     [TOKEN_NUMBER] = {number, NULL, PREC_NONE},
 
     [TOKEN_AND] = {NULL, and_, PREC_AND},
-    [TOKEN_ASSERT] = {NULL, NULL, PREC_NONE},
+    [TOKEN_ASSERT] = {assert, NULL, PREC_NONE},
     [TOKEN_CLASS] = {NULL, NULL, PREC_NONE},
     [TOKEN_ELSE] = {NULL, NULL, PREC_NONE},
     [TOKEN_FALSE] = {literal, NULL, PREC_NONE},

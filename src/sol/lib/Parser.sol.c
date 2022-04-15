@@ -20,13 +20,13 @@ static ValueArray initConstants1() {
 static Chunk initChunk1() {
   Chunk c;
   initChunk(&c);
-  c.count = 9;
-  c.capacity = 9;
+  c.count = 10;
+  c.capacity = 10;
   u8 code[] = {
-    14, 0, 14, 1, 17, 0, 14, 0, 40,
+    14, 0, 14, 1, 17, 0, 7, 14, 0, 40,
   };
   int lines[] = {
-    20, 20, 20, 20, 20, 20, 21, 21, 21,
+    20, 20, 20, 20, 20, 20, 20, 21, 21, 21,
   };
   c.code = cloneMemory(code, sizeof(code));
   c.lines = cloneMemory(lines, sizeof(lines));
