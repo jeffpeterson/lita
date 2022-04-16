@@ -749,7 +749,7 @@ static void literal(Ctx *ctx) {
 }
 
 static void grouping(Ctx *ctx) {
-  expression();
+  if (!expression()) emit(nil);
   consume(TOKEN_RIGHT_PAREN, "Expect ')' after expression.");
 }
 
