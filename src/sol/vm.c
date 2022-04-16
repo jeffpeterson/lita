@@ -733,7 +733,7 @@ static InterpretResult run() {
       break;
 
     case OP_PRINT:
-      fprintValue(stdout, pop());
+      fprintValue(stdout, peek(0));
       printf("\n");
       break;
 

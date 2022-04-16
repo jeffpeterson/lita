@@ -484,7 +484,7 @@ static bool declareVariable() {
  * _Declaring_ a local variable reserves its slot in the compiler, but
  * referencing it before it is _defined_ is an error.
  */
-static uint8_t parseVariable(const char *errorMessage) {
+static u8 parseVariable(const char *errorMessage) {
   consume(TOKEN_IDENTIFIER, errorMessage);
 
   declareVariable();
@@ -794,6 +794,11 @@ static void or_(Ctx *ctx) {
   emitByte(OP_POP);
   parseAt(PREC_OR);
   patchJump(endJump);
+}
+
+static void print(Ctx *ctx) {
+  expression();
+  emitByte(OP_PRINT);
 }
 
 static void string(Ctx *ctx) {
@@ -1147,12 +1152,6 @@ static void ifStatement() {
   patchJump(elseJump);
 }
 
-static void printStatement() {
-  expression();
-  consumeTerminator("Expect newline after value.");
-  emitByte(OP_PRINT);
-}
-
 static void returnStatement() {
   // Note: I like the idea of top-level returns to exit early.
   // if (current->type == TYPE_SCRIPT)
@@ -1228,9 +1227,7 @@ static void declaration() {
 }
 
 static void statement() {
-  if (match(TOKEN_PRINT)) {
-    printStatement();
-  } else if (match(TOKEN_INDENT)) {
+  if (match(TOKEN_INDENT)) {
     beginScope();
     block();
     endScope();
@@ -1332,7 +1329,7 @@ ParseRule rules[] = {
     [TOKEN_IF] = {NULL, NULL, PREC_NONE},
     [TOKEN_NIL] = {literal, NULL, PREC_NONE},
     [TOKEN_OR] = {NULL, or_, PREC_OR},
-    [TOKEN_PRINT] = {NULL, NULL, PREC_NONE},
+    [TOKEN_PRINT] = {print, NULL, PREC_EVAL},
     [TOKEN_RETURN] = {NULL, NULL, PREC_NONE},
     [TOKEN_SUPER] = {super_, NULL, PREC_NONE},
     [TOKEN_THIS] = {this_, NULL, PREC_NONE},
