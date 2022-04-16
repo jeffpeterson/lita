@@ -195,8 +195,7 @@ static void consume(TokenType type, const char *message) {
 }
 
 static void skipNewlines() {
-  while (match(TOKEN_NEWLINE)) {
-  }
+  while (match(TOKEN_NEWLINE)) {}
 }
 
 static void consumeAtLeast(TokenType type, const char *message) {
@@ -264,8 +263,7 @@ static void emitReturn() {
   case TYPE_CLASS:
     emitBytes(OP_GET_LOCAL, 0); // init() methods always return self.
     break;
-  default:
-    emitByte(OP_NIL);
+  default: emitByte(OP_NIL);
   }
 
   emitByte(OP_RETURN);
@@ -663,8 +661,7 @@ static bool assignment(Ctx *ctx, OpCode getOp, OpCode setOp, uint8_t arg,
     emitBytes(setOp, arg);
     return true;
 
-  default:
-    break;
+  default: break;
   }
 
   // Could not assign.
@@ -690,43 +687,20 @@ static void binary(Ctx *ctx) {
   parseAbove(rule->precedence);
 
   switch (operatorType) {
-  case TOKEN_DOT_DOT:
-    emitByte(OP_RANGE);
-    break;
-  case TOKEN_BANG_EQUAL:
-    emitBytes(OP_EQUAL, OP_NOT);
-    break;
-  case TOKEN_EQUAL_EQUAL:
-    emitByte(OP_EQUAL);
-    break;
-  case TOKEN_GREATER:
-    emitByte(OP_GREATER);
-    break;
-  case TOKEN_GREATER_EQUAL:
-    emitBytes(OP_LESS, OP_NOT);
-    break;
+  case TOKEN_DOT_DOT: emitByte(OP_RANGE); break;
+  case TOKEN_BANG_EQUAL: emitBytes(OP_EQUAL, OP_NOT); break;
+  case TOKEN_EQUAL_EQUAL: emitByte(OP_EQUAL); break;
+  case TOKEN_GREATER: emitByte(OP_GREATER); break;
+  case TOKEN_GREATER_EQUAL: emitBytes(OP_LESS, OP_NOT); break;
 
-  case TOKEN_LESS:
-    emitByte(OP_LESS);
-    break;
-  case TOKEN_LESS_EQUAL:
-    emitBytes(OP_GREATER, OP_NOT);
-    break;
+  case TOKEN_LESS: emitByte(OP_LESS); break;
+  case TOKEN_LESS_EQUAL: emitBytes(OP_GREATER, OP_NOT); break;
 
-  case TOKEN_PLUS:
-    emitByte(OP_ADD);
-    break;
-  case TOKEN_MINUS:
-    emitByte(OP_SUBTRACT);
-    break;
-  case TOKEN_STAR:
-    emitByte(OP_MULTIPLY);
-    break;
-  case TOKEN_SLASH:
-    emitByte(OP_DIVIDE);
-    break;
-  default:
-    return;
+  case TOKEN_PLUS: emitByte(OP_ADD); break;
+  case TOKEN_MINUS: emitByte(OP_SUBTRACT); break;
+  case TOKEN_STAR: emitByte(OP_MULTIPLY); break;
+  case TOKEN_SLASH: emitByte(OP_DIVIDE); break;
+  default: return;
   }
 }
 
@@ -766,15 +740,9 @@ static void dot(Ctx *ctx) {
 
 static void literal(Ctx *ctx) {
   switch (parser.previous.type) {
-  case TOKEN_FALSE:
-    emitByte(OP_FALSE);
-    break;
-  case TOKEN_NIL:
-    emitByte(OP_NIL);
-    break;
-  case TOKEN_TRUE:
-    emitByte(OP_TRUE);
-    break;
+  case TOKEN_FALSE: emitByte(OP_FALSE); break;
+  case TOKEN_NIL: emitByte(OP_NIL); break;
+  case TOKEN_TRUE: emitByte(OP_TRUE); break;
   default: // Unreachable.
     return;
   }
@@ -859,9 +827,7 @@ static void variable(Ctx *ctx) {
 }
 
 static void super_(Ctx *ctx) {
-  if (currentClass == NULL) {
-    error("Can't use 'super' outside of a class.");
-  }
+  if (currentClass == NULL) error("Can't use 'super' outside of a class.");
 
   // Todo: super() calls the current method.
   consume(TOKEN_DOT, "Expect '.' after 'super'.");
@@ -900,14 +866,9 @@ static void prefix(Ctx *ctx) {
 
   // Emit the operator instruction.
   switch (operatorType) {
-  case TOKEN_BANG:
-    emitByte(OP_NOT);
-    break;
-  case TOKEN_MINUS:
-    emitByte(OP_NEGATE);
-    break;
-  default:
-    return; // Unreachable.
+  case TOKEN_BANG: emitByte(OP_NOT); break;
+  case TOKEN_MINUS: emitByte(OP_NEGATE); break;
+  default: return; // Unreachable.
   }
 }
 
@@ -917,16 +878,13 @@ static void postfix(Ctx *ctx) {
   switch (operatorType) {
   // case TOKEN_BANG:
   // case TOKEN_QUEST:
-  default:
-    return;
+  default: return;
   }
 }
 
 // Todo: Block-as-expression + yield/break keyword
 static void block() {
-  while (!check(TOKEN_DEDENT) && !check(TOKEN_EOF)) {
-    declaration();
-  }
+  while (!check(TOKEN_DEDENT) && !check(TOKEN_EOF)) { declaration(); }
 
   consume(TOKEN_DEDENT, "Expect dedent after block.");
 }
@@ -1040,8 +998,7 @@ static void classDeclaration(Ctx *ctx) {
   emitSwap(0, 1); // [1 class][0 super] -> [1 super][0 class]
 
   if (match(TOKEN_INDENT)) {
-    while (!check(TOKEN_DEDENT) && !check(TOKEN_EOF))
-      method();
+    while (!check(TOKEN_DEDENT) && !check(TOKEN_EOF)) method();
 
     consume(TOKEN_DEDENT, "Expect dedent after class body.");
   } else {
@@ -1209,8 +1166,7 @@ static void synchronize() {
     case TOKEN_IF:
     case TOKEN_WHILE:
     case TOKEN_PRINT:
-    case TOKEN_RETURN:
-      return;
+    case TOKEN_RETURN: return;
     default:; // Do nothing.
     }
 
@@ -1272,9 +1228,7 @@ ObjFun *compile(const char *source, ObjString *name) {
 
   advance();
 
-  while (!match(TOKEN_EOF)) {
-    declaration();
-  }
+  while (!match(TOKEN_EOF)) { declaration(); }
 
   ObjFun *fun = endCompiler();
   return parser.hadError ? NULL : fun;
