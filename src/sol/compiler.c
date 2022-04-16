@@ -1064,12 +1064,10 @@ static void varDeclaration() {
   uint8_t global = parseVariable("Expect variable name.");
 
   if (match(TOKEN_EQUAL)) {
-    expression();
+    parseAt(PREC_ASSIGNMENT);
   } else {
     emitByte(OP_NIL);
   }
-
-  consumeTerminator("Expect newline or ';' after variable declaration.");
 
   defineVariable(global);
 }
@@ -1086,7 +1084,7 @@ static void assert(Ctx *ctx) {
 static void expressionStatement() {
   expression();
   emitByte(OP_POP);
-  consumeTerminator("Expect newline or ';' after expression");
+  consumeTerminator("Expect newline after expression");
 }
 
 // for ;;i++:
@@ -1097,25 +1095,24 @@ static void forStatement() {
   // uint8_t global = parseVariable("Expect variable after 'for'.");
   // consume(TOKEN_IN, "Expect 'in' after variable in for clause.");
 
-  if (match(TOKEN_SEMICOLON)) {
-    // No initializer.
-  } else if (match(TOKEN_LET)) {
+  if (match(TOKEN_LET)) {
     varDeclaration();
   } else {
-    expressionStatement();
+    if (parseAbove(PREC_SEMI)) emitByte(OP_POP);
   }
+
+  consume(TOKEN_SEMICOLON, "Expect ';' after initializer.");
 
   int loopStart = currentChunk()->count;
   int exitJump = -1;
 
-  if (!match(TOKEN_SEMICOLON)) {
-    expression();
-    consume(TOKEN_SEMICOLON, "Expect ';' after loop condition.");
-
+  if (parseAbove(PREC_SEMI)) {
     // Jump out of the loop if condition is false.
     exitJump = emitJump(OP_JUMP_IF_FALSE);
     emitByte(OP_POP); // Condition.
   }
+
+  consume(TOKEN_SEMICOLON, "Expect ';' after loop condition.");
 
   if (check(TOKEN_INDENT) || match(TOKEN_COLON)) {
     // No increment.
@@ -1123,8 +1120,7 @@ static void forStatement() {
     int bodyJump = emitJump(OP_JUMP);
     int incrementStart = currentChunk()->count;
 
-    expression();
-    emitByte(OP_POP);
+    if (parseAbove(PREC_SEMI)) emitByte(OP_POP);
 
     if (!check(TOKEN_INDENT))
       consume(TOKEN_COLON, "Expect ':' or indentation after for clause.");
@@ -1231,6 +1227,7 @@ static void declaration() {
     funDeclaration();
   } else if (match(TOKEN_LET)) {
     varDeclaration();
+    consumeTerminator("Expect newline after variable declaration.");
   } else {
     statement();
   }
