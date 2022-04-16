@@ -30,4 +30,8 @@ let p2 = Point(3, 4)
 
 // assert p1 + p2 == Point(4, 6)
 
+/// Precedence
+assert (assert 1) == 1
+
+
 write("\n\nAssertions passed!\n".green)

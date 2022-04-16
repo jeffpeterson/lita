@@ -294,6 +294,11 @@ static void emitDefault(Value value) {
   emitBytes(OP_DEFAULT, makeConstant(value));
 }
 
+static void emit(Value val) {
+  if (IS_NIL(val)) return emitByte(OP_NIL);
+  return emitConstant(val);
+}
+
 /**
  * Patches a previously emitted JUMP instruction at the given offset.
  * The new jump operand will point to the next instruction that is
@@ -1063,9 +1068,10 @@ static void varDeclaration() {
   defineVariable(global);
 }
 
-static void assert() {
+static void assert(Ctx *ctx) {
   const char *start = parser.previous.start;
-  expression();
+  if (!parseAt(ctx->precedence))
+    return error("Expect expression after assert.");
   int length = parser.previous.start + parser.previous.length - start;
   Value source = OBJ_VAL(copyString(start, length));
   emitBytes(OP_ASSERT, makeConstant(source));
@@ -1320,7 +1326,7 @@ ParseRule rules[] = {
     [TOKEN_NUMBER] = {number, NULL, PREC_NONE},
 
     [TOKEN_AND] = {NULL, and_, PREC_AND},
-    [TOKEN_ASSERT] = {assert, NULL, PREC_NONE},
+    [TOKEN_ASSERT] = {assert, NULL, PREC_EVAL},
     [TOKEN_CLASS] = {NULL, NULL, PREC_NONE},
     [TOKEN_ELSE] = {NULL, NULL, PREC_NONE},
     [TOKEN_FALSE] = {literal, NULL, PREC_NONE},
