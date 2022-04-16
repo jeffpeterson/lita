@@ -488,6 +488,8 @@ static bool declareVariable() {
  *
  * _Declaring_ a local variable reserves its slot in the compiler, but
  * referencing it before it is _defined_ is an error.
+ *
+ * Returns the constant id if the variable is global, 0 otherwise.
  */
 static u8 parseVariable(const char *errorMessage) {
   consume(TOKEN_IDENTIFIER, errorMessage);
@@ -503,11 +505,15 @@ static u8 parseVariable(const char *errorMessage) {
  * Global variables are _defined_ at runtime via OP_DEFINE_GLOBAL.
  *
  * Undefined locals have a depth of -1.
+ *
+ * Returns the slot of the defined local variable, -1 for global.
  */
-static void markDefined() {
-  if (current->scopeDepth == 0) return;
+static int markDefined() {
+  if (current->scopeDepth == 0) return -1;
+  int local = current->localCount - 1;
 
-  current->locals[current->localCount - 1].depth = current->scopeDepth;
+  current->locals[local].depth = current->scopeDepth;
+  return local;
 }
 
 /**
