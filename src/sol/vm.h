@@ -113,6 +113,7 @@ void crash(const char *str);
  */
 void panic(const char *str);
 
+Value vm_peek(int i);
 InterpretResult vm_add();
 InterpretResult vm_assert(Value src);
 InterpretResult vm_call(int argc);

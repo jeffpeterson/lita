@@ -121,12 +121,9 @@ int disassembleInstruction(Chunk *chunk, int offset) {
           info.type, info.name);
 
   switch (info.type) {
-  case SIMPLE:
-    break;
+  case SIMPLE: break;
 
-  case BYTE:
-    byte(code[offset++]);
-    break;
+  case BYTE: byte(code[offset++]); break;
 
   case CONSTANT: {
     uint8_t arg = code[offset++];
@@ -194,17 +191,14 @@ int disassembleInstruction(Chunk *chunk, int offset) {
     fprintf(stderr, "%x %x\n", args >> 4, args & 0x0f);
     break;
   }
-  default:
-    newline();
+  default: newline();
   }
 
   return offset;
 }
 
 static void printIndents(int indent) {
-  for (int i = 0; i < indent; i++) {
-    fputs("\t", stderr);
-  }
+  for (int i = 0; i < indent; i++) { fputs("\t", stderr); }
 }
 
 void debugTokens() {
@@ -241,12 +235,8 @@ void debugTokens() {
       fprintf(stderr, "[error: %.*s]\n", token.length, token.start);
       printIndents(indent);
       break;
-    case TOKEN_EOF:
-      fputs("[EOF]\n", stderr);
-      break;
-    default:
-      fg(color);
-      fprintf(stderr, "%.*s ", token.length, token.start);
+    case TOKEN_EOF: fputs("[EOF]\n", stderr); break;
+    default: fg(color); fprintf(stderr, "%.*s ", token.length, token.start);
     }
 
   } while (token.type != TOKEN_EOF);
@@ -254,17 +244,25 @@ void debugTokens() {
   resetScanner();
 }
 
-void debugExecution() {
-  int stackSize = vm.stackTop - vm.stack;
-  int offsets[stackSize];
+static void debugValues(Value *start, int length) {
+  int offsets[length];
   // int frameIndex = 0;
-
-  fprintf(stderr, DIM "        |  -->" NO_DIM);
-  for (int i = 0; i < stackSize; i++) {
-
-    offsets[i] = fprintf(stderr, "[ ") + fprintValue(stderr, vm.stack[i]) +
+  for (int i = 0; i < length; i++) {
+    offsets[i] = fprintf(stderr, "[ ") + fprintValue(stderr, start[i]) +
                  fprintf(stderr, " ]");
   }
+}
+
+void debugStack() {
+  debugValues(vm.stack, vm.stackTop - vm.stack);
+  fputs(DIM, stderr);
+  debugValues(vm.stackTop, vm.stackHigh - vm.stackTop);
+  fputs(NO_DIM, stderr);
+}
+
+void debugExecution() {
+  fprintf(stderr, DIM "        |  -->" NO_DIM);
+  debugStack();
   // int frameSizes[vm.frameCount];
 
   // for (int i = 0; i <= vm.frameCount - 1; i++) {

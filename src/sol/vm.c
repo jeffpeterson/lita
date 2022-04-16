@@ -239,8 +239,7 @@ static bool callValue(Value callee, int argCount) {
       return true;
     }
 
-    case OBJ_CLOSURE:
-      return call(AS_CLOSURE(callee), argCount);
+    case OBJ_CLOSURE: return call(AS_CLOSURE(callee), argCount);
 
     case OBJ_NATIVE: {
       ObjNative *native = AS_NATIVE(callee);
@@ -258,8 +257,7 @@ static bool callValue(Value callee, int argCount) {
       return true;
     }
 
-    default:
-      break; // Non-callable object type.
+    default: break; // Non-callable object type.
     }
   }
 
@@ -430,6 +428,8 @@ InterpretResult vm_get_global(Value name) {
   return INTERPRET_OK;
 }
 
+Value vm_peek(int idx) { return peek(idx); }
+
 /** [1 start][0 end] -> [0 range] */
 void vm_range() {
   let b = pop();
@@ -481,25 +481,13 @@ static InterpretResult run() {
       push(READ_CONSTANT());
       break;
     }
-    case OP_NIL:
-      push(NIL_VAL);
-      break;
-    case OP_TRUE:
-      push(BOOL_VAL(true));
-      break;
-    case OP_FALSE:
-      push(BOOL_VAL(false));
-      break;
+    case OP_NIL: push(NIL_VAL); break;
+    case OP_TRUE: push(BOOL_VAL(true)); break;
+    case OP_FALSE: push(BOOL_VAL(false)); break;
 
-    case OP_PEEK:
-      push(peek(READ_BYTE()));
-      break;
-    case OP_POP:
-      pop();
-      break;
-    case OP_POPN:
-      popn(READ_BYTE());
-      break;
+    case OP_PEEK: push(peek(READ_BYTE())); break;
+    case OP_POP: pop(); break;
+    case OP_POPN: popn(READ_BYTE()); break;
     case OP_SWAP: {
       uint8_t args = READ_BYTE();
       vm_swap(args & 0x0f, args >> 4);
@@ -515,17 +503,11 @@ static InterpretResult run() {
       }
       break;
 
-    case OP_RANGE:
-      vm_range();
-      break;
+    case OP_RANGE: vm_range(); break;
 
-    case OP_TUPLE:
-      vm_tuple(READ_BYTE());
-      break;
+    case OP_TUPLE: vm_tuple(READ_BYTE()); break;
 
-    case OP_DEFINE_GLOBAL:
-      tableSet(&vm.globals, READ_CONSTANT(), pop());
-      break;
+    case OP_DEFINE_GLOBAL: tableSet(&vm.globals, READ_CONSTANT(), pop()); break;
 
     case OP_GET_GLOBAL:
       if ((err = vm_get_global(READ_CONSTANT()))) return err;
@@ -597,29 +579,17 @@ static InterpretResult run() {
       push(BOOL_VAL(valuesEqual(a, b)));
       break;
     }
-    case OP_GREATER:
-      BINARY_OP(BOOL_VAL, >);
-      break;
-    case OP_LESS:
-      BINARY_OP(BOOL_VAL, <);
-      break;
+    case OP_GREATER: BINARY_OP(BOOL_VAL, >); break;
+    case OP_LESS: BINARY_OP(BOOL_VAL, <); break;
 
     case OP_ADD:
       if ((err = vm_add())) return err;
       SYNC_FRAME();
       break;
-    case OP_SUBTRACT:
-      BINARY_OP(NUMBER_VAL, -);
-      break;
-    case OP_MULTIPLY:
-      BINARY_OP(NUMBER_VAL, *);
-      break;
-    case OP_DIVIDE:
-      BINARY_OP(NUMBER_VAL, /);
-      break;
-    case OP_NOT:
-      push(BOOL_VAL(isFalsey(pop())));
-      break;
+    case OP_SUBTRACT: BINARY_OP(NUMBER_VAL, -); break;
+    case OP_MULTIPLY: BINARY_OP(NUMBER_VAL, *); break;
+    case OP_DIVIDE: BINARY_OP(NUMBER_VAL, /); break;
+    case OP_NOT: push(BOOL_VAL(isFalsey(pop()))); break;
     case OP_NEGATE:
       if (!IS_NUMBER(peek(0))) {
         runtimeError("Operand must be a number.");

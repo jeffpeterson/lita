@@ -34,20 +34,11 @@ int main(int argc, char *argv[]) {
 
   while ((opt = getopt(argc, argv, "cire:")) != -1) {
     switch (opt) {
-    case 'c':
-      mode = COMPILE;
-      break;
-    case 'i':
-      mode = INTERPRET;
-      break;
-    case 'r':
-      startRepl = true;
-      break;
-    case 'e':
-      assertOkResult(interpret(optarg, newString("eval flag")));
-      break;
-    case '?':
-      exit(1);
+    case 'c': mode = COMPILE; break;
+    case 'i': mode = INTERPRET; break;
+    case 'r': startRepl = true; break;
+    case 'e': assertOkResult(interpret(optarg, newString("eval flag"))); break;
+    case '?': exit(1);
     }
   }
 
@@ -58,9 +49,7 @@ int main(int argc, char *argv[]) {
   for (int i = optind; i < argc; i++) {
     ObjString *path = newString(argv[i]);
 
-    if (mode == INTERPRET) {
-      runFile(path);
-    }
+    if (mode == INTERPRET) { runFile(path); }
 
     if (mode == COMPILE) compileFile(path);
   }
