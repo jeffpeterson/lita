@@ -36,7 +36,7 @@ typedef enum {     // Lower precedence
   PREC_COMMA,      // ,
   PREC_OR,         // or
   PREC_AND,        // and
-  PREC_EVAL,       // (x y z)
+  PREC_ADJOINING,  // (x y z)
   PREC_ASSIGNMENT, // = += -= /= *=
   PREC_EQUALITY,   // == !=
   PREC_COMPARISON, // < > <= >=
@@ -1246,7 +1246,7 @@ void markCompilerRoots() {
 ParseRule rules[] = {
 
     //                {prefix, infix, precedence}
-    // [TOKEN_NEWLINE] = {NULL, NULL, PREC_EVAL},
+    // [TOKEN_NEWLINE] = {NULL, NULL, PREC_ADJOINING},
     [TOKEN_LEFT_PAREN] = {grouping, call, PREC_CALL},
     [TOKEN_RIGHT_PAREN] = {NULL, NULL, PREC_NONE},
     [TOKEN_LEFT_BRACE] = {NULL, NULL, PREC_NONE},
@@ -1283,7 +1283,7 @@ ParseRule rules[] = {
     [TOKEN_NUMBER] = {number, NULL, PREC_NONE},
 
     [TOKEN_AND] = {NULL, and_, PREC_AND},
-    [TOKEN_ASSERT] = {assert, NULL, PREC_EVAL},
+    [TOKEN_ASSERT] = {assert, NULL, PREC_ADJOINING},
     [TOKEN_CLASS] = {NULL, NULL, PREC_NONE},
     [TOKEN_ELSE] = {NULL, NULL, PREC_NONE},
     [TOKEN_FALSE] = {literal, NULL, PREC_NONE},
@@ -1292,7 +1292,7 @@ ParseRule rules[] = {
     [TOKEN_IF] = {NULL, NULL, PREC_NONE},
     [TOKEN_NIL] = {literal, NULL, PREC_NONE},
     [TOKEN_OR] = {NULL, or_, PREC_OR},
-    [TOKEN_PRINT] = {print, NULL, PREC_EVAL},
+    [TOKEN_PRINT] = {print, NULL, PREC_ADJOINING},
     [TOKEN_RETURN] = {NULL, NULL, PREC_NONE},
     [TOKEN_SUPER] = {super_, NULL, PREC_NONE},
     [TOKEN_THIS] = {this_, NULL, PREC_NONE},
