@@ -63,6 +63,7 @@ _ bind(_ self, _ fun);
 _ findMethod(_ klass, _ name);
 _ find(_ self, _ name);
 
+bool has(_ self, _ key);
 _ get(_ self, _ key);
 _ set(_ self, _ key, _ value);
 

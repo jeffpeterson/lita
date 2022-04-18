@@ -115,9 +115,7 @@ _ method(_ klass, _ fun) {
 
   let key = name(fun);
 
-  if (isNil(key)) {
-    return error("Method must be callable.");
-  }
+  if (isNil(key)) { return error("Method must be callable."); }
 
   tableSet(&AS_CLASS(klass)->methods, key, fun);
 
@@ -137,12 +135,8 @@ _ add(_ a, _ b) {
   case OBJ_STRING:
     out = (Obj *)concatStrings(AS_STRING(a), AS_STRING(toStr(b)));
     break;
-  case OBJ_TUPLE:
-    out = (Obj *)zipTuples(AS_TUPLE(a), AS_TUPLE(b), add);
-    break;
-  default:
-    runtimeError("Values cannot be added.");
-    return nil;
+  case OBJ_TUPLE: out = (Obj *)zipTuples(AS_TUPLE(a), AS_TUPLE(b), add); break;
+  default: runtimeError("Values cannot be added."); return nil;
   }
 
   if (out == NULL) return nil;
@@ -174,9 +168,7 @@ _ multiply(_ a, _ b) {
   case OBJ_TUPLE:
     out = (Obj *)zipTuples(AS_TUPLE(a), AS_TUPLE(b), multiply);
     break;
-  default:
-    runtimeError("Values cannot be multiplied.");
-    return NIL_VAL;
+  default: runtimeError("Values cannot be multiplied."); return NIL_VAL;
   }
 
   if (out == NULL) return NIL_VAL;
@@ -220,6 +212,7 @@ _ find(_ self, _ key) {
   return findMethod(classOf(self), key);
 }
 
+bool has(_ self, _ key) { return !IS_NIL(find(self, key)); }
 _ get(_ self, _ key) { return bind(self, find(self, key)); }
 _ set(_ self, _ key, _ value) { return error("Not implemented."); }
 
@@ -229,8 +222,7 @@ _ len(_ x) {
   if (!isObj(x)) return nil;
 
   switch (asObj(x)->type) {
-  case OBJ_BOUND:
-    return len(obj(asMethod(x)->method));
+  case OBJ_BOUND: return len(obj(asMethod(x)->method));
 
   case OBJ_CLASS:
   case OBJ_CLOSURE:
@@ -240,30 +232,22 @@ _ len(_ x) {
   case OBJ_NATIVE:
   case OBJ_UPVALUE:
 
-  case OBJ_RANGE:
-    return subtract(asRange(x)->end, asRange(x)->start);
+  case OBJ_RANGE: return subtract(asRange(x)->end, asRange(x)->start);
 
   case OBJ_STRING:
   case OBJ_TUPLE:
-  default:
-    return nil;
+  default: return nil;
   }
 }
 
 _ name(_ self) {
   switch (asObj(self)->type) {
-  case OBJ_CLASS:
-    return obj(AS_CLASS(self)->name);
-  case OBJ_FUN:
-    return obj(AS_FUN(self)->name);
-  case OBJ_NATIVE:
-    return obj(AS_NATIVE(self)->name);
-  case OBJ_CLOSURE:
-    return obj(AS_CLOSURE(self)->fun->name);
-  case OBJ_BOUND:
-    return obj(AS_BOUND(self)->method->fun->name);
-  default:
-    return nil;
+  case OBJ_CLASS: return obj(AS_CLASS(self)->name);
+  case OBJ_FUN: return obj(AS_FUN(self)->name);
+  case OBJ_NATIVE: return obj(AS_NATIVE(self)->name);
+  case OBJ_CLOSURE: return obj(AS_CLOSURE(self)->fun->name);
+  case OBJ_BOUND: return obj(AS_BOUND(self)->method->fun->name);
+  default: return nil;
   }
 }
 
@@ -308,21 +292,15 @@ _ toString(_ val) {
 
   if (IS_OBJ(val)) {
     switch (OBJ_TYPE(val)) {
-    case OBJ_BOUND:
-      return OBJ_VAL(AS_BOUND(val)->method->fun->name);
-    case OBJ_CLASS:
-      return OBJ_VAL(AS_CLASS(val)->name);
-    case OBJ_CLOSURE:
-      return toString(OBJ_VAL(AS_CLOSURE(val)->fun));
-    case OBJ_ERR:
-      return OBJ_VAL(AS_ERR(val)->msg);
-    case OBJ_FUN:
-      return OBJ_VAL(AS_FUN(val)->name);
+    case OBJ_BOUND: return OBJ_VAL(AS_BOUND(val)->method->fun->name);
+    case OBJ_CLASS: return OBJ_VAL(AS_CLASS(val)->name);
+    case OBJ_CLOSURE: return toString(OBJ_VAL(AS_CLOSURE(val)->fun));
+    case OBJ_ERR: return OBJ_VAL(AS_ERR(val)->msg);
+    case OBJ_FUN: return OBJ_VAL(AS_FUN(val)->name);
     case OBJ_INSTANCE:
       // get(val, string("toString"));
       return toString(OBJ_VAL(AS_INSTANCE(val)->klass));
-    case OBJ_NATIVE:
-      return OBJ_VAL(AS_NATIVE(val)->name);
+    case OBJ_NATIVE: return OBJ_VAL(AS_NATIVE(val)->name);
 
     case OBJ_RANGE: {
       ObjRange *range = AS_RANGE(val);
@@ -330,11 +308,9 @@ _ toString(_ val) {
           stringf("%s..%s", toString(range->start), toString(range->end)));
     }
 
-    case OBJ_STRING:
-      return val;
+    case OBJ_STRING: return val;
 
-    default:
-      return str(objInfo[OBJ_TYPE(val)].inspect);
+    default: return str(objInfo[OBJ_TYPE(val)].inspect);
     }
   }
 
@@ -368,28 +344,23 @@ _ inspect(_ val) {
     case OBJ_CLASS:
       return OBJ_VAL(stringf("<class %s>", AS_CLASS(val)->name->chars));
 
-    case OBJ_CLOSURE:
-      return toStr(OBJ_VAL(AS_CLOSURE(val)->fun));
+    case OBJ_CLOSURE: return toStr(OBJ_VAL(AS_CLOSURE(val)->fun));
 
-    case OBJ_ERR:
-      return OBJ_VAL(stringf("Error(%s)", AS_ERR(val)->msg->chars));
+    case OBJ_ERR: return OBJ_VAL(stringf("Error(%s)", AS_ERR(val)->msg->chars));
 
     case OBJ_FUN: {
       ObjFun *fun = AS_BOUND(val)->method->fun;
       return OBJ_VAL(stringf("<fn %s/%d>", fun->name->chars, fun->arity));
     }
-    case OBJ_INSTANCE:
-      return toStr(OBJ_VAL(AS_INSTANCE(val)->klass));
-    case OBJ_NATIVE:
-      return OBJ_VAL(AS_NATIVE(val)->name);
+    case OBJ_INSTANCE: return toStr(OBJ_VAL(AS_INSTANCE(val)->klass));
+    case OBJ_NATIVE: return OBJ_VAL(AS_NATIVE(val)->name);
 
     case OBJ_RANGE: {
       ObjRange *range = AS_RANGE(val);
       return OBJ_VAL(stringf("%s..%s", toStr(range->start), toStr(range->end)));
     }
 
-    case OBJ_STRING:
-      return OBJ_VAL(stringf("\"%s\"", AS_STRING(val)->chars));
+    case OBJ_STRING: return OBJ_VAL(stringf("\"%s\"", AS_STRING(val)->chars));
 
     case OBJ_TUPLE: {
       ObjTuple *tuple = AS_TUPLE(val);
@@ -403,8 +374,7 @@ _ inspect(_ val) {
       return out;
     }
 
-    default:
-      break;
+    default: break;
     }
   }
 

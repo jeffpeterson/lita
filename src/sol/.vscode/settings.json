@@ -50,7 +50,8 @@
     "mutex": "c",
     "optional": "c",
     "__locale": "c",
-    "ios": "c"
+    "ios": "c",
+    "scanner.h": "c"
   },
   "C_Cpp.default.includePath": [".."],
   "C_Cpp.default.compilerArgs": ["-Wall", "-Werror"],
