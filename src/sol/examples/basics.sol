@@ -17,10 +17,7 @@ for let i = a; i < b; i++
 	let y = i - 1
 	print ("✓", x, y)
 
-class Ainu
-	init(name)
-		this.name = name
-
+class Ainu(name)
 	kind() => 'Ainu
 
 class Maia < Ainu
