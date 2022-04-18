@@ -33,5 +33,8 @@ let p2 = Point(3, 4)
 /// Precedence
 assert (assert 1) == 1
 
+assert (3b) == 12
+assert (b 3) == 12
+assert (Point 1 2)
 
-write("\n\nAssertions passed!\n".green)
+write "\n\nAssertions passed!\n".green

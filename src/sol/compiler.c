@@ -34,9 +34,9 @@ typedef enum {     // Lower precedence
   PREC_NONE,       //
   PREC_SEMI,       // ; NEWLINE
   PREC_COMMA,      // ,
+  PREC_ADJOINING,  // (x y z)
   PREC_OR,         // or
   PREC_AND,        // and
-  PREC_ADJOINING,  // (x y z)
   PREC_ASSIGNMENT, // = += -= /= *=
   PREC_EQUALITY,   // == !=
   PREC_COMPARISON, // < > <= >=
@@ -532,6 +532,7 @@ static void defineVariable(uint8_t global) {
 }
 
 static ParseRule *getRule(TokenType type) { return &rules[type]; }
+static u8 adjoining();
 
 /**
  * Parse at this precedence or above.
@@ -569,6 +570,11 @@ static bool parseAt(Precedence precedence) {
     return false;
   }
 
+  if (ctx.precedence <= PREC_ADJOINING) {
+    u8 argc = adjoining();
+    if (argc) emitBytes(OP_CALL, argc);
+  }
+
   return true;
 }
 
@@ -578,6 +584,17 @@ static bool parseAt(Precedence precedence) {
  */
 static bool parseAbove(Precedence precedence) {
   return parseAt(precedence + 1);
+}
+
+/**
+ * Parse whitespace-separated expressions.
+ * Returns the number of expressions parsed.
+ */
+static u8 adjoining() {
+  if (!parseAbove(PREC_ADJOINING)) return 0;
+  u8 count = 1;
+  while (parseAbove(PREC_ADJOINING)) count++;
+  return count;
 }
 
 static bool expression() { return parseAbove(PREC_NONE); }
@@ -821,10 +838,7 @@ static void namedVariable(Token name, Ctx *ctx) {
   emitBytes(getOp, arg);
 }
 
-static void variable(Ctx *ctx) {
-  namedVariable(parser.previous, ctx);
-  // if (match(TOKEN_LEFT_PAREN)) call(ctx);
-}
+static void variable(Ctx *ctx) { namedVariable(parser.previous, ctx); }
 
 static void super_(Ctx *ctx) {
   if (currentClass == NULL) error("Can't use 'super' outside of a class.");
@@ -928,7 +942,7 @@ static void function(FunType type) {
   } else if (match(TOKEN_FAT_ARROW)) {
     expression();
     emitByte(OP_RETURN);
-    consumeTerminator("Expect newline or ';' after arrow function.");
+    consumeTerminator("Expect newline after arrow function.");
   } else if (match(TOKEN_INDENT)) {
     block();
   }
@@ -1041,7 +1055,7 @@ static void assert(Ctx *ctx) {
 static void expressionStatement() {
   expression();
   emitByte(OP_POP);
-  consumeTerminator("Expect newline after expression");
+  consumeTerminator("Expect newline after expression.");
 }
 
 // for ;;i++:
