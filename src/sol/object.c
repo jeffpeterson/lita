@@ -58,8 +58,7 @@ ObjClass *newClass(ObjString *name) {
 
 ObjClosure *newClosure(ObjFun *fun) {
   ObjUpvalue **upvalues = ALLOCATE(ObjUpvalue *, fun->upvalueCount);
-  for (int i = 0; i < fun->upvalueCount; i++)
-    upvalues[i] = NULL;
+  for (int i = 0; i < fun->upvalueCount; i++) upvalues[i] = NULL;
 
   ObjClosure *closure = ALLOCATE_OBJ(ObjClosure, OBJ_CLOSURE);
   closure->fun = fun;
@@ -117,8 +116,7 @@ ObjRange *makeRange(Value start, Value end) {
 const char *objectBytes(Obj *obj, int length) {
   switch (obj->type) {
   case OBJ_RANGE: {
-    if (length != sizeof(Value) * 2)
-      return NULL;
+    if (length != sizeof(Value) * 2) return NULL;
 
     ObjRange *range = (ObjRange *)obj;
     return (char *)&range->start;
@@ -126,21 +124,18 @@ const char *objectBytes(Obj *obj, int length) {
 
   case OBJ_STRING: {
     ObjString *str = (ObjString *)obj;
-    if (length != str->length)
-      return NULL;
+    if (length != str->length) return NULL;
     return str->chars;
   }
 
   case OBJ_TUPLE: {
     ObjTuple *tuple = (ObjTuple *)obj;
-    if (length != tuple->length * sizeof(Value))
-      return NULL;
+    if (length != tuple->length * sizeof(Value)) return NULL;
 
     return (char *)tuple->values;
   }
 
-  default:
-    return NULL;
+  default: return NULL;
   }
 }
 
@@ -167,14 +162,11 @@ int fprintObject(FILE *io, Obj *obj) {
            fprintTable(io, &klass->methods) + fputs(" }", io);
   }
 
-  case OBJ_CLOSURE:
-    return fprintFunction(io, "fn", ((ObjClosure *)obj)->fun);
+  case OBJ_CLOSURE: return fprintFunction(io, "fn", ((ObjClosure *)obj)->fun);
 
-  case OBJ_ERR:
-    return fprintf(io, "Error: %s", ((ObjErr *)obj)->msg->chars);
+  case OBJ_ERR: return fprintf(io, "Error: %s", ((ObjErr *)obj)->msg->chars);
 
-  case OBJ_FUN:
-    return fprintFunction(io, "ObjFun", (ObjFun *)obj);
+  case OBJ_FUN: return fprintFunction(io, "ObjFun", (ObjFun *)obj);
 
   case OBJ_INSTANCE: {
     ObjInstance *inst = (ObjInstance *)obj;
@@ -194,17 +186,15 @@ int fprintObject(FILE *io, Obj *obj) {
            fprintValue(io, range->end);
   }
 
-  case OBJ_STRING:
-    return fprintf(io, FG_GREEN "\"%s\"" FG_DEFAULT,
-                   ((ObjString *)obj)->chars) -
-           10;
-
+  case OBJ_STRING: {
+    ObjString *str = escapeString((ObjString *)obj);
+    return fprintf(io, FG_GREEN "%s" FG_DEFAULT, str->chars) - 10;
+  }
   case OBJ_TUPLE: {
     ObjTuple *tuple = (ObjTuple *)obj;
     int tot = fprintf(io, "(");
     for (int i = 0; i < tuple->length; i++) {
-      if (i > 0)
-        tot += fprintf(io, ", ");
+      if (i > 0) tot += fprintf(io, ", ");
       tot += fprintValue(io, tuple->values[i]);
     }
     return fprintf(io, ")") + tot;
@@ -221,11 +211,9 @@ int fprintObject(FILE *io, Obj *obj) {
 int cmpObjects(Obj *a, Obj *b) {
   int td = a->type - b->type;
 
-  if (td != 0)
-    return td;
+  if (td != 0) return td;
 
-  if (a == b)
-    return 0;
+  if (a == b) return 0;
 
   switch (a->type) {
   case OBJ_BOUND:

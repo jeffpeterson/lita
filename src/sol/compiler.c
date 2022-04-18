@@ -294,6 +294,7 @@ static void emitDefault(Value value) {
 
 static void emit(Value val) {
   if (IS_NIL(val)) return emitByte(OP_NIL);
+  if (IS_BOOL(val)) return emitByte(AS_BOOL(val) ? OP_TRUE : OP_FALSE);
   return emitConstant(val);
 }
 
@@ -800,14 +801,14 @@ static void print(Ctx *ctx) {
 static void string(Ctx *ctx) {
   Token token = parser.previous;
   ObjString *str = copyString(token.start + 1, token.length - 2);
-  if (token.escape) str = escapeString(str);
+  if (token.escaped) str = unescapeString(str);
   emitConstant(OBJ_VAL(str));
 }
 
 static void symbol(Ctx *ctx) {
   Token token = parser.previous;
   ObjString *str = copyString(token.start + 1, token.length - 1);
-  if (token.escape) str = escapeString(str);
+  if (token.escaped) str = unescapeString(str);
   emitConstant(OBJ_VAL(str));
 }
 

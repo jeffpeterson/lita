@@ -20,6 +20,9 @@ TEST_O  := $(filter-out %/main.o,$(OBJECTS))
 
 default: $(TARGET)
 all: default $(TEST) lib
+db/test: $(TEST)
+	@lldb $(TEST)
+
 db/%: $(TARGET)
 	@lldb sol examples/$*.sol
 

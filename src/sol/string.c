@@ -1,6 +1,6 @@
+#include <ctype.h>
 #include <stdarg.h>
 
-#include "buffer.h"
 #include "lib.h"
 #include "memory.h"
 #include "string.h"
@@ -59,7 +59,46 @@ ObjString *copyString(const char *chars, int length) {
   return allocateString(heapChars, length, hash);
 }
 
+ObjString *bufferToString(Buffer *buf) {
+  if (buf->count == 0 || buf->bytes[buf->count - 1] != '\0')
+    appendCharToBuffer(buf, '\0');
+  growBuffer(buf, buf->count);
+  return takeString((char *)buf->bytes, buf->count - 1);
+}
+
 ObjString *escapeString(ObjString *str) {
+  Buffer out = newBuffer(str->length + 3);
+  appendCharToBuffer(&out, '"');
+
+  for (int i = 0; i < str->length; i++) {
+    u8 ch = str->chars[i];
+
+    if (isprint(ch) || ch > 127) {
+      appendCharToBuffer(&out, ch);
+      continue;
+    }
+
+    appendCharToBuffer(&out, '\\');
+
+    ch = ch >= '\0' && ch <= '\6'  ? ch + '0'
+         : ch == '\a'              ? 'a'
+         : ch == '\b'              ? 'b'
+         : ch == '\e'              ? 'e'
+         : ch == '\f'              ? 'f'
+         : ch == '\n'              ? 'n'
+         : ch == '\r'              ? 'r'
+         : ch == '\t'              ? 't'
+         : ch == '\\' || ch == '"' ? ch
+                                   : 'x';
+    appendCharToBuffer(&out, ch);
+  }
+
+  appendCharToBuffer(&out, '"');
+
+  return bufferToString(&out);
+}
+
+ObjString *unescapeString(ObjString *str) {
   char *out = ALLOCATE(char, str->length + 1);
   int len = 0;
   bool escape = false;

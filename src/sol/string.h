@@ -1,6 +1,7 @@
 #ifndef sol_string_h
 #define sol_string_h
 
+#include "buffer.h"
 #include "common.h"
 #include "object.h"
 
@@ -19,9 +20,13 @@ ObjString *takeString(char *chars, int length);
  */
 ObjString *copyString(const char *chars, int length);
 ObjString *concatStrings(ObjString *a, ObjString *b);
+ObjString *bufferToString(Buffer *buf);
+
 ObjString *stringf(const char *fmt, ...);
-ObjString *escapeString(ObjString *str);
 ObjString *stringToCIdent(ObjString *str);
+
+ObjString *escapeString(ObjString *str);
+ObjString *unescapeString(ObjString *str);
 
 ObjString *vstringFormat(const char *fmt, va_list args);
 ObjString *stringFormat(const char *fmt, ...);

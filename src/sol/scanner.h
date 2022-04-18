@@ -80,7 +80,7 @@ typedef enum {
 
 typedef struct {
   TokenType type;
-  bool escape;
+  bool escaped;
   const char *start;
   int length;
   int line;
