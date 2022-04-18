@@ -407,16 +407,12 @@ InterpretResult vm_assert(Value src) {
   return INTERPRET_OK;
 }
 
+// [argc fn][1 arg1][0 ...args ] -> [0 return]
 InterpretResult vm_call(int argc) {
   return callValue(peek(argc), argc) ? INTERPRET_OK : INTERPRET_RUNTIME_ERROR;
 }
 
-// [0 self] -> [0 value]
-InterpretResult vm_get(Value name) {
-  return arity(push(get(pop(), name))) == 0 ? vm_call(0) : INTERPRET_OK;
-}
-
-// [0 self] -> [0 value]
+// [] -> [0 value]
 InterpretResult vm_get_global(Value name) {
   let value;
 
@@ -426,6 +422,57 @@ InterpretResult vm_get_global(Value name) {
   }
   push(value);
   return INTERPRET_OK;
+}
+
+// [0 value] -> [0 value]
+InterpretResult vm_set_global(Value name) {
+  if (tableSet(&vm.globals, name, peek(0))) {
+    // This is a new key and hasn't been defined.
+    tableDelete(&vm.globals, name);
+    return runtimeError("Cannot set undefined variable '%s'.",
+                        AS_STRING(name)->chars);
+  }
+  return INTERPRET_OK;
+}
+
+// [0 self] -> [0 value]
+InterpretResult vm_get_property(Value name) {
+  return arity(push(get(pop(), name))) == 0 ? vm_call(0) : INTERPRET_OK;
+}
+
+// [1 self][0 value] -> [0 value]
+InterpretResult vm_set_property(Value name) {
+  if (!IS_INSTANCE(peek(1))) {
+    return runtimeError("Only instances have properties.");
+  }
+
+  ObjInstance *inst = AS_INSTANCE(peek(1));
+
+  // Keep on stack to prevent GC collection.
+  Value value = peek(0);
+
+  // Assigning 'nil' is deletion.
+  if (IS_NIL(value)) tableDelete(&inst->fields, name);
+  else tableSet(&inst->fields, name, value);
+
+  popn(2);
+  push(value);
+  return INTERPRET_OK;
+}
+
+// [0 self] -> [0 value]
+InterpretResult vm_get_var(Value name) {
+  if (has(peek(0), name)) return vm_get_property(name);
+  pop();
+  return vm_get_global(name);
+}
+
+// [1 self][0 value] -> [0 value]
+InterpretResult vm_set_var(Value name) {
+  if (has(peek(0), name)) return vm_set_property(name);
+  vm_swap(0, 1);
+  pop();
+  return vm_set_global(name);
 }
 
 Value vm_peek(int idx) { return peek(idx); }
@@ -513,16 +560,9 @@ static InterpretResult run() {
       if ((err = vm_get_global(READ_CONSTANT()))) return err;
       break;
 
-    case OP_SET_GLOBAL: {
-      Value name = READ_CONSTANT();
-      if (tableSet(&vm.globals, name, peek(0))) {
-        // This is a new key and hasn't been defined.
-        tableDelete(&vm.globals, name);
-        return runtimeError("Cannot set undefined variable '%s'.",
-                            AS_STRING(name)->chars);
-      }
+    case OP_SET_GLOBAL:
+      if ((err = vm_set_global(READ_CONSTANT()))) return err;
       break;
-    }
 
     case OP_GET_LOCAL: {
       uint8_t slot = READ_BYTE();
@@ -535,31 +575,23 @@ static InterpretResult run() {
       break;
     }
 
-    case OP_GET_PROPERTY: {
-      vm_get(READ_CONSTANT());
+    case OP_GET_PROPERTY:
+      if ((err = vm_get_property(READ_CONSTANT()))) return err;
       SYNC_FRAME();
       break;
-    }
-    case OP_SET_PROPERTY: { // [1 self][0 value] -> [0 value]
-      let name = READ_CONSTANT();
-
-      if (!IS_INSTANCE(peek(1))) {
-        return runtimeError("Only instances have properties.");
-      }
-
-      ObjInstance *inst = AS_INSTANCE(peek(1));
-
-      // Keep on stack to prevent GC collection.
-      Value value = peek(0);
-
-      // Assigning 'nil' is deletion.
-      if (IS_NIL(value)) tableDelete(&inst->fields, name);
-      else tableSet(&inst->fields, name, value);
-
-      popn(2);
-      push(value);
+    case OP_SET_PROPERTY:
+      if ((err = vm_set_property(READ_CONSTANT()))) return err;
+      SYNC_FRAME();
       break;
-    }
+
+    case OP_GET_VAR:
+      if ((err = vm_get_var(READ_CONSTANT()))) return err;
+      SYNC_FRAME();
+      break;
+    case OP_SET_VAR: // [1 self][0 value] -> [0 value]
+      if ((err = vm_set_var(READ_CONSTANT()))) return err;
+      SYNC_FRAME();
+      break;
 
     case OP_GET_UPVALUE: {
       uint8_t slot = READ_BYTE();
@@ -614,7 +646,7 @@ static InterpretResult run() {
       break;
     }
 
-    case OP_CALL: // [argc fn][1 arg1][0 ...args ]
+    case OP_CALL:
       vm_call(READ_BYTE());
       SYNC_FRAME();
       break;

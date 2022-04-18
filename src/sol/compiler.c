@@ -828,6 +828,12 @@ static void namedVariable(Token name, Ctx *ctx) {
   } else if ((arg = resolveUpvalue(current, &name)) != -1) {
     getOp = OP_GET_UPVALUE;
     setOp = OP_SET_UPVALUE;
+  } else if (currentClass) {
+    arg = identifierConstant(&name);
+    Token self = syntheticToken("this");
+    emitBytes(OP_GET_LOCAL, resolveLocal(current, &self));
+    getOp = OP_GET_VAR;
+    setOp = OP_SET_VAR;
   } else {
     arg = identifierConstant(&name);
     getOp = OP_GET_GLOBAL;
