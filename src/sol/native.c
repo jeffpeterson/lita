@@ -44,15 +44,29 @@ static _ nativeAppend(_ this, int argc, _ *args) {
 
 /// Native methods
 
+/// Any
 static _ Any_class(_ this, int argc, _ *args) { return classOf(this); }
+static _ Any_eql(_ this, int argc, _ *args) {
+  return BOOL_VAL(this == args[0]);
+}
 static _ Any_hash(_ this, int argc, _ *args) { return hashValue(this); }
 static _ Any_inspect(_ this, int argc, _ *args) { return inspect(this); }
+static _ Any_objectId(_ this, int argc, _ *args) {
+  return NUMBER_VAL((u64)AS_OBJ(this));
+}
 static _ Any_string(_ this, int argc, _ *args) { return toString(this); }
 
+/// Array
+static _ Array_get(_ this, int argc, _ *args) {
+  ObjArray *arr = asArray(this);
+  u32 idx = asNum(args[0]);
+  if (idx >= arr->length) return nil;
+
+  return arr->values[idx];
+}
 static _ Array_length(_ this, int argc, _ *args) {
   return NUMBER_VAL(asArray(this)->length);
 }
-
 static _ Array_plus(_ this, int argc, _ *args) {
   ObjArray *a = asArray(this);
   ObjArray *b = asArray(args[0]);
@@ -76,8 +90,8 @@ static _ Array_slice(_ this, int argc, _ *args) {
   return OBJ_VAL(copyArray(arr->values + start, len));
 }
 
+/// Function
 static _ Function_arity(_ this, int argc, _ *args) { return arity(this); }
-
 static _ Function_bytes(_ this, int argc, _ *args) {
   if (!isFn(this)) return error("Only Fns have bytes.");
 
@@ -85,7 +99,6 @@ static _ Function_bytes(_ this, int argc, _ *args) {
 
   return memory(fn->chunk.code, fn->chunk.count);
 }
-
 static _ Function_byteCount(_ this, int argc, _ *args) {
   if (!isFn(this)) return error("Only Fns have bytes.");
 
@@ -94,6 +107,10 @@ static _ Function_byteCount(_ this, int argc, _ *args) {
   return AS_NUMBER(fn->chunk.count);
 }
 
+/// Number
+static _ Number_eql(_ this, int argc, _ *args) {
+  return BOOL_VAL(AS_NUMBER(this) == AS_NUMBER(args[0]));
+}
 static _ Number_star(_ this, int argc, _ *args) {
   let arg = args[0];
 
@@ -102,6 +119,7 @@ static _ Number_star(_ this, int argc, _ *args) {
   return error("Cannot multiply these values.");
 }
 
+/// String
 static _ String_plus(_ this, int argc, _ *args) {
   let other = toString(args[0]);
   return obj(concatStrings(asStr(this), asStr(other)));
@@ -138,17 +156,21 @@ InterpretResult defineNatives() {
   vm.Table = global(str("Table"));
   vm.Tuple = global(str("Tuple"));
 
+  method(vm.Any, fn("eql", 1, Any_eql));
   method(vm.Any, fn("class", 0, Any_class));
   method(vm.Any, fn("hash", 0, Any_hash));
   method(vm.Any, fn("inspect", 0, Any_inspect));
-  method(vm.Any, fn("toString", 0, Any_string));
+  method(vm.Any, fn("objectId", 0, Any_objectId));
   method(vm.Any, fn("string", 0, Any_string));
+  method(vm.Any, fn("toString", 0, Any_string));
 
+  method(vm.Array, fn("get", 1, Array_get));
   method(vm.Array, fn("length", 0, Array_length));
   method(vm.Array, fn("push", 0, Array_push));
   method(vm.Array, fn("slice", 0, Array_slice));
-  method(vm.Array, fn("+", 0, Array_plus));
+  method(vm.Array, fn("+", 1, Array_plus));
 
+  method(vm.Number, fn("eql", 1, Number_eql));
   method(vm.Number, fn("*", 1, Number_star));
 
   method(vm.Function, fn("arity", 0, Function_arity));         // getter

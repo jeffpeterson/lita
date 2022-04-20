@@ -107,6 +107,8 @@ typedef struct {
 #endif
 
 Value nil;
+Value True;
+Value False;
 
 typedef struct {
   int capacity;

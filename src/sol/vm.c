@@ -17,6 +17,7 @@
 #include "vm.h"
 
 VM vm;
+InterpretResult ok = INTERPRET_OK;
 
 static void resetStack() {
   vm.stackTop = vm.stackHigh = vm.stack;
@@ -614,12 +615,12 @@ static InterpretResult run() {
       break;
     }
 
-    case OP_EQUAL: {
-      Value b = pop();
-      Value a = pop();
-      push(BOOL_VAL(valuesEqual(a, b)));
+    case OP_EQUAL:
+      // Todo: '==' can't be dumped to C
+      vm_invoke(str("eql"), 1);
+      SYNC_FRAME();
       break;
-    }
+
     case OP_GREATER: BINARY_OP(BOOL_VAL, >); break;
     case OP_LESS: BINARY_OP(BOOL_VAL, <); break;
 

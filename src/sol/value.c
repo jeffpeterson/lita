@@ -6,6 +6,8 @@
 #include "value.h"
 
 Value nil = NIL_VAL;
+Value True = TRUE_VAL;
+Value False = FALSE_VAL;
 
 void initValueArray(ValueArray *array) {
   array->values = NULL;
@@ -53,7 +55,7 @@ int trace(const char *label, Value value) {
 bool valuesEqual(Value a, Value b) {
 #ifdef NAN_BOXING
   if (IS_NUMBER(a)) return IS_NUMBER(b) && AS_NUMBER(a) == AS_NUMBER(b);
-  if (IS_INTERNED(a)) return IS_INTERNED(b) && a == b;
+  if (!IS_OBJ(a) || IS_INTERNED(b)) return a == b;
 
   return a == b;
 #else

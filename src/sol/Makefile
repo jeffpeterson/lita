@@ -15,7 +15,7 @@ TARG_O  := $(filter-out %.sol.o,$(TARG_O))
 TEST_O  := $(filter-out %/main.o,$(OBJECTS))
 
 .PHONY: default all clean test db
-.PRECIOUS: $(TARGET)
+.PRECIOUS: $(TARGET) %.c %.o
 .SUFFIXES: # disable crazy built-in rules that append .c
 
 default: $(TARGET)
