@@ -97,6 +97,12 @@
         {
           "match": "([A-Za-z_][A-Za-z0-9_]*)\\(",
           "name": "support.function.sol"
+        },
+        {
+          "match": "([A-Za-z_][A-Za-z0-9_]*)\\s*=>",
+          "captures": {
+            "1": { "name": "support.function.sol" }
+          }
         }
       ]
     },
