@@ -43,8 +43,7 @@ typedef enum {     // Lower precedence
   PREC_TERM,       // + -
   PREC_FACTOR,     // * /
   PREC_RANGE,      // ..
-  PREC_PREFIX,     // ! - ++ -- aka PREC_UNARY
-  PREC_POSTFIX,    // ++ --
+  PREC_PREFIX,     // - ++ -- !
   PREC_CALL,       // . () []
   PREC_PRIMARY     //
 } Precedence;      // Higher Precedence
@@ -1319,8 +1318,8 @@ ParseRule rules[] = {
     [TOKEN_STAR] = {NULL, binary, PREC_FACTOR},
     [TOKEN_STAR_EQUAL] = {NULL, NULL, PREC_ASSIGNMENT},
 
-    [TOKEN_PLUS_PLUS] = {prefix, postfix, PREC_NONE},
-    [TOKEN_MINUS_MINUS] = {prefix, postfix, PREC_NONE},
+    [TOKEN_PLUS_PLUS] = {prefix, postfix, PREC_PREFIX},
+    [TOKEN_MINUS_MINUS] = {prefix, postfix, PREC_PREFIX},
 
     [TOKEN_BANG] = {prefix, NULL, PREC_NONE},
     [TOKEN_BANG_EQUAL] = {NULL, binary, PREC_EQUALITY},

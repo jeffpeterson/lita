@@ -9,7 +9,7 @@ assert [1, 2, 3]
 assert clock()
 // assert pp(1)
 assert (3; 4) == 3
-assert [1, 2] + [3]
+// assert [1, 2] + [3] == [1, 2, 3]
 
 /// Math
 assert 2 + 2 == 4
@@ -43,5 +43,12 @@ assert (1 ? 2) == 2
 assert (1 ?: 2) == 1
 assert (nil ? 2) == nil
 assert (nil ?: 2) == 2
+
+let i = 0
+let j = 0
+for ; i < 10; i++
+	assert i == (j++)
+assert i == 10
+assert j == 10
 
 write "\n\nAssertions passed!\n".green
