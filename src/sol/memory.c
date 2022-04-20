@@ -19,8 +19,7 @@ Value keep(Value v) {
 }
 
 Value unkeep(Value v) {
-  if (tableInc(&vm.keep, v, -1) == 0)
-    tableDelete(&vm.keep, v);
+  if (tableInc(&vm.keep, v, -1) == 0) tableDelete(&vm.keep, v);
   return v;
 }
 
@@ -34,8 +33,7 @@ void *reallocate(void *pointer, size_t oldSize, size_t newSize) {
 #ifdef DEBUG_STRESS_GC
     collectGarbage();
 #endif
-    if (vm.bytesAllocated > vm.nextGC)
-      collectGarbage();
+    if (vm.bytesAllocated > vm.nextGC) collectGarbage();
   }
 
   if (newSize == 0) {
@@ -59,10 +57,8 @@ void *cloneMemory(void *src, usize size) {
 }
 
 void markObject(Obj *obj) {
-  if (obj == NULL)
-    return;
-  if (obj->isMarked)
-    return;
+  if (obj == NULL) return;
+  if (obj->isMarked) return;
 
 #ifdef DEBUG_LOG_GC
   fprintf(stderr, "%p mark gray ", (void *)obj);
@@ -94,14 +90,11 @@ void markObject(Obj *obj) {
 }
 
 void markValue(Value value) {
-  if (IS_OBJ(value))
-    markObject(AS_OBJ(value));
+  if (IS_OBJ(value)) markObject(AS_OBJ(value));
 }
 
 static void markArray(ValueArray *array) {
-  for (int i = 0; i < array->count; i++) {
-    markValue(array->values[i]);
-  }
+  for (int i = 0; i < array->count; i++) { markValue(array->values[i]); }
 }
 
 static void blackenObject(Obj *obj) {
@@ -171,17 +164,13 @@ static void blackenObject(Obj *obj) {
 
   case OBJ_TUPLE: {
     ObjTuple *tuple = (ObjTuple *)obj;
-    for (int i = 0; i < tuple->length; i++)
-      markValue(tuple->values[i]);
+    for (int i = 0; i < tuple->length; i++) markValue(tuple->values[i]);
     break;
   }
 
-  case OBJ_UPVALUE:
-    markValue(((ObjUpvalue *)obj)->closed);
-    break;
+  case OBJ_UPVALUE: markValue(((ObjUpvalue *)obj)->closed); break;
 
-  case OBJ_STRING:
-    break;
+  case OBJ_STRING: break;
   }
 }
 
@@ -213,9 +202,7 @@ static void freeObject(Obj *obj) {
     break;
   }
 
-  case OBJ_ERR:
-    FREE(ObjErr, obj);
-    break;
+  case OBJ_ERR: FREE(ObjErr, obj); break;
 
   case OBJ_FUN: {
     ObjFun *fun = (ObjFun *)obj;
@@ -231,13 +218,9 @@ static void freeObject(Obj *obj) {
     break;
   }
 
-  case OBJ_NATIVE:
-    FREE(ObjNative, obj);
-    break;
+  case OBJ_NATIVE: FREE(ObjNative, obj); break;
 
-  case OBJ_RANGE:
-    FREE(ObjRange, obj);
-    break;
+  case OBJ_RANGE: FREE(ObjRange, obj); break;
 
   case OBJ_STRING: {
     ObjString *string = (ObjString *)obj;
@@ -252,9 +235,7 @@ static void freeObject(Obj *obj) {
     break;
   }
 
-  case OBJ_UPVALUE:
-    FREE(ObjUpvalue, obj);
-    break;
+  case OBJ_UPVALUE: FREE(ObjUpvalue, obj); break;
   }
 }
 

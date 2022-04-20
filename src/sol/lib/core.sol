@@ -16,11 +16,8 @@ class Error
 class Number
 
 class Range(start, end)
-	inspect()
-		return this.start.inspect + ".." + this.end.inspect
-
-	string()
-		return this.start.string + ".." + this.end.string
+	inspect => start.inspect + ".." + end.inspect
+	string => start.string + ".." + end.string
 
 class String
 	bold      => "\e[1m" + this + "\e[21m"

@@ -3,7 +3,7 @@
 #include "vm.h"
 
 /**
- * Allocate an ObjTuple for a (null-terminated) char array.
+ * Allocate an ObjTuple for a series of values.
  */
 static ObjTuple *allocateTuple(Value *vals, int length, Hash hash) {
   ObjTuple *tuple = ALLOCATE_OBJ(ObjTuple, OBJ_TUPLE);
@@ -20,8 +20,7 @@ ObjTuple *copyTuple(Value *values, uint8_t length) {
   ObjTuple *interned =
       (ObjTuple *)getInterned(&hash, OBJ_TUPLE, (char *)values, size);
 
-  if (interned != NULL)
-    return interned;
+  if (interned != NULL) return interned;
 
   Value *heapVals = ALLOCATE(Value, length);
   memcpy(heapVals, values, size);
