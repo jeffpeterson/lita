@@ -1,6 +1,7 @@
 {
   "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
   "name": "sol",
+  "scopeName": "source.sol",
   "patterns": [
     { "include": "#comments" },
     { "include": "#keywords" },
@@ -138,11 +139,17 @@
     "comments": {
       "patterns": [
         {
+          "match": "\\/\\/\\/(.*)",
+          "captures": {
+            "0": { "name": "comment.line.double-slash.sol" },
+            "1": { "name": "keyword.control.directive.line.sol" }
+          }
+        },
+        {
           "name": "comment.line.double-slash.sol",
           "match": "\\/\\/.*"
         }
       ]
     }
-  },
-  "scopeName": "source.sol"
+  }
 }
