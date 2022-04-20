@@ -66,6 +66,8 @@ typedef enum OpCode {
                     /**/
   OP_GET_VAR,       /** (name) [0 self] -> [0 value] */
   OP_SET_VAR,       /** (name) [1 self][0 value] -> [0 value] */
+                    /**/
+  OP_ARRAY,         /** (n) [n ...args][0 arg] -> [0 array] */
 } OpCode;
 
 typedef struct {

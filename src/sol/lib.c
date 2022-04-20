@@ -8,6 +8,7 @@
 #include "tuple.h"
 #include "vm.h"
 
+bool isArray(_ x) { return IS_ARRAY(x); }
 bool isBool(_ x) { return IS_BOOL(x); }
 bool isClass(_ x) { return IS_CLASS(x); }
 bool isFn(_ x) { return IS_CLOSURE(x); }
@@ -23,6 +24,10 @@ bool isStr(_ x) { return IS_STRING(x); }
 bool isTuple(_ x) { return IS_TUPLE(x); }
 bool notNil(_ x) { return !IS_NIL(x); }
 
+ObjArray *asArray(_ x) {
+  assert(isArray(x));
+  return AS_ARRAY(x);
+}
 bool asBool(_ x) {
   assert(isBool(x));
   return AS_BOOL(x);
@@ -222,6 +227,7 @@ _ len(_ x) {
   if (!isObj(x)) return nil;
 
   switch (asObj(x)->type) {
+  case OBJ_ARRAY: return num(asArray(x)->length);
   case OBJ_BOUND: return len(obj(asMethod(x)->method));
 
   case OBJ_CLASS:

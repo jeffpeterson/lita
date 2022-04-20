@@ -26,7 +26,7 @@ static Chunk initChunk1() {
     14, 0, 14, 1, 17, 0, 7, 14, 0, 14, 2, 17, 1, 7, 14, 0, 40,
   };
   int lines[] = {
-    18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18,
+    19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19,
   };
   c.code = cloneMemory(code, sizeof(code));
   c.lines = cloneMemory(lines, sizeof(lines));
@@ -60,10 +60,10 @@ static Chunk inspectChunk2() {
   c.count = 19;
   c.capacity = 19;
   u8 code[] = {
-    14, 0, 16, 0, 16, 1, 0, 2, 24, 14, 0, 16, 3, 16, 1, 24, 40, 1, 40,
+    14, 0, 44, 0, 16, 1, 0, 2, 24, 14, 0, 44, 3, 16, 1, 24, 40, 1, 40,
   };
   int lines[] = {
-    20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 22, 22, 22,
+    20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 21, 21,
   };
   c.code = cloneMemory(code, sizeof(code));
   c.lines = cloneMemory(lines, sizeof(lines));
@@ -97,10 +97,10 @@ static Chunk stringChunk3() {
   c.count = 19;
   c.capacity = 19;
   u8 code[] = {
-    14, 0, 16, 0, 16, 1, 0, 2, 24, 14, 0, 16, 3, 16, 1, 24, 40, 1, 40,
+    14, 0, 44, 0, 16, 1, 0, 2, 24, 14, 0, 44, 3, 16, 1, 24, 40, 1, 40,
   };
   int lines[] = {
-    23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 25, 25, 25,
+    21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 23, 23,
   };
   c.code = cloneMemory(code, sizeof(code));
   c.lines = cloneMemory(lines, sizeof(lines));
@@ -137,7 +137,7 @@ static Chunk boldChunk4() {
     0, 0, 14, 0, 24, 0, 1, 24, 40, 1, 40,
   };
   int lines[] = {
-    26, 26, 26, 26, 26, 26, 26, 26, 26, 27, 27,
+    24, 24, 24, 24, 24, 24, 24, 24, 24, 25, 25,
   };
   c.code = cloneMemory(code, sizeof(code));
   c.lines = cloneMemory(lines, sizeof(lines));
@@ -174,7 +174,7 @@ static Chunk dimChunk5() {
     0, 0, 14, 0, 24, 0, 1, 24, 40, 1, 40,
   };
   int lines[] = {
-    27, 27, 27, 27, 27, 27, 27, 27, 27, 28, 28,
+    25, 25, 25, 25, 25, 25, 25, 25, 25, 26, 26,
   };
   c.code = cloneMemory(code, sizeof(code));
   c.lines = cloneMemory(lines, sizeof(lines));
@@ -211,7 +211,7 @@ static Chunk italicChunk6() {
     0, 0, 14, 0, 24, 0, 1, 24, 40, 1, 40,
   };
   int lines[] = {
-    28, 28, 28, 28, 28, 28, 28, 28, 28, 29, 29,
+    26, 26, 26, 26, 26, 26, 26, 26, 26, 27, 27,
   };
   c.code = cloneMemory(code, sizeof(code));
   c.lines = cloneMemory(lines, sizeof(lines));
@@ -248,7 +248,7 @@ static Chunk underlineChunk7() {
     0, 0, 14, 0, 24, 0, 1, 24, 40, 1, 40,
   };
   int lines[] = {
-    29, 29, 29, 29, 29, 29, 29, 29, 29, 30, 30,
+    27, 27, 27, 27, 27, 27, 27, 27, 27, 28, 28,
   };
   c.code = cloneMemory(code, sizeof(code));
   c.lines = cloneMemory(lines, sizeof(lines));
@@ -285,7 +285,7 @@ static Chunk invertChunk8() {
     0, 0, 14, 0, 24, 0, 1, 24, 40, 1, 40,
   };
   int lines[] = {
-    30, 30, 30, 30, 30, 30, 30, 30, 30, 31, 31,
+    28, 28, 28, 28, 28, 28, 28, 28, 28, 29, 29,
   };
   c.code = cloneMemory(code, sizeof(code));
   c.lines = cloneMemory(lines, sizeof(lines));
@@ -322,7 +322,7 @@ static Chunk hideChunk9() {
     0, 0, 14, 0, 24, 0, 1, 24, 40, 1, 40,
   };
   int lines[] = {
-    31, 31, 31, 31, 31, 31, 31, 31, 31, 32, 32,
+    29, 29, 29, 29, 29, 29, 29, 29, 29, 30, 30,
   };
   c.code = cloneMemory(code, sizeof(code));
   c.lines = cloneMemory(lines, sizeof(lines));
@@ -359,7 +359,7 @@ static Chunk strikeChunk10() {
     0, 0, 14, 0, 24, 0, 1, 24, 40, 1, 40,
   };
   int lines[] = {
-    32, 32, 32, 32, 32, 32, 32, 32, 32, 34, 34,
+    30, 30, 30, 30, 30, 30, 30, 30, 30, 32, 32,
   };
   c.code = cloneMemory(code, sizeof(code));
   c.lines = cloneMemory(lines, sizeof(lines));
@@ -396,7 +396,7 @@ static Chunk blackChunk11() {
     0, 0, 14, 0, 24, 0, 1, 24, 40, 1, 40,
   };
   int lines[] = {
-    34, 34, 34, 34, 34, 34, 34, 34, 34, 35, 35,
+    32, 32, 32, 32, 32, 32, 32, 32, 32, 33, 33,
   };
   c.code = cloneMemory(code, sizeof(code));
   c.lines = cloneMemory(lines, sizeof(lines));
@@ -433,7 +433,7 @@ static Chunk redChunk12() {
     0, 0, 14, 0, 24, 0, 1, 24, 40, 1, 40,
   };
   int lines[] = {
-    35, 35, 35, 35, 35, 35, 35, 35, 35, 36, 36,
+    33, 33, 33, 33, 33, 33, 33, 33, 33, 34, 34,
   };
   c.code = cloneMemory(code, sizeof(code));
   c.lines = cloneMemory(lines, sizeof(lines));
@@ -470,7 +470,7 @@ static Chunk greenChunk13() {
     0, 0, 14, 0, 24, 0, 1, 24, 40, 1, 40,
   };
   int lines[] = {
-    36, 36, 36, 36, 36, 36, 36, 36, 36, 37, 37,
+    34, 34, 34, 34, 34, 34, 34, 34, 34, 35, 35,
   };
   c.code = cloneMemory(code, sizeof(code));
   c.lines = cloneMemory(lines, sizeof(lines));
@@ -507,7 +507,7 @@ static Chunk yellowChunk14() {
     0, 0, 14, 0, 24, 0, 1, 24, 40, 1, 40,
   };
   int lines[] = {
-    37, 37, 37, 37, 37, 37, 37, 37, 37, 38, 38,
+    35, 35, 35, 35, 35, 35, 35, 35, 35, 36, 36,
   };
   c.code = cloneMemory(code, sizeof(code));
   c.lines = cloneMemory(lines, sizeof(lines));
@@ -544,7 +544,7 @@ static Chunk blueChunk15() {
     0, 0, 14, 0, 24, 0, 1, 24, 40, 1, 40,
   };
   int lines[] = {
-    38, 38, 38, 38, 38, 38, 38, 38, 38, 39, 39,
+    36, 36, 36, 36, 36, 36, 36, 36, 36, 37, 37,
   };
   c.code = cloneMemory(code, sizeof(code));
   c.lines = cloneMemory(lines, sizeof(lines));
@@ -581,7 +581,7 @@ static Chunk magentaChunk16() {
     0, 0, 14, 0, 24, 0, 1, 24, 40, 1, 40,
   };
   int lines[] = {
-    39, 39, 39, 39, 39, 39, 39, 39, 39, 40, 40,
+    37, 37, 37, 37, 37, 37, 37, 37, 37, 38, 38,
   };
   c.code = cloneMemory(code, sizeof(code));
   c.lines = cloneMemory(lines, sizeof(lines));
@@ -618,7 +618,7 @@ static Chunk cyanChunk17() {
     0, 0, 14, 0, 24, 0, 1, 24, 40, 1, 40,
   };
   int lines[] = {
-    40, 40, 40, 40, 40, 40, 40, 40, 40, 41, 41,
+    38, 38, 38, 38, 38, 38, 38, 38, 38, 39, 39,
   };
   c.code = cloneMemory(code, sizeof(code));
   c.lines = cloneMemory(lines, sizeof(lines));
@@ -655,7 +655,7 @@ static Chunk whiteChunk18() {
     0, 0, 14, 0, 24, 0, 1, 24, 40, 1, 40,
   };
   int lines[] = {
-    41, 41, 41, 41, 41, 41, 41, 41, 41, 43, 43,
+    39, 39, 39, 39, 39, 39, 39, 39, 39, 41, 41,
   };
   c.code = cloneMemory(code, sizeof(code));
   c.lines = cloneMemory(lines, sizeof(lines));
@@ -692,7 +692,7 @@ static Chunk bg_blackChunk19() {
     0, 0, 14, 0, 24, 0, 1, 24, 40, 1, 40,
   };
   int lines[] = {
-    43, 43, 43, 43, 43, 43, 43, 43, 43, 44, 44,
+    41, 41, 41, 41, 41, 41, 41, 41, 41, 42, 42,
   };
   c.code = cloneMemory(code, sizeof(code));
   c.lines = cloneMemory(lines, sizeof(lines));
@@ -729,7 +729,7 @@ static Chunk bg_redChunk20() {
     0, 0, 14, 0, 24, 0, 1, 24, 40, 1, 40,
   };
   int lines[] = {
-    44, 44, 44, 44, 44, 44, 44, 44, 44, 45, 45,
+    42, 42, 42, 42, 42, 42, 42, 42, 42, 43, 43,
   };
   c.code = cloneMemory(code, sizeof(code));
   c.lines = cloneMemory(lines, sizeof(lines));
@@ -766,7 +766,7 @@ static Chunk bg_greenChunk21() {
     0, 0, 14, 0, 24, 0, 1, 24, 40, 1, 40,
   };
   int lines[] = {
-    45, 45, 45, 45, 45, 45, 45, 45, 45, 46, 46,
+    43, 43, 43, 43, 43, 43, 43, 43, 43, 44, 44,
   };
   c.code = cloneMemory(code, sizeof(code));
   c.lines = cloneMemory(lines, sizeof(lines));
@@ -803,7 +803,7 @@ static Chunk bg_yellowChunk22() {
     0, 0, 14, 0, 24, 0, 1, 24, 40, 1, 40,
   };
   int lines[] = {
-    46, 46, 46, 46, 46, 46, 46, 46, 46, 47, 47,
+    44, 44, 44, 44, 44, 44, 44, 44, 44, 45, 45,
   };
   c.code = cloneMemory(code, sizeof(code));
   c.lines = cloneMemory(lines, sizeof(lines));
@@ -840,7 +840,7 @@ static Chunk bg_blueChunk23() {
     0, 0, 14, 0, 24, 0, 1, 24, 40, 1, 40,
   };
   int lines[] = {
-    47, 47, 47, 47, 47, 47, 47, 47, 47, 48, 48,
+    45, 45, 45, 45, 45, 45, 45, 45, 45, 46, 46,
   };
   c.code = cloneMemory(code, sizeof(code));
   c.lines = cloneMemory(lines, sizeof(lines));
@@ -877,7 +877,7 @@ static Chunk bg_magentaChunk24() {
     0, 0, 14, 0, 24, 0, 1, 24, 40, 1, 40,
   };
   int lines[] = {
-    48, 48, 48, 48, 48, 48, 48, 48, 48, 49, 49,
+    46, 46, 46, 46, 46, 46, 46, 46, 46, 47, 47,
   };
   c.code = cloneMemory(code, sizeof(code));
   c.lines = cloneMemory(lines, sizeof(lines));
@@ -914,7 +914,7 @@ static Chunk bg_cyanChunk25() {
     0, 0, 14, 0, 24, 0, 1, 24, 40, 1, 40,
   };
   int lines[] = {
-    49, 49, 49, 49, 49, 49, 49, 49, 49, 50, 50,
+    47, 47, 47, 47, 47, 47, 47, 47, 47, 48, 48,
   };
   c.code = cloneMemory(code, sizeof(code));
   c.lines = cloneMemory(lines, sizeof(lines));
@@ -951,7 +951,7 @@ static Chunk bg_whiteChunk26() {
     0, 0, 14, 0, 24, 0, 1, 24, 40, 1, 40,
   };
   int lines[] = {
-    50, 50, 50, 50, 50, 50, 50, 50, 50, 52, 52,
+    48, 48, 48, 48, 48, 48, 48, 48, 48, 50, 50,
   };
   c.code = cloneMemory(code, sizeof(code));
   c.lines = cloneMemory(lines, sizeof(lines));
@@ -988,7 +988,7 @@ static Chunk inspectChunk27() {
     0, 0, 0, 1, 24, 40, 1, 40,
   };
   int lines[] = {
-    54, 54, 54, 54, 54, 56, 56, 56,
+    52, 52, 52, 52, 52, 54, 54, 54,
   };
   c.code = cloneMemory(code, sizeof(code));
   c.lines = cloneMemory(lines, sizeof(lines));
@@ -1008,9 +1008,9 @@ static Value inspectFn27() {
 static ValueArray lib_core_solConstants0() {
   ValueArray vals;
   initValueArray(&vals);
-  vals.count = vals.capacity = 67;
+  vals.count = vals.capacity = 68;
   Value values[] = {
-    str("Nil"), str("Any"), str("Object"), str("Function"), str("Method"), str("NativeFunction"), str("Class"), str("Bool"), str("Error"), str("Number"), str("Range"), initFn1(), str("init"), str("inspect"), inspectFn2(), str("string"), stringFn3(), str("String"), str("bold"), boldFn4(), str("dim"), dimFn5(), str("italic"), italicFn6(), str("underline"), underlineFn7(), str("invert"), invertFn8(), str("hide"), hideFn9(), str("strike"), strikeFn10(), str("black"), blackFn11(), str("red"), redFn12(), str("green"), greenFn13(), str("yellow"), yellowFn14(), str("blue"), blueFn15(), str("magenta"), magentaFn16(), str("cyan"), cyanFn17(), str("white"), whiteFn18(), str("bg_black"), bg_blackFn19(), str("bg_red"), bg_redFn20(), str("bg_green"), bg_greenFn21(), str("bg_yellow"), bg_yellowFn22(), str("bg_blue"), bg_blueFn23(), str("bg_magenta"), bg_magentaFn24(), str("bg_cyan"), bg_cyanFn25(), str("bg_white"), bg_whiteFn26(), str("Table"), inspectFn27(), str("Tuple"),
+    str("Nil"), str("Any"), str("Object"), str("Function"), str("Method"), str("NativeFunction"), str("Class"), str("Array"), str("Bool"), str("Error"), str("Number"), str("Range"), initFn1(), str("init"), str("inspect"), inspectFn2(), str("string"), stringFn3(), str("String"), str("bold"), boldFn4(), str("dim"), dimFn5(), str("italic"), italicFn6(), str("underline"), underlineFn7(), str("invert"), invertFn8(), str("hide"), hideFn9(), str("strike"), strikeFn10(), str("black"), blackFn11(), str("red"), redFn12(), str("green"), greenFn13(), str("yellow"), yellowFn14(), str("blue"), blueFn15(), str("magenta"), magentaFn16(), str("cyan"), cyanFn17(), str("white"), whiteFn18(), str("bg_black"), bg_blackFn19(), str("bg_red"), bg_redFn20(), str("bg_green"), bg_greenFn21(), str("bg_yellow"), bg_yellowFn22(), str("bg_blue"), bg_blueFn23(), str("bg_magenta"), bg_magentaFn24(), str("bg_cyan"), bg_cyanFn25(), str("bg_white"), bg_whiteFn26(), str("Table"), inspectFn27(), str("Tuple"),
   };
   vals.values = cloneMemory(values, sizeof(values));
   return vals;
@@ -1019,13 +1019,13 @@ static ValueArray lib_core_solConstants0() {
 static Chunk lib_core_solChunk0() {
   Chunk c;
   initChunk(&c);
-  c.count = 266;
-  c.capacity = 266;
+  c.count = 278;
+  c.capacity = 278;
   u8 code[] = {
-    34, 0, 0, 14, 0, 44, 1, 35, 9, 1, 7, 7, 34, 2, 0, 14, 0, 44, 1, 35, 9, 1, 7, 7, 34, 3, 0, 14, 0, 44, 2, 35, 9, 1, 7, 7, 34, 4, 0, 14, 0, 44, 3, 35, 9, 1, 7, 7, 34, 5, 0, 14, 0, 44, 3, 35, 9, 1, 7, 7, 34, 6, 0, 14, 0, 44, 3, 35, 9, 1, 7, 7, 34, 7, 0, 14, 0, 44, 2, 35, 9, 1, 7, 7, 34, 8, 0, 14, 0, 44, 2, 35, 9, 1, 7, 7, 34, 9, 0, 14, 0, 44, 2, 35, 9, 1, 7, 7, 34, 10, 0, 37, 11, 36, 12, 14, 0, 44, 2, 35, 9, 1, 37, 14, 36, 13, 37, 16, 36, 15, 7, 7, 34, 17, 0, 14, 0, 44, 2, 35, 9, 1, 37, 19, 36, 18, 37, 21, 36, 20, 37, 23, 36, 22, 37, 25, 36, 24, 37, 27, 36, 26, 37, 29, 36, 28, 37, 31, 36, 30, 37, 33, 36, 32, 37, 35, 36, 34, 37, 37, 36, 36, 37, 39, 36, 38, 37, 41, 36, 40, 37, 43, 36, 42, 37, 45, 36, 44, 37, 47, 36, 46, 37, 49, 36, 48, 37, 51, 36, 50, 37, 53, 36, 52, 37, 55, 36, 54, 37, 57, 36, 56, 37, 59, 36, 58, 37, 61, 36, 60, 37, 63, 36, 62, 7, 7, 34, 64, 0, 14, 0, 44, 2, 35, 9, 1, 37, 65, 36, 13, 7, 7, 34, 66, 0, 14, 0, 44, 2, 35, 9, 1, 7, 7, 1, 40,
+    34, 0, 0, 14, 0, 44, 1, 35, 9, 1, 7, 7, 34, 2, 0, 14, 0, 44, 1, 35, 9, 1, 7, 7, 34, 3, 0, 14, 0, 44, 2, 35, 9, 1, 7, 7, 34, 4, 0, 14, 0, 44, 3, 35, 9, 1, 7, 7, 34, 5, 0, 14, 0, 44, 3, 35, 9, 1, 7, 7, 34, 6, 0, 14, 0, 44, 3, 35, 9, 1, 7, 7, 34, 7, 0, 14, 0, 44, 2, 35, 9, 1, 7, 7, 34, 8, 0, 14, 0, 44, 2, 35, 9, 1, 7, 7, 34, 9, 0, 14, 0, 44, 2, 35, 9, 1, 7, 7, 34, 10, 0, 14, 0, 44, 2, 35, 9, 1, 7, 7, 34, 11, 0, 37, 12, 36, 13, 14, 0, 44, 2, 35, 9, 1, 37, 15, 36, 14, 37, 17, 36, 16, 7, 7, 34, 18, 0, 14, 0, 44, 2, 35, 9, 1, 37, 20, 36, 19, 37, 22, 36, 21, 37, 24, 36, 23, 37, 26, 36, 25, 37, 28, 36, 27, 37, 30, 36, 29, 37, 32, 36, 31, 37, 34, 36, 33, 37, 36, 36, 35, 37, 38, 36, 37, 37, 40, 36, 39, 37, 42, 36, 41, 37, 44, 36, 43, 37, 46, 36, 45, 37, 48, 36, 47, 37, 50, 36, 49, 37, 52, 36, 51, 37, 54, 36, 53, 37, 56, 36, 55, 37, 58, 36, 57, 37, 60, 36, 59, 37, 62, 36, 61, 37, 64, 36, 63, 7, 7, 34, 65, 0, 14, 0, 44, 2, 35, 9, 1, 37, 66, 36, 14, 7, 7, 34, 67, 0, 14, 0, 44, 2, 35, 9, 1, 7, 7, 1, 40,
   };
   int lines[] = {
-    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 22, 22, 22, 22, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 27, 27, 27, 27, 28, 28, 28, 28, 29, 29, 29, 29, 30, 30, 30, 30, 31, 31, 31, 31, 32, 32, 32, 32, 34, 34, 34, 34, 35, 35, 35, 35, 36, 36, 36, 36, 37, 37, 37, 37, 38, 38, 38, 38, 39, 39, 39, 39, 40, 40, 40, 40, 41, 41, 41, 41, 43, 43, 43, 43, 44, 44, 44, 44, 45, 45, 45, 45, 46, 46, 46, 46, 47, 47, 47, 47, 48, 48, 48, 48, 49, 49, 49, 49, 50, 50, 50, 50, 52, 52, 52, 52, 52, 52, 52, 52, 52, 52, 52, 52, 52, 52, 52, 52, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 57, 57, 57, 57,
+    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 21, 21, 21, 21, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 25, 25, 25, 25, 26, 26, 26, 26, 27, 27, 27, 27, 28, 28, 28, 28, 29, 29, 29, 29, 30, 30, 30, 30, 32, 32, 32, 32, 33, 33, 33, 33, 34, 34, 34, 34, 35, 35, 35, 35, 36, 36, 36, 36, 37, 37, 37, 37, 38, 38, 38, 38, 39, 39, 39, 39, 41, 41, 41, 41, 42, 42, 42, 42, 43, 43, 43, 43, 44, 44, 44, 44, 45, 45, 45, 45, 46, 46, 46, 46, 47, 47, 47, 47, 48, 48, 48, 48, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 54, 54, 54, 54, 54, 54, 54, 54, 54, 54, 54, 54, 54, 54, 54, 54, 55, 55, 55, 55,
   };
   c.code = cloneMemory(code, sizeof(code));
   c.lines = cloneMemory(lines, sizeof(lines));

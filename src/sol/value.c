@@ -52,25 +52,19 @@ int trace(const char *label, Value value) {
 
 bool valuesEqual(Value a, Value b) {
 #ifdef NAN_BOXING
-  if (IS_NUMBER(a) && IS_NUMBER(b))
-    return AS_NUMBER(a) == AS_NUMBER(b);
+  if (IS_NUMBER(a)) return IS_NUMBER(b) && AS_NUMBER(a) == AS_NUMBER(b);
+  if (IS_INTERNED(a)) return IS_INTERNED(b) && a == b;
 
   return a == b;
 #else
-  if (a.type != b.type)
-    return false;
+  if (a.type != b.type) return false;
 
   switch (a.type) {
-  case VAL_BOOL:
-    return AS_BOOL(a) == AS_BOOL(b);
-  case VAL_NIL:
-    return true;
-  case VAL_NUMBER:
-    return AS_NUMBER(a) == AS_NUMBER(b);
-  case VAL_OBJ:
-    return AS_OBJ(a) == AS_OBJ(b);
-  default:
-    return false;
+  case VAL_BOOL: return AS_BOOL(a) == AS_BOOL(b);
+  case VAL_NIL: return true;
+  case VAL_NUMBER: return AS_NUMBER(a) == AS_NUMBER(b);
+  case VAL_OBJ: return AS_OBJ(a) == AS_OBJ(b);
+  default: return false;
   }
 #endif
 }
@@ -99,8 +93,7 @@ Hash appendHash(Hash hash, uint32_t x) {
 
 Hash hashBytes(const char *bytes, int length) {
   Hash hash = 2166136261u;
-  for (int i = 0; i < length; i++)
-    hash = appendHash(hash, bytes[i]);
+  for (int i = 0; i < length; i++) hash = appendHash(hash, bytes[i]);
   return hash;
 }
 

@@ -9,7 +9,8 @@
 #include "value.h"
 #include "vm.h"
 
-const ObjInfo objInfo[11] = {
+const ObjInfo objInfo[12] = {
+    [OBJ_ARRAY] = {"ARRAY", "Array"},
     [OBJ_BOUND] = {"BOUND", "Method"},
     [OBJ_CLASS] = {"CLASS", "Class"},
     [OBJ_CLOSURE] = {"CLOSURE", "Function"},
@@ -152,6 +153,16 @@ int fprintFunction(FILE *io, const char *kind, ObjFun *fun) {
 
 int fprintObject(FILE *io, Obj *obj) {
   switch (obj->type) {
+  case OBJ_ARRAY: {
+    ObjArray *arr = (ObjArray *)obj;
+    int tot = fprintf(io, "[");
+    for (int i = 0; i < arr->length; i++) {
+      if (i > 0) tot += fprintf(io, ", ");
+      tot += fprintValue(io, arr->values[i]);
+    }
+    return fprintf(io, "]") + tot;
+  }
+
   case OBJ_BOUND: {
     return fprintFunction(io, "bound", ((ObjBound *)obj)->method->fun);
   }

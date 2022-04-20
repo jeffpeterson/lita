@@ -105,6 +105,11 @@ static void blackenObject(Obj *obj) {
 #endif
 
   switch (obj->type) {
+  case OBJ_ARRAY: {
+    ObjArray *arr = (ObjArray *)obj;
+    for (int i = 0; i < arr->length; i++) markValue(arr->values[i]);
+    break;
+  }
   case OBJ_BOUND: {
     ObjBound *bound = (ObjBound *)obj;
     markValue(bound->receiver);
@@ -184,9 +189,13 @@ static void freeObject(Obj *obj) {
 #endif
 
   switch (obj->type) {
-  case OBJ_BOUND:
-    FREE(ObjBound, obj);
+  case OBJ_ARRAY: {
+    ObjArray *arr = (ObjArray *)obj;
+    FREE_ARRAY(Value, arr->values, arr->capacity);
+    FREE(ObjArray, obj);
     break;
+  }
+  case OBJ_BOUND: FREE(ObjBound, obj); break;
 
   case OBJ_CLASS: {
     ObjClass *klass = (ObjClass *)obj;

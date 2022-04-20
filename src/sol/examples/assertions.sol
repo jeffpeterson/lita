@@ -3,11 +3,13 @@ assert 1
 assert 1, 2
 assert "Strings"
 assert 0..9
+assert [1, 2, 3]
 
 /// Natives
 assert clock()
 // assert pp(1)
 assert (3; 4) == 3
+assert [1, 2] + [3]
 
 /// Math
 assert 2 + 2 == 4

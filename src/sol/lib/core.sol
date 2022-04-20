@@ -11,6 +11,7 @@ class Method < Function
 class NativeFunction < Function
 class Class < Function
 
+class Array
 class Bool
 class Error
 class Number

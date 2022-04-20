@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "array.h"
 #include "common.h"
 #include "compiler.h"
 #include "debug.h"
@@ -91,6 +92,7 @@ void initVM() {
   vm.str.init = newString("init");
 
   vm.Any = nil;
+  vm.Array = nil;
   vm.Bool = nil;
   vm.Class = nil;
   vm.Error = nil;
@@ -389,6 +391,13 @@ InterpretResult vm_add() {
   return INTERPRET_OK;
 }
 
+/** [length ...args][0 arg] -> [0 array] */
+void vm_array(u32 length) {
+  ObjArray *arr = copyArray(vm.stackTop - length, length);
+  popn(length);
+  push(OBJ_VAL(arr));
+}
+
 InterpretResult vm_assert(Value src) {
   let value = peek(0);
   if (isFalsey(value)) {
@@ -551,7 +560,7 @@ static InterpretResult run() {
       break;
 
     case OP_RANGE: vm_range(); break;
-
+    case OP_ARRAY: vm_array(AS_NUMBER(READ_CONSTANT())); break;
     case OP_TUPLE: vm_tuple(READ_BYTE()); break;
 
     case OP_DEFINE_GLOBAL: tableSet(&vm.globals, READ_CONSTANT(), pop()); break;

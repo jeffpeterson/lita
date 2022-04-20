@@ -9,12 +9,12 @@
 #include "vm.h"
 
 typedef enum OpType {
-  SIMPLE = BLUE,
-  BYTE = YELLOW,
-  CONSTANT = GREEN,
-  INVOKE = MAGENTA,
-  JUMP = RED,
-  CONSTANT_BYTE = CYAN,
+  SIMPLE,
+  BYTE,
+  CONSTANT,
+  INVOKE,
+  JUMP,
+  CONSTANT_BYTE,
 } OpType;
 
 typedef struct OpInfo {
@@ -84,7 +84,20 @@ OpInfo infos[] = {
 
     [OP_INVOKE] = {"OP_INVOKE", INVOKE},
     [OP_SUPER_INVOKE] = {"OP_SUPER_INVOKE", INVOKE},
+
+    [OP_ARRAY] = {"OP_ARRAY", CONSTANT},
 };
+
+static Color color(OpType type) {
+  switch (type) {
+  case SIMPLE: return BLUE;
+  case BYTE: return YELLOW;
+  case CONSTANT: return GREEN;
+  case INVOKE: return MAGENTA;
+  case JUMP: return RED;
+  case CONSTANT_BYTE: return CYAN;
+  }
+}
 
 void disassembleChunk(Chunk *chunk, const char *name) {
   fprintf(stderr, "=== %s ===\n", name);
@@ -121,7 +134,7 @@ int disassembleInstruction(Chunk *chunk, int offset) {
   fprintf(stderr,
           "\e[3%dm"
           "%-16s" FG_DEFAULT,
-          info.type, info.name);
+          color(info.type), info.name);
 
   switch (info.type) {
   case SIMPLE: break;

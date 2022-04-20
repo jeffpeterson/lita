@@ -45,7 +45,7 @@ typedef enum {     // Lower precedence
   PREC_RANGE,      // ..
   PREC_PREFIX,     // ! - ++ -- aka PREC_UNARY
   PREC_POSTFIX,    // ++ --
-  PREC_CALL,       // . ()
+  PREC_CALL,       // . () []
   PREC_PRIMARY     //
 } Precedence;      // Higher Precedence
 
@@ -696,6 +696,17 @@ static void and_(Ctx *ctx) {
   patchJump(endJump);
 }
 
+static void array(Ctx *ctx) {
+  u32 length = 0;
+  if (!check(TOKEN_RIGHT_BRACKET)) do {
+      parseAbove(PREC_COMMA);
+      length++;
+    } while (match(TOKEN_COMMA));
+
+  emitBytes(OP_ARRAY, makeConstant(NUMBER_VAL(length)));
+  consume(TOKEN_RIGHT_BRACKET, "Expect ']' after array.");
+}
+
 /**
  * Left-associative.
  */
@@ -1272,6 +1283,8 @@ ParseRule rules[] = {
     [TOKEN_RIGHT_PAREN] = {NULL, NULL, PREC_NONE},
     [TOKEN_LEFT_BRACE] = {NULL, NULL, PREC_NONE},
     [TOKEN_RIGHT_BRACE] = {NULL, NULL, PREC_NONE},
+    [TOKEN_LEFT_BRACKET] = {array, NULL, PREC_CALL},
+    [TOKEN_RIGHT_BRACKET] = {NULL, NULL, PREC_NONE},
     [TOKEN_COMMA] = {NULL, tuple, PREC_COMMA},
     [TOKEN_DOT] = {NULL, dot, PREC_CALL},
     [TOKEN_DOT_DOT] = {NULL, binary, PREC_RANGE},

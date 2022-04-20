@@ -13,7 +13,8 @@ typedef enum ObjType ObjType;
 // Todo: stuff ObjType into VAL_OBJ pointer.
 #define OBJ_TYPE(val) (AS_OBJ(val)->type)
 
-#define IS_INTERNED(val) isInterned(val);
+#define IS_INTERNED(val) isInterned(val)
+#define IS_ARRAY(val) isObjType(val, OBJ_ARRAY)
 #define IS_BOUND(val) isObjType(val, OBJ_BOUND)
 #define IS_CLASS(val) isObjType(val, OBJ_CLASS)
 #define IS_CLOSURE(val) isObjType(val, OBJ_CLOSURE)
@@ -26,6 +27,7 @@ typedef enum ObjType ObjType;
 #define IS_TUPLE(val) isObjType(val, OBJ_TUPLE)
 #define IS_UPVALUE(val) isObjType(val, OBJ_UPVALUE)
 
+#define AS_ARRAY(val) ((ObjArray *)AS_OBJ(val))
 #define AS_BOUND(val) ((ObjBound *)AS_OBJ(val))
 #define AS_CLASS(val) ((ObjClass *)AS_OBJ(val))
 #define AS_CLOSURE(val) ((ObjClosure *)AS_OBJ(val))
@@ -45,6 +47,7 @@ typedef enum ObjType ObjType;
   (type *)allocateObject(sizeof(type), objectType)
 
 enum ObjType {
+  OBJ_ARRAY,
   OBJ_BOUND,
   OBJ_CLASS,
   OBJ_CLOSURE,
@@ -84,6 +87,13 @@ typedef struct ObjUpvalue {
   Value *location; /** Pointer to this upvalue's Value. */
   struct ObjUpvalue *next; /** Linked list of all upvalues tracked by VM. */
 } ObjUpvalue;
+
+typedef struct ObjArray {
+  Obj obj;
+  int capacity;
+  int length;
+  Value *values;
+} ObjArray;
 
 typedef struct ObjErr {
   Obj obj;
@@ -163,7 +173,7 @@ typedef struct ObjInfo {
   const char *className;
 } ObjInfo;
 
-const ObjInfo objInfo[11];
+const ObjInfo objInfo[12];
 
 Obj *allocateObject(size_t size, ObjType type);
 

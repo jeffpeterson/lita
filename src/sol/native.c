@@ -1,5 +1,6 @@
 #include <time.h>
 
+#include "array.h"
 #include "lib.h"
 #include "native.h"
 #include "vm.h"
@@ -48,6 +49,33 @@ static _ Any_hash(_ this, int argc, _ *args) { return hashValue(this); }
 static _ Any_inspect(_ this, int argc, _ *args) { return inspect(this); }
 static _ Any_string(_ this, int argc, _ *args) { return toString(this); }
 
+static _ Array_length(_ this, int argc, _ *args) {
+  return NUMBER_VAL(asArray(this)->length);
+}
+
+static _ Array_plus(_ this, int argc, _ *args) {
+  ObjArray *a = asArray(this);
+  ObjArray *b = asArray(args[0]);
+  ObjArray *out = newArray();
+  resizeArray(out, a->length + b->length);
+  writeArray(out, 0, a->values, a->length);
+  writeArray(out, a->length, b->values, b->length);
+  return OBJ_VAL(out);
+}
+
+static _ Array_push(_ this, int argc, _ *args) {
+  ObjArray *arr = asArray(this);
+  for (int i = 0; i < argc; i++) appendArray(arr, args[i]);
+  return this;
+}
+
+static _ Array_slice(_ this, int argc, _ *args) {
+  ObjArray *arr = asArray(this);
+  int start = argc > 0 ? asNum(args[0]) : 0;
+  int len = argc > 1 ? asNum(args[1]) : arr->length - start;
+  return OBJ_VAL(copyArray(arr->values + start, len));
+}
+
 static _ Function_arity(_ this, int argc, _ *args) { return arity(this); }
 
 static _ Function_bytes(_ this, int argc, _ *args) {
@@ -95,6 +123,7 @@ InterpretResult defineNatives() {
 
   if (result) return result;
 
+  vm.Array = global(str("Array"));
   vm.Bool = global(str("Bool"));
   vm.Class = global(str("Class"));
   vm.Error = global(str("Error"));
@@ -114,6 +143,11 @@ InterpretResult defineNatives() {
   method(vm.Any, fn("inspect", 0, Any_inspect));
   method(vm.Any, fn("toString", 0, Any_string));
   method(vm.Any, fn("string", 0, Any_string));
+
+  method(vm.Array, fn("length", 0, Array_length));
+  method(vm.Array, fn("push", 0, Array_push));
+  method(vm.Array, fn("slice", 0, Array_slice));
+  method(vm.Array, fn("+", 0, Array_plus));
 
   method(vm.Number, fn("*", 1, Number_star));
 

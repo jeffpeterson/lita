@@ -51,6 +51,7 @@ typedef struct VM {
 
   /** The language built-in values. */
   Value Any;
+  Value Array;
   Value Bool;
   Value Class;
   Value Error;
