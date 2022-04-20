@@ -3,13 +3,10 @@ assert 1
 assert 1, 2
 assert "Strings"
 assert 0..9
-assert [1, 2, 3]
 
 /// Natives
 assert clock()
-// assert pp(1)
 assert (3; 4) == 3
-// assert [1, 2] + [3] == [1, 2, 3]
 
 /// Math
 assert 2 + 2 == 4
@@ -20,6 +17,12 @@ let a = 2
 let b = 4
 
 assert a + b == 6
+
+
+/// Arrays
+assert [1, 2, 3]
+// assert [1, 2, 3].length == 3
+// assert [1, 2] + [3] == [1, 2, 3]
 
 /// Instances
 class Point(x, y)
@@ -39,6 +42,7 @@ assert (3b) == 12
 assert (b 3) == 12
 assert (Point 1 2)
 
+/// ?: operator
 assert (1 ? 2) == 2
 assert (1 ?: 2) == 1
 assert (nil ? 2) == nil
