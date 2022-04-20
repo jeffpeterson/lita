@@ -333,6 +333,7 @@ Token scanToken() {
   case ';': return makeToken(TOKEN_SEMICOLON);
   case ':': return makeToken(TOKEN_COLON);
   case ',': return makeToken(TOKEN_COMMA);
+  case '?': return makeToken(TOKEN_QUESTION);
   case '.': return makeToken(match('.') ? TOKEN_DOT_DOT : TOKEN_DOT);
   case '-':
     return makeToken(match('>')   ? TOKEN_ARROW

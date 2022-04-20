@@ -856,6 +856,25 @@ static void namedVariable(Token name, Ctx *ctx) {
   emitBytes(getOp, arg);
 }
 
+static void question(Ctx *ctx) {
+  int thenJump = emitJump(OP_JUMP_IF_FALSE);
+
+  if (!check(TOKEN_COLON)) {
+    emitByte(OP_POP);
+    if (!parseAbove(ctx->precedence)) error("Expected expression after '?'.");
+  }
+
+  int elseJump = emitJump(OP_JUMP);
+  patchJump(thenJump);
+
+  if (match(TOKEN_COLON)) {
+    emitByte(OP_POP);
+    if (!parseAt(ctx->precedence)) error("Expect expression after ':'.");
+  }
+
+  patchJump(elseJump);
+}
+
 static void variable(Ctx *ctx) { namedVariable(parser.previous, ctx); }
 
 static void super_(Ctx *ctx) {
@@ -1289,6 +1308,7 @@ ParseRule rules[] = {
     [TOKEN_DOT] = {NULL, dot, PREC_CALL},
     [TOKEN_DOT_DOT] = {NULL, binary, PREC_RANGE},
     [TOKEN_SEMICOLON] = {NULL, semi, PREC_SEMI},
+    [TOKEN_QUESTION] = {NULL, question, PREC_SEMI},
 
     [TOKEN_MINUS] = {prefix, binary, PREC_TERM},
     [TOKEN_MINUS_EQUAL] = {NULL, NULL, PREC_ASSIGNMENT},

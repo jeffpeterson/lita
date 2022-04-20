@@ -39,4 +39,9 @@ assert (3b) == 12
 assert (b 3) == 12
 assert (Point 1 2)
 
+assert (1 ? 2) == 2
+assert (1 ?: 2) == 1
+assert (nil ? 2) == nil
+assert (nil ?: 2) == 2
+
 write "\n\nAssertions passed!\n".green
