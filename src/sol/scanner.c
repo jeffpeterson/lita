@@ -334,7 +334,10 @@ Token scanToken() {
   case ':': return makeToken(TOKEN_COLON);
   case ',': return makeToken(TOKEN_COMMA);
   case '?': return makeToken(TOKEN_QUESTION);
-  case '.': return makeToken(match('.') ? TOKEN_DOT_DOT : TOKEN_DOT);
+  case '$': return identifier();
+  case '.':
+    return makeToken(match('.') ? (match('.') ? TOKEN_ELLIPSIS : TOKEN_DOT_DOT)
+                                : TOKEN_DOT);
   case '-':
     return makeToken(match('>')   ? TOKEN_ARROW
                      : match('=') ? TOKEN_MINUS_EQUAL
