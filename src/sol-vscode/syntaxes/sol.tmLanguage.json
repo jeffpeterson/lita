@@ -16,7 +16,7 @@
       "patterns": [
         {
           "name": "keyword.control.sol",
-          "match": "\\b(if|else|while|for|return|and|or|in|macro|fn|=>)\\b"
+          "match": "\\b(if|else|while|for|return|and|or|in|proc|macro|fn|=>)\\b"
         },
         {
           "name": "constant.language.null.sol",
