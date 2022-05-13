@@ -60,11 +60,14 @@ static bool match(char expected) {
 }
 
 static int matchStr(const char *str) {
-  if (!strcmp(str, scanner.current)) return 0;
-
-  int len = strlen(str);
-  scanner.current += len;
-  return len;
+  const char *cur = scanner.current;
+  int i = 0;
+  for (;;) {
+    if (str[i] == '\0') return scanner.current += i, i;
+    if (cur[i] == '\0') return 0;
+    if (str[i] != cur[i]) return 0;
+    i++;
+  }
 }
 
 Token syntheticToken(const char *text) {
