@@ -5,6 +5,7 @@
 
 Scanner scanner;
 
+static bool skipShebang();
 static bool skipWhitespace();
 
 void initScanner(const char *source) {
@@ -20,6 +21,7 @@ void initScanner(const char *source) {
   scanner.data = NULL;
   scanner.dataLength = 0;
 
+  skipShebang();
   skipWhitespace();
 }
 
@@ -57,6 +59,14 @@ static bool match(char expected) {
   return true;
 }
 
+static int matchStr(const char *str) {
+  if (!strcmp(str, scanner.current)) return 0;
+
+  int len = strlen(str);
+  scanner.current += len;
+  return len;
+}
+
 Token syntheticToken(const char *text) {
   Token token;
   token.start = text;
@@ -81,6 +91,13 @@ static Token errorToken(const char *message) {
   token.length = (int)strlen(message);
   token.line = scanner.line;
   return token;
+}
+
+// Returns whether shebang was skipped
+static bool skipShebang() {
+  if (!matchStr("#!")) return false;
+  while (peek() != '\n' && !isAtEnd()) advance();
+  return true;
 }
 
 static bool skipWhitespace() {
