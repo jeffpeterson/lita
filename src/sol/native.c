@@ -11,33 +11,40 @@ bool defineNative(const char *name, int arity, NativeFn fun) {
   return setGlobal(string(name), fn(name, arity, fun));
 }
 
+let global_class(const char *name) {
+  let vname = string(name);
+  let klass = global(vname);
+  if (isClass(klass)) return klass;
+  return setGlobal(vname, class(vname));
+}
+
 /// Native global functions
 
-static _ nativeClock(_ this, int argc, _ *args) {
+static _ native_clock(_ this, int argc, _ *args) {
   return num((double)clock() / CLOCKS_PER_SEC);
 }
 
-static _ nativeHash(_ this, int argc, _ *args) {
+static _ native_hash(_ this, int argc, _ *args) {
   return num(hashValue(args[0]));
 }
 
-static _ nativePrettyPrint(_ this, int argc, _ *args) {
+static _ native_pp(_ this, int argc, _ *args) {
   if (argc == 1) return pp(args[0]);
 
   return pp(t(argc, args));
 }
 
-static _ nativeRead(_ this, int argc, _ *args) {
+static _ native_read(_ this, int argc, _ *args) {
   let path = argc == 0 ? str("/dev/stdin") : args[0];
   return read(path);
 }
 
-static _ nativeWrite(_ this, int argc, _ *args) {
+static _ native_write(_ this, int argc, _ *args) {
   let path = argc == 1 ? str("/dev/stdout") : args[0];
   return write(path, args[argc - 1]);
 }
 
-static _ nativeAppend(_ this, int argc, _ *args) {
+static _ native_append(_ this, int argc, _ *args) {
   let path = argc == 1 ? str("/dev/stdout") : args[0];
   return append(path, args[argc - 1]);
 }
@@ -128,14 +135,14 @@ static _ String_plus(_ this, int argc, _ *args) {
 ObjFun *core_sol();
 
 InterpretResult defineNatives() {
-  defineNative("clock", 0, nativeClock);
-  defineNative("hash", 1, nativeHash);
-  defineNative("pp", 1, nativePrettyPrint);
-  defineNative("read", 0, nativeRead);
-  defineNative("write", 1, nativeWrite);
-  defineNative("append", 1, nativeAppend);
+  defineNative("clock", 0, native_clock);
+  defineNative("hash", 1, native_hash);
+  defineNative("pp", 1, native_pp);
+  defineNative("read", 0, native_read);
+  defineNative("write", 1, native_write);
+  defineNative("append", 1, native_append);
 
-  vm.Any = setGlobal(str("Any"), class(str("Any")));
+  vm.Any = global_class("Any");
 
   InterpretResult result = runFun(core_sol());
 

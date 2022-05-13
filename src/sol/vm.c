@@ -12,6 +12,7 @@
 #include "native.h"
 #include "object.h"
 #include "string.h"
+#include "system.h"
 #include "term.h"
 #include "tuple.h"
 #include "vm.h"
@@ -427,8 +428,9 @@ InterpretResult vm_get_global(Value name) {
   let value;
 
   if (!tableGet(&vm.globals, name, &value)) {
-    return runtimeError("Cannot get undefined variable '%s'.",
-                        AS_STRING(name)->chars);
+    if (isNil(value = get_env(name)))
+      return runtimeError("Cannot get undefined variable '%s'.",
+                          asStr(name)->chars);
   }
   push(value);
   return INTERPRET_OK;

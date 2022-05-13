@@ -35,11 +35,11 @@ test: $(TEST) assertions
 
 $(TARGET): $(TARG_O)
 	@mkdir -p $(dir $@)
-	$(CC) -o $@ $^ $(SOL_O)
+	$(CC) $(CFLAGS) -o $@ $^ $(SOL_O)
 
 $(TEST): $(TEST_O)
 	@mkdir -p $(dir $@)
-	$(CC) -o $@ $^
+	$(CC) $(CFLAGS) -o $@ $^
 
 _build/%.o: ./%.c $(HEADERS)
 	@mkdir -p $(dir $@)

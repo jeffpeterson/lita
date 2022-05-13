@@ -7,6 +7,8 @@
 #include "vm.h"
 
 bool defineNative(const char *name, int arity, NativeFn fun);
+let global_class(const char *name);
+
 InterpretResult defineNatives();
 
 #endif

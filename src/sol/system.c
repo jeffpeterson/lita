@@ -3,6 +3,7 @@
 
 #include "compiler.h"
 #include "dump.h"
+#include "lib.h"
 #include "string.h"
 #include "system.h"
 #include "vm.h"
@@ -75,4 +76,13 @@ void compileFile(ObjString *path) {
   FILE *io = openFile(dst, "w");
   dumpModule(io, path, fun);
   fclose(io);
+}
+
+Value get_env(Value name) {
+  ObjString *str = asStr(name);
+  char *chars = str->chars;
+  if (chars[0] == '$') chars++;
+  const char *val;
+  if ((val = getenv(chars))) return string(val);
+  return nil;
 }

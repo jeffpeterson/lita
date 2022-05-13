@@ -40,6 +40,7 @@ int fprintValue(FILE *io, Value val) {
          : IS_NUMBER(val)
              ? fprintf(io, FG_BLUE "%g" FG_DEFAULT, AS_NUMBER(val)) - 10
          : IS_OBJ(val) ? fprintObject(io, AS_OBJ(val))
+         : IS_PTR(val) ? fprintf(io, FG_RED "%p" FG_DEFAULT, AS_PTR(val))
                        : 0;
 }
 

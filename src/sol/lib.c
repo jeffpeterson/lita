@@ -19,6 +19,7 @@ bool isNative(_ x) { return IS_NATIVE(x); }
 bool isNil(_ x) { return IS_NIL(x); }
 bool isNum(_ x) { return IS_NUMBER(x); }
 bool isObj(_ x) { return IS_OBJ(x); }
+bool isPtr(_ x) { return IS_PTR(x); }
 bool isRange(_ x) { return IS_RANGE(x); }
 bool isStr(_ x) { return IS_STRING(x); }
 bool isTuple(_ x) { return IS_TUPLE(x); }
@@ -61,6 +62,10 @@ Obj *asObj(_ x) {
   assert(isObj(x));
   return AS_OBJ(x);
 }
+void *asPtr(_ x) {
+  assert(isPtr(x));
+  return AS_PTR(x);
+}
 ObjRange *asRange(_ x) {
   assert(isRange(x));
   return AS_RANGE(x);
@@ -82,6 +87,7 @@ _ memory(u8 *bytes, int length) {
   return obj(copyString((char *)bytes, length));
 }
 _ num(double num) { return NUMBER_VAL(num); }
+_ ptr(void *pointer) { return PTR_VAL(pointer); }
 _ range(_ start, _ end) { return obj(makeRange(start, end)); }
 _ str(const char *str) { return obj(newString(str)); }
 _ string(const char *str) { return obj(newString(str)); }
@@ -196,7 +202,7 @@ _ classOf(_ self) { return obj(valueClass(self)); }
 
 _ superOf(_ klass) { return obj(asClass(klass)->parent); }
 
-_ bind(_ self, _ fun) {
+_ bindFn(_ self, _ fun) {
   if (isFn(fun)) return obj(newBound(self, asFn(fun)));
 
   return fun;
@@ -218,7 +224,7 @@ _ find(_ self, _ key) {
 }
 
 bool has(_ self, _ key) { return !IS_NIL(find(self, key)); }
-_ get(_ self, _ key) { return bind(self, find(self, key)); }
+_ get(_ self, _ key) { return bindFn(self, find(self, key)); }
 _ set(_ self, _ key, _ value) { return error("Not implemented."); }
 
 _ hash(_ val) { return NUMBER_VAL(hashValue(val)); }
