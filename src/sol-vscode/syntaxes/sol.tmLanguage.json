@@ -16,7 +16,15 @@
       "patterns": [
         {
           "name": "keyword.control.sol",
-          "match": "\\b(if|else|while|for|return|and|or|in|proc|macro|fn|=>)\\b"
+          "match": "\\b(and|atom|else|fn|for|if|in|macro|or|proc|return|while)\\b"
+        },
+        {
+          "name": "keyword.operator.sol",
+          "match": "->|=>|<-"
+        },
+        {
+          "name": "keyword.operator.logical.sol",
+          "match": "[+\\-*%&!@#^?/:;,.]+"
         },
         {
           "name": "constant.language.null.sol",
@@ -130,6 +138,10 @@
     },
     "ident": {
       "patterns": [
+        {
+          "name": "entity.name.class.sol",
+          "match": "\\b[A-Z][A-Za-z0-9_]*\\b"
+        },
         {
           "name": "variable.other.readwrite.sol",
           "match": "\\b[A-Za-z_][A-Za-z0-9_]*\\b"
