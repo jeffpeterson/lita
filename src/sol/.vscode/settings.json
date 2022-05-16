@@ -51,7 +51,8 @@
     "optional": "c",
     "__locale": "c",
     "ios": "c",
-    "scanner.h": "c"
+    "scanner.h": "c",
+    "graph.h": "c"
   },
   "C_Cpp.default.includePath": [".."],
   "C_Cpp.default.compilerArgs": ["-Wall", "-Werror"],
