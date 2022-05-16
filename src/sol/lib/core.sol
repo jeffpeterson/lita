@@ -59,3 +59,5 @@ class Table
 		return "{" + "}"
 
 class Tuple
+
+class Atom(type, value, targets) // ...targets)
