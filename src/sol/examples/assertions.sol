@@ -55,4 +55,8 @@ for ; i < 10; i++
 assert i == 10
 assert j == 10
 
+fn empty_fn()
+
+assert empty_fn() == nil
+
 write "\n\nAssertions passed!\n".green
