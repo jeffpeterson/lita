@@ -781,9 +781,9 @@ static void grouping(Ctx *ctx) {
   consume(TOKEN_RIGHT_PAREN, "Expect ')' after expression.");
 }
 
-static void newline(Ctx *ctx) {
-  // emitByte(OP_POP);
-}
+// static void newline(Ctx *ctx) {
+//   // emitByte(OP_POP);
+// }
 
 static void number(Ctx *ctx) {
   double value = strtod(parser.previous.start, NULL);
