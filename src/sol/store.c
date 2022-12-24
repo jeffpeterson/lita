@@ -1,7 +1,7 @@
 #include "store.h"
 
-DB *db;
-DB_ENV *env;
+// DB *db;
+// DB_ENV *env;
 
 void createStore() {
   // db_env_create(&env, 0);

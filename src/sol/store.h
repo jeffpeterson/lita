@@ -1,7 +1,7 @@
 #ifndef sol_store_h
 #define sol_store_h
 
-#include <db.h>
+// #include <db.h>
 // #include <ossp/uuid.h>
 #include <string.h>
 
