@@ -1,9 +1,9 @@
 {
-  "name": "@craft-concept/sol-vscode",
+  "name": "@jeffpeterson/sol-vscode",
   "displayName": "Sol Language Support",
   "description": "Syntax highlighting for the Sol language.",
   "version": "0.0.1",
-  "publisher": "craft-concept",
+  "publisher": "jeffpeterson",
   "license": "MIT",
   "type": "module",
   "scripts": {
