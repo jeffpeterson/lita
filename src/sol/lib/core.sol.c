@@ -6,7 +6,7 @@
 #include "sol/memory.h"
 #include "sol/string.h"
 
-// eql
+// ==
 static ValueArray constants1() {
   ValueArray vals;
   initValueArray(&vals);
@@ -18,7 +18,7 @@ static ValueArray constants1() {
   return vals;
 }
 
-// eql
+// ==
 static Chunk chunk1() {
   Chunk c;
   initChunk(&c);
@@ -32,18 +32,18 @@ static Chunk chunk1() {
   };
   c.code = cloneMemory(code, sizeof(code));
   c.lines = cloneMemory(lines, sizeof(lines));
-                // eql
+                // ==
   c.constants = constants1();
 
   return c;
 };
 
-// eql
+// ==
 static Value fn1() {
   ObjFun *f = newFunction();  f->arity = 1;
   f->upvalueCount = 0;
-  f->name = newString("eql");
-             // eql
+  f->name = newString("==");
+             // ==
   f->chunk = chunk1();
   return obj(f);
 }
@@ -1230,7 +1230,7 @@ static ValueArray constants0() {
   initValueArray(&vals);
   vals.count = vals.capacity = 72;
   Value values[] = {
-    str("Nil"), str("Any"), str("Object"), str("Function"), str("Method"), str("NativeFunction"), str("Class"), str("Array"), str("eql"), /*eql*/fn1(), str("Bool"), str("Error"), str("Number"), str("Range"), /*init*/fn2(), str("init"), str("inspect"), /*inspect*/fn3(), str("string"), /*string*/fn4(), str("String"), str("bold"), /*bold*/fn5(), str("dim"), /*dim*/fn6(), str("italic"), /*italic*/fn7(), str("underline"), /*underline*/fn8(), str("invert"), /*invert*/fn9(), str("hide"), /*hide*/fn10(), str("strike"), /*strike*/fn11(), str("black"), /*black*/fn12(), str("red"), /*red*/fn13(), str("green"), /*green*/fn14(), str("yellow"), /*yellow*/fn15(), str("blue"), /*blue*/fn16(), str("magenta"), /*magenta*/fn17(), str("cyan"), /*cyan*/fn18(), str("white"), /*white*/fn19(), str("bg_black"), /*bg_black*/fn20(), str("bg_red"), /*bg_red*/fn21(), str("bg_green"), /*bg_green*/fn22(), str("bg_yellow"), /*bg_yellow*/fn23(), str("bg_blue"), /*bg_blue*/fn24(), str("bg_magenta"), /*bg_magenta*/fn25(), str("bg_cyan"), /*bg_cyan*/fn26(), str("bg_white"), /*bg_white*/fn27(), str("Table"), /*inspect*/fn28(), str("Tuple"), str("Atom"), /*init*/fn29(),
+    str("Nil"), str("Any"), str("Object"), str("Function"), str("Method"), str("NativeFunction"), str("Class"), str("Array"), str("=="), /*==*/fn1(), str("Bool"), str("Error"), str("Number"), str("Range"), /*init*/fn2(), str("init"), str("inspect"), /*inspect*/fn3(), str("string"), /*string*/fn4(), str("String"), str("bold"), /*bold*/fn5(), str("dim"), /*dim*/fn6(), str("italic"), /*italic*/fn7(), str("underline"), /*underline*/fn8(), str("invert"), /*invert*/fn9(), str("hide"), /*hide*/fn10(), str("strike"), /*strike*/fn11(), str("black"), /*black*/fn12(), str("red"), /*red*/fn13(), str("green"), /*green*/fn14(), str("yellow"), /*yellow*/fn15(), str("blue"), /*blue*/fn16(), str("magenta"), /*magenta*/fn17(), str("cyan"), /*cyan*/fn18(), str("white"), /*white*/fn19(), str("bg_black"), /*bg_black*/fn20(), str("bg_red"), /*bg_red*/fn21(), str("bg_green"), /*bg_green*/fn22(), str("bg_yellow"), /*bg_yellow*/fn23(), str("bg_blue"), /*bg_blue*/fn24(), str("bg_magenta"), /*bg_magenta*/fn25(), str("bg_cyan"), /*bg_cyan*/fn26(), str("bg_white"), /*bg_white*/fn27(), str("Table"), /*inspect*/fn28(), str("Tuple"), str("Atom"), /*init*/fn29(),
   };
   vals.values = cloneMemory(values, sizeof(values));
   return vals;

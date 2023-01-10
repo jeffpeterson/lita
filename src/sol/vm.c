@@ -633,8 +633,7 @@ static InterpretResult run() {
     }
 
     case OP_EQUAL:
-      // Todo: '==' can't be dumped to C
-      vm_invoke(str("eql"), 1);
+      vm_invoke(str("=="), 1);
       SYNC_FRAME();
       break;
 

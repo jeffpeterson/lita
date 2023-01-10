@@ -42,7 +42,7 @@ assert [1, 2, 3]
 class Point(x, y)
 	fn magnitude = (x + y)
 	fn + (b) = Point(x + b.x, y + b.y)
-	fn eql(b)
+	fn == (b)
 		return x == b.x and y == b.y
 
 let p1 = Point(1, 2)

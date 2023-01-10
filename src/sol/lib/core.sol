@@ -12,7 +12,7 @@ class NativeFunction < Function
 class Class < Function
 
 class Array
-	eql(b)
+	fn == (b)
 		if length != b.length: return false
 		if objectId == b.objectId: return true
 		for let i = 0; i < length; i++

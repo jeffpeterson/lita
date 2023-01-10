@@ -169,7 +169,7 @@ InterpretResult defineNatives() {
   vm.Table = global(str("Table"));
   vm.Tuple = global(str("Tuple"));
 
-  method(vm.Any, fn("eql", 1, Any_eql));
+  method(vm.Any, fn("==", 1, Any_eql));
   method(vm.Any, fn("class", 0, Any_class));
   method(vm.Any, fn("hash", 0, Any_hash));
   method(vm.Any, fn("inspect", 0, Any_inspect));
@@ -183,7 +183,7 @@ InterpretResult defineNatives() {
   method(vm.Array, fn("slice", 0, Array_slice));
   method(vm.Array, fn("+", 1, Array_plus));
 
-  method(vm.Number, fn("eql", 1, Number_eql));
+  method(vm.Number, fn("==", 1, Number_eql));
   method(vm.Number, fn("*", 1, Number_star));
 
   method(vm.Function, fn("arity", 0, Function_arity));         // getter
