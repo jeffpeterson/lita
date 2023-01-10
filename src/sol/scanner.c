@@ -27,25 +27,57 @@ void initScanner(const char *source) {
 
 void resetScanner() { initScanner(scanner.source); }
 
-static bool isAlpha(char c) {
+static u8 utfBytes(const char *str) {
+  const u8 *s = (u8 *)str;
+  if (s[0] < 0x80) return s[0] ? 1 : 0;
+  if (s[1] < 0x80) return 0;
+  if (s[0] < 0xE0) return 2;
+  if (s[2] < 0x80) return 0;
+  if (s[0] < 0xF0) return 3;
+  if (s[3] < 0xF0) return 0;
+  return 4;
+}
+
+static u32 codePoint(const char *str) {
+  switch (utfBytes(str)) {
+  case 1: return str[0];
+  case 2: return ((str[0] & 0x1F) << 6) | (str[1] & 0x3F);
+  case 3:
+    return ((str[0] & 0x0F) << 12) | ((str[1] & 0x3F) << 6) | (str[2] & 0x3F);
+  case 4:
+    return ((str[0] & 0x07) << 18) | ((str[1] & 0x3F) << 12) |
+           ((str[2] & 0x3F) << 6) | (str[3] & 0x3F);
+  default: return 0;
+  }
+}
+
+static bool isAtEnd() { return *scanner.current == '\0'; }
+static bool isAlpha(u32 c) {
   return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || c == '_';
 }
-static bool isDigit(char c) { return c >= '0' && c <= '9'; }
-static bool isAtEnd() { return *scanner.current == '\0'; }
+static bool isDigit(u32 c) { return c >= '0' && c <= '9'; }
 
-static char advance() {
-  scanner.current++;
-  return scanner.current[-1];
+static bool isSubscript(u32 c) { return c >= 0x2080 && c <= 0x2089; }
+// static bool isSuperscript(u32 c) {
+//   return c == 0x00B2 || c == 0x00B3 || // 2,3
+//          c == 0x2070 || c == 0x00B9 || // 0,1
+//          (c >= 0x2074 && c <= 0x2079); // 4-9
+// }
+
+static u32 advance() {
+  u32 c = codePoint(scanner.current);
+  scanner.current += utfBytes(scanner.current);
+  return c;
 }
 
-static char peek() { return *scanner.current; }
+static u32 peek() { return codePoint(scanner.current); }
 
-static char peekNext() {
+static u32 peekNext() {
   if (isAtEnd()) return '\0';
   return scanner.current[1];
 }
 
-static bool match(char expected) {
+static bool match(u32 expected) {
   if (isAtEnd()) return false;
   if (*scanner.current != expected) return false;
   scanner.current++;
@@ -234,6 +266,7 @@ static TokenType identifierType() {
 
 static Token identifier() {
   while (isAlpha(peek()) || isDigit(peek())) advance();
+  while (isSubscript(peek())) advance();
   while (peek() == '\'') advance();
   return makeToken(identifierType());
 }

@@ -1,7 +1,10 @@
 /// Identifiers
-let a
-let a' = 1
-assert a' == 1
+let x
+let x' = 1
+let x₂' = 3
+
+assert x' == 1
+assert x₂' == 3
 
 /// Literals
 assert 1
