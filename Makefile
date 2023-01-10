@@ -4,12 +4,12 @@ CFLAGS := -g -Werror -Wall -Wno-error=unused-variable -Wno-error=unused-function
 TARGET := .bin/sol
 TEST := $(TARGET)-test
 
-SOL_SRC := $(shell find ./src/lib -name "*.sol")
+SOL_SRC := $(shell find src/lib -name "*.sol")
 SOL_C   := $(SOL_SRC:.sol=.sol.c)
 SOL_O   := $(SOL_C:%.c=_build/%.o)
-SOURCES := $(shell find ./src -name "*.c")
-HEADERS := $(shell find ./src -name "*.h")
-OBJECTS := $(patsubst ./src/%.c,_build/%.o, $(SOURCES))
+SOURCES := $(shell find src -name "*.c")
+HEADERS := $(shell find src -name "*.h")
+OBJECTS := $(patsubst src/%.c,_build/%.o, $(SOURCES))
 TARG_O  := $(filter-out %_test.o,$(OBJECTS))
 TARG_O  := $(filter-out %.sol.o,$(TARG_O))
 TEST_O  := $(filter-out %/main.o,$(OBJECTS))
@@ -30,7 +30,6 @@ db/%: $(TARGET)
 	@$(TARGET) $<
 
 lib: $(SOL_O)
-
 test: $(TEST) assertions
 	@$(TEST)
 
@@ -42,7 +41,7 @@ $(TEST): $(TEST_O)
 	@mkdir -p $(dir $@)
 	$(CC) $(CFLAGS) -o $@ $^
 
-_build/%.o: ./%.c $(HEADERS)
+_build/%.o: src/%.c $(HEADERS)
 	@mkdir -p $(dir $@)
 	$(CC) $(CFLAGS) -c -o $@ $<
 
