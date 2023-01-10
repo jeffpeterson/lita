@@ -12,6 +12,7 @@ assert (3; 4) == 3
 assert 2 + 2 == 4
 assert ('0 + '5) == '05
 assert ("hi " + "there") == "hi there"
+assert 'foo / 'bar == "foo/bar"
 
 let a = 2
 let b = 4

@@ -423,6 +423,21 @@ InterpretResult vm_call(int argc) {
   return callValue(peek(argc), argc) ? INTERPRET_OK : INTERPRET_RUNTIME_ERROR;
 }
 
+/** [1 a][0 b] -> [0 result] */
+InterpretResult vm_divide() {
+  Value b = peek(0);
+  Value a = peek(1);
+  Value res = nil;
+
+  if (isNum(a) && isNum(b)) res = num(AS_NUMBER(a) / AS_NUMBER(b));
+
+  if (isNil(res)) return vm_invoke(string("/"), 1);
+
+  popn(2);
+  push(res);
+  return INTERPRET_OK;
+}
+
 // [] -> [0 value]
 InterpretResult vm_get_global(Value name) {
   let value;
@@ -630,9 +645,12 @@ static InterpretResult run() {
       if ((err = vm_add())) return err;
       SYNC_FRAME();
       break;
+    case OP_DIVIDE:
+      if ((err = vm_divide())) return err;
+      SYNC_FRAME();
+      break;
     case OP_SUBTRACT: BINARY_OP(NUMBER_VAL, -); break;
     case OP_MULTIPLY: BINARY_OP(NUMBER_VAL, *); break;
-    case OP_DIVIDE: BINARY_OP(NUMBER_VAL, /); break;
     case OP_NOT: push(BOOL_VAL(isFalsey(pop()))); break;
     case OP_NEGATE:
       if (!IS_NUMBER(peek(0))) {

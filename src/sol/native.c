@@ -132,6 +132,12 @@ static _ String_plus(_ this, int argc, _ *args) {
   return obj(concatStrings(asStr(this), asStr(other)));
 }
 
+static _ String_divide(_ this, int argc, _ *args) {
+  let other = toString(args[0]);
+  return obj(
+      concatStrings(concatStrings(asStr(this), newString("/")), asStr(other)));
+}
+
 ObjFun *core_sol();
 
 InterpretResult defineNatives() {
@@ -185,5 +191,6 @@ InterpretResult defineNatives() {
   method(vm.Function, fn("byteCount", 0, Function_byteCount)); // getter
 
   method(vm.String, fn("+", 1, String_plus));
+  method(vm.String, fn("/", 1, String_divide));
   return result;
 }
