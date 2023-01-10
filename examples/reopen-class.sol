@@ -1,10 +1,8 @@
 class Cat
-	meow()
-		print "meow!"
+	fn meow = print "meow!"
 
 class Cat
-	legs()
-		4
+	fn legs = 4
 
 let cat = Cat()
 print cat.legs()

@@ -14,7 +14,6 @@ TARG_C := $(filter-out %_test.c,$(SOURCES))
 
 OBJECTS := $(patsubst src/%.c,_build/%.o, $(SOURCES))
 TARG_O  := $(filter-out %_test.o,$(OBJECTS))
-TARG_O  := $(filter-out %.sol.o,$(TARG_O))
 TEST_O  := $(filter-out %/main.o,$(OBJECTS))
 
 .PHONY: default all clean test db db/test lib

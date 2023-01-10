@@ -16,12 +16,13 @@ assert clock()
 assert (3; 4) == 3
 
 /// Math
-assert 2 + 2 == 4
-
 let a = 2
 let b = 4
 
+assert 2 + 2 == 4
 assert a + b == 6
+assert 2(3) == 6
+assert (2 b) == 8
 
 /// Strings
 assert "Strings"

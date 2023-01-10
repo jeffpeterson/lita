@@ -13,8 +13,7 @@ print read("Makefile")
 print write("tmp/demo.txt", "It runs!")
 
 class Point(x, y)
-	+ (b)
-		return Point(x + b.x, y + b.y)
+	+ (b) = Point(x + b.x, y + b.y)
 
 let p1 = Point(4, 5)
 let p2 = Point(6, 7)
