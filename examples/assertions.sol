@@ -1,3 +1,8 @@
+/// Identifiers
+let a
+let a' = 1
+assert a' == 1
+
 /// Literals
 assert 1
 assert 1, 2

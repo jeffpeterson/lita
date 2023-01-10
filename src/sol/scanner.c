@@ -234,6 +234,7 @@ static TokenType identifierType() {
 
 static Token identifier() {
   while (isAlpha(peek()) || isDigit(peek())) advance();
+  while (peek() == '\'') advance();
   return makeToken(identifierType());
 }
 
@@ -275,13 +276,13 @@ static Token string() {
   return token;
 }
 
-static Token symbol() {
-  return makeToken(TOKEN_QUOTE);
-}
+static Token symbol() { return makeToken(TOKEN_QUOTE); }
 
 Token scanToken() {
   scanner.start = scanner.current;
-  if (skipWhitespace()) { return makeToken(TOKEN_NEWLINE); }
+  if (skipWhitespace()) {
+    return makeToken(TOKEN_NEWLINE);
+  }
 
   scanner.start = scanner.current;
   Indent *in = &scanner.indent;
