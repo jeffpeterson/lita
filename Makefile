@@ -1,17 +1,18 @@
 CC = clang
-CFLAGS := -g -Werror -Wall -Wno-error=unused-variable -Wno-error=unused-function -I..
+CFLAGS := -g -Werror -Wall -Wno-error=unused-variable -Wno-error=unused-function
 
 TARGET := .bin/sol
 TEST := $(TARGET)-test
 
 SOL_SRC := $(shell find src/lib -name "*.sol")
 SOL_C   := $(SOL_SRC:.sol=.sol.c)
-SOL_O   := $(SOL_C:%.c=_build/%.o)
+SOL_O   := $(SOL_C:src/%.c=_build/%.o)
 SOURCES := $(shell find src -name "*.c")
 HEADERS := $(shell find src -name "*.h")
+
 OBJECTS := $(patsubst src/%.c,_build/%.o, $(SOURCES))
 TARG_O  := $(filter-out %_test.o,$(OBJECTS))
-TARG_O  := $(filter-out %.sol.o,$(TARG_O))
+# TARG_O  := $(filter-out %.sol.o,$(TARG_O))
 TEST_O  := $(filter-out %/main.o,$(OBJECTS))
 
 .PHONY: default all clean test db db/test lib
@@ -35,7 +36,7 @@ test: $(TEST) assertions
 
 $(TARGET): $(TARG_O)
 	@mkdir -p $(dir $@)
-	$(CC) $(CFLAGS) -o $@ $^ $(SOL_O)
+	$(CC) $(CFLAGS) -o $@ $^ #$(SOL_O)
 
 $(TEST): $(TEST_O)
 	@mkdir -p $(dir $@)
@@ -45,8 +46,8 @@ _build/%.o: src/%.c $(HEADERS)
 	@mkdir -p $(dir $@)
 	$(CC) $(CFLAGS) -c -o $@ $<
 
-%.sol.c: %.sol $(TARGET)
-	sol -c $<
+# %.sol.c: %.sol $(TARGET)
+# 	sol -c $<
 
 clean:
 	-rm -f $(TARGET) $(TEST) $(OBJECTS)

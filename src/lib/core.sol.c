@@ -1,10 +1,10 @@
 // clang-format off
 // sol -c lib/core.sol
-#include "sol/chunk.h"
-#include "sol/common.h"
-#include "sol/lib.h"
-#include "sol/memory.h"
-#include "sol/string.h"
+#include "../chunk.h"
+#include "../common.h"
+#include "../lib.h"
+#include "../memory.h"
+#include "../string.h"
 
 static ValueArray eqlConstants1() {
   ValueArray vals;
