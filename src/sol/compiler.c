@@ -935,7 +935,9 @@ static void postfix(Ctx *ctx) {
 
 // Todo: Block-as-expression + yield/break keyword
 static void block() {
-  while (!check(TOKEN_DEDENT) && !check(TOKEN_EOF)) { declaration(); }
+  while (!check(TOKEN_DEDENT) && !check(TOKEN_EOF)) {
+    declaration();
+  }
 
   consume(TOKEN_DEDENT, "Expect dedent after block.");
 }
@@ -976,10 +978,10 @@ static void function(FunType type) {
       emitBytes(OP_SET_PROPERTY, constant);
       emitByte(OP_POP); // Pop the value
     }
-  } else if (match(TOKEN_FAT_ARROW)) {
+  } else if (match(TOKEN_EQUAL) || match(TOKEN_FAT_ARROW)) {
     expression();
     emitByte(OP_RETURN);
-    consumeTerminator("Expect newline after arrow function.");
+    consumeTerminator("Expect newline after single-line function.");
   } else if (match(TOKEN_INDENT)) {
     block();
   }
@@ -995,6 +997,7 @@ static void function(FunType type) {
 }
 
 static void method() {
+  match(TOKEN_FN); // optional
   consumeIdent("Expect method name.");
 
   uint8_t constant = identifierConstant(&parser.previous);
@@ -1279,7 +1282,9 @@ ObjFun *compile(const char *source, ObjString *name) {
 
   advance();
 
-  while (!match(TOKEN_EOF)) { declaration(); }
+  while (!match(TOKEN_EOF)) {
+    declaration();
+  }
 
   ObjFun *fun = endCompiler();
   return parser.hadError ? NULL : fun;

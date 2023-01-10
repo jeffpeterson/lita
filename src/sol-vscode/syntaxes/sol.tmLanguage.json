@@ -16,11 +16,11 @@
       "patterns": [
         {
           "name": "keyword.control.sol",
-          "match": "\\b(and|atom|else|fn|for|if|in|macro|or|proc|return|while)\\b"
+          "match": "\\b(and|atom|else|for|if|in|macro|or|proc|return|while)\\b"
         },
         {
           "name": "keyword.operator.sol",
-          "match": "->|=>|<-"
+          "match": "->|=>|<-|==|="
         },
         {
           "name": "keyword.operator.logical.sol",
@@ -75,7 +75,7 @@
           }
         },
         {
-          "match": "\\b(fn)\\s+([A-Za-z_][A-Za-z0-9_]*)\\s*\\(([A-Za-z0-9,\\s]*)\\)\\s*(=>)?",
+          "match": "\\b(fn)\\s+([^\\(\\s]*)\\s*(?:\\(([A-Za-z0-9,\\s]*)\\))?\\s*(=>?)?",
           "captures": {
             "1": { "name": "storage.type.function.sol" },
             "2": { "name": "entity.name.function.sol" },
@@ -120,7 +120,13 @@
         {
           "name": "string.quoted.double.sol",
           "begin": "'?\"",
-          "end": "\""
+          "end": "\"",
+          "patterns": [
+            {
+              "match": "\\\\[0tnr\"'\\\\]",
+              "name": "constant.character.escape.sol"
+            }
+          ]
         },
         {
           "name": "string.quoted.single.sol",
