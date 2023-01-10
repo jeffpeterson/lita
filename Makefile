@@ -47,7 +47,7 @@ _build/%.o: src/%.c $(HEADERS)
 	@mkdir -p $(dir $@)
 	$(CC) $(CFLAGS) -c -o $@ $<
 
-%.sol.c: %.sol #bin/sol
+%.sol.c: %.sol bin/sol
 	bin/sol -c $<
 
 clean:
