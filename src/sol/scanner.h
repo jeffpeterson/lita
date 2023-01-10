@@ -25,6 +25,7 @@ typedef enum {
   TOKEN_ELLIPSIS,
   TOKEN_SEMICOLON,
   TOKEN_QUESTION,
+  TOKEN_QUOTE,
 
   TOKEN_ARROW,     // ->
   TOKEN_FAT_ARROW, // =>
@@ -51,7 +52,6 @@ typedef enum {
   // Literals.
   TOKEN_NUMBER,
   TOKEN_STRING,
-  TOKEN_SYMBOL,
 
   TOKEN_MINUS,
   TOKEN_PLUS,

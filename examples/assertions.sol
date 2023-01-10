@@ -1,7 +1,6 @@
 /// Literals
 assert 1
 assert 1, 2
-assert "Strings"
 assert 0..9
 
 /// Natives
@@ -10,14 +9,20 @@ assert (3; 4) == 3
 
 /// Math
 assert 2 + 2 == 4
-assert ('0 + '5) == '05
-assert ("hi " + "there") == "hi there"
-assert 'foo / 'bar == "foo/bar"
 
 let a = 2
 let b = 4
 
 assert a + b == 6
+
+/// Strings
+assert "Strings"
+assert ('0 + '5) == '05
+assert ("hi " + "there") == "hi there"
+assert 'foo / 'bar == "foo/bar"
+assert '/ == "/"
+assert '"hi there" == "\"hi there\""
+assert '( == "("
 
 
 /// Arrays

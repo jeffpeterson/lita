@@ -31,14 +31,7 @@ static bool isAlpha(char c) {
   return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || c == '_';
 }
 static bool isDigit(char c) { return c >= '0' && c <= '9'; }
-static bool isWhitespace(char c) {
-  return c == '\t' || c == ' ' || c == '\n' || c == '\r';
-}
 static bool isAtEnd() { return *scanner.current == '\0'; }
-static bool isTokenEnding(char c) {
-  return isWhitespace(c) || c == '\0' || c == '}' || c == ']' || c == ')' ||
-         c == '.' || c == ';';
-}
 
 static char advance() {
   scanner.current++;
@@ -283,26 +276,7 @@ static Token string() {
 }
 
 static Token symbol() {
-  bool escaped = false;
-
-  if (isAtEnd() || isWhitespace(peek()))
-    return errorToken("Expected non-whitespace character follow single quote.");
-
-  // We always take the first character
-  char c = advance();
-
-  if (c == '"') {
-    Token token = string();
-    escaped = token.escaped;
-    if (token.type == TOKEN_ERROR) return token;
-
-  } else {
-    while (!isAtEnd() && !isTokenEnding(peek())) advance();
-  }
-
-  Token token = makeToken(TOKEN_SYMBOL);
-  token.escaped = escaped;
-  return token;
+  return makeToken(TOKEN_QUOTE);
 }
 
 Token scanToken() {

@@ -816,8 +816,9 @@ static void string(Ctx *ctx) {
 }
 
 static void symbol(Ctx *ctx) {
+  advance();
   Token token = parser.previous;
-  ObjString *str = copyString(token.start + 1, token.length - 1);
+  ObjString *str = copyString(token.start, token.length);
   if (token.escaped) str = unescapeString(str);
   emitConstant(OBJ_VAL(str));
 }
@@ -1308,6 +1309,7 @@ ParseRule rules[] = {
     [TOKEN_DOT_DOT] = {NULL, binary, PREC_RANGE},
     [TOKEN_SEMICOLON] = {NULL, semi, PREC_SEMI},
     [TOKEN_QUESTION] = {NULL, question, PREC_SEMI},
+    [TOKEN_QUOTE] = {symbol, NULL, PREC_NONE},
 
     [TOKEN_MINUS] = {prefix, binary, PREC_TERM},
     [TOKEN_MINUS_EQUAL] = {NULL, NULL, PREC_ASSIGNMENT},
@@ -1332,7 +1334,6 @@ ParseRule rules[] = {
 
     [TOKEN_IDENTIFIER] = {variable, NULL, PREC_NONE},
     [TOKEN_STRING] = {string, NULL, PREC_NONE},
-    [TOKEN_SYMBOL] = {symbol, NULL, PREC_NONE},
     [TOKEN_NUMBER] = {number, NULL, PREC_NONE},
 
     [TOKEN_AND] = {NULL, and_, PREC_AND},
