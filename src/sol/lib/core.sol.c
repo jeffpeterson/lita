@@ -1,10 +1,10 @@
 // clang-format off
-// sol -c lib/core.sol
-#include "../chunk.h"
-#include "../common.h"
-#include "../lib.h"
-#include "../memory.h"
-#include "../string.h"
+// sol -c src/lib/core.sol
+#include "sol/chunk.h"
+#include "sol/common.h"
+#include "sol/lib.h"
+#include "sol/memory.h"
+#include "sol/string.h"
 
 static ValueArray eqlConstants1() {
   ValueArray vals;
@@ -1042,43 +1042,80 @@ static Value inspectFn28() {
   return obj(f);
 }
 
-static ValueArray lib_core_solConstants0() {
+static ValueArray initConstants29() {
   ValueArray vals;
   initValueArray(&vals);
-  vals.count = vals.capacity = 70;
+  vals.count = vals.capacity = 3;
   Value values[] = {
-    str("Nil"), str("Any"), str("Object"), str("Function"), str("Method"), str("NativeFunction"), str("Class"), str("Array"), str("eql"), eqlFn1(), str("Bool"), str("Error"), str("Number"), str("Range"), initFn2(), str("init"), str("inspect"), inspectFn3(), str("string"), stringFn4(), str("String"), str("bold"), boldFn5(), str("dim"), dimFn6(), str("italic"), italicFn7(), str("underline"), underlineFn8(), str("invert"), invertFn9(), str("hide"), hideFn10(), str("strike"), strikeFn11(), str("black"), blackFn12(), str("red"), redFn13(), str("green"), greenFn14(), str("yellow"), yellowFn15(), str("blue"), blueFn16(), str("magenta"), magentaFn17(), str("cyan"), cyanFn18(), str("white"), whiteFn19(), str("bg_black"), bg_blackFn20(), str("bg_red"), bg_redFn21(), str("bg_green"), bg_greenFn22(), str("bg_yellow"), bg_yellowFn23(), str("bg_blue"), bg_blueFn24(), str("bg_magenta"), bg_magentaFn25(), str("bg_cyan"), bg_cyanFn26(), str("bg_white"), bg_whiteFn27(), str("Table"), inspectFn28(), str("Tuple"),
+    str("type"), str("value"), str("targets"),
   };
   vals.values = cloneMemory(values, sizeof(values));
   return vals;
 }
 
-static Chunk lib_core_solChunk0() {
+static Chunk initChunk29() {
   Chunk c;
   initChunk(&c);
-  c.count = 282;
-  c.capacity = 282;
+  c.count = 24;
+  c.capacity = 24;
   u8 code[] = {
-    34, 0, 0, 14, 0, 44, 1, 35, 9, 1, 7, 7, 34, 2, 0, 14, 0, 44, 1, 35, 9, 1, 7, 7, 34, 3, 0, 14, 0, 44, 2, 35, 9, 1, 7, 7, 34, 4, 0, 14, 0, 44, 3, 35, 9, 1, 7, 7, 34, 5, 0, 14, 0, 44, 3, 35, 9, 1, 7, 7, 34, 6, 0, 14, 0, 44, 3, 35, 9, 1, 7, 7, 34, 7, 0, 14, 0, 44, 2, 35, 9, 1, 37, 9, 36, 8, 7, 7, 34, 10, 0, 14, 0, 44, 2, 35, 9, 1, 7, 7, 34, 11, 0, 14, 0, 44, 2, 35, 9, 1, 7, 7, 34, 12, 0, 14, 0, 44, 2, 35, 9, 1, 7, 7, 34, 13, 0, 37, 14, 36, 15, 14, 0, 44, 2, 35, 9, 1, 37, 17, 36, 16, 37, 19, 36, 18, 7, 7, 34, 20, 0, 14, 0, 44, 2, 35, 9, 1, 37, 22, 36, 21, 37, 24, 36, 23, 37, 26, 36, 25, 37, 28, 36, 27, 37, 30, 36, 29, 37, 32, 36, 31, 37, 34, 36, 33, 37, 36, 36, 35, 37, 38, 36, 37, 37, 40, 36, 39, 37, 42, 36, 41, 37, 44, 36, 43, 37, 46, 36, 45, 37, 48, 36, 47, 37, 50, 36, 49, 37, 52, 36, 51, 37, 54, 36, 53, 37, 56, 36, 55, 37, 58, 36, 57, 37, 60, 36, 59, 37, 62, 36, 61, 37, 64, 36, 63, 37, 66, 36, 65, 7, 7, 34, 67, 0, 14, 0, 44, 2, 35, 9, 1, 37, 68, 36, 16, 7, 7, 34, 69, 0, 14, 0, 44, 2, 35, 9, 1, 7, 7, 1, 40,
+    14, 0, 14, 1, 17, 0, 7, 14, 0, 14, 2, 17, 1, 7, 14, 0, 14, 3, 17, 2, 7, 14, 0, 40,
   };
   int lines[] = {
-    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 28, 28, 28, 28, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 32, 32, 32, 32, 33, 33, 33, 33, 34, 34, 34, 34, 35, 35, 35, 35, 36, 36, 36, 36, 37, 37, 37, 37, 39, 39, 39, 39, 40, 40, 40, 40, 41, 41, 41, 41, 42, 42, 42, 42, 43, 43, 43, 43, 44, 44, 44, 44, 45, 45, 45, 45, 46, 46, 46, 46, 48, 48, 48, 48, 49, 49, 49, 49, 50, 50, 50, 50, 51, 51, 51, 51, 52, 52, 52, 52, 53, 53, 53, 53, 54, 54, 54, 54, 55, 55, 55, 55, 57, 57, 57, 57, 57, 57, 57, 57, 57, 57, 57, 57, 57, 57, 57, 57, 61, 61, 61, 61, 61, 61, 61, 61, 61, 61, 61, 61, 61, 61, 61, 61, 62, 62, 62, 62,
+    63, 63, 63, 63, 63, 63, 63, 63, 63, 63, 63, 63, 63, 63, 63, 63, 63, 63, 63, 63, 63, 63, 63, 63,
   };
   c.code = cloneMemory(code, sizeof(code));
   c.lines = cloneMemory(lines, sizeof(lines));
-  c.constants = lib_core_solConstants0();
+  c.constants = initConstants29();
 
   return c;
 };
 
-static Value lib_core_solFn0() {
+static Value initFn29() {
+  ObjFun *f = newFunction();  f->arity = 3;
+  f->upvalueCount = 0;
+  f->name = newString("init");
+  f->chunk = initChunk29();
+  return obj(f);
+}
+
+static ValueArray src_lib_core_solConstants0() {
+  ValueArray vals;
+  initValueArray(&vals);
+  vals.count = vals.capacity = 72;
+  Value values[] = {
+    str("Nil"), str("Any"), str("Object"), str("Function"), str("Method"), str("NativeFunction"), str("Class"), str("Array"), str("eql"), eqlFn1(), str("Bool"), str("Error"), str("Number"), str("Range"), initFn2(), str("init"), str("inspect"), inspectFn3(), str("string"), stringFn4(), str("String"), str("bold"), boldFn5(), str("dim"), dimFn6(), str("italic"), italicFn7(), str("underline"), underlineFn8(), str("invert"), invertFn9(), str("hide"), hideFn10(), str("strike"), strikeFn11(), str("black"), blackFn12(), str("red"), redFn13(), str("green"), greenFn14(), str("yellow"), yellowFn15(), str("blue"), blueFn16(), str("magenta"), magentaFn17(), str("cyan"), cyanFn18(), str("white"), whiteFn19(), str("bg_black"), bg_blackFn20(), str("bg_red"), bg_redFn21(), str("bg_green"), bg_greenFn22(), str("bg_yellow"), bg_yellowFn23(), str("bg_blue"), bg_blueFn24(), str("bg_magenta"), bg_magentaFn25(), str("bg_cyan"), bg_cyanFn26(), str("bg_white"), bg_whiteFn27(), str("Table"), inspectFn28(), str("Tuple"), str("Atom"), initFn29(),
+  };
+  vals.values = cloneMemory(values, sizeof(values));
+  return vals;
+}
+
+static Chunk src_lib_core_solChunk0() {
+  Chunk c;
+  initChunk(&c);
+  c.count = 298;
+  c.capacity = 298;
+  u8 code[] = {
+    34, 0, 0, 14, 0, 44, 1, 35, 9, 1, 7, 7, 34, 2, 0, 14, 0, 44, 1, 35, 9, 1, 7, 7, 34, 3, 0, 14, 0, 44, 2, 35, 9, 1, 7, 7, 34, 4, 0, 14, 0, 44, 3, 35, 9, 1, 7, 7, 34, 5, 0, 14, 0, 44, 3, 35, 9, 1, 7, 7, 34, 6, 0, 14, 0, 44, 3, 35, 9, 1, 7, 7, 34, 7, 0, 14, 0, 44, 2, 35, 9, 1, 37, 9, 36, 8, 7, 7, 34, 10, 0, 14, 0, 44, 2, 35, 9, 1, 7, 7, 34, 11, 0, 14, 0, 44, 2, 35, 9, 1, 7, 7, 34, 12, 0, 14, 0, 44, 2, 35, 9, 1, 7, 7, 34, 13, 0, 37, 14, 36, 15, 14, 0, 44, 2, 35, 9, 1, 37, 17, 36, 16, 37, 19, 36, 18, 7, 7, 34, 20, 0, 14, 0, 44, 2, 35, 9, 1, 37, 22, 36, 21, 37, 24, 36, 23, 37, 26, 36, 25, 37, 28, 36, 27, 37, 30, 36, 29, 37, 32, 36, 31, 37, 34, 36, 33, 37, 36, 36, 35, 37, 38, 36, 37, 37, 40, 36, 39, 37, 42, 36, 41, 37, 44, 36, 43, 37, 46, 36, 45, 37, 48, 36, 47, 37, 50, 36, 49, 37, 52, 36, 51, 37, 54, 36, 53, 37, 56, 36, 55, 37, 58, 36, 57, 37, 60, 36, 59, 37, 62, 36, 61, 37, 64, 36, 63, 37, 66, 36, 65, 7, 7, 34, 67, 0, 14, 0, 44, 2, 35, 9, 1, 37, 68, 36, 16, 7, 7, 34, 69, 0, 14, 0, 44, 2, 35, 9, 1, 7, 7, 34, 70, 0, 37, 71, 36, 15, 14, 0, 44, 2, 35, 9, 1, 7, 7, 1, 40,
+  };
+  int lines[] = {
+    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 28, 28, 28, 28, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 32, 32, 32, 32, 33, 33, 33, 33, 34, 34, 34, 34, 35, 35, 35, 35, 36, 36, 36, 36, 37, 37, 37, 37, 39, 39, 39, 39, 40, 40, 40, 40, 41, 41, 41, 41, 42, 42, 42, 42, 43, 43, 43, 43, 44, 44, 44, 44, 45, 45, 45, 45, 46, 46, 46, 46, 48, 48, 48, 48, 49, 49, 49, 49, 50, 50, 50, 50, 51, 51, 51, 51, 52, 52, 52, 52, 53, 53, 53, 53, 54, 54, 54, 54, 55, 55, 55, 55, 57, 57, 57, 57, 57, 57, 57, 57, 57, 57, 57, 57, 57, 57, 57, 57, 61, 61, 61, 61, 61, 61, 61, 61, 61, 61, 61, 61, 61, 61, 61, 61, 63, 63, 63, 63, 63, 63, 63, 63, 63, 63, 63, 63, 63, 63, 63, 63, 64, 64, 64, 64,
+  };
+  c.code = cloneMemory(code, sizeof(code));
+  c.lines = cloneMemory(lines, sizeof(lines));
+  c.constants = src_lib_core_solConstants0();
+
+  return c;
+};
+
+static Value src_lib_core_solFn0() {
   ObjFun *f = newFunction();  f->arity = 0;
   f->upvalueCount = 0;
-  f->name = newString("lib_core_sol");
-  f->chunk = lib_core_solChunk0();
+  f->name = newString("src_lib_core_sol");
+  f->chunk = src_lib_core_solChunk0();
   return obj(f);
 }
 
 ObjFun *core_sol() {
-  return AS_FUN(lib_core_solFn0());
+  return AS_FUN(src_lib_core_solFn0());
 }
