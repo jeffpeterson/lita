@@ -1,10 +1,10 @@
 // clang-format off
-// sol -c lib/Parser.sol
-#include "../chunk.h"
-#include "../common.h"
-#include "../lib.h"
-#include "../memory.h"
-#include "../string.h"
+// sol -c src/sol/lib/Parser.sol
+#include "sol/chunk.h"
+#include "sol/common.h"
+#include "sol/lib.h"
+#include "sol/memory.h"
+#include "sol/string.h"
 
 static ValueArray initConstants1() {
   ValueArray vals;
@@ -43,7 +43,7 @@ static Value initFn1() {
   return obj(f);
 }
 
-static ValueArray lib_Parser_solConstants0() {
+static ValueArray src_sol_lib_Parser_solConstants0() {
   ValueArray vals;
   initValueArray(&vals);
   vals.count = vals.capacity = 4;
@@ -54,7 +54,7 @@ static ValueArray lib_Parser_solConstants0() {
   return vals;
 }
 
-static Chunk lib_Parser_solChunk0() {
+static Chunk src_sol_lib_Parser_solChunk0() {
   Chunk c;
   initChunk(&c);
   c.count = 18;
@@ -67,19 +67,19 @@ static Chunk lib_Parser_solChunk0() {
   };
   c.code = cloneMemory(code, sizeof(code));
   c.lines = cloneMemory(lines, sizeof(lines));
-  c.constants = lib_Parser_solConstants0();
+  c.constants = src_sol_lib_Parser_solConstants0();
 
   return c;
 };
 
-static Value lib_Parser_solFn0() {
+static Value src_sol_lib_Parser_solFn0() {
   ObjFun *f = newFunction();  f->arity = 0;
   f->upvalueCount = 0;
-  f->name = newString("lib_Parser_sol");
-  f->chunk = lib_Parser_solChunk0();
+  f->name = newString("src_sol_lib_Parser_sol");
+  f->chunk = src_sol_lib_Parser_solChunk0();
   return obj(f);
 }
 
 ObjFun *Parser_sol() {
-  return AS_FUN(lib_Parser_solFn0());
+  return AS_FUN(src_sol_lib_Parser_solFn0());
 }

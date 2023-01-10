@@ -1,5 +1,5 @@
 // clang-format off
-// sol -c src/lib/core.sol
+// sol -c src/sol/lib/core.sol
 #include "sol/chunk.h"
 #include "sol/common.h"
 #include "sol/lib.h"
@@ -1079,7 +1079,7 @@ static Value initFn29() {
   return obj(f);
 }
 
-static ValueArray src_lib_core_solConstants0() {
+static ValueArray src_sol_lib_core_solConstants0() {
   ValueArray vals;
   initValueArray(&vals);
   vals.count = vals.capacity = 72;
@@ -1090,7 +1090,7 @@ static ValueArray src_lib_core_solConstants0() {
   return vals;
 }
 
-static Chunk src_lib_core_solChunk0() {
+static Chunk src_sol_lib_core_solChunk0() {
   Chunk c;
   initChunk(&c);
   c.count = 298;
@@ -1103,19 +1103,19 @@ static Chunk src_lib_core_solChunk0() {
   };
   c.code = cloneMemory(code, sizeof(code));
   c.lines = cloneMemory(lines, sizeof(lines));
-  c.constants = src_lib_core_solConstants0();
+  c.constants = src_sol_lib_core_solConstants0();
 
   return c;
 };
 
-static Value src_lib_core_solFn0() {
+static Value src_sol_lib_core_solFn0() {
   ObjFun *f = newFunction();  f->arity = 0;
   f->upvalueCount = 0;
-  f->name = newString("src_lib_core_sol");
-  f->chunk = src_lib_core_solChunk0();
+  f->name = newString("src_sol_lib_core_sol");
+  f->chunk = src_sol_lib_core_solChunk0();
   return obj(f);
 }
 
 ObjFun *core_sol() {
-  return AS_FUN(src_lib_core_solFn0());
+  return AS_FUN(src_sol_lib_core_solFn0());
 }
