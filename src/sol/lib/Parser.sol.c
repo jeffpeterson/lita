@@ -6,7 +6,8 @@
 #include "sol/memory.h"
 #include "sol/string.h"
 
-static ValueArray initConstants1() {
+// init
+static ValueArray constants1() {
   ValueArray vals;
   initValueArray(&vals);
   vals.count = vals.capacity = 1;
@@ -17,7 +18,8 @@ static ValueArray initConstants1() {
   return vals;
 }
 
-static Chunk initChunk1() {
+// init
+static Chunk chunk1() {
   Chunk c;
   initChunk(&c);
   c.count = 10;
@@ -30,31 +32,36 @@ static Chunk initChunk1() {
   };
   c.code = cloneMemory(code, sizeof(code));
   c.lines = cloneMemory(lines, sizeof(lines));
-  c.constants = initConstants1();
+                // init
+  c.constants = constants1();
 
   return c;
 };
 
-static Value initFn1() {
+// init
+static Value fn1() {
   ObjFun *f = newFunction();  f->arity = 1;
   f->upvalueCount = 0;
   f->name = newString("init");
-  f->chunk = initChunk1();
+             // init
+  f->chunk = chunk1();
   return obj(f);
 }
 
-static ValueArray src_sol_lib_Parser_solConstants0() {
+// src_sol_lib_Parser_sol
+static ValueArray constants0() {
   ValueArray vals;
   initValueArray(&vals);
   vals.count = vals.capacity = 4;
   Value values[] = {
-    str("Parser"), str("Object"), str("init"), initFn1(),
+    str("Parser"), str("Object"), str("init"), /*init*/fn1(),
   };
   vals.values = cloneMemory(values, sizeof(values));
   return vals;
 }
 
-static Chunk src_sol_lib_Parser_solChunk0() {
+// src_sol_lib_Parser_sol
+static Chunk chunk0() {
   Chunk c;
   initChunk(&c);
   c.count = 18;
@@ -67,19 +74,23 @@ static Chunk src_sol_lib_Parser_solChunk0() {
   };
   c.code = cloneMemory(code, sizeof(code));
   c.lines = cloneMemory(lines, sizeof(lines));
-  c.constants = src_sol_lib_Parser_solConstants0();
+                // src_sol_lib_Parser_sol
+  c.constants = constants0();
 
   return c;
 };
 
-static Value src_sol_lib_Parser_solFn0() {
+// src_sol_lib_Parser_sol
+static Value fn0() {
   ObjFun *f = newFunction();  f->arity = 0;
   f->upvalueCount = 0;
   f->name = newString("src_sol_lib_Parser_sol");
-  f->chunk = src_sol_lib_Parser_solChunk0();
+             // src_sol_lib_Parser_sol
+  f->chunk = chunk0();
   return obj(f);
 }
 
 ObjFun *Parser_sol() {
-  return AS_FUN(src_sol_lib_Parser_solFn0());
+                //src_sol_lib_Parser_sol
+  return AS_FUN(fn0());
 }

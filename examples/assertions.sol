@@ -40,9 +40,10 @@ assert [1, 2, 3]
 
 /// Instances
 class Point(x, y)
-	magnitude() => (x + y)
-	+ (b) => Point(x + b.x, y + b.y)
-	eql(b) => x == b.x and y == b.y
+	fn magnitude = (x + y)
+	fn + (b) = Point(x + b.x, y + b.y)
+	fn eql(b)
+		return x == b.x and y == b.y
 
 let p1 = Point(1, 2)
 let p2 = Point(3, 4)

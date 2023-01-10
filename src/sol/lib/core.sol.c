@@ -6,7 +6,8 @@
 #include "sol/memory.h"
 #include "sol/string.h"
 
-static ValueArray eqlConstants1() {
+// eql
+static ValueArray constants1() {
   ValueArray vals;
   initValueArray(&vals);
   vals.count = vals.capacity = 5;
@@ -17,7 +18,8 @@ static ValueArray eqlConstants1() {
   return vals;
 }
 
-static Chunk eqlChunk1() {
+// eql
+static Chunk chunk1() {
   Chunk c;
   initChunk(&c);
   c.count = 107;
@@ -30,20 +32,24 @@ static Chunk eqlChunk1() {
   };
   c.code = cloneMemory(code, sizeof(code));
   c.lines = cloneMemory(lines, sizeof(lines));
-  c.constants = eqlConstants1();
+                // eql
+  c.constants = constants1();
 
   return c;
 };
 
-static Value eqlFn1() {
+// eql
+static Value fn1() {
   ObjFun *f = newFunction();  f->arity = 1;
   f->upvalueCount = 0;
   f->name = newString("eql");
-  f->chunk = eqlChunk1();
+             // eql
+  f->chunk = chunk1();
   return obj(f);
 }
 
-static ValueArray initConstants2() {
+// init
+static ValueArray constants2() {
   ValueArray vals;
   initValueArray(&vals);
   vals.count = vals.capacity = 2;
@@ -54,7 +60,8 @@ static ValueArray initConstants2() {
   return vals;
 }
 
-static Chunk initChunk2() {
+// init
+static Chunk chunk2() {
   Chunk c;
   initChunk(&c);
   c.count = 17;
@@ -67,20 +74,24 @@ static Chunk initChunk2() {
   };
   c.code = cloneMemory(code, sizeof(code));
   c.lines = cloneMemory(lines, sizeof(lines));
-  c.constants = initConstants2();
+                // init
+  c.constants = constants2();
 
   return c;
 };
 
-static Value initFn2() {
+// init
+static Value fn2() {
   ObjFun *f = newFunction();  f->arity = 2;
   f->upvalueCount = 0;
   f->name = newString("init");
-  f->chunk = initChunk2();
+             // init
+  f->chunk = chunk2();
   return obj(f);
 }
 
-static ValueArray inspectConstants3() {
+// inspect
+static ValueArray constants3() {
   ValueArray vals;
   initValueArray(&vals);
   vals.count = vals.capacity = 4;
@@ -91,7 +102,8 @@ static ValueArray inspectConstants3() {
   return vals;
 }
 
-static Chunk inspectChunk3() {
+// inspect
+static Chunk chunk3() {
   Chunk c;
   initChunk(&c);
   c.count = 19;
@@ -104,20 +116,24 @@ static Chunk inspectChunk3() {
   };
   c.code = cloneMemory(code, sizeof(code));
   c.lines = cloneMemory(lines, sizeof(lines));
-  c.constants = inspectConstants3();
+                // inspect
+  c.constants = constants3();
 
   return c;
 };
 
-static Value inspectFn3() {
+// inspect
+static Value fn3() {
   ObjFun *f = newFunction();  f->arity = 0;
   f->upvalueCount = 0;
   f->name = newString("inspect");
-  f->chunk = inspectChunk3();
+             // inspect
+  f->chunk = chunk3();
   return obj(f);
 }
 
-static ValueArray stringConstants4() {
+// string
+static ValueArray constants4() {
   ValueArray vals;
   initValueArray(&vals);
   vals.count = vals.capacity = 4;
@@ -128,7 +144,8 @@ static ValueArray stringConstants4() {
   return vals;
 }
 
-static Chunk stringChunk4() {
+// string
+static Chunk chunk4() {
   Chunk c;
   initChunk(&c);
   c.count = 19;
@@ -141,31 +158,36 @@ static Chunk stringChunk4() {
   };
   c.code = cloneMemory(code, sizeof(code));
   c.lines = cloneMemory(lines, sizeof(lines));
-  c.constants = stringConstants4();
+                // string
+  c.constants = constants4();
 
   return c;
 };
 
-static Value stringFn4() {
+// string
+static Value fn4() {
   ObjFun *f = newFunction();  f->arity = 0;
   f->upvalueCount = 0;
   f->name = newString("string");
-  f->chunk = stringChunk4();
+             // string
+  f->chunk = chunk4();
   return obj(f);
 }
 
-static ValueArray boldConstants5() {
+// bold
+static ValueArray constants5() {
   ValueArray vals;
   initValueArray(&vals);
   vals.count = vals.capacity = 2;
   Value values[] = {
-    str("[1m"), str("[21m"),
+    str("\e[1m"), str("\e[21m"),
   };
   vals.values = cloneMemory(values, sizeof(values));
   return vals;
 }
 
-static Chunk boldChunk5() {
+// bold
+static Chunk chunk5() {
   Chunk c;
   initChunk(&c);
   c.count = 11;
@@ -178,31 +200,36 @@ static Chunk boldChunk5() {
   };
   c.code = cloneMemory(code, sizeof(code));
   c.lines = cloneMemory(lines, sizeof(lines));
-  c.constants = boldConstants5();
+                // bold
+  c.constants = constants5();
 
   return c;
 };
 
-static Value boldFn5() {
+// bold
+static Value fn5() {
   ObjFun *f = newFunction();  f->arity = 0;
   f->upvalueCount = 0;
   f->name = newString("bold");
-  f->chunk = boldChunk5();
+             // bold
+  f->chunk = chunk5();
   return obj(f);
 }
 
-static ValueArray dimConstants6() {
+// dim
+static ValueArray constants6() {
   ValueArray vals;
   initValueArray(&vals);
   vals.count = vals.capacity = 2;
   Value values[] = {
-    str("[2m"), str("[22m"),
+    str("\e[2m"), str("\e[22m"),
   };
   vals.values = cloneMemory(values, sizeof(values));
   return vals;
 }
 
-static Chunk dimChunk6() {
+// dim
+static Chunk chunk6() {
   Chunk c;
   initChunk(&c);
   c.count = 11;
@@ -215,31 +242,36 @@ static Chunk dimChunk6() {
   };
   c.code = cloneMemory(code, sizeof(code));
   c.lines = cloneMemory(lines, sizeof(lines));
-  c.constants = dimConstants6();
+                // dim
+  c.constants = constants6();
 
   return c;
 };
 
-static Value dimFn6() {
+// dim
+static Value fn6() {
   ObjFun *f = newFunction();  f->arity = 0;
   f->upvalueCount = 0;
   f->name = newString("dim");
-  f->chunk = dimChunk6();
+             // dim
+  f->chunk = chunk6();
   return obj(f);
 }
 
-static ValueArray italicConstants7() {
+// italic
+static ValueArray constants7() {
   ValueArray vals;
   initValueArray(&vals);
   vals.count = vals.capacity = 2;
   Value values[] = {
-    str("[3m"), str("[23m"),
+    str("\e[3m"), str("\e[23m"),
   };
   vals.values = cloneMemory(values, sizeof(values));
   return vals;
 }
 
-static Chunk italicChunk7() {
+// italic
+static Chunk chunk7() {
   Chunk c;
   initChunk(&c);
   c.count = 11;
@@ -252,31 +284,36 @@ static Chunk italicChunk7() {
   };
   c.code = cloneMemory(code, sizeof(code));
   c.lines = cloneMemory(lines, sizeof(lines));
-  c.constants = italicConstants7();
+                // italic
+  c.constants = constants7();
 
   return c;
 };
 
-static Value italicFn7() {
+// italic
+static Value fn7() {
   ObjFun *f = newFunction();  f->arity = 0;
   f->upvalueCount = 0;
   f->name = newString("italic");
-  f->chunk = italicChunk7();
+             // italic
+  f->chunk = chunk7();
   return obj(f);
 }
 
-static ValueArray underlineConstants8() {
+// underline
+static ValueArray constants8() {
   ValueArray vals;
   initValueArray(&vals);
   vals.count = vals.capacity = 2;
   Value values[] = {
-    str("[4m"), str("[24m"),
+    str("\e[4m"), str("\e[24m"),
   };
   vals.values = cloneMemory(values, sizeof(values));
   return vals;
 }
 
-static Chunk underlineChunk8() {
+// underline
+static Chunk chunk8() {
   Chunk c;
   initChunk(&c);
   c.count = 11;
@@ -289,31 +326,36 @@ static Chunk underlineChunk8() {
   };
   c.code = cloneMemory(code, sizeof(code));
   c.lines = cloneMemory(lines, sizeof(lines));
-  c.constants = underlineConstants8();
+                // underline
+  c.constants = constants8();
 
   return c;
 };
 
-static Value underlineFn8() {
+// underline
+static Value fn8() {
   ObjFun *f = newFunction();  f->arity = 0;
   f->upvalueCount = 0;
   f->name = newString("underline");
-  f->chunk = underlineChunk8();
+             // underline
+  f->chunk = chunk8();
   return obj(f);
 }
 
-static ValueArray invertConstants9() {
+// invert
+static ValueArray constants9() {
   ValueArray vals;
   initValueArray(&vals);
   vals.count = vals.capacity = 2;
   Value values[] = {
-    str("[7m"), str("[27m"),
+    str("\e[7m"), str("\e[27m"),
   };
   vals.values = cloneMemory(values, sizeof(values));
   return vals;
 }
 
-static Chunk invertChunk9() {
+// invert
+static Chunk chunk9() {
   Chunk c;
   initChunk(&c);
   c.count = 11;
@@ -326,31 +368,36 @@ static Chunk invertChunk9() {
   };
   c.code = cloneMemory(code, sizeof(code));
   c.lines = cloneMemory(lines, sizeof(lines));
-  c.constants = invertConstants9();
+                // invert
+  c.constants = constants9();
 
   return c;
 };
 
-static Value invertFn9() {
+// invert
+static Value fn9() {
   ObjFun *f = newFunction();  f->arity = 0;
   f->upvalueCount = 0;
   f->name = newString("invert");
-  f->chunk = invertChunk9();
+             // invert
+  f->chunk = chunk9();
   return obj(f);
 }
 
-static ValueArray hideConstants10() {
+// hide
+static ValueArray constants10() {
   ValueArray vals;
   initValueArray(&vals);
   vals.count = vals.capacity = 2;
   Value values[] = {
-    str("[8m"), str("[28m"),
+    str("\e[8m"), str("\e[28m"),
   };
   vals.values = cloneMemory(values, sizeof(values));
   return vals;
 }
 
-static Chunk hideChunk10() {
+// hide
+static Chunk chunk10() {
   Chunk c;
   initChunk(&c);
   c.count = 11;
@@ -363,31 +410,36 @@ static Chunk hideChunk10() {
   };
   c.code = cloneMemory(code, sizeof(code));
   c.lines = cloneMemory(lines, sizeof(lines));
-  c.constants = hideConstants10();
+                // hide
+  c.constants = constants10();
 
   return c;
 };
 
-static Value hideFn10() {
+// hide
+static Value fn10() {
   ObjFun *f = newFunction();  f->arity = 0;
   f->upvalueCount = 0;
   f->name = newString("hide");
-  f->chunk = hideChunk10();
+             // hide
+  f->chunk = chunk10();
   return obj(f);
 }
 
-static ValueArray strikeConstants11() {
+// strike
+static ValueArray constants11() {
   ValueArray vals;
   initValueArray(&vals);
   vals.count = vals.capacity = 2;
   Value values[] = {
-    str("[9m"), str("[29m"),
+    str("\e[9m"), str("\e[29m"),
   };
   vals.values = cloneMemory(values, sizeof(values));
   return vals;
 }
 
-static Chunk strikeChunk11() {
+// strike
+static Chunk chunk11() {
   Chunk c;
   initChunk(&c);
   c.count = 11;
@@ -400,31 +452,36 @@ static Chunk strikeChunk11() {
   };
   c.code = cloneMemory(code, sizeof(code));
   c.lines = cloneMemory(lines, sizeof(lines));
-  c.constants = strikeConstants11();
+                // strike
+  c.constants = constants11();
 
   return c;
 };
 
-static Value strikeFn11() {
+// strike
+static Value fn11() {
   ObjFun *f = newFunction();  f->arity = 0;
   f->upvalueCount = 0;
   f->name = newString("strike");
-  f->chunk = strikeChunk11();
+             // strike
+  f->chunk = chunk11();
   return obj(f);
 }
 
-static ValueArray blackConstants12() {
+// black
+static ValueArray constants12() {
   ValueArray vals;
   initValueArray(&vals);
   vals.count = vals.capacity = 2;
   Value values[] = {
-    str("[30m"), str("[39m"),
+    str("\e[30m"), str("\e[39m"),
   };
   vals.values = cloneMemory(values, sizeof(values));
   return vals;
 }
 
-static Chunk blackChunk12() {
+// black
+static Chunk chunk12() {
   Chunk c;
   initChunk(&c);
   c.count = 11;
@@ -437,31 +494,36 @@ static Chunk blackChunk12() {
   };
   c.code = cloneMemory(code, sizeof(code));
   c.lines = cloneMemory(lines, sizeof(lines));
-  c.constants = blackConstants12();
+                // black
+  c.constants = constants12();
 
   return c;
 };
 
-static Value blackFn12() {
+// black
+static Value fn12() {
   ObjFun *f = newFunction();  f->arity = 0;
   f->upvalueCount = 0;
   f->name = newString("black");
-  f->chunk = blackChunk12();
+             // black
+  f->chunk = chunk12();
   return obj(f);
 }
 
-static ValueArray redConstants13() {
+// red
+static ValueArray constants13() {
   ValueArray vals;
   initValueArray(&vals);
   vals.count = vals.capacity = 2;
   Value values[] = {
-    str("[31m"), str("[39m"),
+    str("\e[31m"), str("\e[39m"),
   };
   vals.values = cloneMemory(values, sizeof(values));
   return vals;
 }
 
-static Chunk redChunk13() {
+// red
+static Chunk chunk13() {
   Chunk c;
   initChunk(&c);
   c.count = 11;
@@ -474,31 +536,36 @@ static Chunk redChunk13() {
   };
   c.code = cloneMemory(code, sizeof(code));
   c.lines = cloneMemory(lines, sizeof(lines));
-  c.constants = redConstants13();
+                // red
+  c.constants = constants13();
 
   return c;
 };
 
-static Value redFn13() {
+// red
+static Value fn13() {
   ObjFun *f = newFunction();  f->arity = 0;
   f->upvalueCount = 0;
   f->name = newString("red");
-  f->chunk = redChunk13();
+             // red
+  f->chunk = chunk13();
   return obj(f);
 }
 
-static ValueArray greenConstants14() {
+// green
+static ValueArray constants14() {
   ValueArray vals;
   initValueArray(&vals);
   vals.count = vals.capacity = 2;
   Value values[] = {
-    str("[32m"), str("[39m"),
+    str("\e[32m"), str("\e[39m"),
   };
   vals.values = cloneMemory(values, sizeof(values));
   return vals;
 }
 
-static Chunk greenChunk14() {
+// green
+static Chunk chunk14() {
   Chunk c;
   initChunk(&c);
   c.count = 11;
@@ -511,31 +578,36 @@ static Chunk greenChunk14() {
   };
   c.code = cloneMemory(code, sizeof(code));
   c.lines = cloneMemory(lines, sizeof(lines));
-  c.constants = greenConstants14();
+                // green
+  c.constants = constants14();
 
   return c;
 };
 
-static Value greenFn14() {
+// green
+static Value fn14() {
   ObjFun *f = newFunction();  f->arity = 0;
   f->upvalueCount = 0;
   f->name = newString("green");
-  f->chunk = greenChunk14();
+             // green
+  f->chunk = chunk14();
   return obj(f);
 }
 
-static ValueArray yellowConstants15() {
+// yellow
+static ValueArray constants15() {
   ValueArray vals;
   initValueArray(&vals);
   vals.count = vals.capacity = 2;
   Value values[] = {
-    str("[33m"), str("[39m"),
+    str("\e[33m"), str("\e[39m"),
   };
   vals.values = cloneMemory(values, sizeof(values));
   return vals;
 }
 
-static Chunk yellowChunk15() {
+// yellow
+static Chunk chunk15() {
   Chunk c;
   initChunk(&c);
   c.count = 11;
@@ -548,31 +620,36 @@ static Chunk yellowChunk15() {
   };
   c.code = cloneMemory(code, sizeof(code));
   c.lines = cloneMemory(lines, sizeof(lines));
-  c.constants = yellowConstants15();
+                // yellow
+  c.constants = constants15();
 
   return c;
 };
 
-static Value yellowFn15() {
+// yellow
+static Value fn15() {
   ObjFun *f = newFunction();  f->arity = 0;
   f->upvalueCount = 0;
   f->name = newString("yellow");
-  f->chunk = yellowChunk15();
+             // yellow
+  f->chunk = chunk15();
   return obj(f);
 }
 
-static ValueArray blueConstants16() {
+// blue
+static ValueArray constants16() {
   ValueArray vals;
   initValueArray(&vals);
   vals.count = vals.capacity = 2;
   Value values[] = {
-    str("[34m"), str("[39m"),
+    str("\e[34m"), str("\e[39m"),
   };
   vals.values = cloneMemory(values, sizeof(values));
   return vals;
 }
 
-static Chunk blueChunk16() {
+// blue
+static Chunk chunk16() {
   Chunk c;
   initChunk(&c);
   c.count = 11;
@@ -585,31 +662,36 @@ static Chunk blueChunk16() {
   };
   c.code = cloneMemory(code, sizeof(code));
   c.lines = cloneMemory(lines, sizeof(lines));
-  c.constants = blueConstants16();
+                // blue
+  c.constants = constants16();
 
   return c;
 };
 
-static Value blueFn16() {
+// blue
+static Value fn16() {
   ObjFun *f = newFunction();  f->arity = 0;
   f->upvalueCount = 0;
   f->name = newString("blue");
-  f->chunk = blueChunk16();
+             // blue
+  f->chunk = chunk16();
   return obj(f);
 }
 
-static ValueArray magentaConstants17() {
+// magenta
+static ValueArray constants17() {
   ValueArray vals;
   initValueArray(&vals);
   vals.count = vals.capacity = 2;
   Value values[] = {
-    str("[35m"), str("[39m"),
+    str("\e[35m"), str("\e[39m"),
   };
   vals.values = cloneMemory(values, sizeof(values));
   return vals;
 }
 
-static Chunk magentaChunk17() {
+// magenta
+static Chunk chunk17() {
   Chunk c;
   initChunk(&c);
   c.count = 11;
@@ -622,31 +704,36 @@ static Chunk magentaChunk17() {
   };
   c.code = cloneMemory(code, sizeof(code));
   c.lines = cloneMemory(lines, sizeof(lines));
-  c.constants = magentaConstants17();
+                // magenta
+  c.constants = constants17();
 
   return c;
 };
 
-static Value magentaFn17() {
+// magenta
+static Value fn17() {
   ObjFun *f = newFunction();  f->arity = 0;
   f->upvalueCount = 0;
   f->name = newString("magenta");
-  f->chunk = magentaChunk17();
+             // magenta
+  f->chunk = chunk17();
   return obj(f);
 }
 
-static ValueArray cyanConstants18() {
+// cyan
+static ValueArray constants18() {
   ValueArray vals;
   initValueArray(&vals);
   vals.count = vals.capacity = 2;
   Value values[] = {
-    str("[36m"), str("[39m"),
+    str("\e[36m"), str("\e[39m"),
   };
   vals.values = cloneMemory(values, sizeof(values));
   return vals;
 }
 
-static Chunk cyanChunk18() {
+// cyan
+static Chunk chunk18() {
   Chunk c;
   initChunk(&c);
   c.count = 11;
@@ -659,31 +746,36 @@ static Chunk cyanChunk18() {
   };
   c.code = cloneMemory(code, sizeof(code));
   c.lines = cloneMemory(lines, sizeof(lines));
-  c.constants = cyanConstants18();
+                // cyan
+  c.constants = constants18();
 
   return c;
 };
 
-static Value cyanFn18() {
+// cyan
+static Value fn18() {
   ObjFun *f = newFunction();  f->arity = 0;
   f->upvalueCount = 0;
   f->name = newString("cyan");
-  f->chunk = cyanChunk18();
+             // cyan
+  f->chunk = chunk18();
   return obj(f);
 }
 
-static ValueArray whiteConstants19() {
+// white
+static ValueArray constants19() {
   ValueArray vals;
   initValueArray(&vals);
   vals.count = vals.capacity = 2;
   Value values[] = {
-    str("[37m"), str("[39m"),
+    str("\e[37m"), str("\e[39m"),
   };
   vals.values = cloneMemory(values, sizeof(values));
   return vals;
 }
 
-static Chunk whiteChunk19() {
+// white
+static Chunk chunk19() {
   Chunk c;
   initChunk(&c);
   c.count = 11;
@@ -696,31 +788,36 @@ static Chunk whiteChunk19() {
   };
   c.code = cloneMemory(code, sizeof(code));
   c.lines = cloneMemory(lines, sizeof(lines));
-  c.constants = whiteConstants19();
+                // white
+  c.constants = constants19();
 
   return c;
 };
 
-static Value whiteFn19() {
+// white
+static Value fn19() {
   ObjFun *f = newFunction();  f->arity = 0;
   f->upvalueCount = 0;
   f->name = newString("white");
-  f->chunk = whiteChunk19();
+             // white
+  f->chunk = chunk19();
   return obj(f);
 }
 
-static ValueArray bg_blackConstants20() {
+// bg_black
+static ValueArray constants20() {
   ValueArray vals;
   initValueArray(&vals);
   vals.count = vals.capacity = 2;
   Value values[] = {
-    str("[40m"), str("[39m"),
+    str("\e[40m"), str("\e[39m"),
   };
   vals.values = cloneMemory(values, sizeof(values));
   return vals;
 }
 
-static Chunk bg_blackChunk20() {
+// bg_black
+static Chunk chunk20() {
   Chunk c;
   initChunk(&c);
   c.count = 11;
@@ -733,31 +830,36 @@ static Chunk bg_blackChunk20() {
   };
   c.code = cloneMemory(code, sizeof(code));
   c.lines = cloneMemory(lines, sizeof(lines));
-  c.constants = bg_blackConstants20();
+                // bg_black
+  c.constants = constants20();
 
   return c;
 };
 
-static Value bg_blackFn20() {
+// bg_black
+static Value fn20() {
   ObjFun *f = newFunction();  f->arity = 0;
   f->upvalueCount = 0;
   f->name = newString("bg_black");
-  f->chunk = bg_blackChunk20();
+             // bg_black
+  f->chunk = chunk20();
   return obj(f);
 }
 
-static ValueArray bg_redConstants21() {
+// bg_red
+static ValueArray constants21() {
   ValueArray vals;
   initValueArray(&vals);
   vals.count = vals.capacity = 2;
   Value values[] = {
-    str("[41m"), str("[39m"),
+    str("\e[41m"), str("\e[39m"),
   };
   vals.values = cloneMemory(values, sizeof(values));
   return vals;
 }
 
-static Chunk bg_redChunk21() {
+// bg_red
+static Chunk chunk21() {
   Chunk c;
   initChunk(&c);
   c.count = 11;
@@ -770,31 +872,36 @@ static Chunk bg_redChunk21() {
   };
   c.code = cloneMemory(code, sizeof(code));
   c.lines = cloneMemory(lines, sizeof(lines));
-  c.constants = bg_redConstants21();
+                // bg_red
+  c.constants = constants21();
 
   return c;
 };
 
-static Value bg_redFn21() {
+// bg_red
+static Value fn21() {
   ObjFun *f = newFunction();  f->arity = 0;
   f->upvalueCount = 0;
   f->name = newString("bg_red");
-  f->chunk = bg_redChunk21();
+             // bg_red
+  f->chunk = chunk21();
   return obj(f);
 }
 
-static ValueArray bg_greenConstants22() {
+// bg_green
+static ValueArray constants22() {
   ValueArray vals;
   initValueArray(&vals);
   vals.count = vals.capacity = 2;
   Value values[] = {
-    str("[42m"), str("[39m"),
+    str("\e[42m"), str("\e[39m"),
   };
   vals.values = cloneMemory(values, sizeof(values));
   return vals;
 }
 
-static Chunk bg_greenChunk22() {
+// bg_green
+static Chunk chunk22() {
   Chunk c;
   initChunk(&c);
   c.count = 11;
@@ -807,31 +914,36 @@ static Chunk bg_greenChunk22() {
   };
   c.code = cloneMemory(code, sizeof(code));
   c.lines = cloneMemory(lines, sizeof(lines));
-  c.constants = bg_greenConstants22();
+                // bg_green
+  c.constants = constants22();
 
   return c;
 };
 
-static Value bg_greenFn22() {
+// bg_green
+static Value fn22() {
   ObjFun *f = newFunction();  f->arity = 0;
   f->upvalueCount = 0;
   f->name = newString("bg_green");
-  f->chunk = bg_greenChunk22();
+             // bg_green
+  f->chunk = chunk22();
   return obj(f);
 }
 
-static ValueArray bg_yellowConstants23() {
+// bg_yellow
+static ValueArray constants23() {
   ValueArray vals;
   initValueArray(&vals);
   vals.count = vals.capacity = 2;
   Value values[] = {
-    str("[43m"), str("[39m"),
+    str("\e[43m"), str("\e[39m"),
   };
   vals.values = cloneMemory(values, sizeof(values));
   return vals;
 }
 
-static Chunk bg_yellowChunk23() {
+// bg_yellow
+static Chunk chunk23() {
   Chunk c;
   initChunk(&c);
   c.count = 11;
@@ -844,31 +956,36 @@ static Chunk bg_yellowChunk23() {
   };
   c.code = cloneMemory(code, sizeof(code));
   c.lines = cloneMemory(lines, sizeof(lines));
-  c.constants = bg_yellowConstants23();
+                // bg_yellow
+  c.constants = constants23();
 
   return c;
 };
 
-static Value bg_yellowFn23() {
+// bg_yellow
+static Value fn23() {
   ObjFun *f = newFunction();  f->arity = 0;
   f->upvalueCount = 0;
   f->name = newString("bg_yellow");
-  f->chunk = bg_yellowChunk23();
+             // bg_yellow
+  f->chunk = chunk23();
   return obj(f);
 }
 
-static ValueArray bg_blueConstants24() {
+// bg_blue
+static ValueArray constants24() {
   ValueArray vals;
   initValueArray(&vals);
   vals.count = vals.capacity = 2;
   Value values[] = {
-    str("[44m"), str("[39m"),
+    str("\e[44m"), str("\e[39m"),
   };
   vals.values = cloneMemory(values, sizeof(values));
   return vals;
 }
 
-static Chunk bg_blueChunk24() {
+// bg_blue
+static Chunk chunk24() {
   Chunk c;
   initChunk(&c);
   c.count = 11;
@@ -881,31 +998,36 @@ static Chunk bg_blueChunk24() {
   };
   c.code = cloneMemory(code, sizeof(code));
   c.lines = cloneMemory(lines, sizeof(lines));
-  c.constants = bg_blueConstants24();
+                // bg_blue
+  c.constants = constants24();
 
   return c;
 };
 
-static Value bg_blueFn24() {
+// bg_blue
+static Value fn24() {
   ObjFun *f = newFunction();  f->arity = 0;
   f->upvalueCount = 0;
   f->name = newString("bg_blue");
-  f->chunk = bg_blueChunk24();
+             // bg_blue
+  f->chunk = chunk24();
   return obj(f);
 }
 
-static ValueArray bg_magentaConstants25() {
+// bg_magenta
+static ValueArray constants25() {
   ValueArray vals;
   initValueArray(&vals);
   vals.count = vals.capacity = 2;
   Value values[] = {
-    str("[45m"), str("[39m"),
+    str("\e[45m"), str("\e[39m"),
   };
   vals.values = cloneMemory(values, sizeof(values));
   return vals;
 }
 
-static Chunk bg_magentaChunk25() {
+// bg_magenta
+static Chunk chunk25() {
   Chunk c;
   initChunk(&c);
   c.count = 11;
@@ -918,31 +1040,36 @@ static Chunk bg_magentaChunk25() {
   };
   c.code = cloneMemory(code, sizeof(code));
   c.lines = cloneMemory(lines, sizeof(lines));
-  c.constants = bg_magentaConstants25();
+                // bg_magenta
+  c.constants = constants25();
 
   return c;
 };
 
-static Value bg_magentaFn25() {
+// bg_magenta
+static Value fn25() {
   ObjFun *f = newFunction();  f->arity = 0;
   f->upvalueCount = 0;
   f->name = newString("bg_magenta");
-  f->chunk = bg_magentaChunk25();
+             // bg_magenta
+  f->chunk = chunk25();
   return obj(f);
 }
 
-static ValueArray bg_cyanConstants26() {
+// bg_cyan
+static ValueArray constants26() {
   ValueArray vals;
   initValueArray(&vals);
   vals.count = vals.capacity = 2;
   Value values[] = {
-    str("[46m"), str("[39m"),
+    str("\e[46m"), str("\e[39m"),
   };
   vals.values = cloneMemory(values, sizeof(values));
   return vals;
 }
 
-static Chunk bg_cyanChunk26() {
+// bg_cyan
+static Chunk chunk26() {
   Chunk c;
   initChunk(&c);
   c.count = 11;
@@ -955,31 +1082,36 @@ static Chunk bg_cyanChunk26() {
   };
   c.code = cloneMemory(code, sizeof(code));
   c.lines = cloneMemory(lines, sizeof(lines));
-  c.constants = bg_cyanConstants26();
+                // bg_cyan
+  c.constants = constants26();
 
   return c;
 };
 
-static Value bg_cyanFn26() {
+// bg_cyan
+static Value fn26() {
   ObjFun *f = newFunction();  f->arity = 0;
   f->upvalueCount = 0;
   f->name = newString("bg_cyan");
-  f->chunk = bg_cyanChunk26();
+             // bg_cyan
+  f->chunk = chunk26();
   return obj(f);
 }
 
-static ValueArray bg_whiteConstants27() {
+// bg_white
+static ValueArray constants27() {
   ValueArray vals;
   initValueArray(&vals);
   vals.count = vals.capacity = 2;
   Value values[] = {
-    str("[47m"), str("[39m"),
+    str("\e[47m"), str("\e[39m"),
   };
   vals.values = cloneMemory(values, sizeof(values));
   return vals;
 }
 
-static Chunk bg_whiteChunk27() {
+// bg_white
+static Chunk chunk27() {
   Chunk c;
   initChunk(&c);
   c.count = 11;
@@ -992,20 +1124,24 @@ static Chunk bg_whiteChunk27() {
   };
   c.code = cloneMemory(code, sizeof(code));
   c.lines = cloneMemory(lines, sizeof(lines));
-  c.constants = bg_whiteConstants27();
+                // bg_white
+  c.constants = constants27();
 
   return c;
 };
 
-static Value bg_whiteFn27() {
+// bg_white
+static Value fn27() {
   ObjFun *f = newFunction();  f->arity = 0;
   f->upvalueCount = 0;
   f->name = newString("bg_white");
-  f->chunk = bg_whiteChunk27();
+             // bg_white
+  f->chunk = chunk27();
   return obj(f);
 }
 
-static ValueArray inspectConstants28() {
+// inspect
+static ValueArray constants28() {
   ValueArray vals;
   initValueArray(&vals);
   vals.count = vals.capacity = 2;
@@ -1016,7 +1152,8 @@ static ValueArray inspectConstants28() {
   return vals;
 }
 
-static Chunk inspectChunk28() {
+// inspect
+static Chunk chunk28() {
   Chunk c;
   initChunk(&c);
   c.count = 8;
@@ -1029,20 +1166,24 @@ static Chunk inspectChunk28() {
   };
   c.code = cloneMemory(code, sizeof(code));
   c.lines = cloneMemory(lines, sizeof(lines));
-  c.constants = inspectConstants28();
+                // inspect
+  c.constants = constants28();
 
   return c;
 };
 
-static Value inspectFn28() {
+// inspect
+static Value fn28() {
   ObjFun *f = newFunction();  f->arity = 0;
   f->upvalueCount = 0;
   f->name = newString("inspect");
-  f->chunk = inspectChunk28();
+             // inspect
+  f->chunk = chunk28();
   return obj(f);
 }
 
-static ValueArray initConstants29() {
+// init
+static ValueArray constants29() {
   ValueArray vals;
   initValueArray(&vals);
   vals.count = vals.capacity = 3;
@@ -1053,7 +1194,8 @@ static ValueArray initConstants29() {
   return vals;
 }
 
-static Chunk initChunk29() {
+// init
+static Chunk chunk29() {
   Chunk c;
   initChunk(&c);
   c.count = 24;
@@ -1066,31 +1208,36 @@ static Chunk initChunk29() {
   };
   c.code = cloneMemory(code, sizeof(code));
   c.lines = cloneMemory(lines, sizeof(lines));
-  c.constants = initConstants29();
+                // init
+  c.constants = constants29();
 
   return c;
 };
 
-static Value initFn29() {
+// init
+static Value fn29() {
   ObjFun *f = newFunction();  f->arity = 3;
   f->upvalueCount = 0;
   f->name = newString("init");
-  f->chunk = initChunk29();
+             // init
+  f->chunk = chunk29();
   return obj(f);
 }
 
-static ValueArray src_sol_lib_core_solConstants0() {
+// src_sol_lib_core_sol
+static ValueArray constants0() {
   ValueArray vals;
   initValueArray(&vals);
   vals.count = vals.capacity = 72;
   Value values[] = {
-    str("Nil"), str("Any"), str("Object"), str("Function"), str("Method"), str("NativeFunction"), str("Class"), str("Array"), str("eql"), eqlFn1(), str("Bool"), str("Error"), str("Number"), str("Range"), initFn2(), str("init"), str("inspect"), inspectFn3(), str("string"), stringFn4(), str("String"), str("bold"), boldFn5(), str("dim"), dimFn6(), str("italic"), italicFn7(), str("underline"), underlineFn8(), str("invert"), invertFn9(), str("hide"), hideFn10(), str("strike"), strikeFn11(), str("black"), blackFn12(), str("red"), redFn13(), str("green"), greenFn14(), str("yellow"), yellowFn15(), str("blue"), blueFn16(), str("magenta"), magentaFn17(), str("cyan"), cyanFn18(), str("white"), whiteFn19(), str("bg_black"), bg_blackFn20(), str("bg_red"), bg_redFn21(), str("bg_green"), bg_greenFn22(), str("bg_yellow"), bg_yellowFn23(), str("bg_blue"), bg_blueFn24(), str("bg_magenta"), bg_magentaFn25(), str("bg_cyan"), bg_cyanFn26(), str("bg_white"), bg_whiteFn27(), str("Table"), inspectFn28(), str("Tuple"), str("Atom"), initFn29(),
+    str("Nil"), str("Any"), str("Object"), str("Function"), str("Method"), str("NativeFunction"), str("Class"), str("Array"), str("eql"), /*eql*/fn1(), str("Bool"), str("Error"), str("Number"), str("Range"), /*init*/fn2(), str("init"), str("inspect"), /*inspect*/fn3(), str("string"), /*string*/fn4(), str("String"), str("bold"), /*bold*/fn5(), str("dim"), /*dim*/fn6(), str("italic"), /*italic*/fn7(), str("underline"), /*underline*/fn8(), str("invert"), /*invert*/fn9(), str("hide"), /*hide*/fn10(), str("strike"), /*strike*/fn11(), str("black"), /*black*/fn12(), str("red"), /*red*/fn13(), str("green"), /*green*/fn14(), str("yellow"), /*yellow*/fn15(), str("blue"), /*blue*/fn16(), str("magenta"), /*magenta*/fn17(), str("cyan"), /*cyan*/fn18(), str("white"), /*white*/fn19(), str("bg_black"), /*bg_black*/fn20(), str("bg_red"), /*bg_red*/fn21(), str("bg_green"), /*bg_green*/fn22(), str("bg_yellow"), /*bg_yellow*/fn23(), str("bg_blue"), /*bg_blue*/fn24(), str("bg_magenta"), /*bg_magenta*/fn25(), str("bg_cyan"), /*bg_cyan*/fn26(), str("bg_white"), /*bg_white*/fn27(), str("Table"), /*inspect*/fn28(), str("Tuple"), str("Atom"), /*init*/fn29(),
   };
   vals.values = cloneMemory(values, sizeof(values));
   return vals;
 }
 
-static Chunk src_sol_lib_core_solChunk0() {
+// src_sol_lib_core_sol
+static Chunk chunk0() {
   Chunk c;
   initChunk(&c);
   c.count = 298;
@@ -1103,19 +1250,23 @@ static Chunk src_sol_lib_core_solChunk0() {
   };
   c.code = cloneMemory(code, sizeof(code));
   c.lines = cloneMemory(lines, sizeof(lines));
-  c.constants = src_sol_lib_core_solConstants0();
+                // src_sol_lib_core_sol
+  c.constants = constants0();
 
   return c;
 };
 
-static Value src_sol_lib_core_solFn0() {
+// src_sol_lib_core_sol
+static Value fn0() {
   ObjFun *f = newFunction();  f->arity = 0;
   f->upvalueCount = 0;
   f->name = newString("src_sol_lib_core_sol");
-  f->chunk = src_sol_lib_core_solChunk0();
+             // src_sol_lib_core_sol
+  f->chunk = chunk0();
   return obj(f);
 }
 
 ObjFun *core_sol() {
-  return AS_FUN(src_sol_lib_core_solFn0());
+                //src_sol_lib_core_sol
+  return AS_FUN(fn0());
 }

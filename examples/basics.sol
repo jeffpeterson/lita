@@ -18,20 +18,20 @@ for let i = a; i < b; i++
 	print ("✓", x, y)
 
 class Ainu(name)
-	kind() => 'Ainu
+	fn kind = 'Ainu
 
 class Maia < Ainu
-	kind() => "Maia < " + super.kind
+	fn kind = "Maia < " + super.kind
 
 class Istar < Maia
-	kind() => "Istar < " + super.kind
+	fn kind = "Istar < " + super.kind
 
 let Gandalf = Istar('Gandalf)
 
 print Gandalf.kind
 
 class MyClass
-	myMethod() => 20
+	fn myMethod = 20
 
 print MyClass
 
