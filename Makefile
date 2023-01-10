@@ -10,6 +10,8 @@ SOL_O   := $(SOL_C:src/%.c=_build/%.o)
 SOURCES := $(shell find src -name "*.c")
 HEADERS := $(shell find src -name "*.h")
 
+TARG_C := $(filter-out %_test.c,$(SOURCES))
+
 OBJECTS := $(patsubst src/%.c,_build/%.o, $(SOURCES))
 TARG_O  := $(filter-out %_test.o,$(OBJECTS))
 TEST_O  := $(filter-out %/main.o,$(OBJECTS))
