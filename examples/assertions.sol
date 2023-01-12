@@ -32,11 +32,21 @@ assert 'foo / 'bar == "foo/bar"
 assert '/ == "/"
 assert '"hi there" == "\"hi there\""
 assert '( == "("
+assert "" nil == ""
+assert nil.string == ""
+assert "" 3 == "3"
+assert "" 3.5 == "3.5"
+// print 3.5.class().string
 
+/// Tuples
+assert (1, 2) == (1, 2)
+assert (2, 3) != (1, 2)
 
 /// Arrays
 assert [1, 2, 3]
+assert [1, 2].get(1) == 2
 // assert [1, 2, 3].length == 3
+print hash([1,2,3])
 // assert [1, 2] + [3] == [1, 2, 3]
 
 /// Instances

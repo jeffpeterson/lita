@@ -1,4 +1,6 @@
 class Nil < Any
+	fn string = ""
+
 class Object < Any
 
 // class Bytes(str)
@@ -20,6 +22,9 @@ class Array
 		return true
 
 class Bool
+	fn inspect = this ? 'true : 'false
+	fn string = inspect
+
 class Error
 class Number
 
@@ -30,6 +35,7 @@ class Range(start, end)
 class String
 	fn string = this
 
+	fn * (b) = this + b.string
 	fn / (str) = this + "/" + str
 
 	fn bold      = "\e[1m" + this + "\e[21m"

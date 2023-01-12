@@ -125,6 +125,9 @@ static _ Number_star(_ this, int argc, _ *args) {
 
   return error("Cannot multiply these values.");
 }
+static _ Number_string(_ this, int argc, _ *args) {
+  return OBJ_VAL(stringf("%g", AS_NUMBER(this)));
+}
 
 /// String
 static _ String_plus(_ this, int argc, _ *args) {
@@ -179,6 +182,7 @@ InterpretResult defineNatives() {
 
   method(vm.Number, fn("==", 1, Number_eql));
   method(vm.Number, fn("*", 1, Number_star));
+  method(vm.Number, fn("string", 0, Number_string));
 
   method(vm.Function, fn("arity", 0, Function_arity));         // getter
   method(vm.Function, fn("bytes", 0, Function_bytes));         // getter
