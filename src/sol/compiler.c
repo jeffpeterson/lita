@@ -39,7 +39,7 @@ typedef enum {     // Lower precedence
   PREC_AND,        // and
   PREC_ASSIGNMENT, // = += -= /= *=
   PREC_EQUALITY,   // == !=
-  PREC_COMPARISON, // < > <= >=
+  PREC_COMPARISON, // < > <= >= << >>
   PREC_TERM,       // + -
   PREC_FACTOR,     // * /
   PREC_RANGE,      // ..
@@ -710,11 +710,11 @@ static void array(Ctx *ctx) {
  * Left-associative.
  */
 static void binary(Ctx *ctx) {
-  TokenType operatorType = parser.previous.type;
-  ParseRule *rule = getRule(operatorType);
+  Token operator= parser.previous;
+  ParseRule *rule = getRule(operator.type);
   parseAbove(rule->precedence);
 
-  switch (operatorType) {
+  switch (operator.type) {
   case TOKEN_DOT_DOT: emitByte(OP_RANGE); break;
   case TOKEN_BANG_EQUAL: emitBytes(OP_EQUAL, OP_NOT); break;
   case TOKEN_EQUAL_EQUAL: emitByte(OP_EQUAL); break;
@@ -728,7 +728,12 @@ static void binary(Ctx *ctx) {
   case TOKEN_MINUS: emitByte(OP_SUBTRACT); break;
   case TOKEN_STAR: emitByte(OP_MULTIPLY); break;
   case TOKEN_SLASH: emitByte(OP_DIVIDE); break;
-  default: return;
+  default: {
+    uint8_t name =
+        makeConstant(OBJ_VAL(copyString(operator.start, operator.length)));
+    emitBytes(OP_INVOKE, name);
+    emitByte(1); // argc
+  }
   }
 }
 
@@ -755,7 +760,7 @@ static void tuple(Ctx *ctx) {
 }
 
 static void dot(Ctx *ctx) {
-  uint8_t name = makeConstant(consumeIdent("Expect property name after '.'."));
+  uint8_t name = makeConstant(consumeIdent("Expect property name after '.'"));
 
   if (assignment(ctx, OP_GET_PROPERTY, OP_SET_PROPERTY, name, true)) return;
 
@@ -1336,6 +1341,9 @@ ParseRule rules[] = {
     [TOKEN_GREATER_EQUAL] = {NULL, binary, PREC_COMPARISON},
     [TOKEN_LESS] = {NULL, binary, PREC_COMPARISON},
     [TOKEN_LESS_EQUAL] = {NULL, binary, PREC_COMPARISON},
+
+    [TOKEN_LESS_LESS] = {NULL, binary, PREC_COMPARISON},
+    [TOKEN_GREATER_GREATER] = {NULL, binary, PREC_COMPARISON},
 
     [TOKEN_IDENTIFIER] = {variable, NULL, PREC_NONE},
     [TOKEN_STRING] = {string, NULL, PREC_NONE},

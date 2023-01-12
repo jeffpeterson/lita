@@ -14,6 +14,8 @@ class NativeFunction < Function
 class Class < Function
 
 class Array
+	fn << (x) = this.push(x)
+
 	fn == (b)
 		if length != b.length: return false
 		if objectId == b.objectId: return true
@@ -68,5 +70,8 @@ class Table
 	fn inspect = "{" + "}"
 
 class Tuple
+	fn each(f)
+		for let i = 0; i < length; i++
+			f(get(i))
 
 class Atom(type, value, targets) // ...targets)

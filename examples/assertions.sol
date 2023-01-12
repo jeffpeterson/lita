@@ -52,6 +52,7 @@ assert [1, 2, 3]
 assert [1, 2].get(1) == 2
 assert [1, 2, 3].length == 3
 assert [1, 2] + [3] == [1, 2, 3]
+assert [1, 2] << 3 == [1, 2, 3]
 
 /// Instances
 class Point(x, y)
