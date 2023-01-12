@@ -94,7 +94,9 @@ void markValue(Value value) {
 }
 
 static void markArray(ValueArray *array) {
-  for (int i = 0; i < array->count; i++) { markValue(array->values[i]); }
+  for (int i = 0; i < array->count; i++) {
+    markValue(array->values[i]);
+  }
 }
 
 static void blackenObject(Obj *obj) {
@@ -113,7 +115,7 @@ static void blackenObject(Obj *obj) {
   case OBJ_BOUND: {
     ObjBound *bound = (ObjBound *)obj;
     markValue(bound->receiver);
-    markObject((Obj *)bound->method);
+    markValue(bound->method);
     break;
   }
 

@@ -42,7 +42,7 @@ Obj *allocateObject(size_t size, ObjType type) {
   return obj;
 }
 
-ObjBound *newBound(Value receiver, ObjClosure *method) {
+ObjBound *newBound(Value receiver, Value method) {
   ObjBound *bound = ALLOCATE_OBJ(ObjBound, OBJ_BOUND);
   bound->receiver = receiver;
   bound->method = method;
@@ -163,9 +163,7 @@ int fprintObject(FILE *io, Obj *obj) {
     return fprintf(io, "]") + tot;
   }
 
-  case OBJ_BOUND: {
-    return fprintFunction(io, "bound", ((ObjBound *)obj)->method->fun);
-  }
+  case OBJ_BOUND: return fprintObject(io, AS_OBJ(((ObjBound *)obj)->method));
 
   case OBJ_CLASS: {
     ObjClass *klass = (ObjClass *)obj;

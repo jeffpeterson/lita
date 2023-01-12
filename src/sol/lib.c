@@ -14,7 +14,7 @@ bool isClass(_ x) { return IS_CLASS(x); }
 bool isFn(_ x) { return IS_CLOSURE(x); }
 bool isInst(_ x) { return IS_INSTANCE(x); }
 bool isInt(_ x) { return isNum(x) && num(asInt(x)) == asNum(x); }
-bool isMethod(_ x) { return IS_BOUND(x); }
+bool isBound(_ x) { return IS_BOUND(x); }
 bool isNative(_ x) { return IS_NATIVE(x); }
 bool isNil(_ x) { return IS_NIL(x); }
 bool isNum(_ x) { return IS_NUMBER(x); }
@@ -46,8 +46,8 @@ ObjInstance *asInst(_ x) {
   return AS_INSTANCE(x);
 }
 int asInt(_ x) { return asNum(x); }
-ObjBound *asMethod(_ x) {
-  assert(isMethod(x));
+ObjBound *asBound(_ x) {
+  assert(isBound(x));
   return AS_BOUND(x);
 }
 ObjNative *asNative(_ x) {
@@ -122,11 +122,13 @@ _ subClass(_ name, _ parent) {
 }
 
 _ method(_ klass, _ fun) {
-  if (!isClass(klass)) return nil;
+  assert(isClass(klass));
 
   let key = name(fun);
 
-  if (isNil(key)) { return error("Method must be callable."); }
+  if (isNil(key)) {
+    return error("Method must be callable.");
+  }
 
   tableSet(&AS_CLASS(klass)->methods, key, fun);
 
@@ -189,7 +191,7 @@ _ multiply(_ a, _ b) {
 
 /** Returns arity of fun, -1 if not callable. */
 int arity(_ fun) {
-  if (isMethod(fun)) return asMethod(fun)->method->fun->arity;
+  if (isBound(fun)) return arity(asBound(fun)->method);
 
   if (isFn(fun)) return asFn(fun)->fun->arity;
 
@@ -203,7 +205,7 @@ _ classOf(_ self) { return obj(valueClass(self)); }
 _ superOf(_ klass) { return obj(asClass(klass)->parent); }
 
 _ bindFn(_ self, _ fun) {
-  if (isFn(fun)) return obj(newBound(self, asFn(fun)));
+  if (isFn(fun) || isNative(fun)) return obj(newBound(self, fun));
 
   return fun;
 }
@@ -234,7 +236,7 @@ _ len(_ x) {
 
   switch (asObj(x)->type) {
   case OBJ_ARRAY: return num(asArray(x)->length);
-  case OBJ_BOUND: return len(obj(asMethod(x)->method));
+  case OBJ_BOUND: return len(obj(asBound(x)->method));
 
   case OBJ_CLASS:
   case OBJ_CLOSURE:
@@ -258,7 +260,7 @@ _ name(_ self) {
   case OBJ_FUN: return obj(AS_FUN(self)->name);
   case OBJ_NATIVE: return obj(AS_NATIVE(self)->name);
   case OBJ_CLOSURE: return obj(AS_CLOSURE(self)->fun->name);
-  case OBJ_BOUND: return obj(AS_BOUND(self)->method->fun->name);
+  case OBJ_BOUND: return name(AS_BOUND(self)->method);
   default: return nil;
   }
 }
@@ -304,15 +306,17 @@ _ toString(_ val) {
 
   if (IS_OBJ(val)) {
     switch (OBJ_TYPE(val)) {
-    case OBJ_BOUND: return OBJ_VAL(AS_BOUND(val)->method->fun->name);
     case OBJ_CLASS: return OBJ_VAL(AS_CLASS(val)->name);
-    case OBJ_CLOSURE: return toString(OBJ_VAL(AS_CLOSURE(val)->fun));
+
+    case OBJ_BOUND:
+    case OBJ_CLOSURE:
+    case OBJ_FUN:
+    case OBJ_NATIVE: return name(val);
+
     case OBJ_ERR: return OBJ_VAL(AS_ERR(val)->msg);
-    case OBJ_FUN: return OBJ_VAL(AS_FUN(val)->name);
     case OBJ_INSTANCE:
       // get(val, string("toString"));
       return toString(OBJ_VAL(AS_INSTANCE(val)->klass));
-    case OBJ_NATIVE: return OBJ_VAL(AS_NATIVE(val)->name);
 
     case OBJ_RANGE: {
       ObjRange *range = AS_RANGE(val);
@@ -348,10 +352,7 @@ _ inspect(_ val) {
 
   if (IS_OBJ(val)) {
     switch (OBJ_TYPE(val)) {
-    case OBJ_BOUND: {
-      ObjFun *fun = AS_BOUND(val)->method->fun;
-      return OBJ_VAL(stringf("<bound %s/%d>", fun->name->chars, fun->arity));
-    }
+    case OBJ_BOUND: return add(str("bound:"), inspect(AS_BOUND(val)->method));
 
     case OBJ_CLASS:
       return OBJ_VAL(stringf("<class %s>", AS_CLASS(val)->name->chars));
@@ -361,7 +362,7 @@ _ inspect(_ val) {
     case OBJ_ERR: return OBJ_VAL(stringf("Error(%s)", AS_ERR(val)->msg->chars));
 
     case OBJ_FUN: {
-      ObjFun *fun = AS_BOUND(val)->method->fun;
+      ObjFun *fun = AS_FUN(val);
       return OBJ_VAL(stringf("<fn %s/%d>", fun->name->chars, fun->arity));
     }
     case OBJ_INSTANCE: return toStr(OBJ_VAL(AS_INSTANCE(val)->klass));

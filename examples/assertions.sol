@@ -10,6 +10,7 @@ assert x₂' == 3
 assert 1
 assert 1, 2
 assert 0..9
+assert 1.class == Number
 
 /// Natives
 assert clock()
@@ -36,7 +37,11 @@ assert "" nil == ""
 assert nil.string == ""
 assert "" 3 == "3"
 assert "" 3.5 == "3.5"
-// print 3.5.class().string
+
+/// Inspect
+assert "hi".inspect == '"hi"
+assert 3.inspect == "3"
+assert (1, 2).inspect == "1, 2"
 
 /// Tuples
 assert (1, 2) == (1, 2)
@@ -46,7 +51,6 @@ assert (2, 3) != (1, 2)
 assert [1, 2, 3]
 assert [1, 2].get(1) == 2
 // assert [1, 2, 3].length == 3
-print hash([1,2,3])
 // assert [1, 2] + [3] == [1, 2, 3]
 
 /// Instances

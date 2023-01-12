@@ -81,10 +81,10 @@ InterpretResult bootVM();
 InterpretResult runFun(ObjFun *fun);
 InterpretResult interpret(const char *source, ObjString *name);
 
-/** Push a value onto the stack. */
+/** Push a value onto the stack and return it. */
 Value push(Value value);
 
-/** Pop a value off the stack. */
+/** Pop a value off the stack and return it. */
 Value pop();
 
 /** pop() but returns the given value. */

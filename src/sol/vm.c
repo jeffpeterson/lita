@@ -226,7 +226,7 @@ static bool callValue(Value callee, int argCount) {
     case OBJ_BOUND: {
       ObjBound *bound = AS_BOUND(callee);
       vm.stackTop[-argCount - 1] = bound->receiver;
-      return call(bound->method, argCount);
+      return callValue(bound->method, argCount);
     }
 
     case OBJ_CLASS: {
@@ -321,10 +321,7 @@ static bool bindMethod(ObjClass *klass, ObjString *name) {
     return false;
   }
 
-  ObjBound *bound = newBound(peek(0), AS_CLOSURE(method));
-
-  pop();
-  push(OBJ_VAL(bound));
+  push(bindFn(pop(), method));
   return true;
 }
 

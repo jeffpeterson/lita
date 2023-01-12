@@ -103,9 +103,9 @@ typedef struct ObjErr {
 typedef struct ObjFun {
   Obj obj;
   int arity;
+  ObjString *name;
   int upvalueCount;
   Chunk chunk;
-  ObjString *name;
 } ObjFun;
 
 /**
@@ -137,8 +137,8 @@ typedef struct ObjInstance {
 /** A closure bound to a receiver.  */
 typedef struct ObjBound {
   Obj obj;
-  Value receiver;     /** Bound `this` value. */
-  ObjClosure *method; /** Method being bound. */
+  Value receiver; /** Bound `this` value. */
+  Value method;   /** Method being bound. */
 } ObjBound;
 
 typedef Value NativeFn(Value self, int argCount, Value *args);
@@ -146,8 +146,8 @@ typedef Value NativeFn(Value self, int argCount, Value *args);
 typedef struct ObjNative {
   Obj obj;
   int arity;
-  NativeFn *fun;
   ObjString *name;
+  NativeFn *fun;
 } ObjNative;
 
 typedef struct ObjRange {
@@ -177,7 +177,7 @@ const ObjInfo objInfo[12];
 
 Obj *allocateObject(size_t size, ObjType type);
 
-ObjBound *newBound(Value receiver, ObjClosure *method);
+ObjBound *newBound(Value receiver, Value method);
 ObjClass *newClass(ObjString *name);
 ObjClosure *newClosure(ObjFun *fun);
 ObjErr *newError(ObjString *msg);
