@@ -42,6 +42,8 @@ typedef Value let;
 #define IS_PTR(val) (val & (QNAN | TAG_PTR)) == (QNAN | TAG_PTR)
 #define IS_OBJ(val) valueIsObj(val)
 
+#define not_nil(val) (!IS_NIL(val))
+
 #define AS_BOOL(val) ((val) == TRUE_VAL)
 #define AS_NUMBER(val) valueToNum(val)
 #define AS_PTR(val) ((void *)(uintptr_t)((val) & ~(TAG_PTR | QNAN)))
@@ -71,6 +73,11 @@ static inline Value numToValue(double num) {
 
 static inline bool valueIsObj(Value val) {
   return !IS_NIL(val) && (val & (QNAN | TAG_OBJ)) == (QNAN | TAG_OBJ);
+}
+static inline int as_int(Value x) { return AS_NUMBER(x); }
+
+static inline bool is_int(Value x) {
+  return IS_NUMBER(x) && NUMBER_VAL(as_int(x)) == AS_NUMBER(x);
 }
 
 #else // else if !NAN_BOXING

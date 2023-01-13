@@ -14,7 +14,7 @@ bool defineNative(const char *name, int arity, NativeFn fun) {
 let global_class(const char *name) {
   let vname = string(name);
   let klass = global(vname);
-  if (isClass(klass)) return klass;
+  if (is_class(klass)) return klass;
   return setGlobal(vname, class(vname));
 }
 
@@ -100,14 +100,14 @@ static Value Array_slice(let this, int argc, _ *args) {
 /// Function
 static _ Function_arity(_ this, int argc, _ *args) { return arity(this); }
 static _ Function_bytes(_ this, int argc, _ *args) {
-  if (!isFn(this)) return error("Only Fns have bytes.");
+  if (!is_closure(this)) return error("Only Fns have bytes.");
 
   ObjFun *fn = AS_FUN(this);
 
   return memory(fn->chunk.code, fn->chunk.count);
 }
 static _ Function_byteCount(_ this, int argc, _ *args) {
-  if (!isFn(this)) return error("Only Fns have bytes.");
+  if (!is_closure(this)) return error("Only Fns have bytes.");
 
   ObjFun *fn = AS_FUN(this);
 
@@ -121,7 +121,7 @@ static _ Number_eql(_ this, int argc, _ *args) {
 static _ Number_star(_ this, int argc, _ *args) {
   let arg = args[0];
 
-  if (isNum(arg)) return AS_NUMBER(this) * AS_NUMBER(arg);
+  if (IS_NUMBER(arg)) return AS_NUMBER(this) * AS_NUMBER(arg);
 
   return error("Cannot multiply these values.");
 }

@@ -234,7 +234,7 @@ static bool callValue(Value callee, int argCount) {
 
       let init = findMethod(callee, obj(vm.str.init));
 
-      if (notNil(init)) {
+      if (not_nil(init)) {
         return call(asFn(init), argCount);
       } else if (argCount != 0) {
         return !runtimeError("Expected 0 arguments but got %d.", argCount);
@@ -381,9 +381,9 @@ InterpretResult vm_add() {
   Value a = peek(1);
   Value res = nil;
 
-  if (isNum(a) && isNum(b)) res = num(AS_NUMBER(a) + AS_NUMBER(b));
+  if (IS_NUMBER(a) && IS_NUMBER(b)) res = num(AS_NUMBER(a) + AS_NUMBER(b));
 
-  if (isNil(res)) return vm_invoke(string("+"), 1);
+  if (IS_NIL(res)) return vm_invoke(string("+"), 1);
 
   popn(2);
   push(res);
@@ -426,9 +426,9 @@ InterpretResult vm_divide() {
   Value a = peek(1);
   Value res = nil;
 
-  if (isNum(a) && isNum(b)) res = num(AS_NUMBER(a) / AS_NUMBER(b));
+  if (IS_NUMBER(a) && IS_NUMBER(b)) res = num(AS_NUMBER(a) / AS_NUMBER(b));
 
-  if (isNil(res)) return vm_invoke(string("/"), 1);
+  if (IS_NIL(res)) return vm_invoke(string("/"), 1);
 
   popn(2);
   push(res);
@@ -440,7 +440,7 @@ InterpretResult vm_get_global(Value name) {
   let value;
 
   if (!tableGet(&vm.globals, name, &value)) {
-    if (isNil(value = get_env(name)))
+    if (IS_NIL(value = get_env(name)))
       return runtimeError("Cannot get undefined variable '%s'.",
                           as_string(name)->chars);
   }

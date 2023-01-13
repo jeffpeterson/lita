@@ -9,63 +9,48 @@
 #include "tuple.h"
 #include "vm.h"
 
-bool isClass(_ x) { return is_class(x); }
-bool isFn(_ x) { return is_closure(x); }
-bool isInst(_ x) { return is_instance(x); }
-bool isInt(_ x) { return isNum(x) && num(asInt(x)) == asNum(x); }
-bool isBound(_ x) { return is_bound(x); }
-bool isNative(_ x) { return is_native(x); }
-bool isNil(_ x) { return IS_NIL(x); }
-bool isNum(_ x) { return IS_NUMBER(x); }
-bool isObj(_ x) { return IS_OBJ(x); }
-bool isPtr(_ x) { return IS_PTR(x); }
-bool isRange(_ x) { return is_range(x); }
-bool isTuple(_ x) { return is_tuple(x); }
-bool notNil(_ x) { return !IS_NIL(x); }
-
 bool asBool(_ x) {
   assert(is_bool(x));
   return AS_BOOL(x);
 }
 ObjClass *asClass(_ x) {
-  assert(isClass(x));
+  assert(is_class(x));
   return AS_CLASS(x);
 }
 ObjClosure *asFn(_ x) {
-  assert(isFn(x));
+  assert(is_closure(x));
   return AS_CLOSURE(x);
 }
 ObjInstance *asInst(_ x) {
-  assert(isInst(x));
+  assert(is_instance(x));
   return AS_INSTANCE(x);
 }
-int asInt(_ x) { return asNum(x); }
 ObjBound *asBound(_ x) {
-  assert(isBound(x));
+  assert(is_bound(x));
   return AS_BOUND(x);
 }
 ObjNative *asNative(_ x) {
-  assert(isNative(x));
+  assert(is_native(x));
   return AS_NATIVE(x);
 }
 double asNum(_ x) {
-  assert(isNum(x));
+  assert(IS_NUMBER(x));
   return AS_NUMBER(x);
 }
 Obj *asObj(_ x) {
-  assert(isObj(x));
+  assert(IS_OBJ(x));
   return AS_OBJ(x);
 }
 void *asPtr(_ x) {
-  assert(isPtr(x));
+  assert(IS_PTR(x));
   return AS_PTR(x);
 }
 ObjRange *asRange(_ x) {
-  assert(isRange(x));
+  assert(is_range(x));
   return AS_RANGE(x);
 }
 ObjTuple *asTuple(_ x) {
-  assert(isTuple(x));
+  assert(is_tuple(x));
   return AS_TUPLE(x);
 }
 
@@ -100,7 +85,7 @@ _ class(_ name) {
 }
 
 _ subClass(_ name, _ parent) {
-  if (!isClass(parent)) return nil;
+  if (!is_class(parent)) return nil;
 
   _ klass = class(name);
   ObjClass *klassObj = AS_CLASS(klass);
@@ -112,11 +97,11 @@ _ subClass(_ name, _ parent) {
 }
 
 _ method(_ klass, _ fun) {
-  assert(isClass(klass));
+  assert(is_class(klass));
 
   let key = name(fun);
 
-  if (isNil(key)) {
+  if (IS_NIL(key)) {
     return error("Method must be callable.");
   }
 
@@ -126,9 +111,9 @@ _ method(_ klass, _ fun) {
 }
 
 _ add(_ a, _ b) {
-  if (isNum(a) && isNum(b)) return num(AS_NUMBER(a) + AS_NUMBER(b));
+  if (IS_NUMBER(a) && IS_NUMBER(b)) return num(AS_NUMBER(a) + AS_NUMBER(b));
 
-  if (!isObj(a)) {
+  if (!IS_OBJ(a)) {
     runtimeError("This type cannot be added.");
     return nil;
   }
@@ -148,7 +133,7 @@ _ add(_ a, _ b) {
 }
 
 _ subtract(_ a, _ b) {
-  if (isNum(a) && isNum(b)) return num(asNum(a) - asNum(b));
+  if (IS_NUMBER(a) && IS_NUMBER(b)) return num(asNum(a) - asNum(b));
 
   // if (is_string(a) && is_string(b))
   //   remove b from end of a
@@ -156,7 +141,7 @@ _ subtract(_ a, _ b) {
 }
 
 _ multiply(_ a, _ b) {
-  if (isNum(a) && isNum(b)) return num(asNum(a) * asNum(b));
+  if (IS_NUMBER(a) && IS_NUMBER(b)) return num(asNum(a) * asNum(b));
 
   if (!IS_OBJ(a)) {
     runtimeError("This type cannot be multiplied.");
@@ -181,10 +166,10 @@ _ multiply(_ a, _ b) {
 
 /** Returns arity of fun, -1 if not callable. */
 int arity(_ fun) {
-  if (isBound(fun)) return arity(asBound(fun)->method);
-  if (isFn(fun)) return asFn(fun)->fun->arity;
-  if (isNative(fun)) return asNative(fun)->arity;
-  if (isClass(fun)) return arity(findMethod(fun, str("init")));
+  if (is_bound(fun)) return arity(asBound(fun)->method);
+  if (is_closure(fun)) return asFn(fun)->fun->arity;
+  if (is_native(fun)) return asNative(fun)->arity;
+  if (is_class(fun)) return arity(findMethod(fun, str("init")));
 
   return -1;
 }
@@ -194,14 +179,14 @@ _ classOf(_ self) { return obj(valueClass(self)); }
 _ superOf(_ klass) { return obj(asClass(klass)->parent); }
 
 _ bindFn(_ self, _ fun) {
-  if (isFn(fun) || isNative(fun)) return obj(newBound(self, fun));
+  if (is_closure(fun) || is_native(fun)) return obj(newBound(self, fun));
 
   return fun;
 }
 
 _ findMethod(_ klass, _ name) {
   Value fun = nil;
-  while (isClass(klass) && !tableGet(&asClass(klass)->methods, name, &fun))
+  while (is_class(klass) && !tableGet(&asClass(klass)->methods, name, &fun))
     klass = superOf(klass);
 
   return fun;
@@ -209,7 +194,8 @@ _ findMethod(_ klass, _ name) {
 
 _ find(_ self, _ key) {
   _ val;
-  if (isInst(self) && tableGet(&asInst(self)->fields, key, &val)) return val;
+  if (is_instance(self) && tableGet(&asInst(self)->fields, key, &val))
+    return val;
 
   return findMethod(classOf(self), key);
 }
@@ -221,7 +207,7 @@ _ set(_ self, _ key, _ value) { return error("Not implemented."); }
 _ hash(_ val) { return NUMBER_VAL(hashValue(val)); }
 
 u32 len(_ x) {
-  if (!isObj(x)) return nil;
+  if (!IS_OBJ(x)) return nil;
 
   switch (asObj(x)->type) {
   case OBJ_ARRAY: return AS_ARRAY(x)->length;
@@ -284,7 +270,7 @@ _ append(_ path, _ content) {
 _ toStr(_ v) { return toString(v); }
 
 _ toString(_ val) {
-  if (isInt(val)) return OBJ_VAL(stringf("%d", asInt(val)));
+  if (is_int(val)) return OBJ_VAL(stringf("%d", as_int(val)));
 
   if (IS_NUMBER(val)) return OBJ_VAL(stringf("%g", AS_NUMBER(val)));
 

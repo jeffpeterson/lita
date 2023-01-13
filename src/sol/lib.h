@@ -14,24 +14,10 @@
 
 typedef Value _;
 
-bool isClass(_ x);
-bool isFn(_ x);
-bool isInst(_ x);
-bool isBound(_ x);
-bool isNative(_ x);
-bool isNil(_ x);
-bool isNum(_ x);
-bool isObj(_ x);
-bool isPtr(_ x);
-bool isRange(_ x);
-bool isTuple(_ x);
-bool notNil(_ x);
-
 bool asBool(_ x);
 ObjClass *asClass(_ x);
 ObjClosure *asFn(_ x);
 ObjInstance *asInst(_ x);
-int asInt(_ x);
 ObjBound *asBound(_ x);
 ObjNative *asNative(_ x);
 double asNum(_ x);

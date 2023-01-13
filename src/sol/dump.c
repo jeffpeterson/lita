@@ -66,7 +66,7 @@ static void dumpValue(FILE *io, Value v) {
 static int dumpFn(FILE *io, ObjFun *fun) {
   Value vid;
   if (tableGet(&ids, obj(fun), &vid)) {
-    return asInt(vid);
+    return as_int(vid);
   }
   int id = currentId++;
   vid = num(id);
