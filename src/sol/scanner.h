@@ -72,6 +72,7 @@ typedef enum {
   TOKEN_FN,
   TOKEN_IF,
   TOKEN_IN,
+  // TOKEN_MATCH,
   TOKEN_NIL,
   TOKEN_OR,
   TOKEN_PRINT,

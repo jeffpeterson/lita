@@ -543,6 +543,8 @@ static u8 adjoining();
  * Returns true if successful.
  */
 static bool parseAt(Precedence precedence) {
+  // bool indebt = match(TOKEN_INDENT);
+
   ParseRule *rule = getRule(parser.current.type);
   ParseFn *prefix = rule->prefix;
   if (prefix == NULL) return false;
@@ -574,6 +576,8 @@ static bool parseAt(Precedence precedence) {
     u8 argc = adjoining();
     if (argc) emitBytes(OP_CALL, argc);
   }
+
+  // if (indebt) consume(TOKEN_DEDENT, "Expected dedent.");
 
   return true;
 }
