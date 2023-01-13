@@ -28,7 +28,6 @@ bool isStr(_ x);
 bool isTuple(_ x);
 bool notNil(_ x);
 
-ObjArray *asArray(_ x);
 bool asBool(_ x);
 ObjClass *asClass(_ x);
 ObjClosure *asFn(_ x);

@@ -26,7 +26,6 @@ typedef enum ObjType ObjType;
 #define IS_TUPLE(val) is_obj_type(val, OBJ_TUPLE)
 #define IS_UPVALUE(val) is_obj_type(val, OBJ_UPVALUE)
 
-#define AS_ARRAY(val) ((ObjArray *)AS_OBJ(val))
 #define AS_BOUND(val) ((ObjBound *)AS_OBJ(val))
 #define AS_CLASS(val) ((ObjClass *)AS_OBJ(val))
 #define AS_CLOSURE(val) ((ObjClosure *)AS_OBJ(val))

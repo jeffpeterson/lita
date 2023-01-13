@@ -1,9 +1,14 @@
 #include "array.h"
 #include "memory.h"
+#include <assert.h>
 
-/**
- * Allocate a new empty ObjArray.
- */
+/** Safely convert val to array pointer. */
+ObjArray *as_array(let x) {
+  assert(is_array(x));
+  return AS_ARRAY(x);
+}
+
+/** Allocate a new empty ObjArray. */
 ObjArray *newArray() {
   ObjArray *arr = ALLOCATE_OBJ(ObjArray, OBJ_ARRAY);
   arr->length = 0;

@@ -64,19 +64,19 @@ static _ Any_objectId(_ this, int argc, _ *args) {
 static _ Any_string(_ this, int argc, _ *args) { return toString(this); }
 
 /// Array
-static _ Array_get(_ this, int argc, _ *args) {
-  ObjArray *arr = asArray(this);
+static Value Array_get(let this, int argc, _ *args) {
+  ObjArray *arr = AS_ARRAY(this);
   u32 idx = asNum(args[0]);
   if (idx >= arr->length) return nil;
 
   return arr->values[idx];
 }
-static _ Array_length(_ this, int argc, _ *args) {
-  return NUMBER_VAL(asArray(this)->length);
+static Value Array_length(let this, int argc, _ *args) {
+  return NUMBER_VAL(AS_ARRAY(this)->length);
 }
-static _ Array_plus(_ this, int argc, _ *args) {
-  ObjArray *a = asArray(this);
-  ObjArray *b = asArray(args[0]);
+static Value Array_plus(let this, int argc, _ *args) {
+  ObjArray *a = AS_ARRAY(this);
+  ObjArray *b = as_array(args[0]);
   ObjArray *out = newArray();
   resizeArray(out, a->length + b->length);
   writeArray(out, 0, a->values, a->length);
@@ -84,14 +84,14 @@ static _ Array_plus(_ this, int argc, _ *args) {
   return OBJ_VAL(out);
 }
 
-static _ Array_push(_ this, int argc, _ *args) {
-  ObjArray *arr = asArray(this);
+static Value Array_push(let this, int argc, _ *args) {
+  ObjArray *arr = AS_ARRAY(this);
   for (int i = 0; i < argc; i++) appendArray(arr, args[i]);
   return this;
 }
 
-static _ Array_slice(_ this, int argc, _ *args) {
-  ObjArray *arr = asArray(this);
+static Value Array_slice(let this, int argc, _ *args) {
+  ObjArray *arr = AS_ARRAY(this);
   int start = argc > 0 ? asNum(args[0]) : 0;
   int len = argc > 1 ? asNum(args[1]) : arr->length - start;
   return OBJ_VAL(copyArray(arr->values + start, len));

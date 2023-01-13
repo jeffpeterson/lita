@@ -24,10 +24,6 @@ bool isStr(_ x) { return IS_STRING(x); }
 bool isTuple(_ x) { return IS_TUPLE(x); }
 bool notNil(_ x) { return !IS_NIL(x); }
 
-ObjArray *asArray(_ x) {
-  assert(is_array(x));
-  return AS_ARRAY(x);
-}
 bool asBool(_ x) {
   assert(is_bool(x));
   return AS_BOOL(x);
@@ -233,7 +229,7 @@ u32 len(_ x) {
   if (!isObj(x)) return nil;
 
   switch (asObj(x)->type) {
-  case OBJ_ARRAY: return asArray(x)->length;
+  case OBJ_ARRAY: return AS_ARRAY(x)->length;
   case OBJ_BOUND: return len(asBound(x)->method);
   case OBJ_RANGE: return subtract(asRange(x)->end, asRange(x)->start);
 
