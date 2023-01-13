@@ -14,6 +14,7 @@ TARG_C := $(filter-out %_test.c,$(SOURCES))
 
 OBJECTS := $(patsubst src/%.c,_build/%.o, $(SOURCES))
 TARG_O  := $(filter-out %_test.o,$(OBJECTS))
+TARG_O  := $(filter-out %.sol.o,$(TARG_O))
 TEST_O  := $(filter-out %/main.o,$(OBJECTS))
 
 .PHONY: default all clean test db db/test lib
@@ -37,7 +38,7 @@ test: $(TEST) assertions
 
 $(TARGET): $(TARG_O)
 	@mkdir -p $(dir $@)
-	$(CC) $(CFLAGS) -o $@ $^
+	$(CC) $(CFLAGS) -o $@ $^ $(SOL_O)
 
 $(TEST): $(TEST_O)
 	@mkdir -p $(dir $@)
