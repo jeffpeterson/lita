@@ -14,17 +14,17 @@ typedef enum ObjType ObjType;
 #define OBJ_TYPE(val) (AS_OBJ(val)->type)
 
 #define IS_INTERNED(val) isInterned(val)
-#define IS_BOUND(val) isObjType(val, OBJ_BOUND)
-#define IS_CLASS(val) isObjType(val, OBJ_CLASS)
-#define IS_CLOSURE(val) isObjType(val, OBJ_CLOSURE)
-#define IS_ERR(val) isObjType(val, OBJ_ERR)
-#define IS_FUN(val) isObjType(val, OBJ_FUN)
-#define IS_INSTANCE(val) isObjType(val, OBJ_INSTANCE)
-#define IS_NATIVE(val) isObjType(val, OBJ_NATIVE)
-#define IS_RANGE(val) isObjType(val, OBJ_RANGE)
-#define IS_STRING(val) isObjType(val, OBJ_STRING)
-#define IS_TUPLE(val) isObjType(val, OBJ_TUPLE)
-#define IS_UPVALUE(val) isObjType(val, OBJ_UPVALUE)
+#define IS_BOUND(val) is_obj_type(val, OBJ_BOUND)
+#define IS_CLASS(val) is_obj_type(val, OBJ_CLASS)
+#define IS_CLOSURE(val) is_obj_type(val, OBJ_CLOSURE)
+#define IS_ERR(val) is_obj_type(val, OBJ_ERR)
+#define IS_FUN(val) is_obj_type(val, OBJ_FUN)
+#define IS_INSTANCE(val) is_obj_type(val, OBJ_INSTANCE)
+#define IS_NATIVE(val) is_obj_type(val, OBJ_NATIVE)
+#define IS_RANGE(val) is_obj_type(val, OBJ_RANGE)
+#define IS_STRING(val) is_obj_type(val, OBJ_STRING)
+#define IS_TUPLE(val) is_obj_type(val, OBJ_TUPLE)
+#define IS_UPVALUE(val) is_obj_type(val, OBJ_UPVALUE)
 
 #define AS_ARRAY(val) ((ObjArray *)AS_OBJ(val))
 #define AS_BOUND(val) ((ObjBound *)AS_OBJ(val))
@@ -197,7 +197,7 @@ int fprintObjType(FILE *io, ObjType type);
 int fprintObject(FILE *io, Obj *obj);
 
 int cmpObjects(Obj *a, Obj *b);
-static inline bool isObjType(Value value, ObjType type) {
+static inline bool is_obj_type(Value value, ObjType type) {
   return IS_OBJ(value) && AS_OBJ(value)->type == type;
 }
 

@@ -5,7 +5,7 @@
 #include "object.h"
 #include "value.h"
 
-#define is_array(val) isObjType(val, OBJ_ARRAY)
+#define is_array(val) is_obj_type(val, OBJ_ARRAY)
 
 ObjArray *newArray();
 ObjArray *copyArray(Value *values, u32 length);
