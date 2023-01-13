@@ -135,6 +135,21 @@ static _ String_plus(_ this, int argc, _ *args) {
   return obj(concatStrings(asStr(this), asStr(other)));
 }
 
+/// Tuple
+static _ Tuple_map(_ this, int argc, _ *args) {
+  if (!argc) return error("map() requires a callable argument");
+  ObjTuple *tuple = AS_TUPLE(this);
+  let fun = args[0];
+
+  for (u8 i = 0; i < tuple->length; i++) {
+    push(fun);
+    push(tuple->values[i]);
+    vm_call(1);
+  }
+  vm_tuple(tuple->length);
+  return pop();
+}
+
 ObjFun *core_sol();
 
 InterpretResult defineNatives() {
@@ -189,5 +204,8 @@ InterpretResult defineNatives() {
   method(vm.Function, fn("byteCount", 0, Function_byteCount)); // getter
 
   method(vm.String, fn("+", 1, String_plus));
+
+  method(vm.Tuple, fn("map", 1, Tuple_map));
+
   return result;
 }

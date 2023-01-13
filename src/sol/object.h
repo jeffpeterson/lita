@@ -193,7 +193,6 @@ ObjRange *makeRange(Value start, Value end);
 ObjUpvalue *newUpvalue(Value *slot);
 
 const char *objectBytes(Obj *obj, int length);
-ObjClass *objClass(Obj *obj);
 
 int fprintObjType(FILE *io, ObjType type);
 int fprintObject(FILE *io, Obj *obj);

@@ -1474,8 +1474,50 @@ static Value fn35() {
   return obj(f);
 }
 
-// each
+// *
 static ValueArray constants36() {
+  ValueArray vals;
+  initValueArray(&vals);
+  vals.count = vals.capacity = 1;
+  Value values[] = {
+    str("map"),
+  };
+  vals.values = cloneMemory(values, sizeof(values));
+  return vals;
+}
+
+// *
+static Chunk chunk36() {
+  Chunk c;
+  initChunk(&c);
+  c.count = 11;
+  c.capacity = 11;
+  u8 code[] = {
+    14, 0, 44, 0, 14, 1, 33, 1, 40, 1, 40,
+  };
+  int lines[] = {
+    73, 73, 73, 73, 73, 73, 73, 73, 73, 74, 74,
+  };
+  c.code = cloneMemory(code, sizeof(code));
+  c.lines = cloneMemory(lines, sizeof(lines));
+                // *
+  c.constants = constants36();
+
+  return c;
+};
+
+// *
+static Value fn36() {
+  ObjFun *f = newFunction();  f->arity = 1;
+  f->upvalueCount = 0;
+  f->name = newString("*");
+             // *
+  f->chunk = chunk36();
+  return obj(f);
+}
+
+// each
+static ValueArray constants37() {
   ValueArray vals;
   initValueArray(&vals);
   vals.count = vals.capacity = 4;
@@ -1487,7 +1529,7 @@ static ValueArray constants36() {
 }
 
 // each
-static Chunk chunk36() {
+static Chunk chunk37() {
   Chunk c;
   initChunk(&c);
   c.count = 52;
@@ -1496,28 +1538,28 @@ static Chunk chunk36() {
     0, 0, 14, 2, 14, 0, 44, 1, 23, 31, 0, 36, 7, 30, 0, 16, 14, 2, 10, 0, 6, 0, 0, 2, 24, 15, 2, 7, 7, 32, 0, 30, 14, 1, 14, 0, 44, 3, 14, 2, 33, 1, 33, 1, 7, 32, 0, 32, 7, 7, 1, 40,
   };
   int lines[] = {
-    74, 74, 74, 74, 74, 74, 74, 74, 74, 74, 74, 74, 74, 74, 74, 74, 74, 74, 74, 74, 74, 74, 74, 74, 74, 74, 74, 74, 74, 74, 74, 74, 75, 75, 75, 75, 75, 75, 75, 75, 75, 75, 75, 75, 75, 77, 77, 77, 77, 77, 77, 77,
+    75, 75, 75, 75, 75, 75, 75, 75, 75, 75, 75, 75, 75, 75, 75, 75, 75, 75, 75, 75, 75, 75, 75, 75, 75, 75, 75, 75, 75, 75, 75, 75, 76, 76, 76, 76, 76, 76, 76, 76, 76, 76, 76, 76, 76, 78, 78, 78, 78, 78, 78, 78,
   };
   c.code = cloneMemory(code, sizeof(code));
   c.lines = cloneMemory(lines, sizeof(lines));
                 // each
-  c.constants = constants36();
+  c.constants = constants37();
 
   return c;
 };
 
 // each
-static Value fn36() {
+static Value fn37() {
   ObjFun *f = newFunction();  f->arity = 1;
   f->upvalueCount = 0;
   f->name = newString("each");
              // each
-  f->chunk = chunk36();
+  f->chunk = chunk37();
   return obj(f);
 }
 
 // init
-static ValueArray constants37() {
+static ValueArray constants38() {
   ValueArray vals;
   initValueArray(&vals);
   vals.count = vals.capacity = 3;
@@ -1529,7 +1571,7 @@ static ValueArray constants37() {
 }
 
 // init
-static Chunk chunk37() {
+static Chunk chunk38() {
   Chunk c;
   initChunk(&c);
   c.count = 24;
@@ -1538,23 +1580,23 @@ static Chunk chunk37() {
     14, 0, 14, 1, 17, 0, 7, 14, 0, 14, 2, 17, 1, 7, 14, 0, 14, 3, 17, 2, 7, 14, 0, 40,
   };
   int lines[] = {
-    77, 77, 77, 77, 77, 77, 77, 77, 77, 77, 77, 77, 77, 77, 77, 77, 77, 77, 77, 77, 77, 77, 77, 77,
+    78, 78, 78, 78, 78, 78, 78, 78, 78, 78, 78, 78, 78, 78, 78, 78, 78, 78, 78, 78, 78, 78, 78, 78,
   };
   c.code = cloneMemory(code, sizeof(code));
   c.lines = cloneMemory(lines, sizeof(lines));
                 // init
-  c.constants = constants37();
+  c.constants = constants38();
 
   return c;
 };
 
 // init
-static Value fn37() {
+static Value fn38() {
   ObjFun *f = newFunction();  f->arity = 3;
   f->upvalueCount = 0;
   f->name = newString("init");
              // init
-  f->chunk = chunk37();
+  f->chunk = chunk38();
   return obj(f);
 }
 
@@ -1562,9 +1604,9 @@ static Value fn37() {
 static ValueArray constants0() {
   ValueArray vals;
   initValueArray(&vals);
-  vals.count = vals.capacity = 84;
+  vals.count = vals.capacity = 85;
   Value values[] = {
-    str("Nil"), str("Any"), str("string"), /*string*/fn1(), str("Object"), str("Function"), str("Method"), str("NativeFunction"), str("Class"), str("Array"), str("<<"), /*<<*/fn2(), str("=="), /*==*/fn3(), str("Bool"), str("inspect"), /*inspect*/fn4(), /*string*/fn5(), str("Error"), str("Number"), str("Range"), /*init*/fn6(), str("init"), /*inspect*/fn7(), /*string*/fn8(), str("String"), /*string*/fn9(), str("*"), /***/fn10(), str("/"), /*/*/fn11(), str("bold"), /*bold*/fn12(), str("dim"), /*dim*/fn13(), str("italic"), /*italic*/fn14(), str("underline"), /*underline*/fn15(), str("invert"), /*invert*/fn16(), str("hide"), /*hide*/fn17(), str("strike"), /*strike*/fn18(), str("black"), /*black*/fn19(), str("red"), /*red*/fn20(), str("green"), /*green*/fn21(), str("yellow"), /*yellow*/fn22(), str("blue"), /*blue*/fn23(), str("magenta"), /*magenta*/fn24(), str("cyan"), /*cyan*/fn25(), str("white"), /*white*/fn26(), str("bg_black"), /*bg_black*/fn27(), str("bg_red"), /*bg_red*/fn28(), str("bg_green"), /*bg_green*/fn29(), str("bg_yellow"), /*bg_yellow*/fn30(), str("bg_blue"), /*bg_blue*/fn31(), str("bg_magenta"), /*bg_magenta*/fn32(), str("bg_cyan"), /*bg_cyan*/fn33(), str("bg_white"), /*bg_white*/fn34(), str("Table"), /*inspect*/fn35(), str("Tuple"), str("each"), /*each*/fn36(), str("Atom"), /*init*/fn37(),
+    str("Nil"), str("Any"), str("string"), /*string*/fn1(), str("Object"), str("Function"), str("Method"), str("NativeFunction"), str("Class"), str("Array"), str("<<"), /*<<*/fn2(), str("=="), /*==*/fn3(), str("Bool"), str("inspect"), /*inspect*/fn4(), /*string*/fn5(), str("Error"), str("Number"), str("Range"), /*init*/fn6(), str("init"), /*inspect*/fn7(), /*string*/fn8(), str("String"), /*string*/fn9(), str("*"), /***/fn10(), str("/"), /*/*/fn11(), str("bold"), /*bold*/fn12(), str("dim"), /*dim*/fn13(), str("italic"), /*italic*/fn14(), str("underline"), /*underline*/fn15(), str("invert"), /*invert*/fn16(), str("hide"), /*hide*/fn17(), str("strike"), /*strike*/fn18(), str("black"), /*black*/fn19(), str("red"), /*red*/fn20(), str("green"), /*green*/fn21(), str("yellow"), /*yellow*/fn22(), str("blue"), /*blue*/fn23(), str("magenta"), /*magenta*/fn24(), str("cyan"), /*cyan*/fn25(), str("white"), /*white*/fn26(), str("bg_black"), /*bg_black*/fn27(), str("bg_red"), /*bg_red*/fn28(), str("bg_green"), /*bg_green*/fn29(), str("bg_yellow"), /*bg_yellow*/fn30(), str("bg_blue"), /*bg_blue*/fn31(), str("bg_magenta"), /*bg_magenta*/fn32(), str("bg_cyan"), /*bg_cyan*/fn33(), str("bg_white"), /*bg_white*/fn34(), str("Table"), /*inspect*/fn35(), str("Tuple"), /***/fn36(), str("each"), /*each*/fn37(), str("Atom"), /*init*/fn38(),
   };
   vals.values = cloneMemory(values, sizeof(values));
   return vals;
@@ -1574,13 +1616,13 @@ static ValueArray constants0() {
 static Chunk chunk0() {
   Chunk c;
   initChunk(&c);
-  c.count = 330;
-  c.capacity = 330;
+  c.count = 334;
+  c.capacity = 334;
   u8 code[] = {
-    34, 0, 0, 14, 0, 44, 1, 35, 9, 1, 37, 3, 36, 2, 7, 7, 34, 4, 0, 14, 0, 44, 1, 35, 9, 1, 7, 7, 34, 5, 0, 14, 0, 44, 4, 35, 9, 1, 7, 7, 34, 6, 0, 14, 0, 44, 5, 35, 9, 1, 7, 7, 34, 7, 0, 14, 0, 44, 5, 35, 9, 1, 7, 7, 34, 8, 0, 14, 0, 44, 5, 35, 9, 1, 7, 7, 34, 9, 0, 14, 0, 44, 4, 35, 9, 1, 37, 11, 36, 10, 37, 13, 36, 12, 7, 7, 34, 14, 0, 14, 0, 44, 4, 35, 9, 1, 37, 16, 36, 15, 37, 17, 36, 2, 7, 7, 34, 18, 0, 14, 0, 44, 4, 35, 9, 1, 7, 7, 34, 19, 0, 14, 0, 44, 4, 35, 9, 1, 7, 7, 34, 20, 0, 37, 21, 36, 22, 14, 0, 44, 4, 35, 9, 1, 37, 23, 36, 15, 37, 24, 36, 2, 7, 7, 34, 25, 0, 14, 0, 44, 4, 35, 9, 1, 37, 26, 36, 2, 37, 28, 36, 27, 37, 30, 36, 29, 37, 32, 36, 31, 37, 34, 36, 33, 37, 36, 36, 35, 37, 38, 36, 37, 37, 40, 36, 39, 37, 42, 36, 41, 37, 44, 36, 43, 37, 46, 36, 45, 37, 48, 36, 47, 37, 50, 36, 49, 37, 52, 36, 51, 37, 54, 36, 53, 37, 56, 36, 55, 37, 58, 36, 57, 37, 60, 36, 59, 37, 62, 36, 61, 37, 64, 36, 63, 37, 66, 36, 65, 37, 68, 36, 67, 37, 70, 36, 69, 37, 72, 36, 71, 37, 74, 36, 73, 37, 76, 36, 75, 7, 7, 34, 77, 0, 14, 0, 44, 4, 35, 9, 1, 37, 78, 36, 15, 7, 7, 34, 79, 0, 14, 0, 44, 4, 35, 9, 1, 37, 81, 36, 80, 7, 7, 34, 82, 0, 37, 83, 36, 22, 14, 0, 44, 4, 35, 9, 1, 7, 7, 1, 40,
+    34, 0, 0, 14, 0, 44, 1, 35, 9, 1, 37, 3, 36, 2, 7, 7, 34, 4, 0, 14, 0, 44, 1, 35, 9, 1, 7, 7, 34, 5, 0, 14, 0, 44, 4, 35, 9, 1, 7, 7, 34, 6, 0, 14, 0, 44, 5, 35, 9, 1, 7, 7, 34, 7, 0, 14, 0, 44, 5, 35, 9, 1, 7, 7, 34, 8, 0, 14, 0, 44, 5, 35, 9, 1, 7, 7, 34, 9, 0, 14, 0, 44, 4, 35, 9, 1, 37, 11, 36, 10, 37, 13, 36, 12, 7, 7, 34, 14, 0, 14, 0, 44, 4, 35, 9, 1, 37, 16, 36, 15, 37, 17, 36, 2, 7, 7, 34, 18, 0, 14, 0, 44, 4, 35, 9, 1, 7, 7, 34, 19, 0, 14, 0, 44, 4, 35, 9, 1, 7, 7, 34, 20, 0, 37, 21, 36, 22, 14, 0, 44, 4, 35, 9, 1, 37, 23, 36, 15, 37, 24, 36, 2, 7, 7, 34, 25, 0, 14, 0, 44, 4, 35, 9, 1, 37, 26, 36, 2, 37, 28, 36, 27, 37, 30, 36, 29, 37, 32, 36, 31, 37, 34, 36, 33, 37, 36, 36, 35, 37, 38, 36, 37, 37, 40, 36, 39, 37, 42, 36, 41, 37, 44, 36, 43, 37, 46, 36, 45, 37, 48, 36, 47, 37, 50, 36, 49, 37, 52, 36, 51, 37, 54, 36, 53, 37, 56, 36, 55, 37, 58, 36, 57, 37, 60, 36, 59, 37, 62, 36, 61, 37, 64, 36, 63, 37, 66, 36, 65, 37, 68, 36, 67, 37, 70, 36, 69, 37, 72, 36, 71, 37, 74, 36, 73, 37, 76, 36, 75, 7, 7, 34, 77, 0, 14, 0, 44, 4, 35, 9, 1, 37, 78, 36, 15, 7, 7, 34, 79, 0, 14, 0, 44, 4, 35, 9, 1, 37, 80, 36, 27, 37, 82, 36, 81, 7, 7, 34, 83, 0, 37, 84, 36, 22, 14, 0, 44, 4, 35, 9, 1, 7, 7, 1, 40,
   };
   int lines[] = {
-    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 19, 19, 19, 19, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 28, 28, 28, 28, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 35, 35, 35, 35, 37, 37, 37, 37, 37, 37, 37, 37, 37, 37, 37, 37, 37, 37, 37, 37, 40, 40, 40, 40, 41, 41, 41, 41, 43, 43, 43, 43, 44, 44, 44, 44, 45, 45, 45, 45, 46, 46, 46, 46, 47, 47, 47, 47, 48, 48, 48, 48, 49, 49, 49, 49, 51, 51, 51, 51, 52, 52, 52, 52, 53, 53, 53, 53, 54, 54, 54, 54, 55, 55, 55, 55, 56, 56, 56, 56, 57, 57, 57, 57, 58, 58, 58, 58, 60, 60, 60, 60, 61, 61, 61, 61, 62, 62, 62, 62, 63, 63, 63, 63, 64, 64, 64, 64, 65, 65, 65, 65, 66, 66, 66, 66, 67, 67, 67, 67, 69, 69, 69, 69, 69, 69, 69, 69, 69, 69, 69, 69, 69, 69, 69, 69, 72, 72, 72, 72, 72, 72, 72, 72, 72, 72, 72, 72, 72, 72, 72, 72, 77, 77, 77, 77, 77, 77, 77, 77, 77, 77, 77, 77, 77, 77, 77, 77, 77, 77, 77, 77, 78, 78, 78, 78,
+    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 19, 19, 19, 19, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 28, 28, 28, 28, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 35, 35, 35, 35, 37, 37, 37, 37, 37, 37, 37, 37, 37, 37, 37, 37, 37, 37, 37, 37, 40, 40, 40, 40, 41, 41, 41, 41, 43, 43, 43, 43, 44, 44, 44, 44, 45, 45, 45, 45, 46, 46, 46, 46, 47, 47, 47, 47, 48, 48, 48, 48, 49, 49, 49, 49, 51, 51, 51, 51, 52, 52, 52, 52, 53, 53, 53, 53, 54, 54, 54, 54, 55, 55, 55, 55, 56, 56, 56, 56, 57, 57, 57, 57, 58, 58, 58, 58, 60, 60, 60, 60, 61, 61, 61, 61, 62, 62, 62, 62, 63, 63, 63, 63, 64, 64, 64, 64, 65, 65, 65, 65, 66, 66, 66, 66, 67, 67, 67, 67, 69, 69, 69, 69, 69, 69, 69, 69, 69, 69, 69, 69, 69, 69, 69, 69, 72, 72, 72, 72, 72, 72, 72, 72, 72, 72, 72, 72, 72, 72, 72, 72, 74, 74, 74, 74, 78, 78, 78, 78, 78, 78, 78, 78, 78, 78, 78, 78, 78, 78, 78, 78, 78, 78, 78, 78, 79, 79, 79, 79,
   };
   c.code = cloneMemory(code, sizeof(code));
   c.lines = cloneMemory(lines, sizeof(lines));

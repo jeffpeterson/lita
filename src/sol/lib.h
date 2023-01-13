@@ -78,7 +78,7 @@ _ subtract(_ a, _ b);
 _ multiply(_ a, _ b);
 
 _ hash(_ val);
-_ len(_ val);
+u32 len(_ val);
 _ name(_ val);
 
 _ class(_ name);

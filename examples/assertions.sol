@@ -46,6 +46,10 @@ assert (1, 2).inspect == "1, 2"
 /// Tuples
 assert (1, 2) == (1, 2)
 assert (2, 3) != (1, 2)
+assert (1, 2).map(3) == (3, 6)
+assert (1, 2).map("") == ("1", "2")
+assert (1, 2).map("n:") == ("n:1", "n:2")
+// assert (1, 2) * 4 == (4, 8)
 
 /// Arrays
 assert [1, 2, 3]

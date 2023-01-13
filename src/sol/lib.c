@@ -192,10 +192,9 @@ _ multiply(_ a, _ b) {
 /** Returns arity of fun, -1 if not callable. */
 int arity(_ fun) {
   if (isBound(fun)) return arity(asBound(fun)->method);
-
   if (isFn(fun)) return asFn(fun)->fun->arity;
-
   if (isNative(fun)) return asNative(fun)->arity;
+  if (isClass(fun)) return arity(findMethod(fun, str("init")));
 
   return -1;
 }
@@ -231,26 +230,25 @@ _ set(_ self, _ key, _ value) { return error("Not implemented."); }
 
 _ hash(_ val) { return NUMBER_VAL(hashValue(val)); }
 
-_ len(_ x) {
+u32 len(_ x) {
   if (!isObj(x)) return nil;
 
   switch (asObj(x)->type) {
-  case OBJ_ARRAY: return num(asArray(x)->length);
-  case OBJ_BOUND: return len(obj(asBound(x)->method));
+  case OBJ_ARRAY: return asArray(x)->length;
+  case OBJ_BOUND: return len(asBound(x)->method);
+  case OBJ_RANGE: return subtract(asRange(x)->end, asRange(x)->start);
 
   case OBJ_CLASS:
   case OBJ_CLOSURE:
-  case OBJ_ERR:
   case OBJ_FUN:
-  case OBJ_INSTANCE:
-  case OBJ_NATIVE:
-  case OBJ_UPVALUE:
+  case OBJ_NATIVE: return arity(x);
 
-  case OBJ_RANGE: return subtract(asRange(x)->end, asRange(x)->start);
+  case OBJ_STRING: return asStr(x)->length;
+  case OBJ_INSTANCE: return asInst(x)->fields.len;
+  case OBJ_TUPLE: return asTuple(x)->length;
 
-  case OBJ_STRING:
-  case OBJ_TUPLE:
-  default: return nil;
+  case OBJ_ERR:
+  case OBJ_UPVALUE: return 0;
   }
 }
 

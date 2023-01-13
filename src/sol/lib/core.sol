@@ -70,6 +70,7 @@ class Table
 	fn inspect = "{" + "}"
 
 class Tuple
+	fn * (x) = map(x)
 	fn each(f)
 		for let i = 0; i < length; i++
 			f(get(i))
