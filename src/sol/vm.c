@@ -209,7 +209,7 @@ ObjClass *valueClass(Value v) {
   if (name) {
     Value klass = global(string(name));
 
-    if (IS_CLASS(klass)) return AS_CLASS(klass);
+    if (is_class(klass)) return AS_CLASS(klass);
   }
 
   return NULL;
@@ -284,7 +284,7 @@ static bool invokeFromClass(ObjClass *klass, ObjString *name, int argCount) {
     return invokeFromClass(klass->parent, name, argCount);
   }
 
-  if (IS_CLOSURE(method)) return call(AS_CLOSURE(method), argCount);
+  if (is_closure(method)) return call(AS_CLOSURE(method), argCount);
   else return callValue(method, argCount);
 }
 
@@ -294,7 +294,7 @@ static InterpretResult vm_invoke(Value name, int argCount) {
 
   // Value value = find(receiver, name);
 
-  if (IS_INSTANCE(receiver)) {
+  if (is_instance(receiver)) {
     ObjInstance *inst = AS_INSTANCE(receiver);
 
     Value value;
@@ -466,7 +466,7 @@ InterpretResult vm_get_property(Value name) {
 
 // [1 self][0 value] -> [0 value]
 InterpretResult vm_set_property(Value name) {
-  if (!IS_INSTANCE(peek(1))) {
+  if (!is_instance(peek(1))) {
     return runtimeError("Only instances have properties.");
   }
 
@@ -693,7 +693,7 @@ static InterpretResult run() {
     }
 
     case OP_INHERIT: { // [1 class][0 super]
-      if (!IS_CLASS(peek(0))) {
+      if (!is_class(peek(0))) {
         return runtimeError("Superclass must be a class.");
       }
 

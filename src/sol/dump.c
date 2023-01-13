@@ -78,7 +78,7 @@ static int dumpFn(FILE *io, ObjFun *fun) {
 
   for (int i = 0; i < values.count; i++) {
     Value v = values.values[i];
-    if (IS_FUN(v)) dumpFn(io, AS_FUN(v));
+    if (is_fun(v)) dumpFn(io, AS_FUN(v));
   }
 
   fprintf(io,

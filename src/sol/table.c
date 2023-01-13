@@ -205,7 +205,7 @@ int fprintTable(FILE *io, Table *table) {
     if (IS_VOID(entry->key))
       continue;
 
-    if (IS_STRING(entry->key)) {
+    if (is_string(entry->key)) {
       out += (idx > 0 ? fputs(", ", io) : 0) +
              fprintf(io, FG_GREEN "%s" FG_DEFAULT ": ",
                      AS_STRING(entry->key)->chars) +

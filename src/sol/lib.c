@@ -9,19 +9,19 @@
 #include "tuple.h"
 #include "vm.h"
 
-bool isClass(_ x) { return IS_CLASS(x); }
-bool isFn(_ x) { return IS_CLOSURE(x); }
-bool isInst(_ x) { return IS_INSTANCE(x); }
+bool isClass(_ x) { return is_class(x); }
+bool isFn(_ x) { return is_closure(x); }
+bool isInst(_ x) { return is_instance(x); }
 bool isInt(_ x) { return isNum(x) && num(asInt(x)) == asNum(x); }
-bool isBound(_ x) { return IS_BOUND(x); }
-bool isNative(_ x) { return IS_NATIVE(x); }
+bool isBound(_ x) { return is_bound(x); }
+bool isNative(_ x) { return is_native(x); }
 bool isNil(_ x) { return IS_NIL(x); }
 bool isNum(_ x) { return IS_NUMBER(x); }
 bool isObj(_ x) { return IS_OBJ(x); }
 bool isPtr(_ x) { return IS_PTR(x); }
-bool isRange(_ x) { return IS_RANGE(x); }
-bool isStr(_ x) { return IS_STRING(x); }
-bool isTuple(_ x) { return IS_TUPLE(x); }
+bool isRange(_ x) { return is_range(x); }
+bool isStr(_ x) { return is_string(x); }
+bool isTuple(_ x) { return is_tuple(x); }
 bool notNil(_ x) { return !IS_NIL(x); }
 
 bool asBool(_ x) {
