@@ -37,8 +37,8 @@ static Entry *findEntry(Entry *entries, int capacity, Value key) {
   for (;;) {
     Entry *entry = &entries[index];
 
-    if (IS_VOID(entry->key)) {
-      if (IS_NIL(entry->value)) {
+    if (is_void(entry->key)) {
+      if (is_nil(entry->value)) {
         // Return the tombstone if we had found one so the caller
         // is able to insert into it, saving space.
         return tombstone != NULL ? tombstone : entry;
@@ -65,7 +65,7 @@ static void adjustCapacity(Table *table, int capacity) {
   table->total = 0;
   for (int i = 0; i < table->capacity; i++) {
     Entry *entry = &table->entries[i];
-    if (IS_VOID(entry->key)) continue;
+    if (is_void(entry->key)) continue;
 
     Entry *dest = findEntry(entries, capacity, entry->key);
     dest->key = entry->key;
@@ -87,7 +87,7 @@ bool tableGet(Table *table, Value key, Value *value) {
   if (table->len == 0) return false;
 
   Entry *entry = findEntry(table->entries, table->capacity, key);
-  if (IS_VOID(entry->key)) return false;
+  if (is_void(entry->key)) return false;
 
   *value = entry->value;
   return true;
@@ -100,8 +100,8 @@ bool tableSet(Table *table, Value key, Value value) {
   }
 
   Entry *entry = findEntry(table->entries, table->capacity, key);
-  bool isNewKey = IS_VOID(entry->key);
-  if (isNewKey && IS_NIL(entry->value)) table->total++, table->len++;
+  bool isNewKey = is_void(entry->key);
+  if (isNewKey && is_nil(entry->value)) table->total++, table->len++;
 
   entry->key = key;
   entry->value = value;
@@ -110,7 +110,7 @@ bool tableSet(Table *table, Value key, Value value) {
 
 double tableInc(Table *table, Value key, double amt) {
   Value count;
-  if (tableGet(table, key, &count) && IS_NUMBER(count)) {
+  if (tableGet(table, key, &count) && is_num(count)) {
     amt += AS_NUMBER(count);
   }
   tableSet(table, key, NUMBER_VAL(amt));
@@ -122,7 +122,7 @@ bool tableDelete(Table *table, Value key) {
 
   // Find the entry.
   Entry *entry = findEntry(table->entries, table->capacity, key);
-  if (IS_VOID(entry->key)) return false;
+  if (is_void(entry->key)) return false;
 
   // Place a tombstone in the entry.
   entry->key = VOID_VAL;
@@ -134,7 +134,7 @@ bool tableDelete(Table *table, Value key) {
 void tableAddAll(Table *from, Table *to) {
   for (int i = 0; i < from->capacity; i++) {
     Entry *entry = &from->entries[i];
-    if (!IS_VOID(entry->key)) tableSet(to, entry->key, entry->value);
+    if (!is_void(entry->key)) tableSet(to, entry->key, entry->value);
   }
 }
 
@@ -147,7 +147,7 @@ Obj *tableFindObj(Table *table, ObjType type, const char *bytes, int length,
 
   for (;;) {
     Entry *entry = &table->entries[index];
-    if (IS_OBJ(entry->key)) {
+    if (is_obj(entry->key)) {
       Obj *obj = AS_OBJ(entry->key);
 
       if (obj->hash == hash) {
@@ -157,7 +157,7 @@ Obj *tableFindObj(Table *table, ObjType type, const char *bytes, int length,
       }
     } else {
       // Stop if we find an empty non-tombstone entry.
-      if (IS_VOID(entry->key) && IS_NIL(entry->value)) return NULL;
+      if (is_void(entry->key) && is_nil(entry->value)) return NULL;
 
       // Otherwise, skip. Only objects are interned.
     }
@@ -170,7 +170,7 @@ Obj *tableFindObj(Table *table, ObjType type, const char *bytes, int length,
 void tableRemoveWhite(Table *table) {
   for (int i = 0; i < table->capacity; i++) {
     Entry *entry = &table->entries[i];
-    if (IS_NIL(entry->key) || !IS_OBJ(entry->key)) continue;
+    if (is_nil(entry->key) || !is_obj(entry->key)) continue;
 
     if (!AS_OBJ(entry->key)->isMarked) {
       tableDelete(table, entry->key);
@@ -192,7 +192,7 @@ int fprintTable(FILE *io, Table *table) {
   for (int i = 0; i < table->capacity; i++) {
     Entry *entry = &table->entries[i];
 
-    if (IS_VOID(entry->key)) continue;
+    if (is_void(entry->key)) continue;
 
     if (is_string(entry->key)) {
       out += (idx > 0 ? fputs(", ", io) : 0) +
@@ -214,7 +214,7 @@ int fprintTableVerbose(FILE *io, Table *table) {
   for (int i = 0; i < table->capacity; i++) {
     Entry *entry = &table->entries[i];
 
-    if (!IS_VOID(entry->key)) {
+    if (!is_void(entry->key)) {
       out += fprintf(io, "  ") + fprintValue(io, entry->key) +
              fprintf(io, " => ") + fprintValue(io, entry->value) +
              fprintf(io, "\n");

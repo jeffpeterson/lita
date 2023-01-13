@@ -194,11 +194,11 @@ int fprintObject(FILE *io, Obj *obj);
 
 int cmpObjects(Obj *a, Obj *b);
 static inline bool is_obj_type(Value value, ObjType type) {
-  return IS_OBJ(value) && AS_OBJ(value)->type == type;
+  return is_obj(value) && AS_OBJ(value)->type == type;
 }
 
 static inline bool is_interned(Value val) {
-  return IS_OBJ(val) && AS_OBJ(val)->type >= OBJ_INTERNED;
+  return is_obj(val) && AS_OBJ(val)->type >= OBJ_INTERNED;
 }
 
 #endif

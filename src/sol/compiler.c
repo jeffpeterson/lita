@@ -292,7 +292,7 @@ static void emitDefault(Value value) {
 }
 
 static void emit(Value val) {
-  if (IS_NIL(val)) return emitByte(OP_NIL);
+  if (is_nil(val)) return emitByte(OP_NIL);
   if (is_bool(val)) return emitByte(AS_BOOL(val) ? OP_TRUE : OP_FALSE);
   return emitConstant(val);
 }

@@ -34,15 +34,15 @@ ObjNative *asNative(_ x) {
   return AS_NATIVE(x);
 }
 double asNum(_ x) {
-  assert(IS_NUMBER(x));
+  assert(is_num(x));
   return AS_NUMBER(x);
 }
 Obj *asObj(_ x) {
-  assert(IS_OBJ(x));
+  assert(is_obj(x));
   return AS_OBJ(x);
 }
 void *asPtr(_ x) {
-  assert(IS_PTR(x));
+  assert(is_ptr(x));
   return AS_PTR(x);
 }
 ObjRange *asRange(_ x) {
@@ -101,7 +101,7 @@ _ method(_ klass, _ fun) {
 
   let key = name(fun);
 
-  if (IS_NIL(key)) {
+  if (is_nil(key)) {
     return error("Method must be callable.");
   }
 
@@ -111,9 +111,9 @@ _ method(_ klass, _ fun) {
 }
 
 _ add(_ a, _ b) {
-  if (IS_NUMBER(a) && IS_NUMBER(b)) return num(AS_NUMBER(a) + AS_NUMBER(b));
+  if (is_num(a) && is_num(b)) return num(AS_NUMBER(a) + AS_NUMBER(b));
 
-  if (!IS_OBJ(a)) {
+  if (!is_obj(a)) {
     runtimeError("This type cannot be added.");
     return nil;
   }
@@ -133,7 +133,7 @@ _ add(_ a, _ b) {
 }
 
 _ subtract(_ a, _ b) {
-  if (IS_NUMBER(a) && IS_NUMBER(b)) return num(asNum(a) - asNum(b));
+  if (is_num(a) && is_num(b)) return num(asNum(a) - asNum(b));
 
   // if (is_string(a) && is_string(b))
   //   remove b from end of a
@@ -141,9 +141,9 @@ _ subtract(_ a, _ b) {
 }
 
 _ multiply(_ a, _ b) {
-  if (IS_NUMBER(a) && IS_NUMBER(b)) return num(asNum(a) * asNum(b));
+  if (is_num(a) && is_num(b)) return num(asNum(a) * asNum(b));
 
-  if (!IS_OBJ(a)) {
+  if (!is_obj(a)) {
     runtimeError("This type cannot be multiplied.");
     return NIL_VAL;
   }
@@ -200,14 +200,14 @@ _ find(_ self, _ key) {
   return findMethod(classOf(self), key);
 }
 
-bool has(_ self, _ key) { return !IS_NIL(find(self, key)); }
+bool has(_ self, _ key) { return !is_nil(find(self, key)); }
 _ get(_ self, _ key) { return bindFn(self, find(self, key)); }
 _ set(_ self, _ key, _ value) { return error("Not implemented."); }
 
 _ hash(_ val) { return NUMBER_VAL(hashValue(val)); }
 
 u32 len(_ x) {
-  if (!IS_OBJ(x)) return nil;
+  if (!is_obj(x)) return nil;
 
   switch (asObj(x)->type) {
   case OBJ_ARRAY: return AS_ARRAY(x)->length;
@@ -272,13 +272,13 @@ _ toStr(_ v) { return toString(v); }
 _ toString(_ val) {
   if (is_int(val)) return OBJ_VAL(stringf("%d", as_int(val)));
 
-  if (IS_NUMBER(val)) return OBJ_VAL(stringf("%g", AS_NUMBER(val)));
+  if (is_num(val)) return OBJ_VAL(stringf("%g", AS_NUMBER(val)));
 
   if (is_bool(val)) return string(AS_BOOL(val) ? "true" : "false");
 
-  if (IS_NIL(val)) return string("nil");
+  if (is_nil(val)) return string("nil");
 
-  if (IS_OBJ(val)) {
+  if (is_obj(val)) {
     switch (obj_type(val)) {
     case OBJ_CLASS: return OBJ_VAL(AS_CLASS(val)->name);
 
@@ -322,9 +322,9 @@ _ pp(_ x) {
 }
 
 _ inspect(_ val) {
-  if (is_bool(val) || IS_NUMBER(val) || IS_NIL(val)) return toStr(val);
+  if (is_bool(val) || is_num(val) || is_nil(val)) return toStr(val);
 
-  if (IS_OBJ(val)) {
+  if (is_obj(val)) {
     switch (obj_type(val)) {
     case OBJ_BOUND: return add(str("bound:"), inspect(AS_BOUND(val)->method));
 

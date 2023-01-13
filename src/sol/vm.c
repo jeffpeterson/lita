@@ -193,17 +193,17 @@ static bool call(ObjClosure *closure, int argCount) {
 ObjClass *valueClass(Value v) {
   const char *name = NULL;
 
-  if (IS_OBJ(v)) {
+  if (is_obj(v)) {
     Obj *obj = AS_OBJ(v);
 
     if (obj->type == OBJ_INSTANCE) return ((ObjInstance *)obj)->klass;
 
     name = objInfo[obj->type].className;
   } else {
-    name = IS_NIL(v)      ? "Nil"
-           : IS_NUMBER(v) ? "Number"
-           : is_bool(v)   ? "Bool"
-                          : "Any";
+    name = is_nil(v)    ? "Nil"
+           : is_num(v)  ? "Number"
+           : is_bool(v) ? "Bool"
+                        : "Any";
   }
 
   if (name) {
@@ -221,7 +221,7 @@ ObjClass *valueClass(Value v) {
  * Returns whether or not the call was successful.
  */
 static bool callValue(Value callee, int argCount) {
-  if (IS_OBJ(callee)) {
+  if (is_obj(callee)) {
     switch (obj_type(callee)) {
     case OBJ_BOUND: {
       ObjBound *bound = AS_BOUND(callee);
@@ -372,7 +372,7 @@ static void defineMethod(ObjString *name) {
 }
 
 static bool isFalsey(Value value) {
-  return IS_NIL(value) || (is_bool(value) && !AS_BOOL(value));
+  return is_nil(value) || (is_bool(value) && !AS_BOOL(value));
 }
 
 /** [1 a][0 b] -> [0 result] */
@@ -381,9 +381,9 @@ InterpretResult vm_add() {
   Value a = peek(1);
   Value res = nil;
 
-  if (IS_NUMBER(a) && IS_NUMBER(b)) res = num(AS_NUMBER(a) + AS_NUMBER(b));
+  if (is_num(a) && is_num(b)) res = num(AS_NUMBER(a) + AS_NUMBER(b));
 
-  if (IS_NIL(res)) return vm_invoke(string("+"), 1);
+  if (is_nil(res)) return vm_invoke(string("+"), 1);
 
   popn(2);
   push(res);
@@ -426,9 +426,9 @@ InterpretResult vm_divide() {
   Value a = peek(1);
   Value res = nil;
 
-  if (IS_NUMBER(a) && IS_NUMBER(b)) res = num(AS_NUMBER(a) / AS_NUMBER(b));
+  if (is_num(a) && is_num(b)) res = num(AS_NUMBER(a) / AS_NUMBER(b));
 
-  if (IS_NIL(res)) return vm_invoke(string("/"), 1);
+  if (is_nil(res)) return vm_invoke(string("/"), 1);
 
   popn(2);
   push(res);
@@ -440,7 +440,7 @@ InterpretResult vm_get_global(Value name) {
   let value;
 
   if (!tableGet(&vm.globals, name, &value)) {
-    if (IS_NIL(value = get_env(name)))
+    if (is_nil(value = get_env(name)))
       return runtimeError("Cannot get undefined variable '%s'.",
                           as_string(name)->chars);
   }
@@ -476,7 +476,7 @@ InterpretResult vm_set_property(Value name) {
   Value value = peek(0);
 
   // Assigning 'nil' is deletion.
-  if (IS_NIL(value)) tableDelete(&inst->fields, name);
+  if (is_nil(value)) tableDelete(&inst->fields, name);
   else tableSet(&inst->fields, name, value);
 
   popn(2);
@@ -528,7 +528,7 @@ static InterpretResult run() {
 #define READ_STRING() AS_STRING(READ_CONSTANT())
 #define BINARY_OP(valueType, op)                                               \
   do {                                                                         \
-    if (!IS_NUMBER(peek(0)) || !IS_NUMBER(peek(1))) {                          \
+    if (!is_num(peek(0)) || !is_num(peek(1))) {                                \
       runtimeError("Operands must be numbers.");                               \
       return INTERPRET_RUNTIME_ERROR;                                          \
     }                                                                          \
@@ -565,7 +565,7 @@ static InterpretResult run() {
       break;
     }
     case OP_DEFAULT:
-      if (IS_NIL(peek(0))) {
+      if (is_nil(peek(0))) {
         pop();
         push(READ_CONSTANT());
       } else {
@@ -649,7 +649,7 @@ static InterpretResult run() {
     case OP_MULTIPLY: BINARY_OP(NUMBER_VAL, *); break;
     case OP_NOT: push(BOOL_VAL(isFalsey(pop()))); break;
     case OP_NEGATE:
-      if (!IS_NUMBER(peek(0))) {
+      if (!is_num(peek(0))) {
         runtimeError("Operand must be a number.");
         return INTERPRET_RUNTIME_ERROR;
       }

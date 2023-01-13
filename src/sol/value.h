@@ -36,13 +36,13 @@ typedef uint64_t Value;
 typedef Value let;
 
 #define is_bool(val) (((val) | 1) == TRUE_VAL)
-#define IS_NIL(val) ((val) == NIL_VAL)
-#define IS_VOID(val) ((val) == VOID_VAL)
-#define IS_NUMBER(val) (((val)&QNAN) != QNAN)
-#define IS_PTR(val) (val & (QNAN | TAG_PTR)) == (QNAN | TAG_PTR)
-#define IS_OBJ(val) valueIsObj(val)
+#define is_nil(val) ((val) == NIL_VAL)
+#define is_void(val) ((val) == VOID_VAL)
+#define is_num(val) (((val)&QNAN) != QNAN)
+#define is_ptr(val) (val & (QNAN | TAG_PTR)) == (QNAN | TAG_PTR)
+#define is_obj(val) valueIsObj(val)
 
-#define not_nil(val) (!IS_NIL(val))
+#define not_nil(val) (!is_nil(val))
 
 #define AS_BOOL(val) ((val) == TRUE_VAL)
 #define AS_NUMBER(val) valueToNum(val)
@@ -72,12 +72,12 @@ static inline Value numToValue(double num) {
 }
 
 static inline bool valueIsObj(Value val) {
-  return !IS_NIL(val) && (val & (QNAN | TAG_OBJ)) == (QNAN | TAG_OBJ);
+  return !is_nil(val) && (val & (QNAN | TAG_OBJ)) == (QNAN | TAG_OBJ);
 }
 static inline int as_int(Value x) { return AS_NUMBER(x); }
 
 static inline bool is_int(Value x) {
-  return IS_NUMBER(x) && NUMBER_VAL(as_int(x)) == AS_NUMBER(x);
+  return is_num(x) && NUMBER_VAL(as_int(x)) == AS_NUMBER(x);
 }
 
 #else // else if !NAN_BOXING
@@ -110,9 +110,9 @@ typedef struct {
 // } ValueWithUnit;
 
 #define is_bool(value) ((value).type == VAL_BOOL)
-#define IS_NIL(value) ((value).type == VAL_NIL)
-#define IS_NUMBER(value) ((value).type == VAL_NUMBER)
-#define IS_OBJ(value) ((value).type == VAL_OBJ)
+#define is_nil(value) ((value).type == VAL_NIL)
+#define is_num(value) ((value).type == VAL_NUMBER)
+#define is_obj(value) ((value).type == VAL_OBJ)
 
 #define AS_BOOL(value) ((value).as.boolean)
 #define AS_NUMBER(value) ((value).as.number)

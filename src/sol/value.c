@@ -36,11 +36,11 @@ int fprintValue(FILE *io, Value val) {
   return is_bool(val) ? fprintf(io, FG_YELLOW "%s" FG_DEFAULT,
                                 AS_BOOL(val) ? "true" : "false") -
                             10
-         : IS_NIL(val) ? fprintf(io, FG_MAGENTA "%s" FG_DEFAULT, "nil") - 10
-         : IS_NUMBER(val)
+         : is_nil(val) ? fprintf(io, FG_MAGENTA "%s" FG_DEFAULT, "nil") - 10
+         : is_num(val)
              ? fprintf(io, FG_BLUE "%g" FG_DEFAULT, AS_NUMBER(val)) - 10
-         : IS_OBJ(val) ? fprintObject(io, AS_OBJ(val))
-         : IS_PTR(val) ? fprintf(io, FG_RED "%p" FG_DEFAULT, AS_PTR(val))
+         : is_obj(val) ? fprintObject(io, AS_OBJ(val))
+         : is_ptr(val) ? fprintf(io, FG_RED "%p" FG_DEFAULT, AS_PTR(val))
                        : 0;
 }
 
@@ -55,8 +55,8 @@ int trace(const char *label, Value value) {
 
 bool valuesEqual(Value a, Value b) {
 #ifdef NAN_BOXING
-  if (IS_NUMBER(a)) return IS_NUMBER(b) && AS_NUMBER(a) == AS_NUMBER(b);
-  if (!IS_OBJ(a) || is_interned(b)) return a == b;
+  if (is_num(a)) return is_num(b) && AS_NUMBER(a) == AS_NUMBER(b);
+  if (!is_obj(a) || is_interned(b)) return a == b;
 
   return a == b;
 #else
@@ -74,10 +74,10 @@ bool valuesEqual(Value a, Value b) {
 
 // OBJ > NUMBER > BOOL > NIL > VOID
 int cmpValues(Value a, Value b) {
-  if (IS_OBJ(a)) {
-    return IS_OBJ(b) ? cmpObjects(AS_OBJ(a), AS_OBJ(b)) : -1;
-  } else if (IS_NUMBER(a)) {
-    if (IS_NUMBER(b)) {
+  if (is_obj(a)) {
+    return is_obj(b) ? cmpObjects(AS_OBJ(a), AS_OBJ(b)) : -1;
+  } else if (is_num(a)) {
+    if (is_num(b)) {
       double aa = AS_NUMBER(a);
       double bb = AS_NUMBER(b);
       return aa > bb ? 1 : bb > aa ? -1 : 0;
@@ -103,7 +103,7 @@ Hash hashBytes(const char *bytes, int length) {
 Hash hashNumber(uint32_t x) { return appendHash(2166136261u, x); }
 
 Hash hashValue(Value val) {
-  return IS_OBJ(val) ? AS_OBJ(val)->hash
+  return is_obj(val) ? AS_OBJ(val)->hash
                      : hashBytes((char *)&val, sizeof(Value));
 }
 

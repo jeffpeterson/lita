@@ -10,7 +10,7 @@ int currentId = 0;
 Table ids;
 
 static void dumpValue(FILE *io, Value v) {
-  if (IS_NIL(v)) {
+  if (is_nil(v)) {
     fputs("nil", io);
     return;
   }
@@ -20,7 +20,7 @@ static void dumpValue(FILE *io, Value v) {
     return;
   }
 
-  if (!IS_OBJ(v)) {
+  if (!is_obj(v)) {
     fprintf(io, "%#llx", v);
     return;
   }

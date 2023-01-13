@@ -90,7 +90,7 @@ void markObject(Obj *obj) {
 }
 
 void markValue(Value value) {
-  if (IS_OBJ(value)) markObject(AS_OBJ(value));
+  if (is_obj(value)) markObject(AS_OBJ(value));
 }
 
 static void markArray(ValueArray *array) {

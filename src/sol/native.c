@@ -121,7 +121,7 @@ static _ Number_eql(_ this, int argc, _ *args) {
 static _ Number_star(_ this, int argc, _ *args) {
   let arg = args[0];
 
-  if (IS_NUMBER(arg)) return AS_NUMBER(this) * AS_NUMBER(arg);
+  if (is_num(arg)) return AS_NUMBER(this) * AS_NUMBER(arg);
 
   return error("Cannot multiply these values.");
 }
