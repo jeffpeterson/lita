@@ -1223,7 +1223,9 @@ static void synchronize() {
     switch (parser.current.type) {
     case TOKEN_ASSERT:
     case TOKEN_CLASS:
+    case TOKEN_DEDENT:
     case TOKEN_FN:
+    case TOKEN_INDENT:
     case TOKEN_LET:
     case TOKEN_FOR:
     case TOKEN_IF:
