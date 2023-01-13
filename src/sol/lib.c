@@ -121,7 +121,7 @@ _ add(_ a, _ b) {
   Obj *out;
   switch (obj_type(a)) {
   case OBJ_STRING:
-    out = (Obj *)concatStrings(AS_STRING(a), AS_STRING(toStr(b)));
+    out = (Obj *)concatStrings(AS_STRING(a), AS_STRING(to_string(b)));
     break;
   case OBJ_TUPLE: out = (Obj *)zipTuples(AS_TUPLE(a), AS_TUPLE(b), add); break;
   default: runtimeError("Values cannot be added."); return nil;
@@ -151,7 +151,7 @@ _ multiply(_ a, _ b) {
   Obj *out;
   switch (obj_type(a)) {
   case OBJ_STRING:
-    out = (Obj *)concatStrings(AS_STRING(a), AS_STRING(toStr(b)));
+    out = (Obj *)concatStrings(AS_STRING(a), AS_STRING(to_string(b)));
     break;
   case OBJ_TUPLE:
     out = (Obj *)zipTuples(AS_TUPLE(a), AS_TUPLE(b), multiply);
@@ -248,7 +248,7 @@ _ read(_ path) {
 _ write(_ path, _ content) {
   if (!is_string(path)) return error("path must be a string.");
 
-  let data = toStr(content);
+  let data = to_string(content);
 
   if (!writeFile(AS_STRING(path), AS_STRING(data)))
     return error("Could not write to file.");
@@ -259,7 +259,7 @@ _ write(_ path, _ content) {
 _ append(_ path, _ content) {
   if (!is_string(path)) return error("path must be a string.");
 
-  let data = toStr(content);
+  let data = to_string(content);
 
   if (!appendFile(AS_STRING(path), AS_STRING(data)))
     return error("Could not append to file.");
@@ -267,9 +267,7 @@ _ append(_ path, _ content) {
   return data;
 }
 
-_ toStr(_ v) { return toString(v); }
-
-_ toString(_ val) {
+_ to_string(_ val) {
   if (is_int(val)) return OBJ_VAL(stringf("%d", as_int(val)));
 
   if (is_num(val)) return OBJ_VAL(stringf("%g", AS_NUMBER(val)));
@@ -289,13 +287,13 @@ _ toString(_ val) {
 
     case OBJ_ERR: return OBJ_VAL(AS_ERR(val)->msg);
     case OBJ_INSTANCE:
-      // get(val, string("toString"));
-      return toString(OBJ_VAL(AS_INSTANCE(val)->klass));
+      // get(val, string("to_string"));
+      return to_string(OBJ_VAL(AS_INSTANCE(val)->klass));
 
     case OBJ_RANGE: {
       ObjRange *range = AS_RANGE(val);
       return OBJ_VAL(
-          stringf("%s..%s", toString(range->start), toString(range->end)));
+          stringf("%s..%s", to_string(range->start), to_string(range->end)));
     }
 
     case OBJ_STRING: return val;
@@ -308,7 +306,7 @@ _ toString(_ val) {
 }
 
 _ fprint(FILE *io, _ x) {
-  fprintf(io, "%s\n", AS_STRING(toString(x))->chars);
+  fprintf(io, "%s\n", AS_STRING(to_string(x))->chars);
   return x;
 }
 _ print(_ x) {
@@ -322,7 +320,7 @@ _ pp(_ x) {
 }
 
 _ inspect(_ val) {
-  if (is_bool(val) || is_num(val) || is_nil(val)) return toStr(val);
+  if (is_bool(val) || is_num(val) || is_nil(val)) return to_string(val);
 
   if (is_obj(val)) {
     switch (obj_type(val)) {
@@ -331,7 +329,7 @@ _ inspect(_ val) {
     case OBJ_CLASS:
       return OBJ_VAL(stringf("<class %s>", AS_CLASS(val)->name->chars));
 
-    case OBJ_CLOSURE: return toStr(OBJ_VAL(AS_CLOSURE(val)->fun));
+    case OBJ_CLOSURE: return to_string(OBJ_VAL(AS_CLOSURE(val)->fun));
 
     case OBJ_ERR: return OBJ_VAL(stringf("Error(%s)", AS_ERR(val)->msg->chars));
 
@@ -339,12 +337,13 @@ _ inspect(_ val) {
       ObjFun *fun = AS_FUN(val);
       return OBJ_VAL(stringf("<fn %s/%d>", fun->name->chars, fun->arity));
     }
-    case OBJ_INSTANCE: return toStr(OBJ_VAL(AS_INSTANCE(val)->klass));
+    case OBJ_INSTANCE: return to_string(OBJ_VAL(AS_INSTANCE(val)->klass));
     case OBJ_NATIVE: return OBJ_VAL(AS_NATIVE(val)->name);
 
     case OBJ_RANGE: {
       ObjRange *range = AS_RANGE(val);
-      return OBJ_VAL(stringf("%s..%s", toStr(range->start), toStr(range->end)));
+      return OBJ_VAL(
+          stringf("%s..%s", to_string(range->start), to_string(range->end)));
     }
 
     case OBJ_STRING: return OBJ_VAL(stringf("\"%s\"", AS_STRING(val)->chars));
@@ -365,5 +364,5 @@ _ inspect(_ val) {
     }
   }
 
-  return toString(val);
+  return to_string(val);
 }

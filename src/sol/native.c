@@ -61,7 +61,7 @@ static _ Any_inspect(_ this, int argc, _ *args) { return inspect(this); }
 static _ Any_objectId(_ this, int argc, _ *args) {
   return NUMBER_VAL((u64)AS_OBJ(this));
 }
-static _ Any_string(_ this, int argc, _ *args) { return toString(this); }
+static _ Any_string(_ this, int argc, _ *args) { return to_string(this); }
 
 /// Array
 static Value Array_get(let this, int argc, _ *args) {
@@ -131,7 +131,7 @@ static _ Number_string(_ this, int argc, _ *args) {
 
 /// String
 static _ String_plus(_ this, int argc, _ *args) {
-  let other = toString(args[0]);
+  let other = to_string(args[0]);
   return obj(concatStrings(as_string(this), as_string(other)));
 }
 
@@ -187,7 +187,7 @@ InterpretResult defineNatives() {
   method(vm.Any, fn("inspect", 0, Any_inspect));
   method(vm.Any, fn("objectId", 0, Any_objectId));
   method(vm.Any, fn("string", 0, Any_string));
-  method(vm.Any, fn("toString", 0, Any_string));
+  method(vm.Any, fn("to_string", 0, Any_string));
 
   method(vm.Array, fn("get", 1, Array_get));
   method(vm.Array, fn("length", 0, Array_length));

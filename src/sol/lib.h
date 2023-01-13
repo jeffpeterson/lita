@@ -8,7 +8,7 @@
 #include "string.h"
 #include "value.h"
 
-#define TO_STRING(val) toString(val)
+#define TO_STRING(val) to_string(val)
 #define obj(o) OBJ_VAL(o)
 #define fmt(f, ...) obj(stringFormat(f, ...))
 
@@ -40,8 +40,7 @@ _ t3(_ a, _ b, _ c);
 _ t4(_ a, _ b, _ c, _ d);
 _ t(int len, _ *vals);
 
-_ toStr(_ val);
-_ toString(_ val);
+_ to_string(_ val);
 
 int arity(_ fun);
 

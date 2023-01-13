@@ -45,7 +45,7 @@ print inst.x
 print inst.x += 1
 print inst.myMethod
 
-// print inst.toString()
+// print inst.to_string()
 
 // nil values default to 0
 print inst.missing++ // 0
@@ -55,7 +55,7 @@ print inst.missing2 += 1 // 1
 
 let empty
 print empty++
-// print 20.toString()
+// print 20.to_string()
 
 __END__
 ✓ first

@@ -1,4 +1,4 @@
-(a String).toString => a;
+(a String).to_string => a;
 
 Number is a Class.
 String is a Class.

@@ -192,7 +192,7 @@ ObjString *vstringFormat(const char *fmt, va_list args) {
       case '}': {
         i++;
         Value v = va_arg(args, Value);
-        ObjString *show = as_string(toString(v));
+        ObjString *show = as_string(to_string(v));
         appendBuffer(&buf, (u8 *)show->chars, show->length);
         break;
       }

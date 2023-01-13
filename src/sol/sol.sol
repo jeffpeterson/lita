@@ -7,7 +7,7 @@ class Object < Any
 //   let Any = setGlobal(str("Any"), class(str("Any")));
 //   method(Any, fn("class", 0, Any_class));
 //   method(Any, fn("hash", 0, Any_hash));
-//   method(Any, fn("toString", 0, Any_toString));
+//   method(Any, fn("to_string", 0, Any_to_string));
 
 //   globalClass("Nil", "Any");
 //   globalClass("Object", "Any");
