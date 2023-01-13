@@ -139,7 +139,7 @@ _ add(_ a, _ b) {
   }
 
   Obj *out;
-  switch (OBJ_TYPE(a)) {
+  switch (obj_type(a)) {
   case OBJ_STRING:
     out = (Obj *)concatStrings(AS_STRING(a), AS_STRING(toStr(b)));
     break;
@@ -169,7 +169,7 @@ _ multiply(_ a, _ b) {
   }
 
   Obj *out;
-  switch (OBJ_TYPE(a)) {
+  switch (obj_type(a)) {
   case OBJ_STRING:
     out = (Obj *)concatStrings(AS_STRING(a), AS_STRING(toStr(b)));
     break;
@@ -298,7 +298,7 @@ _ toString(_ val) {
   if (IS_NIL(val)) return string("nil");
 
   if (IS_OBJ(val)) {
-    switch (OBJ_TYPE(val)) {
+    switch (obj_type(val)) {
     case OBJ_CLASS: return OBJ_VAL(AS_CLASS(val)->name);
 
     case OBJ_BOUND:
@@ -319,7 +319,7 @@ _ toString(_ val) {
 
     case OBJ_STRING: return val;
 
-    default: return str(objInfo[OBJ_TYPE(val)].inspect);
+    default: return str(objInfo[obj_type(val)].inspect);
     }
   }
 
@@ -344,7 +344,7 @@ _ inspect(_ val) {
   if (is_bool(val) || IS_NUMBER(val) || IS_NIL(val)) return toStr(val);
 
   if (IS_OBJ(val)) {
-    switch (OBJ_TYPE(val)) {
+    switch (obj_type(val)) {
     case OBJ_BOUND: return add(str("bound:"), inspect(AS_BOUND(val)->method));
 
     case OBJ_CLASS:

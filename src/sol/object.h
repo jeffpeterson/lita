@@ -11,7 +11,7 @@ typedef enum ObjType ObjType;
 #include "value.h"
 
 // Todo: stuff ObjType into VAL_OBJ pointer.
-#define OBJ_TYPE(val) (AS_OBJ(val)->type)
+#define obj_type(val) (AS_OBJ(val)->type)
 
 #define IS_BOUND(val) is_obj_type(val, OBJ_BOUND)
 #define IS_CLASS(val) is_obj_type(val, OBJ_CLASS)

@@ -222,7 +222,7 @@ ObjClass *valueClass(Value v) {
  */
 static bool callValue(Value callee, int argCount) {
   if (IS_OBJ(callee)) {
-    switch (OBJ_TYPE(callee)) {
+    switch (obj_type(callee)) {
     case OBJ_BOUND: {
       ObjBound *bound = AS_BOUND(callee);
       vm.stackTop[-argCount - 1] = bound->receiver;
