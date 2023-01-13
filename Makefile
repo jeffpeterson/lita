@@ -48,8 +48,8 @@ _build/%.o: src/%.c $(HEADERS)
 	@mkdir -p $(dir $@)
 	$(CC) $(CFLAGS) -c -o $@ $<
 
-%.sol.c: %.sol bin/sol
-	bin/sol -c $<
+%.sol.c: %.sol $(TARGET)
+	$(TARGET) -c $<
 
 clean:
 	-rm -f $(TARGET) $(TEST) $(OBJECTS)
