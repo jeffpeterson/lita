@@ -24,7 +24,6 @@ bool isNum(_ x);
 bool isObj(_ x);
 bool isPtr(_ x);
 bool isRange(_ x);
-bool isStr(_ x);
 bool isTuple(_ x);
 bool notNil(_ x);
 
@@ -39,7 +38,7 @@ double asNum(_ x);
 Obj *asObj(_ x);
 void *asPtr(_ x);
 ObjRange *asRange(_ x);
-ObjString *asStr(_ x);
+ObjString *as_string(_ x);
 ObjTuple *asTuple(_ x);
 
 _ error(const char *msg);

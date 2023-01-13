@@ -1,3 +1,4 @@
+#include <assert.h>
 #include <ctype.h>
 #include <stdarg.h>
 
@@ -7,6 +8,11 @@
 #include "table.h"
 #include "value.h"
 #include "vm.h"
+
+ObjString *as_string(let x) {
+  assert(is_string(x));
+  return AS_STRING(x);
+}
 
 /**
  * Allocate an ObjString for a (null-terminated) char array.
@@ -186,7 +192,7 @@ ObjString *vstringFormat(const char *fmt, va_list args) {
       case '}': {
         i++;
         Value v = va_arg(args, Value);
-        ObjString *show = asStr(toString(v));
+        ObjString *show = as_string(toString(v));
         appendBuffer(&buf, (u8 *)show->chars, show->length);
         break;
       }

@@ -3,6 +3,7 @@
 
 #include "memory.h"
 #include "object.h"
+#include "string.h"
 #include "table.h"
 #include "term.h"
 #include "value.h"
@@ -43,8 +44,7 @@ static Entry *findEntry(Entry *entries, int capacity, Value key) {
         return tombstone != NULL ? tombstone : entry;
       } else {
         // Track the first tombstone we find.
-        if (tombstone == NULL)
-          tombstone = entry;
+        if (tombstone == NULL) tombstone = entry;
       }
     } else if (entry->key == key) {
       // We found an entry, return it.
@@ -65,8 +65,7 @@ static void adjustCapacity(Table *table, int capacity) {
   table->total = 0;
   for (int i = 0; i < table->capacity; i++) {
     Entry *entry = &table->entries[i];
-    if (IS_VOID(entry->key))
-      continue;
+    if (IS_VOID(entry->key)) continue;
 
     Entry *dest = findEntry(entries, capacity, entry->key);
     dest->key = entry->key;
@@ -85,12 +84,10 @@ bool tableHas(Table *table, Value key) {
 }
 
 bool tableGet(Table *table, Value key, Value *value) {
-  if (table->len == 0)
-    return false;
+  if (table->len == 0) return false;
 
   Entry *entry = findEntry(table->entries, table->capacity, key);
-  if (IS_VOID(entry->key))
-    return false;
+  if (IS_VOID(entry->key)) return false;
 
   *value = entry->value;
   return true;
@@ -104,8 +101,7 @@ bool tableSet(Table *table, Value key, Value value) {
 
   Entry *entry = findEntry(table->entries, table->capacity, key);
   bool isNewKey = IS_VOID(entry->key);
-  if (isNewKey && IS_NIL(entry->value))
-    table->total++, table->len++;
+  if (isNewKey && IS_NIL(entry->value)) table->total++, table->len++;
 
   entry->key = key;
   entry->value = value;
@@ -122,13 +118,11 @@ double tableInc(Table *table, Value key, double amt) {
 }
 
 bool tableDelete(Table *table, Value key) {
-  if (table->len == 0)
-    return false;
+  if (table->len == 0) return false;
 
   // Find the entry.
   Entry *entry = findEntry(table->entries, table->capacity, key);
-  if (IS_VOID(entry->key))
-    return false;
+  if (IS_VOID(entry->key)) return false;
 
   // Place a tombstone in the entry.
   entry->key = VOID_VAL;
@@ -140,15 +134,13 @@ bool tableDelete(Table *table, Value key) {
 void tableAddAll(Table *from, Table *to) {
   for (int i = 0; i < from->capacity; i++) {
     Entry *entry = &from->entries[i];
-    if (!IS_VOID(entry->key))
-      tableSet(to, entry->key, entry->value);
+    if (!IS_VOID(entry->key)) tableSet(to, entry->key, entry->value);
   }
 }
 
 Obj *tableFindObj(Table *table, ObjType type, const char *bytes, int length,
                   Hash hash) {
-  if (table->total == 0)
-    return NULL;
+  if (table->total == 0) return NULL;
 
   uint32_t index =
       hash & (table->capacity - 1); // Optimized `% table->capacity` when 2^n
@@ -165,8 +157,7 @@ Obj *tableFindObj(Table *table, ObjType type, const char *bytes, int length,
       }
     } else {
       // Stop if we find an empty non-tombstone entry.
-      if (IS_VOID(entry->key) && IS_NIL(entry->value))
-        return NULL;
+      if (IS_VOID(entry->key) && IS_NIL(entry->value)) return NULL;
 
       // Otherwise, skip. Only objects are interned.
     }
@@ -179,8 +170,7 @@ Obj *tableFindObj(Table *table, ObjType type, const char *bytes, int length,
 void tableRemoveWhite(Table *table) {
   for (int i = 0; i < table->capacity; i++) {
     Entry *entry = &table->entries[i];
-    if (IS_NIL(entry->key) || !IS_OBJ(entry->key))
-      continue;
+    if (IS_NIL(entry->key) || !IS_OBJ(entry->key)) continue;
 
     if (!AS_OBJ(entry->key)->isMarked) {
       tableDelete(table, entry->key);
@@ -202,8 +192,7 @@ int fprintTable(FILE *io, Table *table) {
   for (int i = 0; i < table->capacity; i++) {
     Entry *entry = &table->entries[i];
 
-    if (IS_VOID(entry->key))
-      continue;
+    if (IS_VOID(entry->key)) continue;
 
     if (is_string(entry->key)) {
       out += (idx > 0 ? fputs(", ", io) : 0) +

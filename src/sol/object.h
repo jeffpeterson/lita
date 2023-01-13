@@ -21,7 +21,6 @@ typedef enum ObjType ObjType;
 #define is_instance(val) is_obj_type(val, OBJ_INSTANCE)
 #define is_native(val) is_obj_type(val, OBJ_NATIVE)
 #define is_range(val) is_obj_type(val, OBJ_RANGE)
-#define is_string(val) is_obj_type(val, OBJ_STRING)
 #define is_tuple(val) is_obj_type(val, OBJ_TUPLE)
 #define is_upvalue(val) is_obj_type(val, OBJ_UPVALUE)
 
@@ -33,7 +32,6 @@ typedef enum ObjType ObjType;
 #define AS_INSTANCE(val) ((ObjInstance *)AS_OBJ(val))
 #define AS_NATIVE(val) ((ObjNative *)AS_OBJ(val))
 #define AS_RANGE(val) ((ObjRange *)AS_OBJ(val))
-#define AS_STRING(val) ((ObjString *)AS_OBJ(val))
 #define AS_TUPLE(val) ((ObjTuple *)AS_OBJ(val))
 #define AS_UPVALUE(val) ((ObjUpvalue *)AS_OBJ(val))
 

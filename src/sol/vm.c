@@ -306,9 +306,9 @@ static InterpretResult vm_invoke(Value name, int argCount) {
 
   ObjClass *klass = valueClass(receiver);
   // printf("invoke: %s_%s()\n", klass->name->chars, name->chars);
-  if (!invokeFromClass(klass, asStr(name), argCount)) {
-    return runtimeError("Undefined property '%s' on %s.", asStr(name)->chars,
-                        klass->name->chars);
+  if (!invokeFromClass(klass, as_string(name), argCount)) {
+    return runtimeError("Undefined property '%s' on %s.",
+                        as_string(name)->chars, klass->name->chars);
   }
 
   return INTERPRET_OK;
@@ -442,7 +442,7 @@ InterpretResult vm_get_global(Value name) {
   if (!tableGet(&vm.globals, name, &value)) {
     if (isNil(value = get_env(name)))
       return runtimeError("Cannot get undefined variable '%s'.",
-                          asStr(name)->chars);
+                          as_string(name)->chars);
   }
   push(value);
   return INTERPRET_OK;

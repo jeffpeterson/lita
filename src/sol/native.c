@@ -132,7 +132,7 @@ static _ Number_string(_ this, int argc, _ *args) {
 /// String
 static _ String_plus(_ this, int argc, _ *args) {
   let other = toString(args[0]);
-  return obj(concatStrings(asStr(this), asStr(other)));
+  return obj(concatStrings(as_string(this), as_string(other)));
 }
 
 /// Tuple

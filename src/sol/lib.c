@@ -20,7 +20,6 @@ bool isNum(_ x) { return IS_NUMBER(x); }
 bool isObj(_ x) { return IS_OBJ(x); }
 bool isPtr(_ x) { return IS_PTR(x); }
 bool isRange(_ x) { return is_range(x); }
-bool isStr(_ x) { return is_string(x); }
 bool isTuple(_ x) { return is_tuple(x); }
 bool notNil(_ x) { return !IS_NIL(x); }
 
@@ -65,10 +64,6 @@ ObjRange *asRange(_ x) {
   assert(isRange(x));
   return AS_RANGE(x);
 }
-ObjString *asStr(_ x) {
-  assert(isStr(x));
-  return AS_STRING(x);
-}
 ObjTuple *asTuple(_ x) {
   assert(isTuple(x));
   return AS_TUPLE(x);
@@ -99,7 +94,7 @@ _ t7(_ a, _ b, _ c, _ d, _ e, _ f, _ g) {
 }
 
 _ class(_ name) {
-  if (!isStr(name)) return nil;
+  if (!is_string(name)) return nil;
 
   return pope(OBJ_VAL(newClass(AS_STRING(push(name)))));
 }
@@ -155,7 +150,7 @@ _ add(_ a, _ b) {
 _ subtract(_ a, _ b) {
   if (isNum(a) && isNum(b)) return num(asNum(a) - asNum(b));
 
-  // if (isStr(a) && isStr(b))
+  // if (is_string(a) && is_string(b))
   //   remove b from end of a
   return nil;
 }
@@ -238,7 +233,7 @@ u32 len(_ x) {
   case OBJ_FUN:
   case OBJ_NATIVE: return arity(x);
 
-  case OBJ_STRING: return asStr(x)->length;
+  case OBJ_STRING: return as_string(x)->length;
   case OBJ_INSTANCE: return asInst(x)->fields.len;
   case OBJ_TUPLE: return asTuple(x)->length;
 
@@ -259,13 +254,13 @@ _ name(_ self) {
 }
 
 _ read(_ path) {
-  if (!isStr(path)) return error("path must be a string.");
+  if (!is_string(path)) return error("path must be a string.");
 
   return obj(readFile(AS_STRING(path)));
 }
 
 _ write(_ path, _ content) {
-  if (!isStr(path)) return error("path must be a string.");
+  if (!is_string(path)) return error("path must be a string.");
 
   let data = toStr(content);
 
@@ -276,7 +271,7 @@ _ write(_ path, _ content) {
 }
 
 _ append(_ path, _ content) {
-  if (!isStr(path)) return error("path must be a string.");
+  if (!is_string(path)) return error("path must be a string.");
 
   let data = toStr(content);
 

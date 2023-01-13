@@ -5,6 +5,11 @@
 #include "common.h"
 #include "object.h"
 
+#define is_string(val) is_obj_type(val, OBJ_STRING)
+#define AS_STRING(val) ((ObjString *)AS_OBJ(val))
+
+ObjString *as_string(let x);
+
 ObjString *newString(const char *chars);
 
 /**
