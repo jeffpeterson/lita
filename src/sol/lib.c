@@ -1,6 +1,7 @@
 #include <assert.h>
 #include <string.h>
 
+#include "array.h"
 #include "lib.h"
 #include "memory.h"
 #include "string.h"
@@ -8,8 +9,6 @@
 #include "tuple.h"
 #include "vm.h"
 
-bool isArray(_ x) { return IS_ARRAY(x); }
-bool isBool(_ x) { return IS_BOOL(x); }
 bool isClass(_ x) { return IS_CLASS(x); }
 bool isFn(_ x) { return IS_CLOSURE(x); }
 bool isInst(_ x) { return IS_INSTANCE(x); }
@@ -26,11 +25,11 @@ bool isTuple(_ x) { return IS_TUPLE(x); }
 bool notNil(_ x) { return !IS_NIL(x); }
 
 ObjArray *asArray(_ x) {
-  assert(isArray(x));
+  assert(is_array(x));
   return AS_ARRAY(x);
 }
 bool asBool(_ x) {
-  assert(isBool(x));
+  assert(is_bool(x));
   return AS_BOOL(x);
 }
 ObjClass *asClass(_ x) {
@@ -298,7 +297,7 @@ _ toString(_ val) {
 
   if (IS_NUMBER(val)) return OBJ_VAL(stringf("%g", AS_NUMBER(val)));
 
-  if (IS_BOOL(val)) return string(AS_BOOL(val) ? "true" : "false");
+  if (is_bool(val)) return string(AS_BOOL(val) ? "true" : "false");
 
   if (IS_NIL(val)) return string("nil");
 
@@ -346,7 +345,7 @@ _ pp(_ x) {
 }
 
 _ inspect(_ val) {
-  if (IS_BOOL(val) || IS_NUMBER(val) || IS_NIL(val)) return toStr(val);
+  if (is_bool(val) || IS_NUMBER(val) || IS_NIL(val)) return toStr(val);
 
   if (IS_OBJ(val)) {
     switch (OBJ_TYPE(val)) {

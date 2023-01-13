@@ -15,7 +15,7 @@ static void dumpValue(FILE *io, Value v) {
     return;
   }
 
-  if (IS_BOOL(v)) {
+  if (is_bool(v)) {
     fputs(AS_BOOL(v) ? "TRUE_VAL" : "FALSE_VAL", io);
     return;
   }

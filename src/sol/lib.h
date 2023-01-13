@@ -14,8 +14,6 @@
 
 typedef Value _;
 
-bool isArray(_ x);
-bool isBool(_ x);
 bool isClass(_ x);
 bool isFn(_ x);
 bool isInst(_ x);

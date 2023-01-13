@@ -14,7 +14,6 @@ typedef enum ObjType ObjType;
 #define OBJ_TYPE(val) (AS_OBJ(val)->type)
 
 #define IS_INTERNED(val) isInterned(val)
-#define IS_ARRAY(val) isObjType(val, OBJ_ARRAY)
 #define IS_BOUND(val) isObjType(val, OBJ_BOUND)
 #define IS_CLASS(val) isObjType(val, OBJ_CLASS)
 #define IS_CLOSURE(val) isObjType(val, OBJ_CLOSURE)

@@ -5,6 +5,8 @@
 #include "object.h"
 #include "value.h"
 
+#define is_array(val) isObjType(val, OBJ_ARRAY)
+
 ObjArray *newArray();
 ObjArray *copyArray(Value *values, u32 length);
 void resizeArray(ObjArray *arr, u32 capacity);

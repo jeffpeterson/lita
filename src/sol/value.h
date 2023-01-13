@@ -35,7 +35,7 @@ typedef struct ObjString ObjString;
 typedef uint64_t Value;
 typedef Value let;
 
-#define IS_BOOL(val) (((val) | 1) == TRUE_VAL)
+#define is_bool(val) (((val) | 1) == TRUE_VAL)
 #define IS_NIL(val) ((val) == NIL_VAL)
 #define IS_VOID(val) ((val) == VOID_VAL)
 #define IS_NUMBER(val) (((val)&QNAN) != QNAN)
@@ -102,7 +102,7 @@ typedef struct {
 //   Obj *unit;
 // } ValueWithUnit;
 
-#define IS_BOOL(value) ((value).type == VAL_BOOL)
+#define is_bool(value) ((value).type == VAL_BOOL)
 #define IS_NIL(value) ((value).type == VAL_NIL)
 #define IS_NUMBER(value) ((value).type == VAL_NUMBER)
 #define IS_OBJ(value) ((value).type == VAL_OBJ)

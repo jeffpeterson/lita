@@ -33,7 +33,7 @@ void freeValueArray(ValueArray *array) {
 }
 
 int fprintValue(FILE *io, Value val) {
-  return IS_BOOL(val) ? fprintf(io, FG_YELLOW "%s" FG_DEFAULT,
+  return is_bool(val) ? fprintf(io, FG_YELLOW "%s" FG_DEFAULT,
                                 AS_BOOL(val) ? "true" : "false") -
                             10
          : IS_NIL(val) ? fprintf(io, FG_MAGENTA "%s" FG_DEFAULT, "nil") - 10

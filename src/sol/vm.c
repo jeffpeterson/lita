@@ -202,7 +202,7 @@ ObjClass *valueClass(Value v) {
   } else {
     name = IS_NIL(v)      ? "Nil"
            : IS_NUMBER(v) ? "Number"
-           : IS_BOOL(v)   ? "Bool"
+           : is_bool(v)   ? "Bool"
                           : "Any";
   }
 
@@ -372,7 +372,7 @@ static void defineMethod(ObjString *name) {
 }
 
 static bool isFalsey(Value value) {
-  return IS_NIL(value) || (IS_BOOL(value) && !AS_BOOL(value));
+  return IS_NIL(value) || (is_bool(value) && !AS_BOOL(value));
 }
 
 /** [1 a][0 b] -> [0 result] */
