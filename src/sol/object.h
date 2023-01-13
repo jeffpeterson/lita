@@ -13,7 +13,6 @@ typedef enum ObjType ObjType;
 // Todo: stuff ObjType into VAL_OBJ pointer.
 #define OBJ_TYPE(val) (AS_OBJ(val)->type)
 
-#define IS_INTERNED(val) isInterned(val)
 #define IS_BOUND(val) is_obj_type(val, OBJ_BOUND)
 #define IS_CLASS(val) is_obj_type(val, OBJ_CLASS)
 #define IS_CLOSURE(val) is_obj_type(val, OBJ_CLOSURE)
@@ -200,7 +199,7 @@ static inline bool is_obj_type(Value value, ObjType type) {
   return IS_OBJ(value) && AS_OBJ(value)->type == type;
 }
 
-static inline bool isInterned(Value val) {
+static inline bool is_interned(Value val) {
   return IS_OBJ(val) && AS_OBJ(val)->type >= OBJ_INTERNED;
 }
 
