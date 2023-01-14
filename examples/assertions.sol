@@ -94,4 +94,7 @@ fn empty_fn()
 
 assert empty_fn() == nil
 
+// let linewrap =
+// 	true
+
 write "\n\nAssertions passed!\n".green

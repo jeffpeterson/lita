@@ -15,6 +15,7 @@
 typedef struct {
   Token current;
   Token previous;
+  int indebt;
   bool hadError;
   bool panicMode;
 } Parser;
@@ -154,6 +155,7 @@ static void errorAt(Token *token, const char *message) {
 
   fprintf(stderr, ": %s\n", message);
   parser.hadError = true;
+  exit(1);
 }
 
 static void error(const char *message) { errorAt(&parser.previous, message); }
@@ -213,6 +215,11 @@ static Value consumeIdent(const char *message) {
 
 static void consumeTerminator(const char *message) {
   consume(TOKEN_NEWLINE, message);
+  if (parser.indebt) {
+    fprintf(stderr, "Warning: Indentation debt not paid off.");
+    parser.indebt--;
+    consume(TOKEN_DEDENT, "Expected end of indented expression.");
+  }
   skipNewlines();
 }
 
@@ -543,8 +550,6 @@ static u8 adjoining();
  * Returns true if successful.
  */
 static bool parseAt(Precedence precedence) {
-  // bool indebt = match(TOKEN_INDENT);
-
   ParseRule *rule = getRule(parser.current.type);
   ParseFn *prefix = rule->prefix;
   if (prefix == NULL) return false;
@@ -576,8 +581,6 @@ static bool parseAt(Precedence precedence) {
     u8 argc = adjoining();
     if (argc) emitBytes(OP_CALL, argc);
   }
-
-  // if (indebt) consume(TOKEN_DEDENT, "Expected dedent.");
 
   return true;
 }
@@ -1020,6 +1023,8 @@ static void method() {
   emitBytes(OP_METHOD, constant);
 }
 
+// static void indent(Ctx *ctx) { parser.indebt++; }
+
 static void classDeclaration(Ctx *ctx) {
   Value name = consumeIdent("Expect class name.");
   Token className = parser.previous;
@@ -1288,6 +1293,7 @@ ObjFun *compile(const char *source, ObjString *name) {
   name = stringToCIdent(name);
   initCompiler(&compiler, TYPE_SCRIPT, name);
 
+  parser.indebt = 0;
   parser.hadError = false;
   parser.panicMode = false;
 
@@ -1314,6 +1320,7 @@ ParseRule rules[] = {
 
     //                {prefix, infix, precedence}
     // [TOKEN_NEWLINE] = {NULL, NULL, PREC_ADJOINING},
+    // [TOKEN_INDENT] = {NULL, indent, PREC_ADJOINING + 1},
     [TOKEN_LEFT_PAREN] = {grouping, call, PREC_CALL},
     [TOKEN_RIGHT_PAREN] = {NULL, NULL, PREC_NONE},
     [TOKEN_LEFT_BRACE] = {NULL, NULL, PREC_NONE},
