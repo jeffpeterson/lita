@@ -8,7 +8,7 @@
 #include "scanner.h"
 #include "string.h"
 
-#if defined(DEBUG_PRINT_CODE) || defined(DEBUG_TOKENS)
+#if defined(DEBUG_PRINT_CODE) || defined(DEBUG_TOKENS) || defined(DEBUG_ERRORS)
 #include "debug.h"
 #endif
 
@@ -34,6 +34,7 @@ typedef struct {
 typedef enum {     // Lower precedence
   PREC_NONE,       //
   PREC_SEMI,       // ; NEWLINE
+  PREC_ARROW,      // ->
   PREC_COMMA,      // ,
   PREC_ADJOINING,  // (x y z)
   PREC_OR,         // or
@@ -143,6 +144,14 @@ static void errorAt(Token *token, const char *message) {
   if (parser.panicMode) return;
 
   parser.panicMode = true;
+
+#if defined(DEBUG_ERRORS) || defined(DEBUG_PRINT_CODE)
+  disassembleChunk(currentChunk(), current->fun->name != NULL
+                                       ? current->fun->name->chars
+                                       : "<script>");
+  fprintf(stderr, "Compilation failed. Current chunk above. ^^^\n");
+#endif
+
   fprintf(stderr, "[line %d] Error", token->line);
 
   if (token->type == TOKEN_EOF) {
@@ -174,10 +183,10 @@ static void advance() {
   }
 }
 
-/** Is this the type of the previous token? */
+/** Is this the type of the current token? */
 static bool check(TokenType type) { return parser.current.type == type; }
 
-/** Check the previous token and consume if it matches. */
+/** Check the current token and consume if it matches. */
 static bool match(TokenType type) {
   if (!check(type)) return false;
 
@@ -185,7 +194,7 @@ static bool match(TokenType type) {
   return true;
 }
 
-/** The previous token must be this type, otherwise error. */
+/** The current token must be this type, otherwise error. */
 static void consume(TokenType type, const char *message) {
   if (parser.current.type == type) {
     advance();
@@ -249,16 +258,6 @@ static void patchBytes(uint8_t byte1, uint8_t byte2, int offset) {
   patchByte(byte2, offset + 1);
 }
 
-/**
- * Emits the given JUMP command with a temp `short` operand.
- * Returns the offset pointing to the start of the `short`.
- */
-static int emitJump(uint8_t instruction) {
-  emitByte(instruction);
-  emitBytes(0xff, 0xff);
-  return currentChunk()->count - 2;
-}
-
 static void emitSwap(uint8_t a, uint8_t b) {
   emitBytes(OP_SWAP, (a << 4) | (b & 0x0f));
 }
@@ -302,6 +301,21 @@ static void emit(Value val) {
   if (is_nil(val)) return emitByte(OP_NIL);
   if (is_bool(val)) return emitByte(AS_BOOL(val) ? OP_TRUE : OP_FALSE);
   return emitConstant(val);
+}
+
+/**
+ * Emits the given JUMP command with a temp `short` operand.
+ * Returns the offset pointing to the start of the `short`.
+ */
+static int emitJump(uint8_t instruction) {
+  emitByte(instruction);
+  emitBytes(0xff, 0xff);
+  return currentChunk()->count - 2;
+}
+
+static void emitJumpTo(uint8_t instruction, int offset) {
+  emitByte(instruction);
+  emitBytes((offset >> 8) & 0xff, offset & 0xff);
 }
 
 /**
@@ -659,6 +673,7 @@ static bool assignment(Ctx *ctx, OpCode getOp, OpCode setOp, uint8_t arg,
       emitBytes(OP_PEEK, 0);      // [value][value]
     }
 
+    // TODO: Replace emitConstant() usage with emit()
     emitConstant(NUMBER_VAL(1));
     emitByte(type == TOKEN_PLUS_PLUS ? OP_ADD : OP_SUBTRACT);
     emitBytes(setOp, arg);
@@ -1172,17 +1187,58 @@ static void ifStatement() {
   if (!check(TOKEN_INDENT))
     consume(TOKEN_COLON, "Expect ':' or block after condition.");
 
-  int thenJump = emitJump(OP_JUMP_IF_FALSE);
-  emitByte(OP_POP);
-  statement();
+  int thenJump =
+      emitJump(OP_JUMP_IF_FALSE);   // Jump to else if condition is false.
+  emitByte(OP_POP);                 // Pop the condition.
+  statement();                      // Then branch.
+  int elseJump = emitJump(OP_JUMP); // Jump over else branch.
 
-  int elseJump = emitJump(OP_JUMP);
-  patchJump(thenJump);
-  emitByte(OP_POP);
+  patchJump(thenJump); // End of then branch.
+  emitByte(OP_POP);    // Pop the condition.
 
-  if (match(TOKEN_ELSE)) statement();
+  if (match(TOKEN_ELSE)) statement(); // Else branch.
+  patchJump(elseJump);                // End of else branch.
+}
 
-  patchJump(elseJump);
+static void matchStatement() {
+  expression(); // [0 match expr]
+  consume(TOKEN_INDENT, "Expect block after match expression.");
+
+  int start_jump = emitJump(OP_JUMP); // Jump over the exit jump.
+  int exit_jump = emitJump(OP_JUMP);  // Below, we use this to exit.
+  patchJump(start_jump);
+
+  while (!check(TOKEN_DEDENT) && !check(TOKEN_EOF) && !check(TOKEN_ELSE)) {
+    emitBytes(OP_PEEK, 0); // [1 match expr][0 match expr]
+
+    // TODO: Handle multiple patterns.
+    // do {...} while (parseAbove(PREC_COMMA)));
+
+    if (parseAbove(PREC_COMMA)) { // [2 match expr][1 match expr][0 pattern]
+      consume(TOKEN_ARROW, "Expect '->' after pattern.");
+      emitByte(OP_MATCH); // [1 match expr][0 bool]
+
+      int skip_jump = emitJump(
+          OP_JUMP_IF_FALSE); // Jump to next pattern if this one doesn't match.
+                             // TODO: OP_JUMP_IF_VOID and matching sets locals.
+
+      emitBytes(OP_POP, OP_POP); // []
+      statement();               // [0 value]
+      emitJumpTo(OP_JUMP, exit_jump);
+      patchJump(skip_jump);
+      emitByte(OP_POP); // Pop the bool match result.
+    } else {
+      error("Expect pattern and then '->'.");
+    }
+  }
+
+  if (match(TOKEN_ELSE)) {
+    emitBytes(OP_POP, OP_POP); // []
+    statement();               // [0 value]
+  }
+
+  patchJump(exit_jump);
+  consume(TOKEN_DEDENT, "Expect dedent after match block.");
 }
 
 static void returnStatement() {
@@ -1270,6 +1326,8 @@ static void statement() {
     forStatement();
   } else if (match(TOKEN_IF)) {
     ifStatement();
+  } else if (match(TOKEN_MATCH)) {
+    matchStatement();
   } else if (match(TOKEN_RETURN)) {
     returnStatement();
   } else if (match(TOKEN_WHILE)) {
@@ -1327,6 +1385,8 @@ ParseRule rules[] = {
     [TOKEN_RIGHT_BRACE] = {NULL, NULL, PREC_NONE},
     [TOKEN_LEFT_BRACKET] = {array, NULL, PREC_CALL},
     [TOKEN_RIGHT_BRACKET] = {NULL, NULL, PREC_NONE},
+
+    [TOKEN_ARROW] = {NULL, NULL, PREC_ARROW},
     [TOKEN_COMMA] = {NULL, tuple, PREC_COMMA},
     [TOKEN_DOT] = {NULL, dot, PREC_CALL},
     [TOKEN_DOT_DOT] = {NULL, binary, PREC_RANGE},
@@ -1370,6 +1430,7 @@ ParseRule rules[] = {
     [TOKEN_FOR] = {NULL, NULL, PREC_NONE},
     [TOKEN_FN] = {NULL, NULL, PREC_NONE},
     [TOKEN_IF] = {NULL, NULL, PREC_NONE},
+    [TOKEN_MATCH] = {NULL, NULL, PREC_NONE},
     [TOKEN_NIL] = {literal, NULL, PREC_NONE},
     [TOKEN_OR] = {NULL, or_, PREC_OR},
     [TOKEN_PRINT] = {print, NULL, PREC_ADJOINING},

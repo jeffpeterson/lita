@@ -94,7 +94,15 @@ fn empty_fn()
 
 assert empty_fn() == nil
 
-// let linewrap =
-// 	true
+/// match
+fn num_to_ord(x)
+	match x
+		1 -> return 'one
+		2 -> return 'two
+		else return x.string
+
+assert num_to_ord(1) == 'one
+assert num_to_ord(2) == 'two
+assert num_to_ord(3) == '3
 
 write "\n\nAssertions passed!\n".green

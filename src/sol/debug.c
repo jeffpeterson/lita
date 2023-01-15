@@ -28,6 +28,7 @@ OpInfo infos[] = {
     [OP_FALSE] = {"OP_FALSE", SIMPLE},
 
     [OP_ASSERT] = {"OP_ASSERT", CONSTANT},
+    [OP_MATCH] = {"OP_MATCH", SIMPLE},
     [OP_NOT] = {"OP_NOT", SIMPLE},
     [OP_NEGATE] = {"OP_NEGATE", SIMPLE},
     [OP_PRINT] = {"OP_PRINT", SIMPLE},
@@ -214,7 +215,9 @@ int disassembleInstruction(Chunk *chunk, int offset) {
 }
 
 static void printIndents(int indent) {
-  for (int i = 0; i < indent; i++) { fputs("\t", stderr); }
+  for (int i = 0; i < indent; i++) {
+    fputs("\t", stderr);
+  }
 }
 
 void debugTokens() {

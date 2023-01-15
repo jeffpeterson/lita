@@ -5,6 +5,7 @@
 #include "value.h"
 
 typedef enum OpCode {
+  /** (inline args) [stack] */
   OP_CONSTANT,      /** (x) [] -> [0 x] */
                     /**/
   OP_NIL,           /** [] -> [0 nil] */
@@ -68,6 +69,7 @@ typedef enum OpCode {
   OP_SET_VAR,       /** (name) [1 self][0 value] -> [0 value] */
                     /**/
   OP_ARRAY,         /** (n) [n ...args][0 arg] -> [0 array] */
+  OP_MATCH,         /** [1 value][0 pattern] -> [0 Bool] */
 } OpCode;
 
 typedef struct {

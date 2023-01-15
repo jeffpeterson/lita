@@ -7,6 +7,8 @@
 
 #define NAN_BOXING "Cram all Value types into 64-bits."
 
+#define DEBUG_ERRORS "Log extra debug information on error."
+
 #define DEBUG_TRACE "Log trace calls."
 
 #define DEBUG_ASSERTS "Log assert calls."
