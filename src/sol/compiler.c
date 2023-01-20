@@ -1130,12 +1130,6 @@ static void assert(Ctx *ctx) {
   emitBytes(OP_ASSERT, makeConstant(source));
 }
 
-static void expressionStatement() {
-  expression();
-  emitByte(OP_POP);
-  consumeTerminator("Expect newline after expression.");
-}
-
 // for ;;i++:
 static void forStatement() {
   beginScope();
@@ -1342,8 +1336,12 @@ static void statement() {
   } else if (match(TOKEN_WHILE)) {
     whileStatement();
   } else {
-    expressionStatement();
+    expression();
+    emitByte(OP_POP);
   }
+
+  skipNewlines();
+
   // Todo: switch statement
   // Todo: break statement
   // Todo: continue statement
