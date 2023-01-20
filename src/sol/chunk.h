@@ -49,7 +49,7 @@ typedef enum OpCode {
   OP_NEGATE,        /** [0 x] -> [0 -x] */
                     /**/
   OP_JUMP,          /** (2n) [] -> [] */
-  OP_JUMP_IF_FALSE, /** (2n) [0 x] -> [0 x] */
+  OP_JUMP_IF_FALSE, /** (2n) [0 cond] -> [0 cond] */
   OP_LOOP,          /** (2n) [] -> [] */
 
   OP_CALL,          /** (argc) [] -> [] */
@@ -58,12 +58,12 @@ typedef enum OpCode {
   OP_METHOD,        /** (name) [1 class][0 closure] -> [0 class] */
   OP_CLOSURE,       /** (fn) [] -> [0 closure] */
   OP_CLOSE_UPVALUE, /** [0 upvalue] -> [] */
-  OP_PRINT,         /** [0 x] -> [] */
+  OP_PRINT,         /** [0 value] -> [0 value] */
   OP_RETURN,        /** [0 x] -> [] */
                     /**/
   OP_INVOKE,        /** (name, n) [n self][0 ...args] -> [] */
   OP_SUPER_INVOKE,  /** (name, n) [n+1 self][1 ...args][0 super] -> [] */
-  OP_ASSERT,        /** [0 value] -> [] */
+  OP_ASSERT,        /** [0 value] -> [0 value] */
                     /**/
   OP_GET_VAR,       /** (name) [0 self] -> [0 value] */
   OP_SET_VAR,       /** (name) [1 self][0 value] -> [0 value] */
