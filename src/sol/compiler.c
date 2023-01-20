@@ -374,7 +374,41 @@ static ObjFun *endCompiler() {
   return fun;
 }
 
-static void beginScope() { current->scopeDepth++; }
+/** Adds a local variable with the given name to the current compiler scope. */
+static void addLocal(Token name) {
+  if (current->localCount == UINT8_COUNT) {
+    error("Too many local variables in function.");
+    return;
+  }
+
+  Local *local = &current->locals[current->localCount++];
+  local->name = name;
+  local->depth = -1; // Set properly when initialized.
+  local->isCaptured = false;
+}
+
+/**
+ * Mark the most recently _declared_ local variable as _defined_.
+ * Global variables are _defined_ at runtime via OP_DEFINE_GLOBAL.
+ *
+ * Undefined locals have a depth of -1.
+ *
+ * Returns the slot of the defined local variable, -1 for global.
+ */
+static int markDefined() {
+  if (current->scopeDepth == 0) return -1;
+  int local = current->localCount - 1;
+
+  current->locals[local].depth = current->scopeDepth;
+  return local;
+}
+
+static void beginScope() {
+  // addLocal(syntheticToken("@block"));
+  // markDefined();
+  current->scopeDepth++;
+}
+
 static void endScope() {
   current->scopeDepth--;
 
@@ -465,19 +499,6 @@ static int resolveUpvalue(Compiler *compiler, Token *name) {
   return -1;
 }
 
-/** Adds a local variable with the given name to the current compiler scope. */
-static void addLocal(Token name) {
-  if (current->localCount == UINT8_COUNT) {
-    error("Too many local variables in function.");
-    return;
-  }
-
-  Local *local = &current->locals[current->localCount++];
-  local->name = name;
-  local->depth = -1; // Set properly when initialized.
-  local->isCaptured = false;
-}
-
 /**
  * Creates a local variable named by the previous token.
  * Errors if the name shadows an existing local variable.
@@ -517,22 +538,6 @@ static u8 parseVariable(const char *errorMessage) {
   if (current->scopeDepth > 0) return 0;
 
   return identifierConstant(&parser.previous);
-}
-
-/**
- * Mark the most recently _declared_ local variable as _defined_.
- * Global variables are _defined_ at runtime via OP_DEFINE_GLOBAL.
- *
- * Undefined locals have a depth of -1.
- *
- * Returns the slot of the defined local variable, -1 for global.
- */
-static int markDefined() {
-  if (current->scopeDepth == 0) return -1;
-  int local = current->localCount - 1;
-
-  current->locals[local].depth = current->scopeDepth;
-  return local;
 }
 
 /**
@@ -1038,7 +1043,11 @@ static void method() {
   emitBytes(OP_METHOD, constant);
 }
 
-// static void indent(Ctx *ctx) { parser.indebt++; }
+// static void indent(Ctx *ctx) {
+//   beginScope();
+//   block();
+//   endScope();
+// }
 
 static void classDeclaration(Ctx *ctx) {
   Value name = consumeIdent("Expect class name.");
