@@ -1138,21 +1138,17 @@ static void forStatement() {
   // uint8_t global = parseVariable("Expect variable after 'for'.");
   // consume(TOKEN_IN, "Expect 'in' after variable in for clause.");
 
-  if (match(TOKEN_LET)) {
-    varDeclaration();
-  } else {
-    if (parseAbove(PREC_SEMI)) emitByte(OP_POP);
-  }
+  if (match(TOKEN_LET)) varDeclaration();           // [-1 local var][]
+  else if (parseAbove(PREC_SEMI)) emitByte(OP_POP); // [] pop init
 
   consume(TOKEN_SEMICOLON, "Expect ';' after initializer.");
 
-  int loopStart = currentChunk()->count;
+  int loopStart = currentChunk()->count; // []
   int exitJump = -1;
 
-  if (parseAbove(PREC_SEMI)) {
-    // Jump out of the loop if condition is false.
-    exitJump = emitJump(OP_JUMP_IF_FALSE);
-    emitByte(OP_POP); // Condition.
+  if (parseAbove(PREC_SEMI)) {             // [0 cond]
+    exitJump = emitJump(OP_JUMP_IF_FALSE); // Exit if condition is false, else
+    emitByte(OP_POP);                      // [] pop the condition.
   }
 
   consume(TOKEN_SEMICOLON, "Expect ';' after loop condition.");
@@ -1160,47 +1156,53 @@ static void forStatement() {
   if (check(TOKEN_INDENT) || match(TOKEN_COLON)) {
     // No increment.
   } else {
-    int bodyJump = emitJump(OP_JUMP);
-    int incrementStart = currentChunk()->count;
+    int bodyJump = emitJump(OP_JUMP); // Jump over increment.
 
-    if (parseAbove(PREC_SEMI)) emitByte(OP_POP);
+    // Runs after each loop.
+    int incrementStart = currentChunk()->count; // []
+
+    if (parseAbove(PREC_SEMI)) // [0 increment]
+      emitByte(OP_POP);        // []
 
     if (!check(TOKEN_INDENT))
       consume(TOKEN_COLON, "Expect ':' or indentation after for clause.");
 
-    emitLoop(loopStart);
-    loopStart = incrementStart;
-    patchJump(bodyJump);
+    emitLoop(loopStart);        // Loop back to condition.
+    loopStart = incrementStart; // End loop with increment.
+    patchJump(bodyJump);        // Begin body.
   }
 
-  statement();
-  emitLoop(loopStart);
+  statement();         // []
+  emitLoop(loopStart); // Loop back to condition.
 
-  if (exitJump != -1) {
-    patchJump(exitJump);
-    emitByte(OP_POP); // Condition.
+  if (exitJump != -1) {  // If we had a condition,
+    patchJump(exitJump); // [0 cond]               begin exit.
+    emitByte(OP_POP);    //  Pop condition.
   }
 
-  endScope();
+  endScope(); // []
 }
 
 static void ifStatement() {
-  expression();
+  expression(); // [0 cond]
 
   if (!check(TOKEN_INDENT))
     consume(TOKEN_COLON, "Expect ':' or block after condition.");
 
   int thenJump =
       emitJump(OP_JUMP_IF_FALSE);   // Jump to else if condition is false.
-  emitByte(OP_POP);                 // Pop the condition.
+  emitByte(OP_POP);                 // [] pop condition
   statement();                      // Then branch.
   int elseJump = emitJump(OP_JUMP); // Jump over else branch.
 
-  patchJump(thenJump); // End of then branch.
-  emitByte(OP_POP);    // Pop the condition.
+  patchJump(thenJump); // End of then branch. Start of else branch.
+  emitByte(OP_POP);    // [] pop condition
 
-  if (match(TOKEN_ELSE)) statement(); // Else branch.
-  patchJump(elseJump);                // End of else branch.
+  if (match(TOKEN_ELSE)) {
+    statement(); // Else branch.
+  }
+
+  patchJump(elseJump); // End of else branch.
 }
 
 static void matchStatement() {
@@ -1226,10 +1228,11 @@ static void matchStatement() {
                              // TODO: OP_JUMP_IF_VOID and matching sets locals.
 
       emitBytes(OP_POP, OP_POP); // []
-      statement();               // [0 value]
+      statement();               // []
       emitJumpTo(OP_JUMP, exit_jump);
+
       patchJump(skip_jump);
-      emitByte(OP_POP); // Pop the bool match result.
+      emitByte(OP_POP); // [1 match expr] Pop the bool match result.
     } else {
       error("Expect pattern and then '->'.");
     }
@@ -1237,7 +1240,7 @@ static void matchStatement() {
 
   if (match(TOKEN_ELSE)) {
     emitBytes(OP_POP, OP_POP); // []
-    statement();               // [0 value]
+    statement();               // []
   }
 
   patchJump(exit_jump);
@@ -1245,10 +1248,6 @@ static void matchStatement() {
 }
 
 static void returnStatement() {
-  // Note: I like the idea of top-level returns to exit early.
-  // if (current->type == TYPE_SCRIPT)
-  //   error("Can't return from top-level code.");
-
   if (match(TOKEN_NEWLINE)) emitReturn();
   else {
     if (current->type == TYPE_INIT) {
@@ -1262,18 +1261,20 @@ static void returnStatement() {
 }
 
 static void whileStatement() {
-  int loopStart = currentChunk()->count;
-  expression();
+  int loop_start = currentChunk()->count;
+
+  expression(); // [0 condition]
 
   if (!check(TOKEN_INDENT))
     consume(TOKEN_COLON, "Expect ':' or block after condition.");
 
-  int exitJump = emitJump(OP_JUMP_IF_FALSE);
-  emitByte(OP_POP);
-  statement();
-  emitLoop(loopStart);
-  patchJump(exitJump);
-  emitByte(OP_POP);
+  int exit_jump = emitJump(OP_JUMP_IF_FALSE);
+  emitByte(OP_POP);     // []
+  statement();          // []
+  emitLoop(loop_start); // Loop back to the condition.
+
+  patchJump(exit_jump); // Exit the loop.
+  emitByte(OP_POP);     // []
 }
 
 static void synchronize() {
