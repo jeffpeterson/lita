@@ -1312,10 +1312,11 @@ static void declaration() {
     funDeclaration();
   } else if (match(TOKEN_LET)) {
     varDeclaration();
-    consumeTerminator("Expect newline after variable declaration.");
   } else {
     statement();
   }
+
+  skipNewlines();
 
   if (parser.panicMode) synchronize();
 }
