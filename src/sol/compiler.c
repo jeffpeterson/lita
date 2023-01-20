@@ -1432,7 +1432,7 @@ ParseRule rules[] = {
     [TOKEN_NUMBER] = {number, NULL, PREC_NONE},
 
     [TOKEN_AND] = {NULL, and_, PREC_AND},
-    [TOKEN_ASSERT] = {assert, NULL, PREC_ADJOINING},
+    [TOKEN_ASSERT] = {assert, NULL, PREC_NONE},
     [TOKEN_CLASS] = {NULL, NULL, PREC_NONE},
     [TOKEN_ELSE] = {NULL, NULL, PREC_NONE},
     [TOKEN_FALSE] = {literal, NULL, PREC_NONE},
@@ -1442,7 +1442,7 @@ ParseRule rules[] = {
     [TOKEN_MATCH] = {NULL, NULL, PREC_NONE},
     [TOKEN_NIL] = {literal, NULL, PREC_NONE},
     [TOKEN_OR] = {NULL, or_, PREC_OR},
-    [TOKEN_PRINT] = {print, NULL, PREC_ADJOINING},
+    [TOKEN_PRINT] = {print, NULL, PREC_NONE},
     [TOKEN_RETURN] = {NULL, NULL, PREC_NONE},
     [TOKEN_SUPER] = {super_, NULL, PREC_NONE},
     [TOKEN_THIS] = {this_, NULL, PREC_NONE},
