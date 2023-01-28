@@ -1,23 +1,23 @@
 CC = clang
 CFLAGS := -g -Werror -Wall -Wno-error=unused-variable -Wno-error=unused-function -Isrc
 
-TARGET := .bin/sol
+TARGET := .bin/lita
 TEST := $(TARGET)-test
-SOL_LIB := _build/sol.so
+LITA_LIB := _build/lita.so
 
 SOURCES := $(shell find src -name "*.c")
 HEADERS := $(shell find src -name "*.h")
 OBJECTS := $(patsubst src/%.c,_build/%.o, $(SOURCES))
 
-SOL_SRC := $(shell find src/sol/lib -name "*.sol")
-SOL_C   := $(SOL_SRC:.sol=.sol.c)
-SOL_O   := $(SOL_C:src/%.c=_build/%.o)
-# SOL_EXISTING_C := $(shell find src/sol/lib -name "*.c")
+LITA_SRC := $(shell find src/lita/lib -name "*.lita")
+LITA_C   := $(LITA_SRC:.lita=.lita.c)
+LITA_O   := $(LITA_C:src/%.c=_build/%.o)
+# LITA_EXISTING_C := $(shell find src/lita/lib -name "*.c")
 
 TARGET_C := $(filter-out %_test.c,$(SOURCES))
 
 TARGET_O  := $(filter-out %_test.o,$(OBJECTS))
-# TARGET_O  := $(filter-out %.sol.o,$(TARGET_O))
+# TARGET_O  := $(filter-out %.lita.o,$(TARGET_O))
 TEST_O  := $(filter-out %/main.o,$(OBJECTS))
 
 .PHONY: default all clean test db db/test lib
@@ -25,18 +25,18 @@ TEST_O  := $(filter-out %/main.o,$(OBJECTS))
 .SUFFIXES: # disable crazy built-in rules that append .c
 
 default: test
-sol: $(TARGET)
+lita: $(TARGET)
 all: default $(TEST) lib
 db/test: $(TEST)
 	@lldb $(TEST)
 
 db/%: $(TARGET)
-	@lldb sol examples/$*.sol
+	@lldb lita examples/$*.lita
 
-%: examples/%.sol $(TARGET)
+%: examples/%.lita $(TARGET)
 	@$(TARGET) $<
 
-lib: $(SOL_LIB)
+lib: $(LITA_LIB)
 test: $(TEST) assertions
 	@$(TEST)
 
@@ -48,7 +48,7 @@ $(TEST): $(TEST_O)
 	@mkdir -p $(dir $@)
 	$(CC) $(CFLAGS) -o $@ $^
 
-$(SOL_LIB): $(SOL_O) $(TARGET_O)
+$(LITA_LIB): $(LITA_O) $(TARGET_O)
 	@mkdir -p $(dir $@)
 	$(CC) $(CFLAGS) -shared -o $@ $^
 
@@ -56,9 +56,9 @@ _build/%.o: src/%.c $(HEADERS)
 	@mkdir -p $(dir $@)
 	$(CC) $(CFLAGS) -c -o $@ $<
 
-# This recipe creates the circular dependency between the sol library and the
-# sol compiler.
-%.sol.c: %.sol
+# This recipe creates the circular dependency between the lita library and the
+# lita compiler.
+%.lita.c: %.lita
 	$(TARGET) -c $<
 
 clean:
