@@ -1,7 +1,7 @@
 {
-  "name": "@jeffpeterson/sol-vscode",
-  "displayName": "Sol Language Support",
-  "description": "Syntax highlighting for the Sol language.",
+  "name": "@jeffpeterson/lita-vscode",
+  "displayName": "Lita Language Support",
+  "description": "Syntax highlighting for the Lita language.",
   "version": "0.0.1",
   "publisher": "jeffpeterson",
   "license": "MIT",
@@ -17,7 +17,7 @@
   ],
   "contributes": {
     "configurationDefaults": {
-      "[sol]": {
+      "[lita]": {
         "editor.insertSpaces": false,
         "editor.detectIndentation": false,
         "editor.tabSize": 4
@@ -25,25 +25,23 @@
     },
     "languages": [
       {
-        "id": "sol",
+        "id": "lita",
         "aliases": [
-          "Sol"
+          "Lita"
         ],
         "extensions": [
-          ".sol"
+          ".lita"
         ],
         "configuration": "./language-configuration.json"
       }
     ],
     "grammars": [
       {
-        "language": "sol",
-        "scopeName": "source.sol",
-        "path": "./syntaxes/sol.tmLanguage.json"
+        "language": "lita",
+        "scopeName": "source.lita",
+        "path": "./syntaxes/lita.tmLanguage.json"
       }
     ]
   },
-  "dependencies": {
-    "@craft-concept/lib": "^0.0.1"
-  }
+  "dependencies": {}
 }
