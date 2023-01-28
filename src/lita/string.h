@@ -1,5 +1,5 @@
-#ifndef sol_string_h
-#define sol_string_h
+#ifndef lita_string_h
+#define lita_string_h
 
 #include "buffer.h"
 #include "common.h"

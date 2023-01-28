@@ -1,5 +1,5 @@
-#ifndef sol_table_h
-#define sol_table_h
+#ifndef lita_table_h
+#define lita_table_h
 
 #include "common.h"
 #include "object.h"

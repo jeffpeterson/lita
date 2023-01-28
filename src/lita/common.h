@@ -1,5 +1,5 @@
-#ifndef sol_common_h
-#define sol_common_h
+#ifndef lita_common_h
+#define lita_common_h
 
 #include <stdbool.h>
 #include <stddef.h>

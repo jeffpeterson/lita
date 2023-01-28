@@ -1,5 +1,5 @@
-#ifndef sol_vm_h
-#define sol_vm_h
+#ifndef lita_vm_h
+#define lita_vm_h
 
 #include "object.h"
 #include "table.h"

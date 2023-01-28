@@ -1,5 +1,5 @@
-#ifndef sol_object_h
-#define sol_object_h
+#ifndef lita_object_h
+#define lita_object_h
 
 #include <stdarg.h>
 

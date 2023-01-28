@@ -1,10 +1,10 @@
 // clang-format off
-// sol -c src/sol/lib/Parser.sol
-#include "sol/chunk.h"
-#include "sol/common.h"
-#include "sol/lib.h"
-#include "sol/memory.h"
-#include "sol/string.h"
+// lita -c src/lita/lib/Parser.lita
+#include "lita/chunk.h"
+#include "lita/common.h"
+#include "lita/lib.h"
+#include "lita/memory.h"
+#include "lita/string.h"
 
 // init
 static ValueArray constants1() {
@@ -48,7 +48,7 @@ static Value fn1() {
   return obj(f);
 }
 
-// src_sol_lib_Parser_sol
+// src_lita_lib_Parser_lita
 static ValueArray constants0() {
   ValueArray vals;
   initValueArray(&vals);
@@ -60,7 +60,7 @@ static ValueArray constants0() {
   return vals;
 }
 
-// src_sol_lib_Parser_sol
+// src_lita_lib_Parser_lita
 static Chunk chunk0() {
   Chunk c;
   initChunk(&c);
@@ -74,23 +74,23 @@ static Chunk chunk0() {
   };
   c.code = cloneMemory(code, sizeof(code));
   c.lines = cloneMemory(lines, sizeof(lines));
-                // src_sol_lib_Parser_sol
+                // src_lita_lib_Parser_lita
   c.constants = constants0();
 
   return c;
 };
 
-// src_sol_lib_Parser_sol
+// src_lita_lib_Parser_lita
 static Value fn0() {
   ObjFun *f = newFunction();  f->arity = 0;
   f->upvalueCount = 0;
-  f->name = newString("src_sol_lib_Parser_sol");
-             // src_sol_lib_Parser_sol
+  f->name = newString("src_lita_lib_Parser_lita");
+             // src_lita_lib_Parser_lita
   f->chunk = chunk0();
   return obj(f);
 }
 
-ObjFun *Parser_sol() {
-                //src_sol_lib_Parser_sol
+ObjFun *Parser_lita() {
+                //src_lita_lib_Parser_lita
   return AS_FUN(fn0());
 }

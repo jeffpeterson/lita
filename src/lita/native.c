@@ -150,7 +150,7 @@ static _ Tuple_map(_ this, int argc, _ *args) {
   return pop();
 }
 
-ObjFun *core_sol();
+ObjFun *core_lita();
 
 InterpretResult defineNatives() {
   defineNative("clock", 0, native_clock);
@@ -162,7 +162,7 @@ InterpretResult defineNatives() {
 
   vm.Any = global_class("Any");
 
-  InterpretResult result = runFun(core_sol());
+  InterpretResult result = runFun(core_lita());
 
   if (result) return result;
 

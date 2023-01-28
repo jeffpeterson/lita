@@ -1,5 +1,5 @@
-#ifndef sol_dump_h
-#define sol_dump_h
+#ifndef lita_dump_h
+#define lita_dump_h
 
 #include <stdio.h>
 

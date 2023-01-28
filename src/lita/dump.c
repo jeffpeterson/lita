@@ -180,12 +180,12 @@ void dumpModule(FILE *io, ObjString *path, ObjFun *fun) {
 
   fprintf(io,
           "// clang-format off\n"
-          "// sol -c %s\n"
-          "#include \"sol/chunk.h\"\n"
-          "#include \"sol/common.h\"\n"
-          "#include \"sol/lib.h\"\n"
-          "#include \"sol/memory.h\"\n"
-          "#include \"sol/string.h\"\n"
+          "// lita -c %s\n"
+          "#include \"lita/chunk.h\"\n"
+          "#include \"lita/common.h\"\n"
+          "#include \"lita/lib.h\"\n"
+          "#include \"lita/memory.h\"\n"
+          "#include \"lita/string.h\"\n"
           "",
           path->chars);
 

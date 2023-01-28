@@ -1,5 +1,5 @@
-#ifndef sol_buffer_h
-#define sol_buffer_h
+#ifndef lita_buffer_h
+#define lita_buffer_h
 
 #include "common.h"
 

@@ -1,5 +1,5 @@
-#ifndef sol_term_h
-#define sol_term_h
+#ifndef lita_term_h
+#define lita_term_h
 
 #define RESET "\e[0m"
 #define BOLD "\e[1m"

@@ -1,5 +1,5 @@
-#ifndef sol_native_h
-#define sol_native_h
+#ifndef lita_native_h
+#define lita_native_h
 
 #include "common.h"
 #include "object.h"

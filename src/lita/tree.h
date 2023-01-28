@@ -1,5 +1,5 @@
-#ifndef sol_tree_h
-#define sol_tree_h
+#ifndef lita_tree_h
+#define lita_tree_h
 
 #include "common.h"
 #include "value.h"

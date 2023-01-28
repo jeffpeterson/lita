@@ -1,5 +1,5 @@
-#ifndef sol_chunk_h
-#define sol_chunk_h
+#ifndef lita_chunk_h
+#define lita_chunk_h
 
 #include "common.h"
 #include "value.h"

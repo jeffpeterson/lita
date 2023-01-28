@@ -1,5 +1,5 @@
-#ifndef sol_memory_h
-#define sol_memory_h
+#ifndef lita_memory_h
+#define lita_memory_h
 
 #include "common.h"
 #include "object.h"

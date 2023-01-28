@@ -1,5 +1,5 @@
-#ifndef sol_array_h
-#define sol_array_h
+#ifndef lita_array_h
+#define lita_array_h
 
 #include "common.h"
 #include "object.h"

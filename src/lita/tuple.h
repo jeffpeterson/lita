@@ -1,5 +1,5 @@
-#ifndef sol_tuple_h
-#define sol_tuple_h
+#ifndef lita_tuple_h
+#define lita_tuple_h
 
 #include "common.h"
 #include "object.h"

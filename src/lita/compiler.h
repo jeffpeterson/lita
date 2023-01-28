@@ -1,5 +1,5 @@
-#ifndef sol_compiler_h
-#define sol_compiler_h
+#ifndef lita_compiler_h
+#define lita_compiler_h
 
 #include "object.h"
 

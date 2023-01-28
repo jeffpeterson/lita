@@ -1,5 +1,5 @@
-#ifndef sol_system_h
-#define sol_system_h
+#ifndef lita_system_h
+#define lita_system_h
 
 #include "common.h"
 #include "object.h"

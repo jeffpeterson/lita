@@ -1,5 +1,5 @@
-#ifndef sol_scanner_h
-#define sol_scanner_h
+#ifndef lita_scanner_h
+#define lita_scanner_h
 
 #include "common.h"
 

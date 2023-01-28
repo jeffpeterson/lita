@@ -1,5 +1,5 @@
-#ifndef sol_graph_h
-#define sol_graph_h
+#ifndef lita_graph_h
+#define lita_graph_h
 
 // #include <db.h>
 // #include <ossp/uuid.h>

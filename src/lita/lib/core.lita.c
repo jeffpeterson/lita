@@ -1,10 +1,10 @@
 // clang-format off
-// sol -c src/sol/lib/core.sol
-#include "sol/chunk.h"
-#include "sol/common.h"
-#include "sol/lib.h"
-#include "sol/memory.h"
-#include "sol/string.h"
+// lita -c src/lita/lib/core.lita
+#include "lita/chunk.h"
+#include "lita/common.h"
+#include "lita/lib.h"
+#include "lita/memory.h"
+#include "lita/string.h"
 
 // string
 static ValueArray constants1() {
@@ -1600,7 +1600,7 @@ static Value fn38() {
   return obj(f);
 }
 
-// src_sol_lib_core_sol
+// src_lita_lib_core_lita
 static ValueArray constants0() {
   ValueArray vals;
   initValueArray(&vals);
@@ -1612,7 +1612,7 @@ static ValueArray constants0() {
   return vals;
 }
 
-// src_sol_lib_core_sol
+// src_lita_lib_core_lita
 static Chunk chunk0() {
   Chunk c;
   initChunk(&c);
@@ -1626,23 +1626,23 @@ static Chunk chunk0() {
   };
   c.code = cloneMemory(code, sizeof(code));
   c.lines = cloneMemory(lines, sizeof(lines));
-                // src_sol_lib_core_sol
+                // src_lita_lib_core_lita
   c.constants = constants0();
 
   return c;
 };
 
-// src_sol_lib_core_sol
+// src_lita_lib_core_lita
 static Value fn0() {
   ObjFun *f = newFunction();  f->arity = 0;
   f->upvalueCount = 0;
-  f->name = newString("src_sol_lib_core_sol");
-             // src_sol_lib_core_sol
+  f->name = newString("src_lita_lib_core_lita");
+             // src_lita_lib_core_lita
   f->chunk = chunk0();
   return obj(f);
 }
 
-ObjFun *core_sol() {
-                //src_sol_lib_core_sol
+ObjFun *core_lita() {
+                //src_lita_lib_core_lita
   return AS_FUN(fn0());
 }

@@ -1,5 +1,5 @@
-#ifndef sol_debug_h
-#define sol_debug_h
+#ifndef lita_debug_h
+#define lita_debug_h
 
 #include "chunk.h"
 

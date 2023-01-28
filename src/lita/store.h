@@ -1,5 +1,5 @@
-#ifndef sol_store_h
-#define sol_store_h
+#ifndef lita_store_h
+#define lita_store_h
 
 // #include <db.h>
 // #include <ossp/uuid.h>

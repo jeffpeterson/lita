@@ -1,5 +1,5 @@
-#ifndef sol_value_h
-#define sol_value_h
+#ifndef lita_value_h
+#define lita_value_h
 
 #include <stdio.h>
 #include <string.h>
