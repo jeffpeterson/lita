@@ -1,7 +1,7 @@
 {
   "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
-  "name": "sol",
-  "scopeName": "source.sol",
+  "name": "lita",
+  "scopeName": "source.lita",
   "patterns": [
     { "include": "#comments" },
     { "include": "#keywords" },
@@ -15,41 +15,41 @@
     "keywords": {
       "patterns": [
         {
-          "name": "keyword.control.sol",
+          "name": "keyword.control.lita",
           "match": "\\b(and|atom|else|for|if|in|macro|match|or|proc|return|while)\\b"
         },
         {
-          "name": "keyword.operator.sol",
+          "name": "keyword.operator.lita",
           "match": "->|=>|<-|==|="
         },
         {
-          "name": "keyword.operator.logical.sol",
+          "name": "keyword.operator.logical.lita",
           "match": "[+\\-*%&!@#^?/:;,.]+"
         },
         {
-          "name": "constant.language.null.sol",
+          "name": "constant.language.null.lita",
           "match": "\\b(nil)\\b"
         },
         {
-          "name": "constant.language.boolean.sol",
+          "name": "constant.language.boolean.lita",
           "match": "\\b(true|false)\\b"
         },
         {
-          "name": "support.function.builtin.sol",
+          "name": "support.function.builtin.lita",
           "match": "\\b(print|assert|clock|read|write)\\b"
         },
         {
-          "name": "variable.language.this.sol",
+          "name": "variable.language.this.lita",
           "match": "\\b(this|self)\\b"
         },
         {
-          "name": "variable.language.super.sol",
+          "name": "variable.language.super.lita",
           "match": "\\b(super)\\b"
         },
         {
           "begin": "^__END__\\n",
           "captures": {
-            "0": { "name": "string.unquoted.program-block.sol" }
+            "0": { "name": "string.unquoted.program-block.lita" }
           },
           "comment": "__END__ marker",
           "contentName": "text.plain",
@@ -58,7 +58,7 @@
             {
               "begin": "(?=<?xml|<(?i:html\\b)|!DOCTYPE (?i:html\\b))",
               "end": "(?=not)impossible",
-              "name": "text.html.embedded.sol",
+              "name": "text.html.embedded.lita",
               "patterns": [{ "include": "text.html.basic" }]
             }
           ]
@@ -70,33 +70,33 @@
         {
           "match": "\\b(let)\\s+([A-Za-z_][A-Za-z0-9_]*)\\b",
           "captures": {
-            "1": { "name": "storage.type.sol" },
-            "2": { "name": "support.variable.sol" }
+            "1": { "name": "storage.type.lita" },
+            "2": { "name": "support.variable.lita" }
           }
         },
         {
           "match": "\\b(fn)\\s+([^\\(\\s]*)\\s*(?:\\(([A-Za-z0-9,\\s]*)\\))?\\s*(=>?)?",
           "captures": {
-            "1": { "name": "storage.type.function.sol" },
-            "2": { "name": "entity.name.function.sol" },
+            "1": { "name": "storage.type.function.lita" },
+            "2": { "name": "entity.name.function.lita" },
             "3": {
               "patterns": [
                 {
                   "match": "\\b[A-Za-z_][A-Za-z0-9_]*\\b",
-                  "name": "variable.parameter.sol"
+                  "name": "variable.parameter.lita"
                 }
               ]
             },
-            "4": { "name": "storage.modifier.sol" }
+            "4": { "name": "storage.modifier.lita" }
           }
         },
         {
           "match": "\\b(class)\\s+([A-Za-z_][A-Za-z0-9_]*)(?:\\s*(<)\\s*([A-Za-z_][A-Za-z0-9_]*))?\\b",
           "captures": {
-            "1": { "name": "storage.type.class.sol" },
-            "2": { "name": "entity.name.type.class.sol" },
-            "3": { "name": "storage.modifier.sol" },
-            "4": { "name": "entity.name.type.class.sol" }
+            "1": { "name": "storage.type.class.lita" },
+            "2": { "name": "entity.name.type.class.lita" },
+            "3": { "name": "storage.modifier.lita" },
+            "4": { "name": "entity.name.type.class.lita" }
           }
         }
       ]
@@ -105,12 +105,12 @@
       "patterns": [
         {
           "match": "([A-Za-z_][A-Za-z0-9_]*)\\(",
-          "name": "support.function.sol"
+          "name": "support.function.lita"
         },
         {
           "match": "([A-Za-z_][A-Za-z0-9_]*)\\s*=>",
           "captures": {
-            "1": { "name": "support.function.sol" }
+            "1": { "name": "support.function.lita" }
           }
         }
       ]
@@ -118,18 +118,18 @@
     "strings": {
       "patterns": [
         {
-          "name": "string.quoted.double.sol",
+          "name": "string.quoted.double.lita",
           "begin": "'?\"",
           "end": "\"",
           "patterns": [
             {
               "match": "\\\\[0tnr\"'\\\\]",
-              "name": "constant.character.escape.sol"
+              "name": "constant.character.escape.lita"
             }
           ]
         },
         {
-          "name": "string.quoted.single.sol",
+          "name": "string.quoted.single.lita",
           "match": "'[^\\s][^\\s;,)\\]}.]*"
         }
       ]
@@ -137,7 +137,7 @@
     "digits": {
       "patterns": [
         {
-          "name": "constant.numeric.sol",
+          "name": "constant.numeric.lita",
           "match": "\\b[0-9]+(?:.[0-9]+)?\\b"
         }
       ]
@@ -145,11 +145,11 @@
     "ident": {
       "patterns": [
         {
-          "name": "entity.name.class.sol",
+          "name": "entity.name.class.lita",
           "match": "\\b[A-Z][A-Za-z0-9_]*\\b"
         },
         {
-          "name": "variable.other.readwrite.sol",
+          "name": "variable.other.readwrite.lita",
           "match": "\\b[A-Za-z_][A-Za-z0-9_]*\\b"
         }
       ]
@@ -159,12 +159,12 @@
         {
           "match": "\\/\\/\\/(.*)",
           "captures": {
-            "0": { "name": "comment.line.double-slash.sol" },
-            "1": { "name": "keyword.control.directive.line.sol" }
+            "0": { "name": "comment.line.double-slash.lita" },
+            "1": { "name": "keyword.control.directive.line.lita" }
           }
         },
         {
-          "name": "comment.line.double-slash.sol",
+          "name": "comment.line.double-slash.lita",
           "match": "\\/\\/.*"
         }
       ]
