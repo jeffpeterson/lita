@@ -2,7 +2,7 @@ fn fib(n)
 	if n < 2: return n
 	return fib(n - 2) + fib(n - 1)
 
-// pp "Sol Demo:"
+// pp "Lita Demo:"
 print 4567.to_string
 
 let x = 42

@@ -1,9 +1,8 @@
-# Sol Lang
+# Lita Lang
 
 ## Debugger
 
-Start the debugger with: `make db/<example>`
-E.g. `make db/basics`
+Start the debugger with: `make db/<example>` E.g. `make db/basics`
 
 ### lldb cheatsheet
 
