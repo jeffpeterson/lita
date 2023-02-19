@@ -157,13 +157,6 @@
     "comments": {
       "patterns": [
         {
-          "match": "\\/\\/\\/(.*)",
-          "captures": {
-            "0": { "name": "comment.line.double-slash.lita" },
-            "1": { "name": "keyword.control.directive.line.lita" }
-          }
-        },
-        {
           "name": "comment.line.double-slash.lita",
           "match": "\\/\\/.*"
         }

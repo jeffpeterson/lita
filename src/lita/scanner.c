@@ -178,11 +178,11 @@ static bool skipWhitespace() {
       }
 
     case '/':
-      if (peekNext() == '/') {
-        // A comment goes until the end of the line.
-        while (peek() != '\n' && !isAtEnd()) advance();
-        break;
-      } else return newline;
+      if (peekNext() != '/') return newline;
+    case '#':
+      // A comment goes until the end of the line.
+      while (peek() != '\n' && !isAtEnd()) advance();
+      break;
 
     default: return newline;
     }
