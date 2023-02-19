@@ -1,0 +1,34 @@
+// entities are represented by an uuid, called an eid
+crypto.randomUUID()
+
+class Point(x, y)
+class Position < Point
+class Velocity < Point
+
+// a system is a function and a query describing the entities and
+// components thereof that it operates on. this includes describing mutations.
+
+// an Entity is an instantiation of one of these queries
+
+// globals start with an uppercase letter: G
+// mutables start with an ampersand: &velocity
+
+/// # Systems
+
+fn gravity({ &velocity, G })
+	velocity -= G
+
+fn inertia({ &position, velocity })
+	position += velocity
+
+fn inertia_low_level({ position(&x, &y), velocity(dx, dy) })
+	x += dx
+	y += dy
+
+fn collision({ position₂, radius₂ }, { &position, &velocity, radius, elasticity })
+	// calculate intersection between the two objects
+	inter
+
+
+// Let's not build this into the language per-say. Let's just make a language
+// where it's extremely natural.

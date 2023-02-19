@@ -1,0 +1,18 @@
+class Method
+	-> Get
+	-> Post
+	-> Put
+	-> Delete
+	-> Head
+	-> Options
+	-> Patch
+
+	str <- String
+		Method.(str.downcase.capitalize)
+
+class Body
+	<- String
+	<- Table
+
+class Request
+	let method
