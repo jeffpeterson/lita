@@ -1,19 +1,20 @@
 // class Precedence
-// 	class None
-// 	class Semi       // ; NEWLINE
-// 	class Comma      // ,
-// 	class Assignment // = += -= /= *=
-// 	class Or         // or
-// 	class And        // and
-// 	class Equality   // == !=
-// 	class Comparison // < > <= >=
-// 	class Term       // + -
-// 	class Factor     // * /
-// 	class Range      // ..
-// 	class Prefix     // ! - ++ -- aka PREC_UNARY
-// 	class Postfix    // ++ --
-// 	class Call       // . ()
-// 	class Primary
+
+// class None < Precedence
+// class Semi < Precedence       // ; NEWLINE
+// class Comma < Precedence      // ,
+// class Assignment < Precedence // = += -= /= *=
+// class Or < Precedence         // or
+// class And < Precedence        // and
+// class Equality < Precedence   // == !=
+// class Comparison < Precedence // < > <= >=
+// class Term < Precedence       // + -
+// class Factor < Precedence     // * /
+// class Range < Precedence      // ..
+// class Prefix < Precedence     // ! - ++ -- aka PREC_UNARY
+// class Postfix < Precedence    // ++ --
+// class Call < Precedence       // . ()
+// class Primary < Precedence
 
 class Parser
 	init(source)
