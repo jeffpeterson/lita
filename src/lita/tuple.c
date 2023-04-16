@@ -56,3 +56,5 @@ ObjTuple *zipTuples(ObjTuple *a, ObjTuple *b, Value (*fn)(Value, Value)) {
 
   return takeTuple(values, length);
 }
+
+const ObjDesc tuple_desc = {.class_name = "Tuple", .size = sizeof(ObjTuple)};

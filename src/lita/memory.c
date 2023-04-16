@@ -136,6 +136,12 @@ static void blackenObject(Obj *obj) {
     break;
   }
 
+  case OBJ_CUSTOM: {
+    ObjCustom *custom = (ObjCustom *)obj;
+    custom->mark(OBJ_VAL(custom), 0, NULL);
+    break;
+  }
+
   case OBJ_ERR: {
     ObjErr *err = (ObjErr *)obj;
     markObject((Obj *)err->msg);
@@ -210,6 +216,13 @@ static void freeObject(Obj *obj) {
     ObjClosure *closure = (ObjClosure *)obj;
     FREE_ARRAY(ObjUpvalue *, closure->upvalues, closure->upvalueCount);
     FREE(ObjClosure, obj);
+    break;
+  }
+
+  case OBJ_CUSTOM: {
+    ObjCustom *custom = (ObjCustom *)obj;
+    custom->free(OBJ_VAL(custom), 0, NULL);
+    reallocate(custom, custom->desc->size, 0);
     break;
   }
 

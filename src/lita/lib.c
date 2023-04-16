@@ -223,6 +223,7 @@ u32 len(_ x) {
   case OBJ_INSTANCE: return asInst(x)->fields.len;
   case OBJ_TUPLE: return asTuple(x)->length;
 
+  case OBJ_CUSTOM:
   case OBJ_ERR:
   case OBJ_UPVALUE: return 0;
   }

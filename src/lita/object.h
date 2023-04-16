@@ -16,6 +16,7 @@ typedef enum ObjType ObjType;
 #define is_bound(val) is_obj_type(val, OBJ_BOUND)
 #define is_class(val) is_obj_type(val, OBJ_CLASS)
 #define is_closure(val) is_obj_type(val, OBJ_CLOSURE)
+#define is_custom(val) is_obj_type(val, OBJ_CUSTOM)
 #define is_err(val) is_obj_type(val, OBJ_ERR)
 #define is_fun(val) is_obj_type(val, OBJ_FUN)
 #define is_instance(val) is_obj_type(val, OBJ_INSTANCE)
@@ -27,6 +28,7 @@ typedef enum ObjType ObjType;
 #define AS_BOUND(val) ((ObjBound *)AS_OBJ(val))
 #define AS_CLASS(val) ((ObjClass *)AS_OBJ(val))
 #define AS_CLOSURE(val) ((ObjClosure *)AS_OBJ(val))
+#define AS_CUSTOM(val) ((ObjCustom *)AS_OBJ(val))
 #define AS_ERR(val) ((ObjErr *)AS_OBJ(val))
 #define AS_FUN(val) ((ObjFun *)AS_OBJ(val))
 #define AS_INSTANCE(val) ((ObjInstance *)AS_OBJ(val))
@@ -46,6 +48,7 @@ enum ObjType {
   OBJ_BOUND,
   OBJ_CLASS,
   OBJ_CLOSURE,
+  OBJ_CUSTOM,
   OBJ_ERR,
   OBJ_FUN,
   OBJ_INSTANCE,
@@ -60,6 +63,8 @@ enum ObjType {
 
 /** First ObjType enum that is interned. */
 #define OBJ_INTERNED OBJ_RANGE
+
+typedef Value NativeFn(Value self, int argCount, Value *args);
 
 struct Obj {
   ObjType type;
@@ -89,6 +94,19 @@ typedef struct ObjArray {
   int length;
   Value *values;
 } ObjArray;
+
+typedef struct ObjDesc {
+  const char *class_name;
+  const uint8_t size;
+} ObjDesc;
+
+typedef struct ObjCustom {
+  Obj obj;
+  ObjDesc *desc;
+  NativeFn *alloc;
+  NativeFn *free;
+  NativeFn *mark;
+} ObjCustom;
 
 typedef struct ObjErr {
   Obj obj;
@@ -136,8 +154,6 @@ typedef struct ObjBound {
   Value method;   /** Method being bound. */
 } ObjBound;
 
-typedef Value NativeFn(Value self, int argCount, Value *args);
-
 typedef struct ObjNative {
   Obj obj;
   int arity;
@@ -168,13 +184,14 @@ typedef struct ObjInfo {
   const char *className;
 } ObjInfo;
 
-const ObjInfo objInfo[12];
+const ObjInfo objInfo[13];
 
 Obj *allocateObject(size_t size, ObjType type);
 
 ObjBound *newBound(Value receiver, Value method);
 ObjClass *newClass(ObjString *name);
 ObjClosure *newClosure(ObjFun *fun);
+ObjCustom *newCustom(ObjDesc *desc);
 ObjErr *newError(ObjString *msg);
 
 ObjFun *newFunction();

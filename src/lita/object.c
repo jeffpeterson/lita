@@ -9,11 +9,12 @@
 #include "value.h"
 #include "vm.h"
 
-const ObjInfo objInfo[12] = {
+const ObjInfo objInfo[13] = {
     [OBJ_ARRAY] = {"ARRAY", "Array"},
     [OBJ_BOUND] = {"BOUND", "Method"},
     [OBJ_CLASS] = {"CLASS", "Class"},
     [OBJ_CLOSURE] = {"CLOSURE", "Function"},
+    [OBJ_CUSTOM] = {"CUSTOM", NULL},
     [OBJ_ERR] = {"ERR", "Error"},
     [OBJ_FUN] = {"FUN", NULL},
     [OBJ_INSTANCE] = {"INSTANCE", NULL},
@@ -66,6 +67,11 @@ ObjClosure *newClosure(ObjFun *fun) {
   closure->upvalues = upvalues;
   closure->upvalueCount = fun->upvalueCount;
   return closure;
+}
+
+ObjCustom *newCustom(ObjDesc *desc) {
+  ObjCustom *custom = (ObjCustom *)allocateObject(desc->size, OBJ_CUSTOM);
+  return custom;
 }
 
 ObjErr *newError(ObjString *msg) {
@@ -172,6 +178,9 @@ int fprintObject(FILE *io, Obj *obj) {
   }
 
   case OBJ_CLOSURE: return fprintFunction(io, "fn", ((ObjClosure *)obj)->fun);
+
+  case OBJ_CUSTOM:
+    return fprintf(io, "<custom %s>", ((ObjCustom *)obj)->desc->class_name);
 
   case OBJ_ERR: return fprintf(io, "Error: %s", ((ObjErr *)obj)->msg->chars);
 

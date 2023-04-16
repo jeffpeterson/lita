@@ -28,7 +28,7 @@ static Chunk chunk1() {
     14, 0, 14, 1, 17, 0, 7, 14, 0, 40,
   };
   int lines[] = {
-    20, 20, 20, 20, 20, 20, 20, 21, 21, 21,
+    21, 21, 21, 21, 21, 21, 21, 22, 22, 22,
   };
   c.code = cloneMemory(code, sizeof(code));
   c.lines = cloneMemory(lines, sizeof(lines));
@@ -70,7 +70,7 @@ static Chunk chunk0() {
     34, 0, 0, 14, 0, 44, 1, 35, 9, 1, 37, 3, 36, 2, 7, 7, 1, 40,
   };
   int lines[] = {
-    18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 21, 21, 21, 21, 21, 21, 21, 21,
+    19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 22, 22, 22, 22, 22, 22, 22, 22,
   };
   c.code = cloneMemory(code, sizeof(code));
   c.lines = cloneMemory(lines, sizeof(lines));
