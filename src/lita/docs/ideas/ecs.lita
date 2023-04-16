@@ -15,7 +15,7 @@ class Velocity < Point
 
 /// # Systems
 
-fn gravity({ &velocity, G })
+fn gravity({ &velocity }, G)
 	velocity -= G
 
 fn inertia({ &position, velocity })
@@ -25,10 +25,24 @@ fn inertia_low_level({ position(&x, &y), velocity(dx, dy) })
 	x += dx
 	y += dy
 
-fn collision({ position₂, radius₂ }, { &position, &velocity, radius, elasticity })
-	// calculate intersection between the two objects
-	inter
+// fn collision({ position₂, radius₂ }, { &position, &velocity, radius, elasticity })
+// 	// calculate intersection between the two objects
+// 	inter
 
+eating: &hunger, holding(food)
+	hunger -= food
+
+drinking: &thirst, holding(water))
+	thirst -= water
+
+starvation: &health, hunger
+	health -= hunger
+
+dehydration: &health, thirst
+	health -= thirst
+
+hunger: &hunger
+	hunger += 0.01
 
 // Let's not build this into the language per-say. Let's just make a language
 // where it's extremely natural.
