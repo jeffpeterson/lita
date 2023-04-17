@@ -9,6 +9,7 @@
   }
 
 void buffer_test();
+void ecs_test();
 void table_test();
 void tree_test();
 void scanner_test();
@@ -18,6 +19,7 @@ int main(int argc, const char *argv[]) {
   bootVM();
   printf("\n\n");
   run(buffer_test);
+  run(ecs_test);
   run(table_test);
   run(tree_test);
   run(scanner_test);
