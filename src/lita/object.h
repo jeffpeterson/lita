@@ -95,12 +95,13 @@ typedef struct ObjArray {
   Value *values;
 } ObjArray;
 
+typedef void ObjFn(Obj *obj);
+
 typedef struct ObjDef {
   const char *class_name;
   const uint8_t size;
-  NativeFn *alloc;
-  NativeFn *free;
-  NativeFn *mark;
+  ObjFn *free;
+  ObjFn *mark;
 } ObjDef;
 
 typedef struct ObjCustom {

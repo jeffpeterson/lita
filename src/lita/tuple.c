@@ -2,6 +2,21 @@
 #include "memory.h"
 #include "vm.h"
 
+static void free_tuple(ObjTuple *tuple) {
+  FREE_ARRAY(Value, tuple->values, tuple->length);
+}
+
+static void mark_tuple(ObjTuple *tuple) {
+  for (int i = 0; i < tuple->length; i++) markValue(tuple->values[i]);
+}
+
+const ObjDef tuple_def = {
+    .class_name = "Tuple",
+    .size = sizeof(ObjTuple),
+    .free = (ObjFn *)free_tuple,
+    .mark = (ObjFn *)mark_tuple,
+};
+
 /**
  * Allocate an ObjTuple for a series of values.
  */
@@ -56,5 +71,3 @@ ObjTuple *zipTuples(ObjTuple *a, ObjTuple *b, Value (*fn)(Value, Value)) {
 
   return takeTuple(values, length);
 }
-
-const ObjDef tuple_desc = {.class_name = "Tuple", .size = sizeof(ObjTuple)};
