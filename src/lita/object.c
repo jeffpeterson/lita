@@ -69,8 +69,8 @@ ObjClosure *newClosure(ObjFun *fun) {
   return closure;
 }
 
-ObjCustom *newCustom(ObjDesc *desc) {
-  ObjCustom *custom = (ObjCustom *)allocateObject(desc->size, OBJ_CUSTOM);
+ObjCustom *newCustom(ObjDef *def) {
+  ObjCustom *custom = (ObjCustom *)allocateObject(def->size, OBJ_CUSTOM);
   return custom;
 }
 
@@ -180,7 +180,7 @@ int fprintObject(FILE *io, Obj *obj) {
   case OBJ_CLOSURE: return fprintFunction(io, "fn", ((ObjClosure *)obj)->fun);
 
   case OBJ_CUSTOM:
-    return fprintf(io, "<custom %s>", ((ObjCustom *)obj)->desc->class_name);
+    return fprintf(io, "<custom %s>", ((ObjCustom *)obj)->def->class_name);
 
   case OBJ_ERR: return fprintf(io, "Error: %s", ((ObjErr *)obj)->msg->chars);
 

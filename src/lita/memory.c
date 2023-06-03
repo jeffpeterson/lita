@@ -138,7 +138,7 @@ static void blackenObject(Obj *obj) {
 
   case OBJ_CUSTOM: {
     ObjCustom *custom = (ObjCustom *)obj;
-    custom->mark(OBJ_VAL(custom), 0, NULL);
+    custom->def->mark(OBJ_VAL(custom), 0, NULL);
     break;
   }
 
@@ -221,8 +221,8 @@ static void freeObject(Obj *obj) {
 
   case OBJ_CUSTOM: {
     ObjCustom *custom = (ObjCustom *)obj;
-    custom->free(OBJ_VAL(custom), 0, NULL);
-    reallocate(custom, custom->desc->size, 0);
+    custom->def->free(OBJ_VAL(custom), 0, NULL);
+    reallocate(custom, custom->def->size, 0);
     break;
   }
 

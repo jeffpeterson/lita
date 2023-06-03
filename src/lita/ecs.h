@@ -5,6 +5,6 @@
 #include "common.h"
 #include "object.h"
 
-// const ObjDesc ecs_desc;
+// const ObjDef ecs_desc;
 
 #endif

@@ -95,17 +95,17 @@ typedef struct ObjArray {
   Value *values;
 } ObjArray;
 
-typedef struct ObjDesc {
+typedef struct ObjDef {
   const char *class_name;
   const uint8_t size;
-} ObjDesc;
-
-typedef struct ObjCustom {
-  Obj obj;
-  ObjDesc *desc;
   NativeFn *alloc;
   NativeFn *free;
   NativeFn *mark;
+} ObjDef;
+
+typedef struct ObjCustom {
+  Obj obj;
+  ObjDef *def;
 } ObjCustom;
 
 typedef struct ObjErr {
@@ -191,7 +191,7 @@ Obj *allocateObject(size_t size, ObjType type);
 ObjBound *newBound(Value receiver, Value method);
 ObjClass *newClass(ObjString *name);
 ObjClosure *newClosure(ObjFun *fun);
-ObjCustom *newCustom(ObjDesc *desc);
+ObjCustom *newCustom(ObjDef *def);
 ObjErr *newError(ObjString *msg);
 
 ObjFun *newFunction();
