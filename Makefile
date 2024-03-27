@@ -25,8 +25,14 @@ TEST_O  := $(filter-out %/main.o,$(OBJECTS))
 .SUFFIXES: # disable crazy built-in rules that append .c
 
 default: test
+
+# zig not working yet
+zig: $(TARGET).zig.wasm
+
+# WASM
 js: $(TARGET).js
 html: $(TARGET).html
+
 lita: $(TARGET)
 all: default $(TEST) lib
 db/test: $(TEST)
@@ -45,6 +51,10 @@ test: $(TEST) assertions
 $(TARGET).wasm $(TARGET).js $(TARGET).html: $(TARGET_O:%.o=%.wasm.o)
 	@mkdir -p $(dir $@)
 	emcc -lc $(CFLAGS) -o $(TARGET).html $^
+
+$(TARGET).zig.wasm: $(filter-out src/flecs/%,$(TARGET_C))
+	@mkdir -p $(dir $@)
+	zig cc $(CFLAGS) --shared -D_WASI_EMULATED_PROCESS_CLOCKS -lwasi-emulated-process-clocks --target=wasm32-wasi $(TARGET).zig.wasm $^
 
 # $(TARGET).wasm $(TARGET).js: $(TARGET_C)
 # 	@mkdir -p $(dir $@)
