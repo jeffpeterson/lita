@@ -54,7 +54,6 @@ ObjTuple *asTuple(_ x) {
   return AS_TUPLE(x);
 }
 
-_ error(const char *msg) { return obj(newError(newString(msg))); }
 _ fn(const char *name, int arity, NativeFn fun) {
   return obj(newNative(newString(name), arity, fun));
 }
@@ -207,9 +206,15 @@ _ set(_ self, _ key, _ value) { return error("Not implemented."); }
 _ hash(_ val) { return NUMBER_VAL(hashValue(val)); }
 
 u32 len(_ x) {
-  if (!is_obj(x)) return 0;
+  if (!is_obj(x)) return 1;
 
-  switch (asObj(x)->type) {
+  Obj *obj = AS_OBJ(x);
+
+  switch (obj->type) {
+  case OBJ_CUSTOM:
+    if (obj->def->len) return obj->def->len(obj);
+    else return 1;
+
   case OBJ_ARRAY: return AS_ARRAY(x)->length;
   case OBJ_BOUND: return len(asBound(x)->method);
   case OBJ_RANGE: return subtract(asRange(x)->end, asRange(x)->start);
@@ -223,9 +228,8 @@ u32 len(_ x) {
   case OBJ_INSTANCE: return asInst(x)->fields.len;
   case OBJ_TUPLE: return asTuple(x)->length;
 
-  case OBJ_CUSTOM:
   case OBJ_ERR:
-  case OBJ_UPVALUE: return 0;
+  case OBJ_UPVALUE: return 1;
   }
 }
 
@@ -324,13 +328,26 @@ _ inspect(_ val) {
   if (is_bool(val) || is_num(val) || is_nil(val)) return to_string(val);
 
   if (is_obj(val)) {
-    switch (obj_type(val)) {
+    Obj *obj = AS_OBJ(val);
+    switch (obj->type) {
     case OBJ_BOUND: return add(str("bound:"), inspect(AS_BOUND(val)->method));
 
     case OBJ_CLASS:
       return OBJ_VAL(stringf("<class %s>", AS_CLASS(val)->name->chars));
 
     case OBJ_CLOSURE: return to_string(OBJ_VAL(AS_CLOSURE(val)->fun));
+
+    case OBJ_CUSTOM:
+      if (obj->def->inspect) {
+        char *str = NULL;
+        size_t len = 0;
+        FILE *io = open_memstream(&str, &len);
+        obj->def->inspect(obj, io);
+        fclose(io);
+        return OBJ_VAL(takeString(str, len));
+      } else {
+        return OBJ_VAL(stringf("<%s>", obj->def->class_name));
+      }
 
     case OBJ_ERR: return OBJ_VAL(stringf("Error(%s)", AS_ERR(val)->msg->chars));
 

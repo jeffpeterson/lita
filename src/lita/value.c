@@ -28,6 +28,8 @@ void freeValueArray(ValueArray *array) {
   initValueArray(array);
 }
 
+int inspect_value(Value value, FILE *io) { return fprintValue(io, value); }
+
 int fprintValue(FILE *io, Value val) {
   return is_bool(val) ? fprintf(io, FG_YELLOW "%s" FG_DEFAULT,
                                 AS_BOOL(val) ? "true" : "false") -

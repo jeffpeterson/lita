@@ -66,8 +66,26 @@ enum ObjType {
 
 typedef Value NativeFn(Value self, int argCount, Value *args);
 
+typedef void ObjFn(Obj *obj);
+typedef int ObjLenFn(Obj *obj);
+typedef int ObjIOFn(Obj *obj, FILE *io);
+typedef const char *ObjBytesFn(Obj *obj, int length);
+
+typedef struct ObjDef {
+  const char *class_name;
+  const uint8_t size;
+  const bool interned;
+  ObjLenFn *len;
+  ObjFn *free;
+  ObjFn *mark;
+  ObjIOFn *inspect;
+  ObjIOFn *dump;
+  ObjBytesFn *bytes;
+} ObjDef;
+
 struct Obj {
   ObjType type;
+  ObjDef *def;
   bool isMarked;    /** Is marked by GC in the current mark cycle. */
   struct Obj *next; /** Linked list of objects used for GC. */
   Hash hash;        /** All objects have a static hash value. */
@@ -94,20 +112,6 @@ typedef struct ObjArray {
   int length;
   Value *values;
 } ObjArray;
-
-typedef void ObjFn(Obj *obj);
-
-typedef struct ObjDef {
-  const char *class_name;
-  const uint8_t size;
-  ObjFn *free;
-  ObjFn *mark;
-} ObjDef;
-
-typedef struct ObjCustom {
-  Obj obj;
-  ObjDef *def;
-} ObjCustom;
 
 typedef struct ObjErr {
   Obj obj;
@@ -192,7 +196,6 @@ Obj *allocateObject(size_t size, ObjType type);
 ObjBound *newBound(Value receiver, Value method);
 ObjClass *newClass(ObjString *name);
 ObjClosure *newClosure(ObjFun *fun);
-ObjCustom *newCustom(ObjDef *def);
 ObjErr *newError(ObjString *msg);
 
 ObjFun *newFunction();
@@ -211,12 +214,21 @@ int fprintObjType(FILE *io, ObjType type);
 int fprintObject(FILE *io, Obj *obj);
 
 int cmpObjects(Obj *a, Obj *b);
+
+let error(const char *msg);
+
 static inline bool is_obj_type(Value value, ObjType type) {
   return is_obj(value) && AS_OBJ(value)->type == type;
 }
 
+static inline bool is_obj_def(Value value, const ObjDef *def) {
+  return is_obj(value) && AS_OBJ(value)->def == def;
+}
+
 static inline bool is_interned(Value val) {
-  return is_obj(val) && AS_OBJ(val)->type >= OBJ_INTERNED;
+  if (!is_obj(val)) return true;
+  Obj *obj = AS_OBJ(val);
+  return obj->type >= OBJ_INTERNED || obj->def->interned;
 }
 
 #endif

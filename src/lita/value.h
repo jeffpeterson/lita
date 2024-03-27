@@ -144,6 +144,8 @@ void freeValueArray(ValueArray *array);
 int fprintValue(FILE *io, Value value);
 int trace(const char *label, Value value);
 
+int inspect_value(Value value, FILE *io);
+
 typedef uint32_t Hash;
 
 Hash appendHash(Hash hash, uint32_t x);

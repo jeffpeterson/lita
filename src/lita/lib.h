@@ -27,7 +27,6 @@ ObjRange *asRange(_ x);
 ObjString *as_string(_ x);
 ObjTuple *asTuple(_ x);
 
-_ error(const char *msg);
 _ fn(const char *name, int arity, NativeFn fun);
 _ memory(u8 *bytes, int length);
 _ num(double num);

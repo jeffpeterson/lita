@@ -68,11 +68,6 @@ ObjClosure *newClosure(ObjFun *fun) {
   return closure;
 }
 
-ObjCustom *newCustom(ObjDef *def) {
-  ObjCustom *custom = (ObjCustom *)allocateObject(def->size, OBJ_CUSTOM);
-  return custom;
-}
-
 ObjErr *newError(ObjString *msg) {
   ObjErr *err = ALLOCATE_OBJ(ObjErr, OBJ_ERR);
   err->msg = msg;
@@ -141,6 +136,12 @@ const char *objectBytes(Obj *obj, int length) {
     return (char *)tuple->values;
   }
 
+  case OBJ_CUSTOM: {
+    if (obj->def->bytes) return obj->def->bytes(obj, length);
+    if (length != obj->def->size) return NULL;
+    return (char *)&obj->hash;
+  }
+
   default: return NULL;
   }
 }
@@ -179,7 +180,8 @@ int fprintObject(FILE *io, Obj *obj) {
   case OBJ_CLOSURE: return fprintFunction(io, "fn", ((ObjClosure *)obj)->fun);
 
   case OBJ_CUSTOM:
-    return fprintf(io, "<custom %s>", ((ObjCustom *)obj)->def->class_name);
+    if (obj->def->inspect) return obj->def->inspect(obj, io);
+    else return fprintf(io, "<custom %s>", obj->def->class_name);
 
   case OBJ_ERR: return fprintf(io, "Error: %s", ((ObjErr *)obj)->msg->chars);
 
@@ -239,3 +241,5 @@ int cmpObjects(Obj *a, Obj *b) {
     return a - b;
   }
 }
+
+let error(const char *msg) { return obj(newError(newString(msg))); }
