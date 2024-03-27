@@ -1,5 +1,6 @@
 CC = clang
-CFLAGS := -g -Isrc -Werror -Wall -Wno-error=unused-variable -Wno-error=unused-function
+WARN_ERRORS := -Werror -Wno-error=unused-variable -Wno-error=unused-function
+CFLAGS := -g -Isrc -Wall $(WARN_ERRORS)
 
 TARGET := .bin/lita
 TEST := $(TARGET)-test
