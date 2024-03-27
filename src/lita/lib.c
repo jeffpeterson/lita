@@ -207,7 +207,7 @@ _ set(_ self, _ key, _ value) { return error("Not implemented."); }
 _ hash(_ val) { return NUMBER_VAL(hashValue(val)); }
 
 u32 len(_ x) {
-  if (!is_obj(x)) return nil;
+  if (!is_obj(x)) return 0;
 
   switch (asObj(x)->type) {
   case OBJ_ARRAY: return AS_ARRAY(x)->length;

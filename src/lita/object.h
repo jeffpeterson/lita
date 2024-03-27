@@ -185,7 +185,7 @@ typedef struct ObjInfo {
   const char *className;
 } ObjInfo;
 
-const ObjInfo objInfo[13];
+extern const ObjInfo objInfo[13];
 
 Obj *allocateObject(size_t size, ObjType type);
 

@@ -38,7 +38,7 @@ typedef Value let;
 #define is_bool(val) (((val) | 1) == TRUE_VAL)
 #define is_nil(val) ((val) == NIL_VAL)
 #define is_void(val) ((val) == VOID_VAL)
-#define is_num(val) (((val)&QNAN) != QNAN)
+#define is_num(val) (((val) & QNAN) != QNAN)
 #define is_ptr(val) (val & (QNAN | TAG_PTR)) == (QNAN | TAG_PTR)
 #define is_obj(val) valueIsObj(val)
 
@@ -125,9 +125,9 @@ typedef struct {
 
 #endif
 
-Value nil;
-Value True;
-Value False;
+#define nil NIL_VAL
+#define True TRUE_VAL
+#define False FALSE_VAL
 
 typedef struct {
   int capacity;

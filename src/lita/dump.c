@@ -4,7 +4,6 @@
 #include "lib.h"
 #include "object.h"
 #include "string.h"
-#include "value.h"
 
 int currentId = 0;
 Table ids;

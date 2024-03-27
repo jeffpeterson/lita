@@ -6,7 +6,6 @@
 #include "string.h"
 #include "table.h"
 #include "term.h"
-#include "value.h"
 
 #define TABLE_MAX_LOAD 0.75
 

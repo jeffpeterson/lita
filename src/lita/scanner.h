@@ -108,7 +108,7 @@ typedef struct {
   unsigned int dataLength;
 } Scanner;
 
-Scanner scanner;
+extern Scanner scanner;
 void initScanner(const char *source);
 void resetScanner();
 Token scanToken();

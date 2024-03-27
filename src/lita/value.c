@@ -5,10 +5,6 @@
 #include "term.h"
 #include "value.h"
 
-Value nil = NIL_VAL;
-Value True = TRUE_VAL;
-Value False = FALSE_VAL;
-
 void initValueArray(ValueArray *array) {
   array->values = NULL;
   array->capacity = 0;

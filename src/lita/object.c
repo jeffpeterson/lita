@@ -6,7 +6,6 @@
 #include "object.h"
 #include "table.h"
 #include "term.h"
-#include "value.h"
 #include "vm.h"
 
 const ObjInfo objInfo[13] = {

@@ -1,5 +1,5 @@
 CC = clang
-CFLAGS := -g -Werror -Wall -Wno-error=unused-variable -Wno-error=unused-function -Isrc
+CFLAGS := -g -Isrc -Werror -Wall -Wno-error=unused-variable -Wno-error=unused-function
 
 TARGET := .bin/lita
 TEST := $(TARGET)-test
@@ -16,7 +16,7 @@ LITA_O   := $(LITA_C:src/%.c=_build/%.o)
 
 TARGET_C := $(filter-out %_test.c,$(SOURCES))
 
-TARGET_O  := $(filter-out %_test.o,$(OBJECTS))
+TARGET_O  := $(TARGET_C:src/%.c=_build/%.o)
 # TARGET_O  := $(filter-out %.lita.o,$(TARGET_O))
 TEST_O  := $(filter-out %/main.o,$(OBJECTS))
 
@@ -25,6 +25,8 @@ TEST_O  := $(filter-out %/main.o,$(OBJECTS))
 .SUFFIXES: # disable crazy built-in rules that append .c
 
 default: test
+js: $(TARGET).js
+html: $(TARGET).html
 lita: $(TARGET)
 all: default $(TEST) lib
 db/test: $(TEST)
@@ -39,6 +41,14 @@ db/%: $(TARGET)
 lib: $(LITA_LIB)
 test: $(TEST) assertions
 	@$(TEST)
+
+$(TARGET).wasm $(TARGET).js $(TARGET).html: $(TARGET_O:%.o=%.wasm.o)
+	@mkdir -p $(dir $@)
+	emcc -lc $(CFLAGS) -o $(TARGET).html $^
+
+# $(TARGET).wasm $(TARGET).js: $(TARGET_C)
+# 	@mkdir -p $(dir $@)
+# 	emcc $(CFLAGS) -o $(TARGET).js $^
 
 $(TARGET): $(TARGET_O)
 	@mkdir -p $(dir $@)
@@ -56,10 +66,14 @@ _build/%.o: src/%.c $(HEADERS)
 	@mkdir -p $(dir $@)
 	$(CC) $(CFLAGS) -c -o $@ $<
 
+_build/%.wasm.o: src/%.c $(HEADERS)
+	@mkdir -p $(dir $@)
+	emcc $(CFLAGS) -c -o $@ $<
+
 # This recipe creates the circular dependency between the lita library and the
 # lita compiler.
 %.lita.c: %.lita
 	$(TARGET) -c $<
 
 clean:
-	-rm -f $(TARGET) $(TEST) $(OBJECTS)
+	-rm -f $(TARGET) $(TEST) $(shell find _build -name "*.o")
