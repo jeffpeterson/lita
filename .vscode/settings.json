@@ -53,7 +53,8 @@
     "ios": "c",
     "scanner.h": "c",
     "graph.h": "c",
-    "atomic": "c"
+    "atomic": "c",
+    "cassert": "c"
   },
   "C_Cpp.default.includePath": ["src"],
   "C_Cpp.default.compilerArgs": ["-Wall", "-Werror"],
