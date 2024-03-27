@@ -8,7 +8,7 @@
 int currentId = 0;
 Table ids;
 
-static void dumpValue(FILE *io, Value v) {
+void dumpValue(FILE *io, Value v) {
   if (is_nil(v)) {
     fputs("nil", io);
     return;
@@ -54,6 +54,10 @@ static void dumpValue(FILE *io, Value v) {
     }
     fputs(")", io);
     return;
+  }
+
+  case OBJ_CUSTOM: {
+    if (obj->def->dump) obj->def->dump(obj, io);
   }
 
   default:

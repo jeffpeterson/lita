@@ -9,5 +9,6 @@
 #include "value.h"
 
 void dumpModule(FILE *io, ObjString *name, ObjFun *fun);
+void dumpValue(FILE *io, Value v);
 
 #endif
