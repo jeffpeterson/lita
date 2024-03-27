@@ -85,5 +85,8 @@ _build/%.wasm.o: src/%.c $(HEADERS)
 %.lita.c: %.lita
 	$(TARGET) -c $<
 
+serve: html
+	python -m http.server 8000 --directory .bin
+
 clean:
 	-rm -f $(TARGET) $(TEST) $(shell find _build -name "*.o")
