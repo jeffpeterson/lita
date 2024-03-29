@@ -64,7 +64,7 @@ _ range(_ start, _ end) { return obj(makeRange(start, end)); }
 _ str(const char *str) { return obj(newString(str)); }
 _ string(const char *str) { return obj(newString(str)); }
 
-_ t(int len, _ *vals) { return obj(copyTuple(vals, len)); }
+_ t(int len, _ *vals) { return obj(copy_tuple(vals, len)); }
 
 _ t2(_ a, _ b) { return t(2, (_[]){a, b}); }
 _ t3(_ a, _ b, _ c) { return t(3, (_[]){a, b, c}); }
@@ -120,7 +120,7 @@ _ add(_ a, _ b) {
   case OBJ_STRING:
     out = (Obj *)concatStrings(AS_STRING(a), AS_STRING(to_string(b)));
     break;
-  // case OBJ_TUPLE: out = (Obj *)zipTuples(AS_TUPLE(a), AS_TUPLE(b), add);
+  // case OBJ_TUPLE: out = (Obj *)zip_tuples(AS_TUPLE(a), AS_TUPLE(b), add);
   // break;
   default: runtimeError("Values cannot be added."); return nil;
   }
@@ -152,7 +152,7 @@ _ multiply(_ a, _ b) {
     out = (Obj *)concatStrings(AS_STRING(a), AS_STRING(to_string(b)));
     break;
   // case OBJ_TUPLE:
-  //   out = (Obj *)zipTuples(AS_TUPLE(a), AS_TUPLE(b), multiply);
+  //   out = (Obj *)zip_tuples(AS_TUPLE(a), AS_TUPLE(b), multiply);
   //   break;
   default: runtimeError("Values cannot be multiplied."); return NIL_VAL;
   }

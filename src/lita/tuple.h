@@ -17,9 +17,9 @@ typedef struct ObjTuple {
 extern const ObjDef tuple_def;
 
 ObjTuple *as_tuple(Value val);
-ObjTuple *copyTuple(Value *values, uint8_t length);
-ObjTuple *takeTuple(Value *values, uint8_t length);
-ObjTuple *zipTuples(ObjTuple *a, ObjTuple *b, Value (*fn)(Value, Value));
+ObjTuple *copy_tuple(Value *values, uint8_t length);
+ObjTuple *take_tuple(Value *values, uint8_t length);
+ObjTuple *zip_tuples(ObjTuple *a, ObjTuple *b, Value (*fn)(Value, Value));
 
 // Tuple: (1, 2)
 // Table: {x: 2}

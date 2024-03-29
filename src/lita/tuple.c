@@ -55,7 +55,7 @@ ObjTuple *as_tuple(Value x) {
 /**
  * Allocate an ObjTuple for a series of values.
  */
-static ObjTuple *allocateTuple(Value *vals, int length, Hash hash) {
+static ObjTuple *allocate_tuple(Value *vals, int length, Hash hash) {
   ObjTuple *tuple = ALLOCATE_OBJ(ObjTuple, OBJ_CUSTOM);
   tuple->obj.def = &tuple_def;
   tuple->length = length;
@@ -65,7 +65,7 @@ static ObjTuple *allocateTuple(Value *vals, int length, Hash hash) {
   return tuple;
 }
 
-ObjTuple *copyTuple(Value *values, uint8_t length) {
+ObjTuple *copy_tuple(Value *values, uint8_t length) {
   int size = length * sizeof(Value);
   Hash hash;
   ObjTuple *interned =
@@ -76,10 +76,10 @@ ObjTuple *copyTuple(Value *values, uint8_t length) {
   Value *heapVals = ALLOCATE(Value, length);
   memcpy(heapVals, values, size);
 
-  return allocateTuple(heapVals, length, hash);
+  return allocate_tuple(heapVals, length, hash);
 }
 
-ObjTuple *takeTuple(Value *values, uint8_t length) {
+ObjTuple *take_tuple(Value *values, uint8_t length) {
   Hash hash;
   Obj *interned =
       getInterned(&hash, OBJ_CUSTOM, (char *)values, length * sizeof(Value));
@@ -89,10 +89,10 @@ ObjTuple *takeTuple(Value *values, uint8_t length) {
     return (ObjTuple *)interned;
   }
 
-  return allocateTuple(values, length, hash);
+  return allocate_tuple(values, length, hash);
 }
 
-ObjTuple *zipTuples(ObjTuple *a, ObjTuple *b, Value (*fn)(Value, Value)) {
+ObjTuple *zip_tuples(ObjTuple *a, ObjTuple *b, Value (*fn)(Value, Value)) {
   if (a->length != b->length) {
     runtimeError("Tuples must be same size.");
     return NULL;
@@ -105,7 +105,7 @@ ObjTuple *zipTuples(ObjTuple *a, ObjTuple *b, Value (*fn)(Value, Value)) {
     values[i] = fn(a->values[i], b->values[i]);
   }
 
-  return takeTuple(values, length);
+  return take_tuple(values, length);
 }
 
 /// Native
@@ -123,7 +123,7 @@ static let Tuple_map(let this, int argc, let *args) {
   return pop();
 }
 
-static void tuple_natives(let klass) { method(klass, fn("map", 1, Tuple_map)); }
+static void tuple_natives(let Tuple) { method(Tuple, fn("map", 1, Tuple_map)); }
 
 const ObjDef tuple_def = {
     .class_name = "Tuple",

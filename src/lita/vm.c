@@ -519,7 +519,7 @@ void vm_range() {
 
 /** [length ...args][0 arg] -> [0 tuple] */
 void vm_tuple(u8 length) {
-  ObjTuple *tuple = copyTuple(vm.stackTop - length, length);
+  ObjTuple *tuple = copy_tuple(vm.stackTop - length, length);
   popn(length);
   push(OBJ_VAL(tuple));
 }
