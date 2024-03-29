@@ -11,7 +11,7 @@ ObjArray *as_array(let x) {
 }
 
 /** Allocate a new empty ObjArray. */
-ObjArray *newArray() {
+ObjArray *new_array() {
   ObjArray *arr = ALLOCATE_OBJ(ObjArray, OBJ_CUSTOM);
   arr->obj.def = &array_def;
   arr->length = 0;
@@ -20,37 +20,37 @@ ObjArray *newArray() {
   return arr;
 }
 
-ObjArray *copyArray(Value *values, u32 length) {
-  ObjArray *arr = newArray();
-  resizeArray(arr, length);
-  writeArray(arr, 0, values, length);
+ObjArray *copy_array(Value *values, u32 length) {
+  ObjArray *arr = new_array();
+  resize_array(arr, length);
+  write_array(arr, 0, values, length);
   return arr;
 }
 
-void resizeArray(ObjArray *arr, u32 capacity) {
+void resize_array(ObjArray *arr, u32 capacity) {
   arr->values = GROW_ARRAY(Value, arr->values, arr->capacity, capacity);
   arr->capacity = capacity;
 }
 
-void growArray(ObjArray *arr, u32 minCapacity) {
+void grow_array(ObjArray *arr, u32 minCapacity) {
   u32 capacity = arr->capacity || 1;
   while (capacity < minCapacity) capacity *= 2;
-  if (capacity > arr->capacity) resizeArray(arr, capacity);
+  if (capacity > arr->capacity) resize_array(arr, capacity);
 }
 
-void writeArray(ObjArray *arr, u32 index, Value *values, u32 length) {
+void write_array(ObjArray *arr, u32 index, Value *values, u32 length) {
   u32 minLength = index + length;
-  if (arr->capacity <= minLength) growArray(arr, minLength);
+  if (arr->capacity <= minLength) grow_array(arr, minLength);
   memcpy(arr->values + index, values, length * sizeof(Value));
   for (int i = arr->length; i < index; i++) arr->values[i] = nil;
   if (minLength > arr->length) arr->length = minLength;
 }
 
-void appendArray(ObjArray *arr, Value value) {
-  writeArray(arr, arr->length, &value, 1);
+void append_array(ObjArray *arr, Value value) {
+  write_array(arr, arr->length, &value, 1);
 }
 
-Value readArray(ObjArray *arr, u32 index) {
+Value read_array(ObjArray *arr, u32 index) {
   if (index >= arr->length) return nil;
   return arr->values[index];
 }
@@ -106,16 +106,16 @@ static let Array_map(let this, int argc, let *args) {
 static Value Array_plus(let this, int argc, let *args) {
   ObjArray *a = AS_ARRAY(this);
   ObjArray *b = as_array(args[0]);
-  ObjArray *out = newArray();
-  resizeArray(out, a->length + b->length);
-  writeArray(out, 0, a->values, a->length);
-  writeArray(out, a->length, b->values, b->length);
+  ObjArray *out = new_array();
+  resize_array(out, a->length + b->length);
+  write_array(out, 0, a->values, a->length);
+  write_array(out, a->length, b->values, b->length);
   return OBJ_VAL(out);
 }
 
 static Value Array_push(let this, int argc, let *args) {
   ObjArray *arr = AS_ARRAY(this);
-  for (int i = 0; i < argc; i++) appendArray(arr, args[i]);
+  for (int i = 0; i < argc; i++) append_array(arr, args[i]);
   return this;
 }
 
@@ -123,7 +123,7 @@ static Value Array_slice(let this, int argc, let *args) {
   ObjArray *arr = AS_ARRAY(this);
   int start = argc > 0 ? asNum(args[0]) : 0;
   int len = argc > 1 ? asNum(args[1]) : arr->length - start;
-  return OBJ_VAL(copyArray(arr->values + start, len));
+  return OBJ_VAL(copy_array(arr->values + start, len));
 }
 
 ObjFun *array_lita();

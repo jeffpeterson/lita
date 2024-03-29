@@ -9,13 +9,13 @@
 #define is_array(val) is_obj_def(val, &array_def)
 
 ObjArray *as_array(let x);
-ObjArray *newArray();
-ObjArray *copyArray(Value *values, u32 length);
-void resizeArray(ObjArray *arr, u32 capacity);
-void growArray(ObjArray *arr, u32 minCapacity);
-void writeArray(ObjArray *arr, u32 index, Value *values, u32 length);
-void appendArray(ObjArray *arr, Value value);
-Value readArray(ObjArray *arr, u32 index);
+ObjArray *new_array();
+ObjArray *copy_array(Value *values, u32 length);
+void resize_array(ObjArray *arr, u32 capacity);
+void grow_array(ObjArray *arr, u32 minCapacity);
+void write_array(ObjArray *arr, u32 index, Value *values, u32 length);
+void append_array(ObjArray *arr, Value value);
+Value read_array(ObjArray *arr, u32 index);
 
 extern const ObjDef array_def;
 

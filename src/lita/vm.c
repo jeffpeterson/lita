@@ -405,7 +405,7 @@ InterpretResult vm_add() {
 
 /** [length ...args][0 arg] -> [0 array] */
 void vm_array(u32 length) {
-  ObjArray *arr = copyArray(vm.stackTop - length, length);
+  ObjArray *arr = copy_array(vm.stackTop - length, length);
   popn(length);
   push(OBJ_VAL(arr));
 }
