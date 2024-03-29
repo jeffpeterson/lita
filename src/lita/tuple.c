@@ -142,3 +142,18 @@ const ObjDef tuple_def = {
     .length = tuple_length,
     .natives = tuple_natives,
 };
+
+let t(int len, let *vals) { return obj(copy_tuple(vals, len)); }
+
+let t2(let a, let b) { return t(2, (let[]){a, b}); }
+let t3(let a, let b, let c) { return t(3, (let[]){a, b, c}); }
+let t4(let a, let b, let c, let d) { return t(4, (let[]){a, b, c, d}); }
+let t5(let a, let b, let c, let d, let e) {
+  return t(5, (let[]){a, b, c, d, e});
+}
+let t6(let a, let b, let c, let d, let e, let f) {
+  return t(6, (let[]){a, b, c, d, e, f});
+}
+let t7(let a, let b, let c, let d, let e, let f, let g) {
+  return t(7, (let[]){a, b, c, d, e, f, g});
+}

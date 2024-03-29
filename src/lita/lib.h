@@ -34,10 +34,6 @@ _ ptr(void *pointer);
 _ range(_ start, _ end);
 _ str(const char *str);
 _ string(const char *str);
-_ t2(_ a, _ b);
-_ t3(_ a, _ b, _ c);
-_ t4(_ a, _ b, _ c, _ d);
-_ t(int len, _ *vals);
 
 _ to_string(_ val);
 

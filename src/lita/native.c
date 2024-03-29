@@ -3,6 +3,7 @@
 #include "array.h"
 #include "lib.h"
 #include "native.h"
+#include "tuple.h"
 #include "vm.h"
 
 /// Helpers

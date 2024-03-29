@@ -64,17 +64,6 @@ _ range(_ start, _ end) { return obj(makeRange(start, end)); }
 _ str(const char *str) { return obj(newString(str)); }
 _ string(const char *str) { return obj(newString(str)); }
 
-_ t(int len, _ *vals) { return obj(copy_tuple(vals, len)); }
-
-_ t2(_ a, _ b) { return t(2, (_[]){a, b}); }
-_ t3(_ a, _ b, _ c) { return t(3, (_[]){a, b, c}); }
-_ t4(_ a, _ b, _ c, _ d) { return t(4, (_[]){a, b, c, d}); }
-_ t5(_ a, _ b, _ c, _ d, _ e) { return t(5, (_[]){a, b, c, d, e}); }
-_ t6(_ a, _ b, _ c, _ d, _ e, _ f) { return t(6, (_[]){a, b, c, d, e, f}); }
-_ t7(_ a, _ b, _ c, _ d, _ e, _ f, _ g) {
-  return t(7, (_[]){a, b, c, d, e, f, g});
-}
-
 _ class(_ name) {
   if (!is_string(name)) return nil;
 
