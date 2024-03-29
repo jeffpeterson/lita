@@ -10,7 +10,8 @@ ObjArray *as_array(let x) {
 
 /** Allocate a new empty ObjArray. */
 ObjArray *newArray() {
-  ObjArray *arr = ALLOCATE_OBJ(ObjArray, OBJ_ARRAY);
+  ObjArray *arr = ALLOCATE_OBJ(ObjArray, OBJ_CUSTOM);
+  arr->obj.def = &array_def;
   arr->length = 0;
   arr->capacity = 0;
   arr->values = NULL;
@@ -51,3 +52,37 @@ Value readArray(ObjArray *arr, u32 index) {
   if (index >= arr->length) return nil;
   return arr->values[index];
 }
+
+static void free_array(Obj *obj) {
+  ObjArray *array = (ObjArray *)obj;
+  FREE_ARRAY(Value, array->values, array->capacity);
+}
+
+static void mark_array(Obj *obj) {
+  ObjArray *arr = (ObjArray *)obj;
+  for (int i = 0; i < arr->length; i++) markValue(arr->values[i]);
+}
+
+static int array_length(Obj *obj) { return ((ObjArray *)obj)->length; }
+
+static int inspect_array(Obj *obj, FILE *io) {
+  ObjArray *arr = (ObjArray *)obj;
+  int tot = fprintf(io, "[");
+  for (int i = 0; i < arr->length; i++) {
+    if (i > 0) tot += fprintf(io, ", ");
+    tot += fprintValue(io, arr->values[i]);
+  }
+  return fprintf(io, "]") + tot;
+}
+
+const ObjDef array_def = {
+    .class_name = "Array",
+    .size = sizeof(ObjArray),
+    .interned = false,
+    .free = free_array,
+    .mark = mark_array,
+    .inspect = inspect_array,
+    // .dump = dump_array,
+    .length = array_length,
+    // .natives = array_natives,
+};

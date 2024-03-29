@@ -198,12 +198,9 @@ u32 len(_ x) {
 
   Obj *obj = AS_OBJ(x);
 
-  switch (obj->type) {
-  case OBJ_CUSTOM:
-    if (obj->def->length) return obj->def->length(obj);
-    else return 1;
+  if (obj->def && obj->def->length) return obj->def->length(obj);
 
-  case OBJ_ARRAY: return AS_ARRAY(x)->length;
+  switch (obj->type) {
   case OBJ_BOUND: return len(asBound(x)->method);
   case OBJ_RANGE: return subtract(asRange(x)->end, asRange(x)->start);
 
@@ -215,8 +212,7 @@ u32 len(_ x) {
   case OBJ_STRING: return as_string(x)->length;
   case OBJ_INSTANCE: return asInst(x)->fields.len;
 
-  case OBJ_ERR:
-  case OBJ_UPVALUE: return 1;
+  default: return 1;
   }
 }
 

@@ -13,7 +13,6 @@ typedef struct ObjTuple {
   Value *values;
 } ObjTuple;
 
-// const ObjDef tuple_def;
 extern const ObjDef tuple_def;
 
 ObjTuple *as_tuple(Value val);

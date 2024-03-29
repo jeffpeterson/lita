@@ -41,7 +41,6 @@ typedef enum ObjType ObjType;
   (type *)allocateObject(sizeof(type), objectType)
 
 enum ObjType {
-  OBJ_ARRAY,
   OBJ_BOUND,
   OBJ_CLASS,
   OBJ_CLOSURE,

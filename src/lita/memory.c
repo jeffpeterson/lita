@@ -109,11 +109,6 @@ static void blackenObject(Obj *obj) {
   if (obj->def && obj->def->mark) return obj->def->mark(obj);
 
   switch (obj->type) {
-  case OBJ_ARRAY: {
-    ObjArray *arr = (ObjArray *)obj;
-    for (int i = 0; i < arr->length; i++) markValue(arr->values[i]);
-    break;
-  }
   case OBJ_BOUND: {
     ObjBound *bound = (ObjBound *)obj;
     markValue(bound->receiver);
@@ -135,12 +130,6 @@ static void blackenObject(Obj *obj) {
     for (int i = 0; i < closure->upvalueCount; i++) {
       markObject((Obj *)closure->upvalues[i]);
     }
-    break;
-  }
-
-  case OBJ_CUSTOM: {
-    fprintf(stderr, "mark not implemented for this object");
-    exit(1);
     break;
   }
 
@@ -180,6 +169,7 @@ static void blackenObject(Obj *obj) {
   case OBJ_UPVALUE: markValue(((ObjUpvalue *)obj)->closed); break;
 
   case OBJ_STRING: break;
+  default: fprintf(stderr, "mark not implemented for this object"); exit(1);
   }
 }
 
@@ -199,12 +189,6 @@ static void freeObject(Obj *obj) {
   }
 
   switch (obj->type) {
-  case OBJ_ARRAY: {
-    ObjArray *arr = (ObjArray *)obj;
-    FREE_ARRAY(Value, arr->values, arr->capacity);
-    FREE(ObjArray, obj);
-    break;
-  }
   case OBJ_BOUND: FREE(ObjBound, obj); break;
 
   case OBJ_CLASS: {
@@ -220,11 +204,6 @@ static void freeObject(Obj *obj) {
     FREE(ObjClosure, obj);
     break;
   }
-
-  case OBJ_CUSTOM:
-    fprintf(stderr, "free not implemented for this object");
-    exit(1);
-    break;
 
   case OBJ_ERR: FREE(ObjErr, obj); break;
 
@@ -254,6 +233,7 @@ static void freeObject(Obj *obj) {
   }
 
   case OBJ_UPVALUE: FREE(ObjUpvalue, obj); break;
+  default: fprintf(stderr, "free not implemented for this object"); exit(1);
   }
 }
 

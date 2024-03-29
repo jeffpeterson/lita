@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 
 #include "lib.h"
@@ -9,7 +10,6 @@
 #include "vm.h"
 
 const ObjInfo objInfo[13] = {
-    [OBJ_ARRAY] = {"ARRAY", "Array"},
     [OBJ_BOUND] = {"BOUND", "Method"},
     [OBJ_CLASS] = {"CLASS", "Class"},
     [OBJ_CLOSURE] = {"CLOSURE", "Function"},
@@ -153,16 +153,6 @@ int fprintObject(FILE *io, Obj *obj) {
   if (obj->def && obj->def->inspect) return obj->def->inspect(obj, io);
 
   switch (obj->type) {
-  case OBJ_ARRAY: {
-    ObjArray *arr = (ObjArray *)obj;
-    int tot = fprintf(io, "[");
-    for (int i = 0; i < arr->length; i++) {
-      if (i > 0) tot += fprintf(io, ", ");
-      tot += fprintValue(io, arr->values[i]);
-    }
-    return fprintf(io, "]") + tot;
-  }
-
   case OBJ_BOUND: return fprintObject(io, AS_OBJ(((ObjBound *)obj)->method));
 
   case OBJ_CLASS: {
@@ -207,6 +197,8 @@ int fprintObject(FILE *io, Obj *obj) {
     return fprintf(io, "<upvalue -> ") + fprintValue(io, *up->location) +
            fprintf(io, ">");
   }
+
+  default: fprintf(stderr, "inspect not implemented for this object"); exit(1);
   }
 }
 
