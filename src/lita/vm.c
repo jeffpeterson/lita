@@ -119,9 +119,17 @@ void initVM() {
   vm.nextGC = 1024 * 1024;
 }
 
+static void register_def(const ObjDef *def) {
+  if (def->natives) {
+    if (!def->class_name) error("def must have a class_name");
+    def->natives(global_class(def->class_name));
+  }
+}
+
 InterpretResult bootVM() {
   InterpretResult result = defineNatives();
-  tuple_def.natives(global_class("Tuple"));
+  register_def(&array_def);
+  register_def(&tuple_def);
   return result;
 }
 

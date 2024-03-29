@@ -13,16 +13,6 @@ class Method < Function
 class NativeFunction < Function
 class Class < Function
 
-class Array
-	fn << (x) = this.push(x)
-
-	fn == (b)
-		if length != b.length: return false
-		if objectId == b.objectId: return true
-		for let i = 0; i < length; i++
-			if get(i) != b.get(i): return false
-		return true
-
 class Bool
 	fn inspect = this ? 'true : 'false
 	fn string = inspect

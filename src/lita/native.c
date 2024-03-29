@@ -64,40 +64,6 @@ static _ Any_objectId(_ this, int argc, _ *args) {
 }
 static _ Any_string(_ this, int argc, _ *args) { return to_string(this); }
 
-/// Array
-static Value Array_get(let this, int argc, _ *args) {
-  ObjArray *arr = AS_ARRAY(this);
-  u32 idx = asNum(args[0]);
-  if (idx >= arr->length) return nil;
-
-  return arr->values[idx];
-}
-static Value Array_length(let this, int argc, _ *args) {
-  return NUMBER_VAL(AS_ARRAY(this)->length);
-}
-static Value Array_plus(let this, int argc, _ *args) {
-  ObjArray *a = AS_ARRAY(this);
-  ObjArray *b = as_array(args[0]);
-  ObjArray *out = newArray();
-  resizeArray(out, a->length + b->length);
-  writeArray(out, 0, a->values, a->length);
-  writeArray(out, a->length, b->values, b->length);
-  return OBJ_VAL(out);
-}
-
-static Value Array_push(let this, int argc, _ *args) {
-  ObjArray *arr = AS_ARRAY(this);
-  for (int i = 0; i < argc; i++) appendArray(arr, args[i]);
-  return this;
-}
-
-static Value Array_slice(let this, int argc, _ *args) {
-  ObjArray *arr = AS_ARRAY(this);
-  int start = argc > 0 ? asNum(args[0]) : 0;
-  int len = argc > 1 ? asNum(args[1]) : arr->length - start;
-  return OBJ_VAL(copyArray(arr->values + start, len));
-}
-
 /// Function
 static _ Function_arity(_ this, int argc, _ *args) { return arity(this); }
 static _ Function_bytes(_ this, int argc, _ *args) {
@@ -174,12 +140,6 @@ InterpretResult defineNatives() {
   method(vm.Any, fn("objectId", 0, Any_objectId));
   method(vm.Any, fn("string", 0, Any_string));
   method(vm.Any, fn("to_string", 0, Any_string));
-
-  method(vm.Array, fn("get", 1, Array_get));
-  method(vm.Array, fn("length", 0, Array_length));
-  method(vm.Array, fn("push", 0, Array_push));
-  method(vm.Array, fn("slice", 0, Array_slice));
-  method(vm.Array, fn("+", 1, Array_plus));
 
   method(vm.Number, fn("==", 1, Number_eql));
   method(vm.Number, fn("*", 1, Number_star));

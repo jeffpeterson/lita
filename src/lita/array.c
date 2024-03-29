@@ -1,5 +1,7 @@
 #include "array.h"
+#include "lib.h"
 #include "memory.h"
+#include "vm.h"
 #include <assert.h>
 
 /** Safely convert val to array pointer. */
@@ -75,6 +77,67 @@ static int inspect_array(Obj *obj, FILE *io) {
   return fprintf(io, "]") + tot;
 }
 
+static Value Array_get(let this, int argc, let *args) {
+  ObjArray *arr = AS_ARRAY(this);
+  u32 idx = asNum(args[0]);
+  if (idx >= arr->length) return nil;
+
+  return arr->values[idx];
+}
+
+static Value Array_length(let this, int argc, let *args) {
+  return NUMBER_VAL(AS_ARRAY(this)->length);
+}
+
+static let Array_map(let this, int argc, let *args) {
+  if (!argc) return error("map() requires a callable argument");
+  ObjArray *array = AS_ARRAY(this);
+  let fun = args[0];
+
+  for (u8 i = 0; i < array->length; i++) {
+    push(fun);
+    push(array->values[i]);
+    vm_call(1);
+  }
+  vm_array(array->length);
+  return pop();
+}
+
+static Value Array_plus(let this, int argc, let *args) {
+  ObjArray *a = AS_ARRAY(this);
+  ObjArray *b = as_array(args[0]);
+  ObjArray *out = newArray();
+  resizeArray(out, a->length + b->length);
+  writeArray(out, 0, a->values, a->length);
+  writeArray(out, a->length, b->values, b->length);
+  return OBJ_VAL(out);
+}
+
+static Value Array_push(let this, int argc, let *args) {
+  ObjArray *arr = AS_ARRAY(this);
+  for (int i = 0; i < argc; i++) appendArray(arr, args[i]);
+  return this;
+}
+
+static Value Array_slice(let this, int argc, let *args) {
+  ObjArray *arr = AS_ARRAY(this);
+  int start = argc > 0 ? asNum(args[0]) : 0;
+  int len = argc > 1 ? asNum(args[1]) : arr->length - start;
+  return OBJ_VAL(copyArray(arr->values + start, len));
+}
+
+ObjFun *array_lita();
+
+static void array_natives(let Array) {
+  runFun(array_lita());
+  method(Array, fn("get", 1, Array_get));
+  method(Array, fn("length", 0, Array_length));
+  method(Array, fn("map", 1, Array_map));
+  method(Array, fn("push", 0, Array_push));
+  method(Array, fn("slice", 0, Array_slice));
+  method(Array, fn("+", 1, Array_plus));
+}
+
 const ObjDef array_def = {
     .class_name = "Array",
     .size = sizeof(ObjArray),
@@ -84,5 +147,5 @@ const ObjDef array_def = {
     .inspect = inspect_array,
     // .dump = dump_array,
     .length = array_length,
-    // .natives = array_natives,
+    .natives = array_natives,
 };

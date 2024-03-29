@@ -125,6 +125,7 @@ InterpretResult vm_get_var(Value name);
 InterpretResult vm_set_var(Value name);
 void vm_range();
 void vm_swap(u8 a, u8 b);
+void vm_array(u32 length);
 void vm_tuple(u8 length);
 
 #endif
