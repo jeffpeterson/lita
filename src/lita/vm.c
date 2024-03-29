@@ -120,8 +120,9 @@ void initVM() {
 }
 
 InterpretResult bootVM() {
+  InterpretResult result = defineNatives();
   tuple_def.natives(global_class("Tuple"));
-  return defineNatives();
+  return result;
 }
 
 void freeVM() {

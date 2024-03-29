@@ -10,7 +10,7 @@ SOURCES := $(shell find src -name "*.c")
 HEADERS := $(shell find src -name "*.h")
 OBJECTS := $(patsubst src/%.c,_build/%.o, $(SOURCES))
 
-LITA_SRC := $(shell find src/lita/lib -name "*.lita")
+LITA_SRC := $(shell find src/lita -name "*.lita" -not -path "*/ideas/*")
 LITA_C   := $(LITA_SRC:.lita=.lita.c)
 LITA_O   := $(LITA_C:src/%.c=_build/%.o)
 # LITA_EXISTING_C := $(shell find src/lita/lib -name "*.c")

@@ -123,7 +123,12 @@ static let Tuple_map(let this, int argc, let *args) {
   return pop();
 }
 
-static void tuple_natives(let Tuple) { method(Tuple, fn("map", 1, Tuple_map)); }
+ObjFun *tuple_lita();
+
+static void tuple_natives(let Tuple) {
+  runFun(tuple_lita());
+  method(Tuple, fn("map", 1, Tuple_map));
+}
 
 const ObjDef tuple_def = {
     .class_name = "Tuple",
