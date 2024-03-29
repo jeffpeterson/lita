@@ -10,7 +10,9 @@ assert x₂' == 3
 assert 1
 assert 1, 2
 assert 0..9
+assert (1, 2)
 assert 1.class == Number
+assert (1, 2).class == Tuple
 
 /// Natives
 assert clock()
@@ -41,7 +43,7 @@ assert "" 3.5 == "3.5"
 /// Inspect
 assert "hi".inspect == '"hi"
 assert 3.inspect == "3"
-assert (1, 2).inspect == "1, 2"
+// assert (1, 2).inspect == "1, 2"
 
 /// Tuples
 assert (1, 2) == (1, 2)

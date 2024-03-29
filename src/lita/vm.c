@@ -119,7 +119,10 @@ void initVM() {
   vm.nextGC = 1024 * 1024;
 }
 
-InterpretResult bootVM() { return defineNatives(); }
+InterpretResult bootVM() {
+  tuple_def.natives(global_class("Tuple"));
+  return defineNatives();
+}
 
 void freeVM() {
   vm.str.init = NULL;
@@ -198,7 +201,8 @@ ObjClass *valueClass(Value v) {
 
     if (obj->type == OBJ_INSTANCE) return ((ObjInstance *)obj)->klass;
 
-    name = objInfo[obj->type].className;
+    if (obj->def && obj->def->class_name) name = obj->def->class_name;
+    else name = objInfo[obj->type].className;
   } else {
     name = is_nil(v)    ? "Nil"
            : is_num(v)  ? "Number"
@@ -399,8 +403,13 @@ void vm_array(u32 length) {
 
 InterpretResult vm_assert(Value src) {
   let value = peek(0);
+
+#ifdef DEBUG_ASSERT_CODE
+  fprintValue(stderr, src);
+  fprintf(stderr, "\n");
+#endif
+
   if (isFalsey(value)) {
-    fprintf(stderr, "\n\n");
     fprintValue(stderr, src);
     fprintf(stderr, " //=> ");
     fprintValue(stderr, value);

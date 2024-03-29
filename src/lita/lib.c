@@ -49,10 +49,8 @@ ObjRange *asRange(_ x) {
   assert(is_range(x));
   return AS_RANGE(x);
 }
-ObjTuple *asTuple(_ x) {
-  assert(is_tuple(x));
-  return AS_TUPLE(x);
-}
+
+let error(const char *msg) { return obj(newError(newString(msg))); }
 
 _ fn(const char *name, int arity, NativeFn fun) {
   return obj(newNative(newString(name), arity, fun));
@@ -122,7 +120,8 @@ _ add(_ a, _ b) {
   case OBJ_STRING:
     out = (Obj *)concatStrings(AS_STRING(a), AS_STRING(to_string(b)));
     break;
-  case OBJ_TUPLE: out = (Obj *)zipTuples(AS_TUPLE(a), AS_TUPLE(b), add); break;
+  // case OBJ_TUPLE: out = (Obj *)zipTuples(AS_TUPLE(a), AS_TUPLE(b), add);
+  // break;
   default: runtimeError("Values cannot be added."); return nil;
   }
 
@@ -152,9 +151,9 @@ _ multiply(_ a, _ b) {
   case OBJ_STRING:
     out = (Obj *)concatStrings(AS_STRING(a), AS_STRING(to_string(b)));
     break;
-  case OBJ_TUPLE:
-    out = (Obj *)zipTuples(AS_TUPLE(a), AS_TUPLE(b), multiply);
-    break;
+  // case OBJ_TUPLE:
+  //   out = (Obj *)zipTuples(AS_TUPLE(a), AS_TUPLE(b), multiply);
+  //   break;
   default: runtimeError("Values cannot be multiplied."); return NIL_VAL;
   }
 
@@ -212,7 +211,7 @@ u32 len(_ x) {
 
   switch (obj->type) {
   case OBJ_CUSTOM:
-    if (obj->def->len) return obj->def->len(obj);
+    if (obj->def->length) return obj->def->length(obj);
     else return 1;
 
   case OBJ_ARRAY: return AS_ARRAY(x)->length;
@@ -226,7 +225,6 @@ u32 len(_ x) {
 
   case OBJ_STRING: return as_string(x)->length;
   case OBJ_INSTANCE: return asInst(x)->fields.len;
-  case OBJ_TUPLE: return asTuple(x)->length;
 
   case OBJ_ERR:
   case OBJ_UPVALUE: return 1;
@@ -329,6 +327,19 @@ _ inspect(_ val) {
 
   if (is_obj(val)) {
     Obj *obj = AS_OBJ(val);
+
+    if (obj->def && obj->def->inspect) {
+      char *str = NULL;
+      size_t len = 0;
+      FILE *io = open_memstream(&str, &len);
+      obj->def->inspect(obj, io);
+      fclose(io);
+      let val = OBJ_VAL(takeString(str, len));
+      fprintValue(stdout, val);
+
+      return val;
+    }
+
     switch (obj->type) {
     case OBJ_BOUND: return add(str("bound:"), inspect(AS_BOUND(val)->method));
 
@@ -337,17 +348,7 @@ _ inspect(_ val) {
 
     case OBJ_CLOSURE: return to_string(OBJ_VAL(AS_CLOSURE(val)->fun));
 
-    case OBJ_CUSTOM:
-      if (obj->def->inspect) {
-        char *str = NULL;
-        size_t len = 0;
-        FILE *io = open_memstream(&str, &len);
-        obj->def->inspect(obj, io);
-        fclose(io);
-        return OBJ_VAL(takeString(str, len));
-      } else {
-        return OBJ_VAL(stringf("<%s>", obj->def->class_name));
-      }
+    case OBJ_CUSTOM: return OBJ_VAL(stringf("<%s>", obj->def->class_name));
 
     case OBJ_ERR: return OBJ_VAL(stringf("Error(%s)", AS_ERR(val)->msg->chars));
 
@@ -365,18 +366,6 @@ _ inspect(_ val) {
     }
 
     case OBJ_STRING: return OBJ_VAL(stringf("\"%s\"", AS_STRING(val)->chars));
-
-    case OBJ_TUPLE: {
-      ObjTuple *tuple = AS_TUPLE(val);
-
-      if (tuple->length < 1) return str("");
-
-      let out = inspect(tuple->values[0]);
-      for (int i = 1; i < tuple->length; i++) {
-        out = add(add(out, str(", ")), inspect(tuple->values[i]));
-      }
-      return out;
-    }
 
     default: break;
     }

@@ -26,6 +26,8 @@ void dumpValue(FILE *io, Value v) {
 
   Obj *obj = AS_OBJ(v);
 
+  if (obj->def && obj->def->dump) obj->def->dump(obj, io);
+
   switch (obj->type) {
   case OBJ_FUN: {
     Value id;
@@ -43,21 +45,6 @@ void dumpValue(FILE *io, Value v) {
     ObjString *str = escapeString(AS_STRING(v));
     fprintf(io, "str(%.*s)", str->length, str->chars);
     return;
-  }
-
-  case OBJ_TUPLE: {
-    ObjTuple *tup = AS_TUPLE(v);
-    fprintf(io, "t(%d", tup->length);
-    for (int i = 0; i < tup->length; i++) {
-      fprintf(io, ", ");
-      dumpValue(io, tup->values[i]);
-    }
-    fputs(")", io);
-    return;
-  }
-
-  case OBJ_CUSTOM: {
-    if (obj->def->dump) obj->def->dump(obj, io);
   }
 
   default:

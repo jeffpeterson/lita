@@ -22,19 +22,16 @@ typedef enum ObjType ObjType;
 #define is_instance(val) is_obj_type(val, OBJ_INSTANCE)
 #define is_native(val) is_obj_type(val, OBJ_NATIVE)
 #define is_range(val) is_obj_type(val, OBJ_RANGE)
-#define is_tuple(val) is_obj_type(val, OBJ_TUPLE)
 #define is_upvalue(val) is_obj_type(val, OBJ_UPVALUE)
 
 #define AS_BOUND(val) ((ObjBound *)AS_OBJ(val))
 #define AS_CLASS(val) ((ObjClass *)AS_OBJ(val))
 #define AS_CLOSURE(val) ((ObjClosure *)AS_OBJ(val))
-#define AS_CUSTOM(val) ((ObjCustom *)AS_OBJ(val))
 #define AS_ERR(val) ((ObjErr *)AS_OBJ(val))
 #define AS_FUN(val) ((ObjFun *)AS_OBJ(val))
 #define AS_INSTANCE(val) ((ObjInstance *)AS_OBJ(val))
 #define AS_NATIVE(val) ((ObjNative *)AS_OBJ(val))
 #define AS_RANGE(val) ((ObjRange *)AS_OBJ(val))
-#define AS_TUPLE(val) ((ObjTuple *)AS_OBJ(val))
 #define AS_UPVALUE(val) ((ObjUpvalue *)AS_OBJ(val))
 
 #define AS_NATIVE_FN(val) (AS_NATIVE(val)->fun)
@@ -58,7 +55,6 @@ enum ObjType {
   // Interned objects must be last:
   OBJ_RANGE,
   OBJ_STRING,
-  OBJ_TUPLE,
 };
 
 /** First ObjType enum that is interned. */
@@ -67,7 +63,8 @@ enum ObjType {
 typedef Value NativeFn(Value self, int argCount, Value *args);
 
 typedef void ObjFn(Obj *obj);
-typedef int ObjLenFn(Obj *obj);
+typedef int ObjLengthFn(Obj *obj);
+typedef void ObjNativesFn(Value klass);
 typedef int ObjIOFn(Obj *obj, FILE *io);
 typedef const char *ObjBytesFn(Obj *obj, int length);
 
@@ -75,17 +72,18 @@ typedef struct ObjDef {
   const char *class_name;
   const uint8_t size;
   const bool interned;
-  ObjLenFn *len;
+  ObjLengthFn *length;
   ObjFn *free;
   ObjFn *mark;
   ObjIOFn *inspect;
   ObjIOFn *dump;
   ObjBytesFn *bytes;
+  ObjNativesFn *natives;
 } ObjDef;
 
 struct Obj {
   ObjType type;
-  ObjDef *def;
+  const ObjDef *def;
   bool isMarked;    /** Is marked by GC in the current mark cycle. */
   struct Obj *next; /** Linked list of objects used for GC. */
   Hash hash;        /** All objects have a static hash value. */
@@ -178,12 +176,6 @@ struct ObjString {
   char *chars;
 };
 
-typedef struct ObjTuple {
-  Obj obj;
-  uint8_t length;
-  Value *values;
-} ObjTuple;
-
 typedef struct ObjInfo {
   const char *inspect;
   const char *className;
@@ -215,8 +207,6 @@ int fprintObject(FILE *io, Obj *obj);
 
 int cmpObjects(Obj *a, Obj *b);
 
-let error(const char *msg);
-
 static inline bool is_obj_type(Value value, ObjType type) {
   return is_obj(value) && AS_OBJ(value)->type == type;
 }
@@ -228,7 +218,7 @@ static inline bool is_obj_def(Value value, const ObjDef *def) {
 static inline bool is_interned(Value val) {
   if (!is_obj(val)) return true;
   Obj *obj = AS_OBJ(val);
-  return obj->type >= OBJ_INTERNED || obj->def->interned;
+  return obj->type >= OBJ_INTERNED || (obj->def && obj->def->interned);
 }
 
 #endif

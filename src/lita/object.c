@@ -21,7 +21,6 @@ const ObjInfo objInfo[13] = {
     [OBJ_UPVALUE] = {"UPVALUE", NULL},
     [OBJ_RANGE] = {"RANGE", "Range"},
     [OBJ_STRING] = {"STRING", "String"},
-    [OBJ_TUPLE] = {"TUPLE", "Tuple"},
 };
 
 Obj *allocateObject(size_t size, ObjType type) {
@@ -115,6 +114,8 @@ ObjRange *makeRange(Value start, Value end) {
 }
 
 const char *objectBytes(Obj *obj, int length) {
+  if (obj->def && obj->def->bytes) return obj->def->bytes(obj, length);
+
   switch (obj->type) {
   case OBJ_RANGE: {
     if (length != sizeof(Value) * 2) return NULL;
@@ -129,18 +130,9 @@ const char *objectBytes(Obj *obj, int length) {
     return str->chars;
   }
 
-  case OBJ_TUPLE: {
-    ObjTuple *tuple = (ObjTuple *)obj;
-    if (length != tuple->length * sizeof(Value)) return NULL;
-
-    return (char *)tuple->values;
-  }
-
-  case OBJ_CUSTOM: {
-    if (obj->def->bytes) return obj->def->bytes(obj, length);
+  case OBJ_CUSTOM:
     if (length != obj->def->size) return NULL;
     return (char *)&obj->hash;
-  }
 
   default: return NULL;
   }
@@ -158,6 +150,8 @@ int fprintFunction(FILE *io, const char *kind, ObjFun *fun) {
 }
 
 int fprintObject(FILE *io, Obj *obj) {
+  if (obj->def && obj->def->inspect) return obj->def->inspect(obj, io);
+
   switch (obj->type) {
   case OBJ_ARRAY: {
     ObjArray *arr = (ObjArray *)obj;
@@ -179,9 +173,7 @@ int fprintObject(FILE *io, Obj *obj) {
 
   case OBJ_CLOSURE: return fprintFunction(io, "fn", ((ObjClosure *)obj)->fun);
 
-  case OBJ_CUSTOM:
-    if (obj->def->inspect) return obj->def->inspect(obj, io);
-    else return fprintf(io, "<custom %s>", obj->def->class_name);
+  case OBJ_CUSTOM: return fprintf(io, "<custom %s>", obj->def->class_name);
 
   case OBJ_ERR: return fprintf(io, "Error: %s", ((ObjErr *)obj)->msg->chars);
 
@@ -209,15 +201,6 @@ int fprintObject(FILE *io, Obj *obj) {
     ObjString *str = escapeString((ObjString *)obj);
     return fprintf(io, FG_GREEN "%s" FG_DEFAULT, str->chars) - 10;
   }
-  case OBJ_TUPLE: {
-    ObjTuple *tuple = (ObjTuple *)obj;
-    int tot = fprintf(io, "(");
-    for (int i = 0; i < tuple->length; i++) {
-      if (i > 0) tot += fprintf(io, ", ");
-      tot += fprintValue(io, tuple->values[i]);
-    }
-    return fprintf(io, ")") + tot;
-  }
 
   case OBJ_UPVALUE: {
     ObjUpvalue *up = (ObjUpvalue *)obj;
@@ -241,5 +224,3 @@ int cmpObjects(Obj *a, Obj *b) {
     return a - b;
   }
 }
-
-let error(const char *msg) { return obj(newError(newString(msg))); }

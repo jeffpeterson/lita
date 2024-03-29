@@ -106,6 +106,8 @@ static void blackenObject(Obj *obj) {
   fprintf(stderr, "\n");
 #endif
 
+  if (obj->def && obj->def->mark) return obj->def->mark(obj);
+
   switch (obj->type) {
   case OBJ_ARRAY: {
     ObjArray *arr = (ObjArray *)obj;
@@ -137,8 +139,8 @@ static void blackenObject(Obj *obj) {
   }
 
   case OBJ_CUSTOM: {
-    ObjFn *mark = obj->def->mark;
-    if (mark) mark(obj);
+    fprintf(stderr, "mark not implemented for this object");
+    exit(1);
     break;
   }
 
@@ -175,12 +177,6 @@ static void blackenObject(Obj *obj) {
     break;
   }
 
-  case OBJ_TUPLE: {
-    ObjTuple *tuple = (ObjTuple *)obj;
-    for (int i = 0; i < tuple->length; i++) markValue(tuple->values[i]);
-    break;
-  }
-
   case OBJ_UPVALUE: markValue(((ObjUpvalue *)obj)->closed); break;
 
   case OBJ_STRING: break;
@@ -195,6 +191,12 @@ static void freeObject(Obj *obj) {
   fprintObject(stderr, obj);
   fprintf(stderr, "\n");
 #endif
+
+  if (obj->def && obj->def->free && obj->def->size) {
+    obj->def->free(obj);
+    reallocate(obj, obj->def->size, 0);
+    return;
+  }
 
   switch (obj->type) {
   case OBJ_ARRAY: {
@@ -219,12 +221,10 @@ static void freeObject(Obj *obj) {
     break;
   }
 
-  case OBJ_CUSTOM: {
-    ObjFn *free = obj->def->free;
-    if (free) obj->def->free(obj);
-    reallocate(obj, obj->def->size, 0);
+  case OBJ_CUSTOM:
+    fprintf(stderr, "free not implemented for this object");
+    exit(1);
     break;
-  }
 
   case OBJ_ERR: FREE(ObjErr, obj); break;
 
@@ -250,12 +250,6 @@ static void freeObject(Obj *obj) {
     ObjString *string = (ObjString *)obj;
     FREE_ARRAY(char, string->chars, string->length + 1);
     FREE(ObjString, obj);
-    break;
-  }
-  case OBJ_TUPLE: {
-    ObjTuple *tuple = (ObjTuple *)obj;
-    FREE_ARRAY(Value, tuple->values, tuple->length);
-    FREE(ObjTuple, obj);
     break;
   }
 

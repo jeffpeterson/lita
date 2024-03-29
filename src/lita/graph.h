@@ -13,8 +13,8 @@ typedef struct Graph {
 void init_graph(Graph *graph);
 void free_graph(Graph *graph);
 
-void graph_edge(ObjTuple *edge);
+void graph_edge(Obj *edge);
 void graph_add(Value index);
-void graph_disconnect(ObjTuple *edge);
+void graph_disconnect(Obj *edge);
 
 #endif
