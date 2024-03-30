@@ -108,7 +108,7 @@ ObjTuple *zip_tuples(ObjTuple *a, ObjTuple *b, Value (*fn)(Value, Value)) {
   return take_tuple(values, length);
 }
 
-/// Native
+// # Native
 static let Tuple_map(let this, int argc, let *args) {
   if (!argc) return error("map() requires a callable argument");
   ObjTuple *tuple = AS_TUPLE(this);

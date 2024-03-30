@@ -168,7 +168,6 @@ static void blackenObject(Obj *obj) {
 
   case OBJ_UPVALUE: markValue(((ObjUpvalue *)obj)->closed); break;
 
-  case OBJ_STRING: break;
   default: fprintf(stderr, "mark not implemented for this object"); exit(1);
   }
 }
@@ -224,13 +223,6 @@ static void freeObject(Obj *obj) {
   case OBJ_NATIVE: FREE(ObjNative, obj); break;
 
   case OBJ_RANGE: FREE(ObjRange, obj); break;
-
-  case OBJ_STRING: {
-    ObjString *string = (ObjString *)obj;
-    FREE_ARRAY(char, string->chars, string->length + 1);
-    FREE(ObjString, obj);
-    break;
-  }
 
   case OBJ_UPVALUE: FREE(ObjUpvalue, obj); break;
   default: fprintf(stderr, "free not implemented for this object"); exit(1);

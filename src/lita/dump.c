@@ -41,12 +41,6 @@ void dumpValue(FILE *io, Value v) {
     return;
   }
 
-  case OBJ_STRING: {
-    ObjString *str = escape_string(AS_STRING(v));
-    fprintf(io, "str(%.*s)", str->length, str->chars);
-    return;
-  }
-
   default:
     fprintf(io, "error(\"unknown obj type: %s\")", objInfo[obj->type].inspect);
     break;

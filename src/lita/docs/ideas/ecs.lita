@@ -13,7 +13,7 @@ class Velocity < Point
 // globals start with an uppercase letter: G
 // mutables start with an ampersand: &velocity
 
-/// # Systems
+// # Systems
 
 fn gravity({ &velocity }, G)
 	velocity -= G

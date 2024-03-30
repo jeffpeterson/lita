@@ -15,9 +15,9 @@ ObjString *as_string(let x) {
 }
 
 /**
- * Allocate an ObjString for a (null-terminated) char array.
+ * Allocate an ObjString for a (null-terminated) char string.
  */
-static ObjString *allocateString(char *chars, int length, Hash hash) {
+static ObjString *allocate_string(char *chars, int length, Hash hash) {
   ObjString *string = ALLOCATE_OBJ(ObjString, OBJ_STRING);
   string->length = length;
   string->chars = chars;
@@ -49,7 +49,7 @@ ObjString *take_string(char *chars, int length) {
     FREE_ARRAY(char, chars, length + 1);
     return interned;
   }
-  return allocateString(chars, length, hash);
+  return allocate_string(chars, length, hash);
 }
 
 ObjString *copy_string(const char *chars, int length) {
@@ -62,7 +62,7 @@ ObjString *copy_string(const char *chars, int length) {
   char *heapChars = ALLOCATE(char, length + 1);
   memcpy(heapChars, chars, length);
   heapChars[length] = '\0';
-  return allocateString(heapChars, length, hash);
+  return allocate_string(heapChars, length, hash);
 }
 
 ObjString *buffer_to_string(Buffer *buf) {
@@ -227,3 +227,47 @@ int fstring_format(FILE *io, const char *fmt, ...) {
   va_end(args);
   return fwrite(str->chars, sizeof(char), str->length, io);
 }
+
+// # Natives
+static _ String_plus(_ this, int argc, _ *args) {
+  let other = to_string(args[0]);
+  return obj(concat_strings(as_string(this), as_string(other)));
+}
+
+ObjFun *string_lita();
+
+static void string_natives(let String) {
+  runFun(string_lita());
+
+  method(vm.String, fn("+", 1, String_plus));
+}
+
+void free_string(Obj *obj) {
+  ObjString *string = (ObjString *)obj;
+  FREE_ARRAY(char, string->chars, string->length + 1);
+}
+
+void mark_string(Obj *obj) {}
+
+int inspect_string(Obj *obj, FILE *io) {
+  ObjString *string = (ObjString *)obj;
+  return fprintf(io, "\"%s\"", string->chars);
+}
+
+int dump_string(Obj *obj, FILE *io) {
+  ObjString *str = escape_string((ObjString *)obj);
+  return fprintf(io, "str(%.*s)", str->length, str->chars) +
+         fprintf(io, "\"%s\"", str->chars);
+}
+
+const ObjDef string_def = {
+    .class_name = "String",
+    .size = sizeof(ObjString),
+    .interned = true,
+    .free = free_string,
+    .mark = mark_string,
+    .inspect = inspect_string,
+    .dump = dump_string,
+    // .length = string_length,
+    .natives = string_natives,
+};

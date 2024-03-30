@@ -350,8 +350,6 @@ _ inspect(_ val) {
           stringf("%s..%s", to_string(range->start), to_string(range->end)));
     }
 
-    case OBJ_STRING: return OBJ_VAL(stringf("\"%s\"", AS_STRING(val)->chars));
-
     default: break;
     }
   }

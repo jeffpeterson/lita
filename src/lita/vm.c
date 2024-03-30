@@ -128,6 +128,7 @@ static void register_def(const ObjDef *def) {
 
 InterpretResult bootVM() {
   InterpretResult result = defineNatives();
+  register_def(&string_def);
   register_def(&array_def);
   register_def(&tuple_def);
   return result;

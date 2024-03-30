@@ -6,7 +6,7 @@
 #include "tuple.h"
 #include "vm.h"
 
-/// Helpers
+// # Helpers
 
 bool defineNative(const char *name, int arity, NativeFn fun) {
   return setGlobal(string(name), fn(name, arity, fun));
@@ -19,7 +19,7 @@ let global_class(const char *name) {
   return setGlobal(vname, class(vname));
 }
 
-/// Native global functions
+// # Native global functions
 
 static _ native_clock(_ this, int argc, _ *args) {
   return num((double)clock() / CLOCKS_PER_SEC);
@@ -50,9 +50,9 @@ static _ native_append(_ this, int argc, _ *args) {
   return append(path, args[argc - 1]);
 }
 
-/// Native methods
+// # Native methods
 
-/// Any
+// # Any
 static _ Any_class(_ this, int argc, _ *args) { return classOf(this); }
 static _ Any_eql(_ this, int argc, _ *args) {
   return BOOL_VAL(this == args[0]);
@@ -64,7 +64,7 @@ static _ Any_objectId(_ this, int argc, _ *args) {
 }
 static _ Any_string(_ this, int argc, _ *args) { return to_string(this); }
 
-/// Function
+// # Function
 static _ Function_arity(_ this, int argc, _ *args) { return arity(this); }
 static _ Function_bytes(_ this, int argc, _ *args) {
   if (!is_closure(this)) return error("Only Fns have bytes.");
@@ -81,7 +81,7 @@ static _ Function_byteCount(_ this, int argc, _ *args) {
   return AS_NUMBER(fn->chunk.count);
 }
 
-/// Number
+// # Number
 static _ Number_eql(_ this, int argc, _ *args) {
   return BOOL_VAL(AS_NUMBER(this) == AS_NUMBER(args[0]));
 }
@@ -94,12 +94,6 @@ static _ Number_star(_ this, int argc, _ *args) {
 }
 static _ Number_string(_ this, int argc, _ *args) {
   return OBJ_VAL(stringf("%g", AS_NUMBER(this)));
-}
-
-/// String
-static _ String_plus(_ this, int argc, _ *args) {
-  let other = to_string(args[0]);
-  return obj(concat_strings(as_string(this), as_string(other)));
 }
 
 ObjFun *core_lita();
@@ -118,20 +112,20 @@ InterpretResult defineNatives() {
 
   if (result) return result;
 
-  vm.Array = global(str("Array"));
-  vm.Bool = global(str("Bool"));
-  vm.Class = global(str("Class"));
-  vm.Error = global(str("Error"));
-  vm.Function = global(str("Function"));
-  vm.Method = global(str("Method"));
-  vm.NativeFunction = global(str("NativeFunction"));
-  vm.Nil = global(str("Nil"));
-  vm.Number = global(str("Number"));
-  vm.Object = global(str("Object"));
-  vm.Range = global(str("Range"));
-  vm.String = global(str("String"));
-  vm.Table = global(str("Table"));
-  vm.Tuple = global(str("Tuple"));
+  vm.Array = global_class("Array");
+  vm.Bool = global_class("Bool");
+  vm.Class = global_class("Class");
+  vm.Error = global_class("Error");
+  vm.Function = global_class("Function");
+  vm.Method = global_class("Method");
+  vm.NativeFunction = global_class("NativeFunction");
+  vm.Nil = global_class("Nil");
+  vm.Number = global_class("Number");
+  vm.Object = global_class("Object");
+  vm.Range = global_class("Range");
+  vm.String = global_class("String");
+  vm.Table = global_class("Table");
+  vm.Tuple = global_class("Tuple");
 
   method(vm.Any, fn("==", 1, Any_eql));
   method(vm.Any, fn("class", 0, Any_class));
@@ -148,8 +142,6 @@ InterpretResult defineNatives() {
   method(vm.Function, fn("arity", 0, Function_arity));         // getter
   method(vm.Function, fn("bytes", 0, Function_bytes));         // getter
   method(vm.Function, fn("byteCount", 0, Function_byteCount)); // getter
-
-  method(vm.String, fn("+", 1, String_plus));
 
   return result;
 }

@@ -166,11 +166,7 @@
               "name": "entity.name.function.lita"
             }
           },
-          "patterns": [
-            {
-              "include": "source.c"
-            }
-          ]
+          "patterns": [{"include": "source.c"}]
         }
       ]
     },
@@ -178,7 +174,8 @@
       "patterns": [
         {
           "name": "comment.line.double-slash.lita",
-          "match": "\\/\\/.*"
+          "match": "\\/\\/.*",
+          "patterns": [{"include": "source.markdown"}]
         }
       ]
     }
