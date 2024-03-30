@@ -1029,7 +1029,10 @@ static void function(FunType type) {
 }
 
 static void method() {
-  match(TOKEN_FN); // optional
+  bool is_c = match(TOKEN_CFN);
+
+  if (is_c) {
+  } else match(TOKEN_FN); // optional
   consumeIdent("Expect method name.");
 
   uint8_t constant = identifierConstant(&parser.previous);

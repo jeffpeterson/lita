@@ -5,6 +5,13 @@
 #include "object.h"
 #include "value.h"
 
+typedef struct ObjArray {
+  Obj obj;
+  int capacity;
+  int length;
+  Value *values;
+} ObjArray;
+
 #define AS_ARRAY(val) ((ObjArray *)AS_OBJ(val))
 #define is_array(val) is_obj_def(val, &array_def)
 

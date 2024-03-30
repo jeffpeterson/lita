@@ -53,14 +53,21 @@ void dumpValue(FILE *io, Value v) {
   }
 }
 
-static int dumpFn(FILE *io, ObjFun *fun) {
-  Value vid;
-  if (tableGet(&ids, obj(fun), &vid)) {
-    return as_int(vid);
+bool id_for(let v, int *id) {
+  let vid;
+  if (tableGet(&ids, v, &vid)) {
+    *id = as_int(vid);
+    return true;
   }
-  int id = currentId++;
-  vid = num(id);
-  tableSet(&ids, obj(fun), vid);
+
+  *id = currentId++;
+  tableSet(&ids, v, num(*id));
+  return false;
+}
+
+static int dumpFn(FILE *io, ObjFun *fun) {
+  int id;
+  if (id_for(obj(fun), &id)) return id;
 
   ObjString *name = fun->name;
   Chunk chunk = fun->chunk;
@@ -68,7 +75,12 @@ static int dumpFn(FILE *io, ObjFun *fun) {
 
   for (int i = 0; i < values.count; i++) {
     Value v = values.values[i];
-    if (is_fun(v)) dumpFn(io, AS_FUN(v));
+
+    if (is_obj(v)) {
+      Obj *obj = AS_OBJ(v);
+      if (obj->def && obj->def->dump_global) obj->def->dump_global(obj, io);
+      else if (is_fun(v)) dumpFn(io, AS_FUN(v));
+    }
   }
 
   fprintf(io,

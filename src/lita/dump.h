@@ -10,5 +10,6 @@
 
 void dumpModule(FILE *io, ObjString *name, ObjFun *fun);
 void dumpValue(FILE *io, Value v);
+bool id_for(let v, int *id);
 
 #endif

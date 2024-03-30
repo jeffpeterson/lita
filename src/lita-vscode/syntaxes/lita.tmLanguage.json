@@ -3,13 +3,14 @@
   "name": "lita",
   "scopeName": "source.lita",
   "patterns": [
-    { "include": "#comments" },
-    { "include": "#keywords" },
-    { "include": "#statements" },
-    { "include": "#callables" },
-    { "include": "#ident" },
-    { "include": "#strings" },
-    { "include": "#digits" }
+    {"include": "#comments"},
+    {"include": "#keywords"},
+    {"include": "#statements"},
+    {"include": "#callables"},
+    {"include": "#ident"},
+    {"include": "#embeds"},
+    {"include": "#strings"},
+    {"include": "#digits"}
   ],
   "repository": {
     "keywords": {
@@ -49,7 +50,7 @@
         {
           "begin": "^__END__\\n",
           "captures": {
-            "0": { "name": "string.unquoted.program-block.lita" }
+            "0": {"name": "string.unquoted.program-block.lita"}
           },
           "comment": "__END__ marker",
           "contentName": "text.plain",
@@ -59,7 +60,7 @@
               "begin": "(?=<?xml|<(?i:html\\b)|!DOCTYPE (?i:html\\b))",
               "end": "(?=not)impossible",
               "name": "text.html.embedded.lita",
-              "patterns": [{ "include": "text.html.basic" }]
+              "patterns": [{"include": "text.html.basic"}]
             }
           ]
         }
@@ -70,15 +71,15 @@
         {
           "match": "\\b(let)\\s+([A-Za-z_][A-Za-z0-9_]*)\\b",
           "captures": {
-            "1": { "name": "storage.type.lita" },
-            "2": { "name": "support.variable.lita" }
+            "1": {"name": "storage.type.lita"},
+            "2": {"name": "support.variable.lita"}
           }
         },
         {
           "match": "\\b(fn)\\s+([^\\(\\s]*)\\s*(?:\\(([A-Za-z0-9,\\s]*)\\))?\\s*(=>?)?",
           "captures": {
-            "1": { "name": "storage.type.function.lita" },
-            "2": { "name": "entity.name.function.lita" },
+            "1": {"name": "storage.type.function.lita"},
+            "2": {"name": "entity.name.function.lita"},
             "3": {
               "patterns": [
                 {
@@ -87,16 +88,16 @@
                 }
               ]
             },
-            "4": { "name": "storage.modifier.lita" }
+            "4": {"name": "storage.modifier.lita"}
           }
         },
         {
           "match": "\\b(class)\\s+([A-Za-z_][A-Za-z0-9_]*)(?:\\s*(<)\\s*([A-Za-z_][A-Za-z0-9_]*))?\\b",
           "captures": {
-            "1": { "name": "storage.type.class.lita" },
-            "2": { "name": "entity.name.type.class.lita" },
-            "3": { "name": "storage.modifier.lita" },
-            "4": { "name": "entity.name.type.class.lita" }
+            "1": {"name": "storage.type.class.lita"},
+            "2": {"name": "entity.name.type.class.lita"},
+            "3": {"name": "storage.modifier.lita"},
+            "4": {"name": "entity.name.type.class.lita"}
           }
         }
       ]
@@ -110,7 +111,7 @@
         {
           "match": "([A-Za-z_][A-Za-z0-9_]*)\\s*=>",
           "captures": {
-            "1": { "name": "support.function.lita" }
+            "1": {"name": "support.function.lita"}
           }
         }
       ]
@@ -151,6 +152,25 @@
         {
           "name": "variable.other.readwrite.lita",
           "match": "\\b[A-Za-z_][A-Za-z0-9_]*\\b"
+        }
+      ]
+    },
+    "embeds": {
+      "patterns": [
+        {
+          "begin": "^(\\s*)(cfn .*)$",
+          "end": "^(?!\\1\\s+|\\n)",
+          "name": "meta.embedded.c",
+          "captures": {
+            "2": {
+              "name": "entity.name.function.lita"
+            }
+          },
+          "patterns": [
+            {
+              "include": "source.c"
+            }
+          ]
         }
       ]
     },

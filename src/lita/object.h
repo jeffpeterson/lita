@@ -76,6 +76,7 @@ typedef struct ObjDef {
   ObjFn *mark;
   ObjIOFn *inspect;
   ObjIOFn *dump;
+  ObjIOFn *dump_global;
   ObjBytesFn *bytes;
   ObjNativesFn *natives;
 } ObjDef;
@@ -102,13 +103,6 @@ typedef struct ObjUpvalue {
   Value *location; /** Pointer to this upvalue's Value. */
   struct ObjUpvalue *next; /** Linked list of all upvalues tracked by VM. */
 } ObjUpvalue;
-
-typedef struct ObjArray {
-  Obj obj;
-  int capacity;
-  int length;
-  Value *values;
-} ObjArray;
 
 typedef struct ObjErr {
   Obj obj;
