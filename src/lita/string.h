@@ -10,7 +10,7 @@
 
 ObjString *as_string(let x);
 
-ObjString *newString(const char *chars);
+ObjString *new_string(const char *chars);
 
 /**
  * Reuse some existing allocated (null-terminated) chars
@@ -18,23 +18,23 @@ ObjString *newString(const char *chars);
  *
  * [length] should not include the null byte.
  */
-ObjString *takeString(char *chars, int length);
+ObjString *take_string(char *chars, int length);
 
 /**
  * Copy existing chars into a newly allocated Obj.
  */
-ObjString *copyString(const char *chars, int length);
-ObjString *concatStrings(ObjString *a, ObjString *b);
-ObjString *bufferToString(Buffer *buf);
+ObjString *copy_string(const char *chars, int length);
+ObjString *concat_strings(ObjString *a, ObjString *b);
+ObjString *buffer_to_string(Buffer *buf);
 
 ObjString *stringf(const char *fmt, ...);
-ObjString *stringToCIdent(ObjString *str);
+ObjString *string_to_c_ident(ObjString *str);
 
-ObjString *escapeString(ObjString *str);
-ObjString *unescapeString(ObjString *str);
+ObjString *escape_string(ObjString *str);
+ObjString *unescape_string(ObjString *str);
 
-ObjString *vstringFormat(const char *fmt, va_list args);
-ObjString *stringFormat(const char *fmt, ...);
-int fstringFormat(FILE *io, const char *fmt, ...);
+ObjString *vstring_format(const char *fmt, va_list args);
+ObjString *string_format(const char *fmt, ...);
+int fstring_format(FILE *io, const char *fmt, ...);
 
 #endif

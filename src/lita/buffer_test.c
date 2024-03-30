@@ -11,8 +11,8 @@ void buffer_test() {
 
   assert(buf.count == 6);
 
-  ObjString *a = bufferToString(&buf);
-  ObjString *b = newString("abcdef");
+  ObjString *a = buffer_to_string(&buf);
+  ObjString *b = new_string("abcdef");
 
   assert(a == b);
 }

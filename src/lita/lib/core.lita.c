@@ -42,7 +42,7 @@ static Chunk chunk1() {
 static Value fn1() {
   ObjFun *f = newFunction();  f->arity = 0;
   f->upvalueCount = 0;
-  f->name = newString("string");
+  f->name = new_string("string");
              // string
   f->chunk = chunk1();
   return obj(f);
@@ -84,7 +84,7 @@ static Chunk chunk2() {
 static Value fn2() {
   ObjFun *f = newFunction();  f->arity = 0;
   f->upvalueCount = 0;
-  f->name = newString("inspect");
+  f->name = new_string("inspect");
              // inspect
   f->chunk = chunk2();
   return obj(f);
@@ -126,7 +126,7 @@ static Chunk chunk3() {
 static Value fn3() {
   ObjFun *f = newFunction();  f->arity = 0;
   f->upvalueCount = 0;
-  f->name = newString("string");
+  f->name = new_string("string");
              // string
   f->chunk = chunk3();
   return obj(f);
@@ -168,7 +168,7 @@ static Chunk chunk4() {
 static Value fn4() {
   ObjFun *f = newFunction();  f->arity = 2;
   f->upvalueCount = 0;
-  f->name = newString("init");
+  f->name = new_string("init");
              // init
   f->chunk = chunk4();
   return obj(f);
@@ -210,7 +210,7 @@ static Chunk chunk5() {
 static Value fn5() {
   ObjFun *f = newFunction();  f->arity = 0;
   f->upvalueCount = 0;
-  f->name = newString("inspect");
+  f->name = new_string("inspect");
              // inspect
   f->chunk = chunk5();
   return obj(f);
@@ -252,7 +252,7 @@ static Chunk chunk6() {
 static Value fn6() {
   ObjFun *f = newFunction();  f->arity = 0;
   f->upvalueCount = 0;
-  f->name = newString("string");
+  f->name = new_string("string");
              // string
   f->chunk = chunk6();
   return obj(f);
@@ -292,7 +292,7 @@ static Chunk chunk7() {
 static Value fn7() {
   ObjFun *f = newFunction();  f->arity = 0;
   f->upvalueCount = 0;
-  f->name = newString("string");
+  f->name = new_string("string");
              // string
   f->chunk = chunk7();
   return obj(f);
@@ -334,7 +334,7 @@ static Chunk chunk8() {
 static Value fn8() {
   ObjFun *f = newFunction();  f->arity = 1;
   f->upvalueCount = 0;
-  f->name = newString("*");
+  f->name = new_string("*");
              // *
   f->chunk = chunk8();
   return obj(f);
@@ -376,7 +376,7 @@ static Chunk chunk9() {
 static Value fn9() {
   ObjFun *f = newFunction();  f->arity = 1;
   f->upvalueCount = 0;
-  f->name = newString("/");
+  f->name = new_string("/");
              // /
   f->chunk = chunk9();
   return obj(f);
@@ -418,7 +418,7 @@ static Chunk chunk10() {
 static Value fn10() {
   ObjFun *f = newFunction();  f->arity = 0;
   f->upvalueCount = 0;
-  f->name = newString("bold");
+  f->name = new_string("bold");
              // bold
   f->chunk = chunk10();
   return obj(f);
@@ -460,7 +460,7 @@ static Chunk chunk11() {
 static Value fn11() {
   ObjFun *f = newFunction();  f->arity = 0;
   f->upvalueCount = 0;
-  f->name = newString("dim");
+  f->name = new_string("dim");
              // dim
   f->chunk = chunk11();
   return obj(f);
@@ -502,7 +502,7 @@ static Chunk chunk12() {
 static Value fn12() {
   ObjFun *f = newFunction();  f->arity = 0;
   f->upvalueCount = 0;
-  f->name = newString("italic");
+  f->name = new_string("italic");
              // italic
   f->chunk = chunk12();
   return obj(f);
@@ -544,7 +544,7 @@ static Chunk chunk13() {
 static Value fn13() {
   ObjFun *f = newFunction();  f->arity = 0;
   f->upvalueCount = 0;
-  f->name = newString("underline");
+  f->name = new_string("underline");
              // underline
   f->chunk = chunk13();
   return obj(f);
@@ -586,7 +586,7 @@ static Chunk chunk14() {
 static Value fn14() {
   ObjFun *f = newFunction();  f->arity = 0;
   f->upvalueCount = 0;
-  f->name = newString("invert");
+  f->name = new_string("invert");
              // invert
   f->chunk = chunk14();
   return obj(f);
@@ -628,7 +628,7 @@ static Chunk chunk15() {
 static Value fn15() {
   ObjFun *f = newFunction();  f->arity = 0;
   f->upvalueCount = 0;
-  f->name = newString("hide");
+  f->name = new_string("hide");
              // hide
   f->chunk = chunk15();
   return obj(f);
@@ -670,7 +670,7 @@ static Chunk chunk16() {
 static Value fn16() {
   ObjFun *f = newFunction();  f->arity = 0;
   f->upvalueCount = 0;
-  f->name = newString("strike");
+  f->name = new_string("strike");
              // strike
   f->chunk = chunk16();
   return obj(f);
@@ -712,7 +712,7 @@ static Chunk chunk17() {
 static Value fn17() {
   ObjFun *f = newFunction();  f->arity = 0;
   f->upvalueCount = 0;
-  f->name = newString("black");
+  f->name = new_string("black");
              // black
   f->chunk = chunk17();
   return obj(f);
@@ -754,7 +754,7 @@ static Chunk chunk18() {
 static Value fn18() {
   ObjFun *f = newFunction();  f->arity = 0;
   f->upvalueCount = 0;
-  f->name = newString("red");
+  f->name = new_string("red");
              // red
   f->chunk = chunk18();
   return obj(f);
@@ -796,7 +796,7 @@ static Chunk chunk19() {
 static Value fn19() {
   ObjFun *f = newFunction();  f->arity = 0;
   f->upvalueCount = 0;
-  f->name = newString("green");
+  f->name = new_string("green");
              // green
   f->chunk = chunk19();
   return obj(f);
@@ -838,7 +838,7 @@ static Chunk chunk20() {
 static Value fn20() {
   ObjFun *f = newFunction();  f->arity = 0;
   f->upvalueCount = 0;
-  f->name = newString("yellow");
+  f->name = new_string("yellow");
              // yellow
   f->chunk = chunk20();
   return obj(f);
@@ -880,7 +880,7 @@ static Chunk chunk21() {
 static Value fn21() {
   ObjFun *f = newFunction();  f->arity = 0;
   f->upvalueCount = 0;
-  f->name = newString("blue");
+  f->name = new_string("blue");
              // blue
   f->chunk = chunk21();
   return obj(f);
@@ -922,7 +922,7 @@ static Chunk chunk22() {
 static Value fn22() {
   ObjFun *f = newFunction();  f->arity = 0;
   f->upvalueCount = 0;
-  f->name = newString("magenta");
+  f->name = new_string("magenta");
              // magenta
   f->chunk = chunk22();
   return obj(f);
@@ -964,7 +964,7 @@ static Chunk chunk23() {
 static Value fn23() {
   ObjFun *f = newFunction();  f->arity = 0;
   f->upvalueCount = 0;
-  f->name = newString("cyan");
+  f->name = new_string("cyan");
              // cyan
   f->chunk = chunk23();
   return obj(f);
@@ -1006,7 +1006,7 @@ static Chunk chunk24() {
 static Value fn24() {
   ObjFun *f = newFunction();  f->arity = 0;
   f->upvalueCount = 0;
-  f->name = newString("white");
+  f->name = new_string("white");
              // white
   f->chunk = chunk24();
   return obj(f);
@@ -1048,7 +1048,7 @@ static Chunk chunk25() {
 static Value fn25() {
   ObjFun *f = newFunction();  f->arity = 0;
   f->upvalueCount = 0;
-  f->name = newString("bg_black");
+  f->name = new_string("bg_black");
              // bg_black
   f->chunk = chunk25();
   return obj(f);
@@ -1090,7 +1090,7 @@ static Chunk chunk26() {
 static Value fn26() {
   ObjFun *f = newFunction();  f->arity = 0;
   f->upvalueCount = 0;
-  f->name = newString("bg_red");
+  f->name = new_string("bg_red");
              // bg_red
   f->chunk = chunk26();
   return obj(f);
@@ -1132,7 +1132,7 @@ static Chunk chunk27() {
 static Value fn27() {
   ObjFun *f = newFunction();  f->arity = 0;
   f->upvalueCount = 0;
-  f->name = newString("bg_green");
+  f->name = new_string("bg_green");
              // bg_green
   f->chunk = chunk27();
   return obj(f);
@@ -1174,7 +1174,7 @@ static Chunk chunk28() {
 static Value fn28() {
   ObjFun *f = newFunction();  f->arity = 0;
   f->upvalueCount = 0;
-  f->name = newString("bg_yellow");
+  f->name = new_string("bg_yellow");
              // bg_yellow
   f->chunk = chunk28();
   return obj(f);
@@ -1216,7 +1216,7 @@ static Chunk chunk29() {
 static Value fn29() {
   ObjFun *f = newFunction();  f->arity = 0;
   f->upvalueCount = 0;
-  f->name = newString("bg_blue");
+  f->name = new_string("bg_blue");
              // bg_blue
   f->chunk = chunk29();
   return obj(f);
@@ -1258,7 +1258,7 @@ static Chunk chunk30() {
 static Value fn30() {
   ObjFun *f = newFunction();  f->arity = 0;
   f->upvalueCount = 0;
-  f->name = newString("bg_magenta");
+  f->name = new_string("bg_magenta");
              // bg_magenta
   f->chunk = chunk30();
   return obj(f);
@@ -1300,7 +1300,7 @@ static Chunk chunk31() {
 static Value fn31() {
   ObjFun *f = newFunction();  f->arity = 0;
   f->upvalueCount = 0;
-  f->name = newString("bg_cyan");
+  f->name = new_string("bg_cyan");
              // bg_cyan
   f->chunk = chunk31();
   return obj(f);
@@ -1342,7 +1342,7 @@ static Chunk chunk32() {
 static Value fn32() {
   ObjFun *f = newFunction();  f->arity = 0;
   f->upvalueCount = 0;
-  f->name = newString("bg_white");
+  f->name = new_string("bg_white");
              // bg_white
   f->chunk = chunk32();
   return obj(f);
@@ -1384,7 +1384,7 @@ static Chunk chunk33() {
 static Value fn33() {
   ObjFun *f = newFunction();  f->arity = 0;
   f->upvalueCount = 0;
-  f->name = newString("inspect");
+  f->name = new_string("inspect");
              // inspect
   f->chunk = chunk33();
   return obj(f);
@@ -1426,7 +1426,7 @@ static Chunk chunk34() {
 static Value fn34() {
   ObjFun *f = newFunction();  f->arity = 3;
   f->upvalueCount = 0;
-  f->name = newString("init");
+  f->name = new_string("init");
              // init
   f->chunk = chunk34();
   return obj(f);
@@ -1468,7 +1468,7 @@ static Chunk chunk0() {
 static Value fn0() {
   ObjFun *f = newFunction();  f->arity = 0;
   f->upvalueCount = 0;
-  f->name = newString("src_lita_lib_core_lita");
+  f->name = new_string("src_lita_lib_core_lita");
              // src_lita_lib_core_lita
   f->chunk = chunk0();
   return obj(f);

@@ -50,19 +50,19 @@ ObjRange *asRange(_ x) {
   return AS_RANGE(x);
 }
 
-let error(const char *msg) { return obj(newError(newString(msg))); }
+let error(const char *msg) { return obj(newError(new_string(msg))); }
 
 _ fn(const char *name, int arity, NativeFn fun) {
-  return obj(newNative(newString(name), arity, fun));
+  return obj(newNative(new_string(name), arity, fun));
 }
 _ memory(u8 *bytes, int length) {
-  return obj(copyString((char *)bytes, length));
+  return obj(copy_string((char *)bytes, length));
 }
 _ num(double num) { return NUMBER_VAL(num); }
 _ ptr(void *pointer) { return PTR_VAL(pointer); }
 _ range(_ start, _ end) { return obj(makeRange(start, end)); }
-_ str(const char *str) { return obj(newString(str)); }
-_ string(const char *str) { return obj(newString(str)); }
+_ str(const char *str) { return obj(new_string(str)); }
+_ string(const char *str) { return obj(new_string(str)); }
 
 _ class(_ name) {
   if (!is_string(name)) return nil;
@@ -107,7 +107,7 @@ _ add(_ a, _ b) {
   Obj *out;
   switch (obj_type(a)) {
   case OBJ_STRING:
-    out = (Obj *)concatStrings(AS_STRING(a), AS_STRING(to_string(b)));
+    out = (Obj *)concat_strings(AS_STRING(a), AS_STRING(to_string(b)));
     break;
   // case OBJ_TUPLE: out = (Obj *)zip_tuples(AS_TUPLE(a), AS_TUPLE(b), add);
   // break;
@@ -138,7 +138,7 @@ _ multiply(_ a, _ b) {
   Obj *out;
   switch (obj_type(a)) {
   case OBJ_STRING:
-    out = (Obj *)concatStrings(AS_STRING(a), AS_STRING(to_string(b)));
+    out = (Obj *)concat_strings(AS_STRING(a), AS_STRING(to_string(b)));
     break;
   // case OBJ_TUPLE:
   //   out = (Obj *)zip_tuples(AS_TUPLE(a), AS_TUPLE(b), multiply);
@@ -319,7 +319,7 @@ _ inspect(_ val) {
       FILE *io = open_memstream(&str, &len);
       obj->def->inspect(obj, io);
       fclose(io);
-      let val = OBJ_VAL(takeString(str, len));
+      let val = OBJ_VAL(take_string(str, len));
       fprintValue(stdout, val);
 
       return val;

@@ -91,7 +91,7 @@ void initVM() {
   initTable(&vm.interned);
   initTable(&vm.keep);
 
-  vm.str.init = newString("init");
+  vm.str.init = new_string("init");
 
   vm.Any = nil;
   vm.Array = nil;

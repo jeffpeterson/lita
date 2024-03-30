@@ -42,7 +42,7 @@ static Chunk chunk1() {
 static Value fn1() {
   ObjFun *f = newFunction();  f->arity = 1;
   f->upvalueCount = 0;
-  f->name = newString("init");
+  f->name = new_string("init");
              // init
   f->chunk = chunk1();
   return obj(f);
@@ -84,7 +84,7 @@ static Chunk chunk0() {
 static Value fn0() {
   ObjFun *f = newFunction();  f->arity = 0;
   f->upvalueCount = 0;
-  f->name = newString("src_lita_lib_Parser_lita");
+  f->name = new_string("src_lita_lib_Parser_lita");
              // src_lita_lib_Parser_lita
   f->chunk = chunk0();
   return obj(f);

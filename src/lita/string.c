@@ -27,20 +27,20 @@ static ObjString *allocateString(char *chars, int length, Hash hash) {
   return string;
 }
 
-ObjString *concatStrings(ObjString *a, ObjString *b) {
+ObjString *concat_strings(ObjString *a, ObjString *b) {
   int length = a->length + b->length;
   char *chars = ALLOCATE(char, length + 1);
   memcpy(chars, a->chars, a->length);
   memcpy(chars + a->length, b->chars, b->length);
   chars[length] = '\0';
-  return takeString(chars, length);
+  return take_string(chars, length);
 }
 
-ObjString *newString(const char *chars) {
-  return copyString(chars, strlen(chars));
+ObjString *new_string(const char *chars) {
+  return copy_string(chars, strlen(chars));
 }
 
-ObjString *takeString(char *chars, int length) {
+ObjString *take_string(char *chars, int length) {
   Hash hash;
   ObjString *interned =
       (ObjString *)getInterned(&hash, OBJ_STRING, chars, length);
@@ -52,7 +52,7 @@ ObjString *takeString(char *chars, int length) {
   return allocateString(chars, length, hash);
 }
 
-ObjString *copyString(const char *chars, int length) {
+ObjString *copy_string(const char *chars, int length) {
   Hash hash;
   ObjString *interned =
       (ObjString *)getInterned(&hash, OBJ_STRING, chars, length);
@@ -65,14 +65,14 @@ ObjString *copyString(const char *chars, int length) {
   return allocateString(heapChars, length, hash);
 }
 
-ObjString *bufferToString(Buffer *buf) {
+ObjString *buffer_to_string(Buffer *buf) {
   if (buf->count == 0 || buf->bytes[buf->count - 1] != '\0')
     appendCharToBuffer(buf, '\0');
   growBuffer(buf, buf->count);
-  return takeString((char *)buf->bytes, buf->count - 1);
+  return take_string((char *)buf->bytes, buf->count - 1);
 }
 
-ObjString *escapeString(ObjString *str) {
+ObjString *escape_string(ObjString *str) {
   Buffer out = newBuffer(str->length + 3);
   appendCharToBuffer(&out, '"');
 
@@ -101,10 +101,10 @@ ObjString *escapeString(ObjString *str) {
 
   appendCharToBuffer(&out, '"');
 
-  return bufferToString(&out);
+  return buffer_to_string(&out);
 }
 
-ObjString *unescapeString(ObjString *str) {
+ObjString *unescape_string(ObjString *str) {
   char *out = ALLOCATE(char, str->length + 1);
   int len = 0;
   bool escape = false;
@@ -135,10 +135,10 @@ ObjString *unescapeString(ObjString *str) {
 
   out[len] = '\0';
 
-  return takeString(GROW_ARRAY(char, out, str->length + 1, len + 1), len);
+  return take_string(GROW_ARRAY(char, out, str->length + 1, len + 1), len);
 }
 
-ObjString *stringToCIdent(ObjString *str) {
+ObjString *string_to_c_ident(ObjString *str) {
   // Extra byte in case of leading "_"
   char *out = ALLOCATE(char, str->length + 2);
   int len = 0;
@@ -157,7 +157,7 @@ ObjString *stringToCIdent(ObjString *str) {
 
   out[len] = '\0';
 
-  return takeString(GROW_ARRAY(char, out, str->length + 2, len + 1), len);
+  return take_string(GROW_ARRAY(char, out, str->length + 2, len + 1), len);
 }
 
 ObjString *stringf(const char *fmt, ...) {
@@ -167,12 +167,12 @@ ObjString *stringf(const char *fmt, ...) {
   int len = vasprintf(&str, fmt, args);
   va_end(args);
 
-  if (len < 0) return copyString("", 0);
+  if (len < 0) return copy_string("", 0);
 
-  return takeString(str, len);
+  return take_string(str, len);
 }
 
-ObjString *vstringFormat(const char *fmt, va_list args) {
+ObjString *vstring_format(const char *fmt, va_list args) {
   Buffer buf = newBuffer(8);
   int offset = 0;
   int i = 0;
@@ -209,21 +209,21 @@ ObjString *vstringFormat(const char *fmt, va_list args) {
   appendBuffer(&buf, (u8 *)fmt + offset, i - offset);
 
   growBuffer(&buf, buf.count);
-  return takeString((char *)buf.bytes, buf.count);
+  return take_string((char *)buf.bytes, buf.count);
 }
 
-ObjString *stringFormat(const char *fmt, ...) {
+ObjString *string_format(const char *fmt, ...) {
   va_list args;
   va_start(args, fmt);
-  ObjString *str = vstringFormat(fmt, args);
+  ObjString *str = vstring_format(fmt, args);
   va_end(args);
   return str;
 }
 
-int fstringFormat(FILE *io, const char *fmt, ...) {
+int fstring_format(FILE *io, const char *fmt, ...) {
   va_list args;
   va_start(args, fmt);
-  ObjString *str = vstringFormat(fmt, args);
+  ObjString *str = vstring_format(fmt, args);
   va_end(args);
   return fwrite(str->chars, sizeof(char), str->length, io);
 }

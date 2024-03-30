@@ -40,7 +40,7 @@ ObjString *readFile(ObjString *path) {
   buffer[bytesRead] = '\0';
 
   fclose(io);
-  return newString(buffer);
+  return new_string(buffer);
 }
 
 bool writeFile(ObjString *path, ObjString *content) {
@@ -72,7 +72,7 @@ void compileFile(ObjString *path) {
 
   if (fun == NULL) exit(65);
 
-  ObjString *dst = concatStrings(path, newString(".c"));
+  ObjString *dst = concat_strings(path, new_string(".c"));
   FILE *io = openFile(dst, "w");
   dumpModule(io, path, fun);
   fclose(io);

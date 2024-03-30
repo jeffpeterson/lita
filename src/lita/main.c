@@ -11,7 +11,7 @@
 #include "vm.h"
 
 static void repl() {
-  ObjString *name = newString("REPL");
+  ObjString *name = new_string("REPL");
   char line[1024];
   for (;;) {
     printf("> ");
@@ -37,7 +37,7 @@ int main(int argc, char *argv[]) {
     case 'c': mode = COMPILE; break;
     case 'i': mode = INTERPRET; break;
     case 'r': startRepl = true; break;
-    case 'e': assertOkResult(interpret(optarg, newString("eval flag"))); break;
+    case 'e': assertOkResult(interpret(optarg, new_string("eval flag"))); break;
     case '?': exit(1);
     }
   }
@@ -47,9 +47,11 @@ int main(int argc, char *argv[]) {
   if (mode == INTERPRET) assertOkResult(bootVM());
 
   for (int i = optind; i < argc; i++) {
-    ObjString *path = newString(argv[i]);
+    ObjString *path = new_string(argv[i]);
 
-    if (mode == INTERPRET) { runFile(path); }
+    if (mode == INTERPRET) {
+      runFile(path);
+    }
 
     if (mode == COMPILE) compileFile(path);
   }

@@ -137,7 +137,7 @@ static void popClassCompiler() {
 static Chunk *currentChunk() { return &current->fun->chunk; }
 
 static Value identifierValue(Token *name) {
-  return OBJ_VAL(copyString(name->start, name->length));
+  return OBJ_VAL(copy_string(name->start, name->length));
 }
 
 static void errorAt(Token *token, const char *message) {
@@ -757,7 +757,7 @@ static void binary(Ctx *ctx) {
   case TOKEN_SLASH: emitByte(OP_DIVIDE); break;
   default: {
     uint8_t name =
-        makeConstant(OBJ_VAL(copyString(operator.start, operator.length)));
+        makeConstant(OBJ_VAL(copy_string(operator.start, operator.length)));
     emitBytes(OP_INVOKE, name);
     emitByte(1); // argc
   }
@@ -842,16 +842,16 @@ static void print(Ctx *ctx) {
 
 static void string(Ctx *ctx) {
   Token token = parser.previous;
-  ObjString *str = copyString(token.start + 1, token.length - 2);
-  if (token.escaped) str = unescapeString(str);
+  ObjString *str = copy_string(token.start + 1, token.length - 2);
+  if (token.escaped) str = unescape_string(str);
   emitConstant(OBJ_VAL(str));
 }
 
 static void symbol(Ctx *ctx) {
   advance();
   Token token = parser.previous;
-  ObjString *str = copyString(token.start, token.length);
-  if (token.escaped) str = unescapeString(str);
+  ObjString *str = copy_string(token.start, token.length);
+  if (token.escaped) str = unescape_string(str);
   emitConstant(OBJ_VAL(str));
 }
 
@@ -976,9 +976,9 @@ static void block() {
 
 static void function(FunType type) {
   Compiler compiler;
-  ObjString *name = type == TYPE_CLASS ? newString("init")
-                                       : copyString(parser.previous.start,
-                                                    parser.previous.length);
+  ObjString *name = type == TYPE_CLASS ? new_string("init")
+                                       : copy_string(parser.previous.start,
+                                                     parser.previous.length);
 
   initCompiler(&compiler, type, name);
   beginScope();
@@ -1069,7 +1069,7 @@ static void classDeclaration(Ctx *ctx) {
   // Parse inline init
   if (check(TOKEN_LEFT_PAREN)) {
     function(TYPE_CLASS);
-    Value init = OBJ_VAL(newString("init"));
+    Value init = OBJ_VAL(new_string("init"));
     emitBytes(OP_METHOD, makeConstant(init));
   }
 
@@ -1129,7 +1129,7 @@ static void assert(Ctx *ctx) {
   if (!parseAt(ctx->precedence))
     return error("Expect expression after assert.");
   int length = parser.previous.start + parser.previous.length - start;
-  Value source = OBJ_VAL(copyString(start, length));
+  Value source = OBJ_VAL(copy_string(start, length));
   emitBytes(OP_ASSERT, makeConstant(source));
 }
 
@@ -1360,7 +1360,7 @@ ObjFun *compile(const char *source, ObjString *name) {
 #endif
 
   Compiler compiler;
-  name = stringToCIdent(name);
+  name = string_to_c_ident(name);
   initCompiler(&compiler, TYPE_SCRIPT, name);
 
   parser.indebt = 0;

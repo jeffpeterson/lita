@@ -188,7 +188,7 @@ int fprintObject(FILE *io, Obj *obj) {
   }
 
   case OBJ_STRING: {
-    ObjString *str = escapeString((ObjString *)obj);
+    ObjString *str = escape_string((ObjString *)obj);
     return fprintf(io, FG_GREEN "%s" FG_DEFAULT, str->chars) - 10;
   }
 
