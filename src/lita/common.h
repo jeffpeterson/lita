@@ -11,9 +11,9 @@
 
 #define DEBUG_TRACE "Log trace calls."
 
-#define DEBUG_ASSERTS "Log assert source."
+#define DEBUG_ASSERTS "Log assert calls."
 
-// #define DEBUG_ASSERT_CODE "Log assert calls."
+// #define DEBUG_ASSERT_CODE "Log assert source."
 
 // #define DEBUG_TOKENS "Log tokens."
 

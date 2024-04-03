@@ -229,7 +229,7 @@ int fstring_format(FILE *io, const char *fmt, ...) {
 }
 
 // # Natives
-static _ String_plus(_ this, int argc, _ *args) {
+static _ String_concat(_ this, int argc, _ *args) {
   let other = to_string(args[0]);
   return obj(concat_strings(as_string(this), as_string(other)));
 }
@@ -239,8 +239,12 @@ ObjFun *string_lita();
 static void string_natives(let String) {
   runFun(string_lita());
 
-  method(vm.String, fn("+", 1, String_plus));
+  method(vm.String, fn("concat", 1, String_concat));
+  method(vm.String, fn("+", 1, String_concat));
+  method(vm.String, fn("*", 1, String_concat));
 }
+
+static int string_length(Obj *obj) { return ((ObjString *)obj)->length; }
 
 void free_string(Obj *obj) {
   ObjString *string = (ObjString *)obj;
@@ -268,6 +272,6 @@ const ObjDef string_def = {
     .mark = mark_string,
     .inspect = inspect_string,
     .dump = dump_string,
-    // .length = string_length,
+    .length = string_length,
     .natives = string_natives,
 };
