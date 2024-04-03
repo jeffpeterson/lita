@@ -6,6 +6,7 @@
 #include "memory.h"
 #include "string.h"
 #include "table.h"
+#include "term.h"
 #include "value.h"
 #include "vm.h"
 
@@ -228,6 +229,12 @@ int fstring_format(FILE *io, const char *fmt, ...) {
   return fwrite(str->chars, sizeof(char), str->length, io);
 }
 
+static const char *string_bytes(Obj *obj, int length) {
+  ObjString *str = (ObjString *)obj;
+  if (length != str->length) return NULL;
+  return str->chars;
+}
+
 // # Natives
 static _ String_concat(_ this, int argc, _ *args) {
   let other = to_string(args[0]);
@@ -254,8 +261,8 @@ void free_string(Obj *obj) {
 void mark_string(Obj *obj) {}
 
 int inspect_string(Obj *obj, FILE *io) {
-  ObjString *string = (ObjString *)obj;
-  return fprintf(io, "\"%s\"", string->chars);
+  ObjString *str = escape_string((ObjString *)obj);
+  return fprintf(io, FG_GREEN "%s" FG_DEFAULT, str->chars) - 10;
 }
 
 int dump_string(Obj *obj, FILE *io) {
@@ -268,6 +275,7 @@ const ObjDef string_def = {
     .class_name = "String",
     .size = sizeof(ObjString),
     .interned = true,
+    .bytes = string_bytes,
     .free = free_string,
     .mark = mark_string,
     .inspect = inspect_string,

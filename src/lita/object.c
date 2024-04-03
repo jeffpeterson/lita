@@ -124,12 +124,6 @@ const char *objectBytes(Obj *obj, int length) {
     return (char *)&range->start;
   }
 
-  case OBJ_STRING: {
-    ObjString *str = (ObjString *)obj;
-    if (length != str->length) return NULL;
-    return str->chars;
-  }
-
   case OBJ_CUSTOM:
     if (length != obj->def->size) return NULL;
     return (char *)&obj->hash;
@@ -185,11 +179,6 @@ int fprintObject(FILE *io, Obj *obj) {
     ObjRange *range = (ObjRange *)obj;
     return fprintValue(io, range->start) + fprintf(io, "..") +
            fprintValue(io, range->end);
-  }
-
-  case OBJ_STRING: {
-    ObjString *str = escape_string((ObjString *)obj);
-    return fprintf(io, FG_GREEN "%s" FG_DEFAULT, str->chars) - 10;
   }
 
   case OBJ_UPVALUE: {

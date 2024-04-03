@@ -209,7 +209,6 @@ u32 len(_ x) {
   case OBJ_FUN:
   case OBJ_NATIVE: return arity(x);
 
-  case OBJ_STRING: return as_string(x)->length;
   case OBJ_INSTANCE: return asInst(x)->fields.len;
 
   default: return 1;
