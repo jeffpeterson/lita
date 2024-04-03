@@ -393,14 +393,23 @@ static bool isFalsey(Value value) {
 InterpretResult vm_add() {
   Value b = peek(0);
   Value a = peek(1);
-  Value res = nil;
 
-  if (is_num(a) && is_num(b)) res = num(AS_NUMBER(a) + AS_NUMBER(b));
-
-  if (is_nil(res)) return vm_invoke(string("+"), 1);
+  if (!is_num(a) || !is_num(b)) return vm_invoke(string("+"), 1);
 
   popn(2);
-  push(res);
+  push(num(AS_NUMBER(a) + AS_NUMBER(b)));
+  return INTERPRET_OK;
+}
+
+/** [1 a][0 b] -> [0 result] */
+InterpretResult vm_multiply() {
+  Value b = peek(0);
+  Value a = peek(1);
+
+  if (!is_num(a) || !is_num(b)) return vm_invoke(string("*"), 1);
+
+  popn(2);
+  push(num(AS_NUMBER(a) * AS_NUMBER(b)));
   return INTERPRET_OK;
 }
 

@@ -96,27 +96,11 @@ _ method(_ klass, _ fun) {
   return fun;
 }
 
-_ add(_ a, _ b) {
-  if (is_num(a) && is_num(b)) return num(AS_NUMBER(a) + AS_NUMBER(b));
-
-  if (!is_obj(a)) {
-    runtimeError("This type cannot be added.");
-    return nil;
-  }
-
-  Obj *out;
-  switch (obj_type(a)) {
-  case OBJ_STRING:
-    out = (Obj *)concat_strings(AS_STRING(a), AS_STRING(to_string(b)));
-    break;
-  // case OBJ_TUPLE: out = (Obj *)zip_tuples(AS_TUPLE(a), AS_TUPLE(b), add);
-  // break;
-  default: runtimeError("Values cannot be added."); return nil;
-  }
-
-  if (out == NULL) return nil;
-
-  return obj(out);
+let add(let a, let b) {
+  push(a);
+  push(b);
+  vm_add();
+  return pop();
 }
 
 _ subtract(_ a, _ b) {
@@ -128,27 +112,10 @@ _ subtract(_ a, _ b) {
 }
 
 _ multiply(_ a, _ b) {
-  if (is_num(a) && is_num(b)) return num(asNum(a) * asNum(b));
-
-  if (!is_obj(a)) {
-    runtimeError("This type cannot be multiplied.");
-    return NIL_VAL;
-  }
-
-  Obj *out;
-  switch (obj_type(a)) {
-  case OBJ_STRING:
-    out = (Obj *)concat_strings(AS_STRING(a), AS_STRING(to_string(b)));
-    break;
-  // case OBJ_TUPLE:
-  //   out = (Obj *)zip_tuples(AS_TUPLE(a), AS_TUPLE(b), multiply);
-  //   break;
-  default: runtimeError("Values cannot be multiplied."); return NIL_VAL;
-  }
-
-  if (out == NULL) return NIL_VAL;
-
-  return OBJ_VAL(out);
+  push(a);
+  push(b);
+  vm_multiply();
+  return pop();
 }
 
 /** Returns arity of fun, -1 if not callable. */
@@ -282,8 +249,6 @@ _ to_string(_ val) {
       return OBJ_VAL(
           stringf("%s..%s", to_string(range->start), to_string(range->end)));
     }
-
-    case OBJ_STRING: return val;
 
     default: return str(objInfo[obj_type(val)].inspect);
     }

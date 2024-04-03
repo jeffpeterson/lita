@@ -19,7 +19,8 @@ ObjString *as_string(let x) {
  * Allocate an ObjString for a (null-terminated) char string.
  */
 static ObjString *allocate_string(char *chars, int length, Hash hash) {
-  ObjString *string = ALLOCATE_OBJ(ObjString, OBJ_STRING);
+  ObjString *string = ALLOCATE_OBJ(ObjString, OBJ_CUSTOM);
+  string->obj.def = &string_def;
   string->length = length;
   string->chars = chars;
   string->obj.hash = hash;
@@ -44,7 +45,7 @@ ObjString *new_string(const char *chars) {
 ObjString *take_string(char *chars, int length) {
   Hash hash;
   ObjString *interned =
-      (ObjString *)getInterned(&hash, OBJ_STRING, chars, length);
+      (ObjString *)getInterned(&hash, OBJ_CUSTOM, chars, length);
 
   if (interned != NULL) {
     FREE_ARRAY(char, chars, length + 1);
@@ -56,7 +57,7 @@ ObjString *take_string(char *chars, int length) {
 ObjString *copy_string(const char *chars, int length) {
   Hash hash;
   ObjString *interned =
-      (ObjString *)getInterned(&hash, OBJ_STRING, chars, length);
+      (ObjString *)getInterned(&hash, OBJ_CUSTOM, chars, length);
 
   if (interned != NULL) return interned;
 

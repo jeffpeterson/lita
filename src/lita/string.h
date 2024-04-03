@@ -5,7 +5,7 @@
 #include "common.h"
 #include "object.h"
 
-#define is_string(val) is_obj_type(val, OBJ_STRING)
+#define is_string(val) is_obj_def(val, &string_def)
 #define AS_STRING(val) ((ObjString *)AS_OBJ(val))
 
 extern const ObjDef string_def;

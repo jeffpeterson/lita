@@ -53,7 +53,6 @@ enum ObjType {
 
   // Interned objects must be last:
   OBJ_RANGE,
-  OBJ_STRING,
 };
 
 /** First ObjType enum that is interned. */

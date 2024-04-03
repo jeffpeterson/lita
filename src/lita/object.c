@@ -20,7 +20,6 @@ const ObjInfo objInfo[13] = {
     [OBJ_NATIVE] = {"NATIVE", "NativeFunction"},
     [OBJ_UPVALUE] = {"UPVALUE", NULL},
     [OBJ_RANGE] = {"RANGE", "Range"},
-    [OBJ_STRING] = {"STRING", "String"},
 };
 
 Obj *allocateObject(size_t size, ObjType type) {
