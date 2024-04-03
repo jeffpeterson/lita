@@ -1124,13 +1124,18 @@ static void varDeclaration() {
   defineVariable(global);
 }
 
+static Value source_since(const char *start) {
+  return OBJ_VAL(copy_string(start, parser.previous.start +
+                                        parser.previous.length - start));
+}
+
 static void assert(Ctx *ctx) {
   const char *start = parser.previous.start;
+
   if (!parseAt(ctx->precedence))
     return error("Expect expression after assert.");
-  int length = parser.previous.start + parser.previous.length - start;
-  Value source = OBJ_VAL(copy_string(start, length));
-  emitBytes(OP_ASSERT, makeConstant(source));
+
+  emitBytes(OP_ASSERT, makeConstant(source_since(start)));
 }
 
 // for ;;i++:

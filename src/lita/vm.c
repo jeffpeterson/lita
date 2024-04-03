@@ -422,6 +422,7 @@ void vm_array(u32 length) {
 
 InterpretResult vm_assert(Value src) {
   let value = peek(0);
+  let rhs = peek(-1);
 
 #ifdef DEBUG_ASSERT_CODE
   fprintValue(stderr, src);
@@ -432,6 +433,9 @@ InterpretResult vm_assert(Value src) {
     fprintValue(stderr, src);
     fprintf(stderr, " //=> ");
     fprintValue(stderr, value);
+    printf("\n");
+    fprintf(stderr, "RHS: ");
+    fprintValue(stderr, rhs);
     printf("\n");
     return runtimeError(FG_RED "Assertion failed." FG_DEFAULT);
   }
