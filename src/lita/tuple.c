@@ -108,9 +108,13 @@ ObjTuple *zip_tuples(ObjTuple *a, ObjTuple *b, Value (*fn)(Value, Value)) {
   return take_tuple(values, length);
 }
 
-// # Native
+// # Natives
+
+static let Tuple_add(let this, int argc, let *args) {
+  return obj(zip_tuples(as_tuple(this), as_tuple(args[0]), add));
+}
+
 static let Tuple_map(let this, int argc, let *args) {
-  if (!argc) return error("map() requires a callable argument");
   ObjTuple *tuple = AS_TUPLE(this);
   let fun = args[0];
 
@@ -123,10 +127,16 @@ static let Tuple_map(let this, int argc, let *args) {
   return pop();
 }
 
+static let Tuple_multiply(let this, int argc, let *args) {
+  return obj(zip_tuples(as_tuple(this), as_tuple(args[0]), multiply));
+}
+
 ObjFun *tuple_lita();
 
 static void tuple_natives(let Tuple) {
   runFun(tuple_lita());
+  method(Tuple, fn("*", 1, Tuple_multiply));
+  method(Tuple, fn("+", 1, Tuple_add));
   method(Tuple, fn("map", 1, Tuple_map));
 }
 
