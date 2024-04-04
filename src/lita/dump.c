@@ -24,10 +24,10 @@ void dumpValue(FILE *io, Value v) {
     return;
   }
 
-  if (!is_obj(v)) {
-    fprintf(io, "%#llx", v);
-    return;
-  }
+  // if (!is_obj(v)) {
+  //   fprintf(io, "%#llx", AS_NUMBER(v));
+  //   return;
+  // }
 
   Obj *obj = AS_OBJ(v);
 

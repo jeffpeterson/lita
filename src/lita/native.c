@@ -8,7 +8,7 @@
 
 // # Helpers
 
-bool defineNative(const char *name, int arity, NativeFn fun) {
+Value defineNative(const char *name, int arity, NativeFn fun) {
   return setGlobal(string(name), fn(name, arity, fun));
 }
 
@@ -56,9 +56,11 @@ static _ native_append(_ this, int argc, _ *args) {
 let Any_self(let this, int argc, let *args) { return this; }
 static _ Any_class(_ this, int argc, _ *args) { return classOf(this); }
 static _ Any_eql(_ this, int argc, _ *args) {
-  return BOOL_VAL(this == args[0]);
+  return BOOL_VAL(valuesEqual(this, args[0]));
 }
-static _ Any_hash(_ this, int argc, _ *args) { return hashValue(this); }
+static _ Any_hash(_ this, int argc, _ *args) {
+  return NUMBER_VAL(hashValue(this));
+}
 static _ Any_inspect(_ this, int argc, _ *args) { return inspect(this); }
 static _ Any_objectId(_ this, int argc, _ *args) {
   return NUMBER_VAL((u64)AS_OBJ(this));
@@ -66,7 +68,9 @@ static _ Any_objectId(_ this, int argc, _ *args) {
 static _ Any_string(_ this, int argc, _ *args) { return to_string(this); }
 
 // # Function
-static _ Function_arity(_ this, int argc, _ *args) { return arity(this); }
+static _ Function_arity(_ this, int argc, _ *args) {
+  return NUMBER_VAL(arity(this));
+}
 static _ Function_bytes(_ this, int argc, _ *args) {
   if (!is_closure(this)) return error("Only Fns have bytes.");
 
@@ -79,7 +83,7 @@ static _ Function_byteCount(_ this, int argc, _ *args) {
 
   ObjFun *fn = AS_FUN(this);
 
-  return AS_NUMBER(fn->chunk.count);
+  return num(fn->chunk.count);
 }
 
 // # Number
@@ -89,7 +93,7 @@ static _ Number_eql(_ this, int argc, _ *args) {
 static _ Number_star(_ this, int argc, _ *args) {
   let arg = args[0];
 
-  if (is_num(arg)) return AS_NUMBER(this) * AS_NUMBER(arg);
+  if (is_num(arg)) return NUMBER_VAL(AS_NUMBER(this) * AS_NUMBER(arg));
 
   return error("Cannot multiply these values.");
 }
