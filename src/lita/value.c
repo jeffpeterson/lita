@@ -53,8 +53,6 @@ int trace(const char *label, Value value) {
 bool valuesEqual(Value a, Value b) {
 #ifdef NAN_BOXING
   if (is_num(a)) return is_num(b) && AS_NUMBER(a) == AS_NUMBER(b);
-  if (!is_obj(a) || is_interned(b)) return a == b;
-
   return a == b;
 #else
   if (a.type != b.type) return false;
