@@ -30,7 +30,6 @@ let error(const char *msg);
 _ fn(const char *name, int arity, NativeFn fun);
 _ memory(u8 *bytes, int length);
 _ num(double num);
-_ ptr(void *pointer);
 _ range(_ start, _ end);
 _ str(const char *str);
 _ string(const char *str);

@@ -33,20 +33,17 @@ typedef struct ObjString ObjString;
 #define TAG_TRUE 5  // 101.
 
 typedef uint64_t Value;
-typedef Value let;
 
 #define is_bool(val) (((val) | 1) == TRUE_VAL)
 #define is_nil(val) ((val) == NIL_VAL)
 #define is_void(val) ((val) == VOID_VAL)
 #define is_num(val) (((val) & QNAN) != QNAN)
-#define is_ptr(val) (val & (QNAN | TAG_PTR)) == (QNAN | TAG_PTR)
 #define is_obj(val) valueIsObj(val)
 
 #define not_nil(val) (!is_nil(val))
 
 #define AS_BOOL(val) ((val) == TRUE_VAL)
 #define AS_NUMBER(val) valueToNum(val)
-#define AS_PTR(val) ((void *)(uintptr_t)((val) & ~(TAG_PTR | QNAN)))
 #define AS_OBJ(val) ((Obj *)(uintptr_t)((val) & ~(TAG_OBJ | QNAN)))
 
 #define BOOL_VAL(b) ((b) ? TRUE_VAL : FALSE_VAL)
@@ -56,7 +53,6 @@ typedef Value let;
 /** Used internally. Not accessible from language. */
 #define VOID_VAL ((Value)(uint64_t)(QNAN | TAG_VOID))
 #define NUMBER_VAL(num) numToValue(num)
-#define PTR_VAL(ptr) (Value)(TAG_PTR | QNAN | (uint64_t)(uintptr_t)(ptr))
 #define OBJ_VAL(obj) (Value)(TAG_OBJ | QNAN | (uint64_t)(uintptr_t)(obj))
 
 static inline double valueToNum(Value value) {
@@ -128,6 +124,8 @@ typedef struct {
 #define nil NIL_VAL
 #define True TRUE_VAL
 #define False FALSE_VAL
+
+typedef Value let;
 
 typedef struct {
   int capacity;

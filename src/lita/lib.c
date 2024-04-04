@@ -41,10 +41,6 @@ Obj *asObj(_ x) {
   assert(is_obj(x));
   return AS_OBJ(x);
 }
-void *asPtr(_ x) {
-  assert(is_ptr(x));
-  return AS_PTR(x);
-}
 ObjRange *asRange(_ x) {
   assert(is_range(x));
   return AS_RANGE(x);
@@ -59,7 +55,6 @@ _ memory(u8 *bytes, int length) {
   return obj(copy_string((char *)bytes, length));
 }
 _ num(double num) { return NUMBER_VAL(num); }
-_ ptr(void *pointer) { return PTR_VAL(pointer); }
 _ range(_ start, _ end) { return obj(makeRange(start, end)); }
 _ str(const char *str) { return obj(new_string(str)); }
 _ string(const char *str) { return obj(new_string(str)); }
