@@ -72,7 +72,7 @@ static int inspect_array(Obj *obj, FILE *io) {
   int tot = fprintf(io, "[");
   for (int i = 0; i < arr->length; i++) {
     if (i > 0) tot += fprintf(io, ", ");
-    tot += fprintValue(io, arr->values[i]);
+    tot += inspect_value(io, arr->values[i]);
   }
   return fprintf(io, "]") + tot;
 }

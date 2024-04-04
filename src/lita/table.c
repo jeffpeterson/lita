@@ -185,7 +185,7 @@ void markTable(Table *table) {
   }
 }
 
-int fprintTable(FILE *io, Table *table) {
+int inspect_table(FILE *io, Table *table) {
   int out = 0;
   int idx = 0;
   for (int i = 0; i < table->capacity; i++) {
@@ -197,10 +197,10 @@ int fprintTable(FILE *io, Table *table) {
       out += (idx > 0 ? fputs(", ", io) : 0) +
              fprintf(io, FG_GREEN "%s" FG_DEFAULT ": ",
                      AS_STRING(entry->key)->chars) +
-             fprintValue(io, entry->value);
+             inspect_value(io, entry->value);
     } else {
-      out += fprintf(io, " ") + fprintValue(io, entry->key) +
-             fprintf(io, " => ") + fprintValue(io, entry->value);
+      out += fprintf(io, " ") + inspect_value(io, entry->key) +
+             fprintf(io, " => ") + inspect_value(io, entry->value);
     }
     idx++;
   }
@@ -214,8 +214,8 @@ int fprintTableVerbose(FILE *io, Table *table) {
     Entry *entry = &table->entries[i];
 
     if (!is_void(entry->key)) {
-      out += fprintf(io, "  ") + fprintValue(io, entry->key) +
-             fprintf(io, " => ") + fprintValue(io, entry->value) +
+      out += fprintf(io, "  ") + inspect_value(io, entry->key) +
+             fprintf(io, " => ") + inspect_value(io, entry->value) +
              fprintf(io, "\n");
     }
   }

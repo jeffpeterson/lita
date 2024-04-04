@@ -194,7 +194,7 @@ ObjClosure *newClosure(ObjFun *fun);
 ObjErr *newError(ObjString *msg);
 
 ObjFun *newFunction();
-int fprintFunction(FILE *io, const char *kind, ObjFun *fun);
+int inspect_function(FILE *io, const char *kind, ObjFun *fun);
 
 ObjInstance *newInstance(ObjClass *klass);
 ObjNative *newNative(ObjString *name, int arity, NativeFn fun);
@@ -205,8 +205,8 @@ ObjUpvalue *newUpvalue(Value *slot);
 
 const char *objectBytes(Obj *obj, int length);
 
-int fprintObjType(FILE *io, ObjType type);
-int fprintObject(FILE *io, Obj *obj);
+int inspect_obj_type(FILE *io, ObjType type);
+int inspect_obj(FILE *io, Obj *obj);
 
 int cmpObjects(Obj *a, Obj *b);
 

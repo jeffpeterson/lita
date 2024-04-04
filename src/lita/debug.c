@@ -146,7 +146,7 @@ int disassembleInstruction(Chunk *chunk, int offset) {
     uint8_t arg = code[offset++];
     byte(arg);
     arrow();
-    fprintValue(stderr, chunk->constants.values[arg]);
+    inspect_value(stderr, chunk->constants.values[arg]);
     break;
   }
 
@@ -155,7 +155,7 @@ int disassembleInstruction(Chunk *chunk, int offset) {
     byte(cnst);
     byte(code[offset++]);
     arrow();
-    fprintValue(stderr, chunk->constants.values[cnst]);
+    inspect_value(stderr, chunk->constants.values[cnst]);
     break;
   }
 
@@ -165,7 +165,7 @@ int disassembleInstruction(Chunk *chunk, int offset) {
     byte(constant);
     byte(argCount);
     arrow();
-    fprintValue(stderr, chunk->constants.values[constant]);
+    inspect_value(stderr, chunk->constants.values[constant]);
     fprintf(stderr, " (%d args)", argCount);
     break;
   }
@@ -267,7 +267,7 @@ static void debugValues(Value *start, int length) {
   int offsets[length];
   // int frameIndex = 0;
   for (int i = 0; i < length; i++) {
-    offsets[i] = fprintf(stderr, "[ ") + fprintValue(stderr, start[i]) +
+    offsets[i] = fprintf(stderr, "[ ") + inspect_value(stderr, start[i]) +
                  fprintf(stderr, " ]");
   }
 }

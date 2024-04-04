@@ -28,22 +28,24 @@ void freeValueArray(ValueArray *array) {
   initValueArray(array);
 }
 
-int inspect_value(Value value, FILE *io) { return fprintValue(io, value); }
+int inspect_value(FILE *io, Value val) {
+  if (is_bool(val))
+    return fprintf(io, FG_YELLOW "%s" FG_DEFAULT,
+                   AS_BOOL(val) ? "true" : "false") -
+           10;
+  if (is_nil(val)) return fprintf(io, FG_MAGENTA "%s" FG_DEFAULT, "nil") - 10;
 
-int fprintValue(FILE *io, Value val) {
-  return is_bool(val) ? fprintf(io, FG_YELLOW "%s" FG_DEFAULT,
-                                AS_BOOL(val) ? "true" : "false") -
-                            10
-         : is_nil(val) ? fprintf(io, FG_MAGENTA "%s" FG_DEFAULT, "nil") - 10
-         : is_num(val)
-             ? fprintf(io, FG_BLUE "%g" FG_DEFAULT, AS_NUMBER(val)) - 10
-         : is_obj(val) ? fprintObject(io, AS_OBJ(val))
-                       : 0;
+  if (is_num(val))
+    return fprintf(io, FG_BLUE "%g" FG_DEFAULT, AS_NUMBER(val)) - 10;
+
+  if (is_obj(val)) return inspect_obj(io, AS_OBJ(val));
+
+  return 0;
 }
 
 int trace(const char *label, Value value) {
 #ifdef DEBUG_TRACE
-  return fprintf(stderr, "%s: ", label) + fprintValue(stderr, value) +
+  return fprintf(stderr, "%s: ", label) + inspect_value(stderr, value) +
          fprintf(stderr, "\n");
 #else
   return 0;

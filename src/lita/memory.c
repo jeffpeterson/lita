@@ -62,7 +62,7 @@ void markObject(Obj *obj) {
 
 #ifdef DEBUG_LOG_GC
   fprintf(stderr, "%p mark gray ", (void *)obj);
-  fprintValue(stderr, OBJ_VAL(obj));
+  inspect_value(stderr, OBJ_VAL(obj));
   fprintf(stderr, "\n");
 #endif
 
@@ -102,7 +102,7 @@ static void markArray(ValueArray *array) {
 static void blackenObject(Obj *obj) {
 #ifdef DEBUG_LOG_GC
   fprintf(stderr, "%p mark black ", (void *)obj);
-  fprintValue(stderr, OBJ_VAL(obj));
+  inspect_value(stderr, OBJ_VAL(obj));
   fprintf(stderr, "\n");
 #endif
 
@@ -175,9 +175,9 @@ static void blackenObject(Obj *obj) {
 static void freeObject(Obj *obj) {
 #ifdef DEBUG_LOG_MEM
   fprintf(stderr, "%p free ", (void *)obj);
-  fprintObjType(stderr, obj->type);
+  inspect_obj_type(stderr, obj->type);
   fprintf(stderr, " ");
-  fprintObject(stderr, obj);
+  inspect_obj(stderr, obj);
   fprintf(stderr, "\n");
 #endif
 
@@ -282,9 +282,9 @@ static void sweep() {
 
 #ifdef DEBUG_LOG_GC
     fprintf(stderr, "%p free ", (void *)unreached);
-    fprintObjType(stderr, unreached->type);
+    inspect_obj_type(stderr, unreached->type);
     fprintf(stderr, " ");
-    fprintObject(stderr, unreached);
+    inspect_obj(stderr, unreached);
     fprintf(stderr, "\n");
 #endif
 

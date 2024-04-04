@@ -29,7 +29,7 @@ static int inspect_tuple(Obj *obj, FILE *io) {
   int tot = fprintf(io, "(");
   for (int i = 0; i < tuple->length; i++) {
     if (i > 0) tot += fprintf(io, ", ");
-    tot += inspect_value(tuple->values[i], io);
+    tot += inspect_value(io, tuple->values[i]);
   }
   return fprintf(io, ")") + tot;
 }

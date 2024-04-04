@@ -40,7 +40,7 @@ InterpretResult runtimeError(const char *format, ...) {
     size_t instruction = frame->ip - fun->chunk.code - 1;
     int line = fun->chunk.lines[instruction];
     fprintf(stderr, "[line %d] in ", line);
-    fprintFunction(stderr, "ObjFun", fun);
+    inspect_function(stderr, "ObjFun", fun);
     fprintf(stderr, "\n");
   }
 
@@ -109,7 +109,7 @@ void initVM() {
   vm.Table = nil;
   vm.Tuple = nil;
 
-  // fprintTable(stderr, &vm.globals);
+  // inspect_table(stderr, &vm.globals);
   // pp(global(str("hash")));
   // pp(global(str("Any")));
   // pp(global(str("Object")));
@@ -251,7 +251,7 @@ static bool callValue(Value callee, int argCount) {
 
 #ifdef DEBUG_TRACE_EXECUTION
   printf("callValue: ");
-  fprintValue(stdout, callee);
+  inspect_value(stdout, callee);
   printf("\n");
 #endif
 
@@ -448,17 +448,17 @@ InterpretResult vm_assert(Value src) {
   let rhs = peek(-1);
 
 #ifdef DEBUG_ASSERT_CODE
-  fprintValue(stderr, src);
+  inspect_value(stderr, src);
   fprintf(stderr, "\n");
 #endif
 
   if (isFalsey(value)) {
-    fprintValue(stderr, src);
+    inspect_value(stderr, src);
     fprintf(stderr, " //=> ");
-    fprintValue(stderr, value);
+    inspect_value(stderr, value);
     printf("\n");
     fprintf(stderr, "RHS: ");
-    fprintValue(stderr, rhs);
+    inspect_value(stderr, rhs);
     printf("\n");
     return runtimeError(FG_RED "Assertion failed." FG_DEFAULT);
   }
@@ -820,7 +820,7 @@ static InterpretResult run() {
       break;
 
     case OP_PRINT:
-      fprintValue(stdout, peek(0));
+      inspect_value(stdout, peek(0));
       printf("\n");
       break;
 

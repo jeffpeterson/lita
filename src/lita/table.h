@@ -34,6 +34,6 @@ Obj *tableFindObj(Table *table, ObjType type, const char *bytes, int length,
                   Hash hash);
 void tableRemoveWhite(Table *table);
 void markTable(Table *table);
-int fprintTable(FILE *io, Table *table);
+int inspect_table(FILE *io, Table *table);
 
 #endif
