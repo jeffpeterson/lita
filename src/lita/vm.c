@@ -331,7 +331,7 @@ InterpretResult vm_invoke(Value name, int argCount) {
     ObjInstance *inst = AS_INSTANCE(receiver);
 
     Value value;
-    if (tableGet(&inst->fields, OBJ_VAL(name), &value)) {
+    if (tableGet(&inst->fields, name, &value)) {
       vm.stackTop[-argCount - 1] = value;
       return !callValue(value, argCount);
     }

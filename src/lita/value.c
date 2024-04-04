@@ -82,7 +82,7 @@ int cmpValues(Value a, Value b) {
   }
 
   // return a > b ? 1 : b > a ? -1 : 0;
-  return a - b;
+  return AS_NUMBER(a) - AS_NUMBER(b);
 }
 
 Hash appendHash(Hash hash, uint32_t x) {

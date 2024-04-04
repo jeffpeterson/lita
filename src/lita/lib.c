@@ -164,7 +164,7 @@ u32 len(_ x) {
 
   switch (obj->type) {
   case OBJ_BOUND: return len(asBound(x)->method);
-  case OBJ_RANGE: return subtract(asRange(x)->end, asRange(x)->start);
+  case OBJ_RANGE: return as_int(subtract(asRange(x)->end, asRange(x)->start));
 
   case OBJ_CLASS:
   case OBJ_CLOSURE:

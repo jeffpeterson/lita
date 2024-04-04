@@ -40,8 +40,6 @@ typedef uint64_t Value;
 #define is_num(val) (((val) & QNAN) != QNAN)
 #define is_obj(val) valueIsObj(val)
 
-#define not_nil(val) (!is_nil(val))
-
 #define AS_BOOL(val) ((val) == TRUE_VAL)
 #define AS_NUMBER(val) valueToNum(val)
 #define AS_OBJ(val) ((Obj *)(uintptr_t)((val) & ~(TAG_OBJ | QNAN)))
@@ -101,6 +99,7 @@ typedef struct {
 // } ValueWithUnit;
 
 #define is_bool(value) ((value).type == VAL_BOOL)
+#define is_void(value) ((value).type == VAL_VOID)
 #define is_nil(value) ((value).type == VAL_NIL)
 #define is_num(value) ((value).type == VAL_NUMBER)
 #define is_obj(value) ((value).type == VAL_OBJ)
@@ -111,14 +110,20 @@ typedef struct {
 
 #define BOOL_VAL(value) ((Value){VAL_BOOL, {.boolean = value}})
 #define NIL_VAL ((Value){VAL_NIL, {.number = 0}})
+#define VOID_VAL ((Value){VAL_VOID, {.number = 0}})
 #define NUMBER_VAL(value) ((Value){VAL_NUMBER, {.number = value}})
 #define OBJ_VAL(object) ((Value){VAL_OBJ, {.obj = (Obj *)object}})
+
+#define TRUE_VAL BOOL_VAL(true)
+#define FALSE_VAL BOOL_VAL(false)
 
 #endif
 
 #define nil NIL_VAL
 #define True TRUE_VAL
 #define False FALSE_VAL
+
+#define not_nil(val) (!is_nil(val))
 
 typedef Value let;
 

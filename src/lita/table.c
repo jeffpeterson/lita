@@ -45,7 +45,7 @@ static Entry *findEntry(Entry *entries, int capacity, Value key) {
         // Track the first tombstone we find.
         if (tombstone == NULL) tombstone = entry;
       }
-    } else if (entry->key == key) {
+    } else if (valuesEqual(entry->key, key)) {
       // We found an entry, return it.
       return entry;
     }
