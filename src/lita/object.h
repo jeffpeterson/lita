@@ -177,6 +177,17 @@ extern const ObjInfo objInfo[13];
 
 Obj *allocateObject(size_t size, ObjType type);
 
+bool as_bool(Value x);
+ObjClass *as_class(Value x);
+ObjClosure *as_fn(Value x);
+ObjInstance *as_inst(Value x);
+ObjBound *as_bound(Value x);
+ObjNative *as_native(Value x);
+double as_num(Value x);
+Obj *as_obj(Value x);
+void *asPtr(Value x);
+ObjRange *as_range(Value x);
+
 ObjBound *newBound(Value receiver, Value method);
 ObjClass *newClass(ObjString *name);
 ObjClosure *newClosure(ObjFun *fun);

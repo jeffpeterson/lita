@@ -1,3 +1,4 @@
+#include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -38,6 +39,43 @@ Obj *allocateObject(size_t size, ObjType type) {
   fprintf(stderr, "\n");
 #endif
   return obj;
+}
+
+bool as_bool(Value x) {
+  assert(is_bool(x));
+  return AS_BOOL(x);
+}
+ObjClass *as_class(Value x) {
+  assert(is_class(x));
+  return AS_CLASS(x);
+}
+ObjClosure *as_fn(Value x) {
+  assert(is_closure(x));
+  return AS_CLOSURE(x);
+}
+ObjInstance *as_inst(Value x) {
+  assert(is_instance(x));
+  return AS_INSTANCE(x);
+}
+ObjBound *as_bound(Value x) {
+  assert(is_bound(x));
+  return AS_BOUND(x);
+}
+ObjNative *as_native(Value x) {
+  assert(is_native(x));
+  return AS_NATIVE(x);
+}
+double as_num(Value x) {
+  assert(is_num(x));
+  return AS_NUMBER(x);
+}
+Obj *as_obj(Value x) {
+  assert(is_obj(x));
+  return AS_OBJ(x);
+}
+ObjRange *as_range(Value x) {
+  assert(is_range(x));
+  return AS_RANGE(x);
 }
 
 ObjBound *newBound(Value receiver, Value method) {

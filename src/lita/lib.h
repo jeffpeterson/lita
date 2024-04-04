@@ -14,17 +14,6 @@
 
 typedef Value _;
 
-bool as_bool(_ x);
-ObjClass *as_class(_ x);
-ObjClosure *as_fn(_ x);
-ObjInstance *as_inst(_ x);
-ObjBound *as_bound(_ x);
-ObjNative *as_native(_ x);
-double as_num(_ x);
-Obj *as_obj(_ x);
-void *asPtr(_ x);
-ObjRange *as_range(_ x);
-
 let error(const char *msg);
 
 _ fn(const char *name, int arity, NativeFn fun);

@@ -9,43 +9,6 @@
 #include "tuple.h"
 #include "vm.h"
 
-bool as_bool(_ x) {
-  assert(is_bool(x));
-  return AS_BOOL(x);
-}
-ObjClass *as_class(_ x) {
-  assert(is_class(x));
-  return AS_CLASS(x);
-}
-ObjClosure *as_fn(_ x) {
-  assert(is_closure(x));
-  return AS_CLOSURE(x);
-}
-ObjInstance *as_inst(_ x) {
-  assert(is_instance(x));
-  return AS_INSTANCE(x);
-}
-ObjBound *as_bound(_ x) {
-  assert(is_bound(x));
-  return AS_BOUND(x);
-}
-ObjNative *as_native(_ x) {
-  assert(is_native(x));
-  return AS_NATIVE(x);
-}
-double as_num(_ x) {
-  assert(is_num(x));
-  return AS_NUMBER(x);
-}
-Obj *as_obj(_ x) {
-  assert(is_obj(x));
-  return AS_OBJ(x);
-}
-ObjRange *as_range(_ x) {
-  assert(is_range(x));
-  return AS_RANGE(x);
-}
-
 let error(const char *msg) { return obj(newError(new_string(msg))); }
 
 _ fn(const char *name, int arity, NativeFn fun) {
