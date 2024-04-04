@@ -702,7 +702,10 @@ static InterpretResult run() {
       SYNC_FRAME();
       break;
     case OP_SUBTRACT: BINARY_OP(NUMBER_VAL, -); break;
-    case OP_MULTIPLY: BINARY_OP(NUMBER_VAL, *); break;
+    case OP_MULTIPLY:
+      if ((err = vm_multiply())) return err;
+      SYNC_FRAME();
+      break;
     case OP_NOT: push(BOOL_VAL(isFalsey(pop()))); break;
     case OP_NEGATE:
       if (!is_num(peek(0))) {

@@ -128,7 +128,9 @@ static let Tuple_map(let this, int argc, let *args) {
 }
 
 static let Tuple_multiply(let this, int argc, let *args) {
-  return obj(zip_tuples(as_tuple(this), as_tuple(args[0]), multiply));
+  if (is_tuple(args[0]))
+    return obj(zip_tuples(as_tuple(this), as_tuple(args[0]), multiply));
+  else return Tuple_map(this, argc, args);
 }
 
 ObjFun *tuple_lita();
