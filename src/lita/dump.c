@@ -19,6 +19,11 @@ void dumpValue(FILE *io, Value v) {
     return;
   }
 
+  if (is_num(v)) {
+    fprintf(io, "NUMBER_VAL(%f)", AS_NUMBER(v));
+    return;
+  }
+
   if (!is_obj(v)) {
     fprintf(io, "%#llx", v);
     return;

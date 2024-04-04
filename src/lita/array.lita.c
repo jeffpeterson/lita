@@ -54,7 +54,7 @@ static ValueArray constants2() {
   initValueArray(&vals);
   vals.count = vals.capacity = 5;
   Value values[] = {
-    str("length"), str("objectId"), 0, 0x3ff0000000000000, str("get"),
+    str("length"), str("objectId"), NUMBER_VAL(0.000000), NUMBER_VAL(1.000000), str("get"),
   };
   vals.values = cloneMemory(values, sizeof(values));
   return vals;
