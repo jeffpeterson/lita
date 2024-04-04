@@ -20,10 +20,6 @@ class Bool
 class Error
 class Number
 
-class Range(start, end)
-	fn inspect = start.inspect + ".." + end.inspect
-	fn string  = start.string + ".." + end.string
-
 class Table
 	fn inspect = "{" + "}"
 

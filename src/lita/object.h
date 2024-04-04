@@ -21,7 +21,6 @@ typedef enum ObjType ObjType;
 #define is_fun(val) is_obj_type(val, OBJ_FUN)
 #define is_instance(val) is_obj_type(val, OBJ_INSTANCE)
 #define is_native(val) is_obj_type(val, OBJ_NATIVE)
-#define is_range(val) is_obj_type(val, OBJ_RANGE)
 #define is_upvalue(val) is_obj_type(val, OBJ_UPVALUE)
 
 #define AS_BOUND(val) ((ObjBound *)AS_OBJ(val))
@@ -31,7 +30,6 @@ typedef enum ObjType ObjType;
 #define AS_FUN(val) ((ObjFun *)AS_OBJ(val))
 #define AS_INSTANCE(val) ((ObjInstance *)AS_OBJ(val))
 #define AS_NATIVE(val) ((ObjNative *)AS_OBJ(val))
-#define AS_RANGE(val) ((ObjRange *)AS_OBJ(val))
 #define AS_UPVALUE(val) ((ObjUpvalue *)AS_OBJ(val))
 
 #define AS_NATIVE_FN(val) (AS_NATIVE(val)->fun)
@@ -50,13 +48,7 @@ enum ObjType {
   OBJ_INSTANCE,
   OBJ_NATIVE,
   OBJ_UPVALUE,
-
-  // Interned objects must be last:
-  OBJ_RANGE,
 };
-
-/** First ObjType enum that is interned. */
-#define OBJ_INTERNED OBJ_RANGE
 
 typedef Value NativeFn(Value self, int argCount, Value *args);
 
@@ -156,12 +148,6 @@ typedef struct ObjNative {
   NativeFn *fun;
 } ObjNative;
 
-typedef struct ObjRange {
-  Obj obj;
-  Value start;
-  Value end;
-} ObjRange;
-
 struct ObjString {
   Obj obj;
   int length;
@@ -186,7 +172,6 @@ ObjNative *as_native(Value x);
 double as_num(Value x);
 Obj *as_obj(Value x);
 void *asPtr(Value x);
-ObjRange *as_range(Value x);
 
 ObjBound *newBound(Value receiver, Value method);
 ObjClass *newClass(ObjString *name);
@@ -198,8 +183,6 @@ int inspect_function(FILE *io, const char *kind, ObjFun *fun);
 
 ObjInstance *newInstance(ObjClass *klass);
 ObjNative *newNative(ObjString *name, int arity, NativeFn fun);
-
-ObjRange *makeRange(Value start, Value end);
 
 ObjUpvalue *newUpvalue(Value *slot);
 
@@ -221,7 +204,7 @@ static inline bool is_obj_def(Value value, const ObjDef *def) {
 static inline bool is_interned(Value val) {
   if (!is_obj(val)) return true;
   Obj *obj = AS_OBJ(val);
-  return obj->type >= OBJ_INTERNED || (obj->def && obj->def->interned);
+  return obj->def && obj->def->interned;
 }
 
 #endif

@@ -20,7 +20,6 @@ const ObjInfo objInfo[13] = {
     [OBJ_INSTANCE] = {"INSTANCE", NULL},
     [OBJ_NATIVE] = {"NATIVE", "NativeFunction"},
     [OBJ_UPVALUE] = {"UPVALUE", NULL},
-    [OBJ_RANGE] = {"RANGE", "Range"},
 };
 
 Obj *allocateObject(size_t size, ObjType type) {
@@ -72,10 +71,6 @@ double as_num(Value x) {
 Obj *as_obj(Value x) {
   assert(is_obj(x));
   return AS_OBJ(x);
-}
-ObjRange *as_range(Value x) {
-  assert(is_range(x));
-  return AS_RANGE(x);
 }
 
 ObjBound *newBound(Value receiver, Value method) {
@@ -142,25 +137,10 @@ ObjUpvalue *newUpvalue(Value *slot) {
   return upvalue;
 }
 
-ObjRange *makeRange(Value start, Value end) {
-  ObjRange *range = ALLOCATE_OBJ(ObjRange, OBJ_RANGE);
-  range->start = start;
-  range->end = end;
-  range->obj.hash = hashBytes((char *)&range->start, sizeof(Value) * 2);
-  return range;
-}
-
 const char *objectBytes(Obj *obj, int length) {
   if (obj->def && obj->def->bytes) return obj->def->bytes(obj, length);
 
   switch (obj->type) {
-  case OBJ_RANGE: {
-    if (length != sizeof(Value) * 2) return NULL;
-
-    ObjRange *range = (ObjRange *)obj;
-    return (char *)&range->start;
-  }
-
   case OBJ_CUSTOM:
     if (length != obj->def->size) return NULL;
     return (char *)&obj->hash;
@@ -210,12 +190,6 @@ int inspect_obj(FILE *io, Obj *obj) {
     return fprintf(io, FG_MAGENTA "<native %s/%d>" FG_DEFAULT,
                    native->name->chars, native->arity) -
            10;
-  }
-
-  case OBJ_RANGE: {
-    ObjRange *range = (ObjRange *)obj;
-    return inspect_value(io, range->start) + fprintf(io, "..") +
-           inspect_value(io, range->end);
   }
 
   case OBJ_UPVALUE: {

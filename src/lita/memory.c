@@ -159,13 +159,6 @@ static void blackenObject(Obj *obj) {
     break;
   }
 
-  case OBJ_RANGE: {
-    ObjRange *range = (ObjRange *)obj;
-    markValue(range->start);
-    markValue(range->end);
-    break;
-  }
-
   case OBJ_UPVALUE: markValue(((ObjUpvalue *)obj)->closed); break;
 
   default: fprintf(stderr, "mark not implemented for this object"); exit(1);
@@ -181,8 +174,8 @@ static void freeObject(Obj *obj) {
   fprintf(stderr, "\n");
 #endif
 
-  if (obj->def && obj->def->free && obj->def->size) {
-    obj->def->free(obj);
+  if (obj->def && obj->def->size) {
+    if (obj->def->free) obj->def->free(obj);
     reallocate(obj, obj->def->size, 0);
     return;
   }
@@ -221,8 +214,6 @@ static void freeObject(Obj *obj) {
   }
 
   case OBJ_NATIVE: FREE(ObjNative, obj); break;
-
-  case OBJ_RANGE: FREE(ObjRange, obj); break;
 
   case OBJ_UPVALUE: FREE(ObjUpvalue, obj); break;
   default: fprintf(stderr, "free not implemented for this object"); exit(1);

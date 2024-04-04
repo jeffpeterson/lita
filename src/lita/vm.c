@@ -11,6 +11,7 @@
 #include "memory.h"
 #include "native.h"
 #include "object.h"
+#include "range.h"
 #include "string.h"
 #include "system.h"
 #include "term.h"
@@ -130,6 +131,7 @@ InterpretResult bootVM() {
   InterpretResult result = defineNatives();
   register_def(&string_def);
   register_def(&array_def);
+  register_def(&range_def);
   register_def(&tuple_def);
   return result;
 }

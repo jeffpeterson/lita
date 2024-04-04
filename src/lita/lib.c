@@ -18,7 +18,6 @@ _ memory(u8 *bytes, int length) {
   return obj(copy_string((char *)bytes, length));
 }
 _ num(double num) { return NUMBER_VAL(num); }
-_ range(_ start, _ end) { return obj(makeRange(start, end)); }
 _ str(const char *str) { return obj(new_string(str)); }
 _ string(const char *str) { return obj(new_string(str)); }
 
@@ -127,7 +126,6 @@ u32 len(_ x) {
 
   switch (obj->type) {
   case OBJ_BOUND: return len(as_bound(x)->method);
-  case OBJ_RANGE: return as_int(subtract(as_range(x)->end, as_range(x)->start));
 
   case OBJ_CLASS:
   case OBJ_CLOSURE:
@@ -202,12 +200,6 @@ _ to_string(_ val) {
       // get(val, string("to_string"));
       return to_string(OBJ_VAL(AS_INSTANCE(val)->klass));
 
-    case OBJ_RANGE: {
-      ObjRange *range = AS_RANGE(val);
-      return OBJ_VAL(
-          stringf("%s..%s", to_string(range->start), to_string(range->end)));
-    }
-
     // default: return str(objInfo[obj_type(val)].inspect);
     default: return send(val, str("string"), 0);
     }
@@ -265,13 +257,6 @@ _ inspect(_ val) {
     }
     case OBJ_INSTANCE: return to_string(OBJ_VAL(AS_INSTANCE(val)->klass));
     case OBJ_NATIVE: return OBJ_VAL(AS_NATIVE(val)->name);
-
-    case OBJ_RANGE: {
-      ObjRange *range = AS_RANGE(val);
-      return OBJ_VAL(
-          stringf("%s..%s", to_string(range->start), to_string(range->end)));
-    }
-
     default: break;
     }
   }

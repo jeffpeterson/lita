@@ -1,0 +1,4 @@
+class Range(start, end)
+	fn inspect = start.inspect + ".." + end.inspect
+	fn string  = start.string + ".." + end.string
+	fn map(f) = f(start) .. f(end)
