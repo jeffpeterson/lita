@@ -279,6 +279,8 @@ void debugStack() {
   fputs(NO_DIM, stderr);
 }
 
+static CallFrame *prev_frame;
+
 void debugExecution() {
   fprintf(stderr, DIM "        |  -->" NO_DIM);
   debugStack();
@@ -298,8 +300,17 @@ void debugExecution() {
   // }
 
   CallFrame *frame = vm.frames + vm.frameCount - 1;
+
+  if (frame != prev_frame) {
+    fprintf(stderr, "\n");
+    for (int i = 0; i < vm.frameCount; i++) {
+      fprintf(stderr, "[ Frame %s ]", vm.frames[i].closure->fun->name->chars);
+    }
+  }
+
   fprintf(stderr, DIM "\n");
   disassembleInstruction(&frame->closure->fun->chunk,
                          (int)(frame->ip - frame->closure->fun->chunk.code));
   fprintf(stderr, NO_DIM);
+  prev_frame = frame;
 }

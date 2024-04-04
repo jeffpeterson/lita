@@ -93,6 +93,8 @@ Value pope(Value val);
 /** pop() n values off the stack. */
 Value *popn(uint8_t n);
 
+Value send(Value this, Value method_name, int argc, ...);
+
 Value global(Value name);
 Value setGlobal(Value name, Value val);
 
@@ -119,6 +121,7 @@ InterpretResult vm_add();
 InterpretResult vm_multiply();
 InterpretResult vm_assert(Value src);
 InterpretResult vm_call(int argc);
+InterpretResult vm_invoke(Value name, int argCount);
 InterpretResult vm_get_global(Value name);
 InterpretResult vm_get_property(Value name);
 InterpretResult vm_set_property(Value name);

@@ -9,6 +9,8 @@
 bool defineNative(const char *name, int arity, NativeFn fun);
 let global_class(const char *name);
 
+let Any_self(let this, int argc, let *args);
+
 InterpretResult defineNatives();
 
 #endif

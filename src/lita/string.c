@@ -4,6 +4,7 @@
 
 #include "lib.h"
 #include "memory.h"
+#include "native.h"
 #include "string.h"
 #include "table.h"
 #include "term.h"
@@ -247,6 +248,7 @@ ObjFun *string_lita();
 static void string_natives(let String) {
   runFun(string_lita());
 
+  method(vm.String, fn("string", 0, Any_self));
   method(vm.String, fn("concat", 1, String_concat));
   method(vm.String, fn("+", 1, String_concat));
   method(vm.String, fn("*", 1, String_concat));
@@ -268,8 +270,7 @@ int inspect_string(Obj *obj, FILE *io) {
 
 int dump_string(Obj *obj, FILE *io) {
   ObjString *str = escape_string((ObjString *)obj);
-  return fprintf(io, "str(%.*s)", str->length, str->chars) +
-         fprintf(io, "\"%s\"", str->chars);
+  return fprintf(io, "str(%.*s)", str->length, str->chars);
 }
 
 const ObjDef string_def = {

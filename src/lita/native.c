@@ -53,6 +53,7 @@ static _ native_append(_ this, int argc, _ *args) {
 // # Native methods
 
 // # Any
+let Any_self(let this, int argc, let *args) { return this; }
 static _ Any_class(_ this, int argc, _ *args) { return classOf(this); }
 static _ Any_eql(_ this, int argc, _ *args) {
   return BOOL_VAL(this == args[0]);
@@ -128,6 +129,7 @@ InterpretResult defineNatives() {
   vm.Tuple = global_class("Tuple");
 
   method(vm.Any, fn("==", 1, Any_eql));
+  method(vm.Any, fn("self", 0, Any_self));
   method(vm.Any, fn("class", 0, Any_class));
   method(vm.Any, fn("hash", 0, Any_hash));
   method(vm.Any, fn("inspect", 0, Any_inspect));

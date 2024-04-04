@@ -250,7 +250,8 @@ _ to_string(_ val) {
           stringf("%s..%s", to_string(range->start), to_string(range->end)));
     }
 
-    default: return str(objInfo[obj_type(val)].inspect);
+    // default: return str(objInfo[obj_type(val)].inspect);
+    default: return send(val, str("string"), 0);
     }
   }
 
@@ -284,7 +285,6 @@ _ inspect(_ val) {
       obj->def->inspect(obj, io);
       fclose(io);
       let val = OBJ_VAL(take_string(str, len));
-      fprintValue(stdout, val);
 
       return val;
     }

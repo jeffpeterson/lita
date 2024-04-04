@@ -26,8 +26,10 @@ void dumpValue(FILE *io, Value v) {
 
   Obj *obj = AS_OBJ(v);
 
-  if (obj->def && obj->def->dump) obj->def->dump(obj, io);
-
+  if (obj->def && obj->def->dump) {
+    obj->def->dump(obj, io);
+    return;
+  }
   switch (obj->type) {
   case OBJ_FUN: {
     Value id;
@@ -40,6 +42,10 @@ void dumpValue(FILE *io, Value v) {
     }
     return;
   }
+
+  case OBJ_CUSTOM:
+    fprintf(io, "error(\"custom obj without dump: %s\")", obj->def->class_name);
+    break;
 
   default:
     fprintf(io, "error(\"unknown obj type: %s\")", objInfo[obj->type].inspect);

@@ -1,6 +1,4 @@
 class String
-	fn string = this
-
 	fn * (b) = this + b.string
 	fn / (str) = this + "/" + str
 

@@ -166,6 +166,19 @@ inline Value *popn(u8 n) {
   return vm.stackTop;
 }
 
+// invoke the method on this
+Value send(Value this, Value method_name, int argc, ...) {
+  push(this);
+  va_list args;
+
+  va_start(args, argc);
+  for (int i = 0; i < argc; i++) push(va_arg(args, Value));
+  va_end(args);
+
+  vm_invoke(method_name, argc);
+  return pop();
+}
+
 void vm_swap(u8 a, u8 b) {
   Value aa = peek(a);
   vm.stackTop[-1 - a] = peek(b);
@@ -235,6 +248,13 @@ ObjClass *valueClass(Value v) {
  * Returns whether or not the call was successful.
  */
 static bool callValue(Value callee, int argCount) {
+
+#ifdef DEBUG_TRACE_EXECUTION
+  printf("callValue: ");
+  fprintValue(stdout, callee);
+  printf("\n");
+#endif
+
   if (is_obj(callee)) {
     switch (obj_type(callee)) {
     case OBJ_BOUND: {
@@ -270,7 +290,7 @@ static bool callValue(Value callee, int argCount) {
 
       Value result =
           native->fun(peek(argCount), argCount, vm.stackTop - argCount);
-      vm.stackTop -= argCount + 1;
+      popn(argCount + 1);
       push(result);
       return true;
     }
@@ -298,12 +318,11 @@ static bool invokeFromClass(ObjClass *klass, ObjString *name, int argCount) {
     return invokeFromClass(klass->parent, name, argCount);
   }
 
-  if (is_closure(method)) return call(AS_CLOSURE(method), argCount);
-  else return callValue(method, argCount);
+  return callValue(method, argCount);
 }
 
 /** [argCount self][0 ...args] */
-static InterpretResult vm_invoke(Value name, int argCount) {
+InterpretResult vm_invoke(Value name, int argCount) {
   Value receiver = peek(argCount);
 
   // Value value = find(receiver, name);
@@ -319,7 +338,11 @@ static InterpretResult vm_invoke(Value name, int argCount) {
   }
 
   ObjClass *klass = valueClass(receiver);
-  // printf("invoke: %s_%s()\n", klass->name->chars, name->chars);
+
+#ifdef DEBUG_TRACE_EXECUTION
+  printf("invoke: %s.%s()\n", klass->name->chars, as_string(name)->chars);
+#endif
+
   if (!invokeFromClass(klass, as_string(name), argCount)) {
     return runtimeError("Undefined property '%s' on %s.",
                         as_string(name)->chars, klass->name->chars);

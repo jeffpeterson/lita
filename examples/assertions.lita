@@ -41,7 +41,7 @@ assert "" 3 == "3"
 assert "" 3.5 == "3.5"
 
 /// Inspect
-assert "hi".inspect == '"hi"
+assert "hi".inspect == "\e[32m\"hi\"\e[39m"
 assert 3.inspect == "3"
 // assert (1, 2).inspect == "1, 2"
 
