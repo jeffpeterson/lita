@@ -14,16 +14,16 @@
 
 typedef Value _;
 
-bool asBool(_ x);
-ObjClass *asClass(_ x);
-ObjClosure *asFn(_ x);
-ObjInstance *asInst(_ x);
-ObjBound *asBound(_ x);
-ObjNative *asNative(_ x);
-double asNum(_ x);
-Obj *asObj(_ x);
+bool as_bool(_ x);
+ObjClass *as_class(_ x);
+ObjClosure *as_fn(_ x);
+ObjInstance *as_inst(_ x);
+ObjBound *as_bound(_ x);
+ObjNative *as_native(_ x);
+double as_num(_ x);
+Obj *as_obj(_ x);
 void *asPtr(_ x);
-ObjRange *asRange(_ x);
+ObjRange *as_range(_ x);
 
 let error(const char *msg);
 

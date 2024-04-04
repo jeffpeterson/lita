@@ -269,7 +269,7 @@ static bool callValue(Value callee, int argCount) {
       let init = findMethod(callee, obj(vm.str.init));
 
       if (not_nil(init)) {
-        return call(asFn(init), argCount);
+        return call(as_fn(init), argCount);
       } else if (argCount != 0) {
         return !runtimeError("Expected 0 arguments but got %d.", argCount);
       }

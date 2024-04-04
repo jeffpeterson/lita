@@ -15,17 +15,17 @@ void table_test() {
   assert(tableGet(&a, num(5), &v));
   assert(tableHas(&a, num(5)));
 
-  assert(asNum(v) == 55);
+  assert(as_num(v) == 55);
   assert(a.len == 1);
 
   assert(!tableSet(&a, num(5), num(555)));
   assert(tableGet(&a, num(5), &v));
-  assert(asNum(v) == 555);
+  assert(as_num(v) == 555);
   assert(a.len == 1);
 
   assert(tableSet(&a, num(6), num(66)));
   assert(tableGet(&a, num(6), &v));
   assert(tableHas(&a, num(6)));
-  assert(asNum(v) == 66);
+  assert(as_num(v) == 66);
   assert(a.len == 2);
 }

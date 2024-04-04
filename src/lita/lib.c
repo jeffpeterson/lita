@@ -9,39 +9,39 @@
 #include "tuple.h"
 #include "vm.h"
 
-bool asBool(_ x) {
+bool as_bool(_ x) {
   assert(is_bool(x));
   return AS_BOOL(x);
 }
-ObjClass *asClass(_ x) {
+ObjClass *as_class(_ x) {
   assert(is_class(x));
   return AS_CLASS(x);
 }
-ObjClosure *asFn(_ x) {
+ObjClosure *as_fn(_ x) {
   assert(is_closure(x));
   return AS_CLOSURE(x);
 }
-ObjInstance *asInst(_ x) {
+ObjInstance *as_inst(_ x) {
   assert(is_instance(x));
   return AS_INSTANCE(x);
 }
-ObjBound *asBound(_ x) {
+ObjBound *as_bound(_ x) {
   assert(is_bound(x));
   return AS_BOUND(x);
 }
-ObjNative *asNative(_ x) {
+ObjNative *as_native(_ x) {
   assert(is_native(x));
   return AS_NATIVE(x);
 }
-double asNum(_ x) {
+double as_num(_ x) {
   assert(is_num(x));
   return AS_NUMBER(x);
 }
-Obj *asObj(_ x) {
+Obj *as_obj(_ x) {
   assert(is_obj(x));
   return AS_OBJ(x);
 }
-ObjRange *asRange(_ x) {
+ObjRange *as_range(_ x) {
   assert(is_range(x));
   return AS_RANGE(x);
 }
@@ -99,7 +99,7 @@ let add(let a, let b) {
 }
 
 _ subtract(_ a, _ b) {
-  if (is_num(a) && is_num(b)) return num(asNum(a) - asNum(b));
+  if (is_num(a) && is_num(b)) return num(as_num(a) - as_num(b));
 
   // if (is_string(a) && is_string(b))
   //   remove b from end of a
@@ -115,9 +115,9 @@ _ multiply(_ a, _ b) {
 
 /** Returns arity of fun, -1 if not callable. */
 int arity(_ fun) {
-  if (is_bound(fun)) return arity(asBound(fun)->method);
-  if (is_closure(fun)) return asFn(fun)->fun->arity;
-  if (is_native(fun)) return asNative(fun)->arity;
+  if (is_bound(fun)) return arity(as_bound(fun)->method);
+  if (is_closure(fun)) return as_fn(fun)->fun->arity;
+  if (is_native(fun)) return as_native(fun)->arity;
   if (is_class(fun)) return arity(findMethod(fun, str("init")));
 
   return -1;
@@ -125,7 +125,7 @@ int arity(_ fun) {
 
 _ classOf(_ self) { return obj(valueClass(self)); }
 
-_ superOf(_ klass) { return obj(asClass(klass)->parent); }
+_ superOf(_ klass) { return obj(as_class(klass)->parent); }
 
 _ bindFn(_ self, _ fun) {
   if (is_closure(fun) || is_native(fun)) return obj(newBound(self, fun));
@@ -135,7 +135,7 @@ _ bindFn(_ self, _ fun) {
 
 _ findMethod(_ klass, _ name) {
   Value fun = nil;
-  while (is_class(klass) && !tableGet(&asClass(klass)->methods, name, &fun))
+  while (is_class(klass) && !tableGet(&as_class(klass)->methods, name, &fun))
     klass = superOf(klass);
 
   return fun;
@@ -143,7 +143,7 @@ _ findMethod(_ klass, _ name) {
 
 _ find(_ self, _ key) {
   _ val;
-  if (is_instance(self) && tableGet(&asInst(self)->fields, key, &val))
+  if (is_instance(self) && tableGet(&as_inst(self)->fields, key, &val))
     return val;
 
   return findMethod(classOf(self), key);
@@ -163,22 +163,22 @@ u32 len(_ x) {
   if (obj->def && obj->def->length) return obj->def->length(obj);
 
   switch (obj->type) {
-  case OBJ_BOUND: return len(asBound(x)->method);
-  case OBJ_RANGE: return as_int(subtract(asRange(x)->end, asRange(x)->start));
+  case OBJ_BOUND: return len(as_bound(x)->method);
+  case OBJ_RANGE: return as_int(subtract(as_range(x)->end, as_range(x)->start));
 
   case OBJ_CLASS:
   case OBJ_CLOSURE:
   case OBJ_FUN:
   case OBJ_NATIVE: return arity(x);
 
-  case OBJ_INSTANCE: return asInst(x)->fields.len;
+  case OBJ_INSTANCE: return as_inst(x)->fields.len;
 
   default: return 1;
   }
 }
 
 _ name(_ self) {
-  switch (asObj(self)->type) {
+  switch (as_obj(self)->type) {
   case OBJ_CLASS: return obj(AS_CLASS(self)->name);
   case OBJ_FUN: return obj(AS_FUN(self)->name);
   case OBJ_NATIVE: return obj(AS_NATIVE(self)->name);

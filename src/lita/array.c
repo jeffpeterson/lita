@@ -79,7 +79,7 @@ static int inspect_array(Obj *obj, FILE *io) {
 
 static Value Array_get(let this, int argc, let *args) {
   ObjArray *arr = AS_ARRAY(this);
-  u32 idx = asNum(args[0]);
+  u32 idx = as_num(args[0]);
   if (idx >= arr->length) return nil;
 
   return arr->values[idx];
@@ -121,8 +121,8 @@ static Value Array_push(let this, int argc, let *args) {
 
 static Value Array_slice(let this, int argc, let *args) {
   ObjArray *arr = AS_ARRAY(this);
-  int start = argc > 0 ? asNum(args[0]) : 0;
-  int len = argc > 1 ? asNum(args[1]) : arr->length - start;
+  int start = argc > 0 ? as_num(args[0]) : 0;
+  int len = argc > 1 ? as_num(args[1]) : arr->length - start;
   return OBJ_VAL(copy_array(arr->values + start, len));
 }
 

@@ -41,7 +41,7 @@ void dumpValue(FILE *io, Value v) {
     ObjFun *fun = AS_FUN(v);
 
     if (tableGet(&ids, v, &id)) {
-      fprintf(io, "/*%s*/fn%g()", fun->name->chars, asNum(id));
+      fprintf(io, "/*%s*/fn%g()", fun->name->chars, as_num(id));
     } else {
       fprintf(io, "error(\"Could not find fn %s\")", fun->name->chars);
     }
