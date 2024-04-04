@@ -70,11 +70,6 @@ static inline Value numToValue(double num) {
 static inline bool valueIsObj(Value val) {
   return !is_nil(val) && (val & (QNAN | TAG_OBJ)) == (QNAN | TAG_OBJ);
 }
-static inline int as_int(Value x) { return AS_NUMBER(x); }
-
-static inline bool is_int(Value x) {
-  return is_num(x) && NUMBER_VAL(as_int(x)) == AS_NUMBER(x);
-}
 
 #else // else if !NAN_BOXING
 
@@ -151,5 +146,11 @@ Hash hashBytes(const char *key, int length);
 Hash hashNumber(uint32_t x);
 Hash hashValue(Value val);
 Hash hashValues(Value *vals, int length);
+
+static inline int as_int(Value x) { return AS_NUMBER(x); }
+
+static inline bool is_int(Value x) {
+  return is_num(x) && as_int(x) == AS_NUMBER(x);
+}
 
 #endif
