@@ -140,6 +140,11 @@ static Value identifierValue(Token *name) {
   return OBJ_VAL(copy_string(name->start, name->length));
 }
 
+static Value source_since(const char *start) {
+  return OBJ_VAL(copy_string(start, parser.previous.start +
+                                        parser.previous.length - start));
+}
+
 static void errorAt(Token *token, const char *message) {
   if (parser.panicMode) return;
 
@@ -359,6 +364,7 @@ static void initCompiler(Compiler *compiler, FunType type, ObjString *name) {
   }
 }
 
+/** Note: implies endScope(); */
 static ObjFun *endCompiler() {
   emitReturn();
   ObjFun *fun = current->fun;
@@ -798,6 +804,36 @@ static void dot(Ctx *ctx) {
   } else emitBytes(OP_GET_PROPERTY, name);
 }
 
+static void dot_sugar(Ctx *ctx) {
+  Token dot = parser.previous;
+  let method_name = consumeIdent("Expect property name after '.'");
+  let fn_name = source_since(dot.start);
+
+  Compiler compiler;
+
+  initCompiler(&compiler, TYPE_FUNCTION, AS_STRING(fn_name));
+  beginScope();
+
+  u8 name_constant = makeConstant(method_name);
+  trace("dot_sugar name const", NUMBER_VAL(name_constant));
+
+  current->fun->arity++;
+  declareVariable();
+  markDefined();
+
+  emitBytes(OP_GET_LOCAL, 1);
+
+  if (match(TOKEN_LEFT_PAREN)) {
+    uint8_t argc = argumentList();
+    emitBytes(OP_INVOKE, name_constant);
+    emitByte(argc);
+  } else emitBytes(OP_GET_PROPERTY, name_constant);
+
+  emitByte(OP_RETURN);
+
+  emitBytes(OP_CLOSURE, makeConstant(OBJ_VAL(endCompiler())));
+}
+
 static void literal(Ctx *ctx) {
   switch (parser.previous.type) {
   case TOKEN_FALSE: emitByte(OP_FALSE); break;
@@ -1124,11 +1160,6 @@ static void varDeclaration() {
   defineVariable(global);
 }
 
-static Value source_since(const char *start) {
-  return OBJ_VAL(copy_string(start, parser.previous.start +
-                                        parser.previous.length - start));
-}
-
 static void assert(Ctx *ctx) {
   const char *start = parser.previous.start;
 
@@ -1405,7 +1436,7 @@ ParseRule rules[] = {
 
     [TOKEN_ARROW] = {NULL, NULL, PREC_ARROW},
     [TOKEN_COMMA] = {NULL, tuple, PREC_COMMA},
-    [TOKEN_DOT] = {NULL, dot, PREC_CALL},
+    [TOKEN_DOT] = {dot_sugar, dot, PREC_CALL},
     [TOKEN_DOT_DOT] = {NULL, binary, PREC_RANGE},
     [TOKEN_SEMICOLON] = {NULL, semi, PREC_SEMI},
     [TOKEN_QUESTION] = {NULL, question, PREC_SEMI},

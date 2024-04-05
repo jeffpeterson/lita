@@ -192,7 +192,7 @@ void vm_swap(u8 a, u8 b) {
  *
  * Returns whether or not the call was successful.
  */
-static bool call(ObjClosure *closure, int argCount) {
+static bool call_closure(ObjClosure *closure, int argCount) {
   ObjFun *fun = closure->fun;
 
   if (argCount != fun->arity) {
@@ -271,7 +271,7 @@ static bool callValue(Value callee, int argCount) {
       let init = findMethod(callee, obj(vm.str.init));
 
       if (not_nil(init)) {
-        return call(as_fn(init), argCount);
+        return call_closure(as_fn(init), argCount);
       } else if (argCount != 0) {
         return !runtimeError("Expected 0 arguments but got %d.", argCount);
       }
@@ -279,7 +279,7 @@ static bool callValue(Value callee, int argCount) {
       return true;
     }
 
-    case OBJ_CLOSURE: return call(AS_CLOSURE(callee), argCount);
+    case OBJ_CLOSURE: return call_closure(AS_CLOSURE(callee), argCount);
 
     case OBJ_NATIVE: {
       ObjNative *native = AS_NATIVE(callee);
@@ -863,7 +863,7 @@ InterpretResult runFun(ObjFun *fun) {
   ObjClosure *closure = newClosure(fun);
   pop();
   push(OBJ_VAL(closure));
-  call(closure, 0);
+  call_closure(closure, 0);
 
   return run();
 }

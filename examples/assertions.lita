@@ -53,6 +53,7 @@ assert (1, 2).map("") == ("1", "2")
 assert (1, 2).map("n:") == ("n:1", "n:2")
 assert (1, 2) * 4 == (4, 8)
 assert (1, 2) * (3, 4) == (3, 8)
+assert ('1, '2) == (1, 2).map(.string)
 
 /// Arrays
 assert [1, 2, 3]
