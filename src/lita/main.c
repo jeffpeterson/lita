@@ -32,11 +32,12 @@ int main(int argc, char *argv[]) {
   bool startRepl = false;
   enum { COMPILE, INTERPRET } mode = INTERPRET;
 
-  while ((opt = getopt(argc, argv, "cire:")) != -1) {
+  while ((opt = getopt(argc, argv, "cirte:")) != -1) {
     switch (opt) {
     case 'c': mode = COMPILE; break;
     case 'i': mode = INTERPRET; break;
     case 'r': startRepl = true; break;
+    case 't': config.tracing = true; break;
     case 'e': assertOkResult(interpret(optarg, new_string("eval flag"))); break;
     case '?': exit(1);
     }

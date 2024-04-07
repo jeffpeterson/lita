@@ -1,4 +1,5 @@
 CC = clang
+LITA_FLAGS := -t
 WARN_ERRORS := -Werror -Wno-error=unused-variable -Wno-error=unused-function
 CFLAGS := -g -Isrc -Wall $(WARN_ERRORS)
 
@@ -26,7 +27,7 @@ TEST_O  := $(filter-out %/main.o,$(OBJECTS))
 .PRECIOUS: $(TARGET) %.c %.o
 .SUFFIXES: # disable crazy built-in rules that append .c
 
-default: test
+default: test assertions
 
 # zig not working yet
 zig: $(TARGET).zig.wasm
@@ -44,11 +45,11 @@ db/%: $(TARGET)
 	@lldb lita examples/$*.lita
 
 %: examples/%.lita $(TARGET)
-	@$(TARGET) $<
+	@$(TARGET) $(LITA_FLAGS) $<
 
 lib: $(LITA_LIB)
-test: $(TEST) assertions
-	@$(TEST)
+test: $(TEST)
+	@$(TEST) $(LITA_FLAGS)
 
 $(TARGET).wasm $(TARGET).js $(TARGET).html: $(TARGET_O:%.o=%.wasm.o)
 	@mkdir -p $(dir $@)

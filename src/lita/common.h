@@ -45,4 +45,10 @@ typedef uint64_t u64;
 typedef __uint128_t u128;
 typedef size_t usize;
 
+typedef struct Config {
+  bool tracing;
+} Config;
+
+extern Config config;
+
 #endif

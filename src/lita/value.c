@@ -44,12 +44,10 @@ int inspect_value(FILE *io, Value val) {
 }
 
 int trace(const char *label, Value value) {
-#ifdef DEBUG_TRACE
-  return fprintf(stderr, "%s: ", label) + inspect_value(stderr, value) +
-         fprintf(stderr, "\n");
-#else
-  return 0;
-#endif
+  if (config.tracing)
+    return fprintf(stderr, "%s: ", label) + inspect_value(stderr, value) +
+           fprintf(stderr, "\n");
+  else return 0;
 }
 
 bool valuesEqual(Value a, Value b) {
