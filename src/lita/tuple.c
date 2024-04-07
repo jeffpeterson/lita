@@ -114,6 +114,13 @@ static let Tuple_add(let this, int argc, let *args) {
   return obj(zip_tuples(as_tuple(this), as_tuple(args[0]), add));
 }
 
+static Value Tuple_get(let this, int argc, let *args) {
+  ObjTuple *tuple = AS_TUPLE(this);
+  u32 idx = as_num(args[0]);
+  if (idx >= tuple->length) return nil;
+  return tuple->values[idx];
+}
+
 static let Tuple_map(let this, int argc, let *args) {
   ObjTuple *tuple = AS_TUPLE(this);
   let fun = args[0];
@@ -139,6 +146,7 @@ static void tuple_natives(let Tuple) {
   runFun(tuple_lita());
   method(Tuple, fn("*", 1, Tuple_multiply));
   method(Tuple, fn("+", 1, Tuple_add));
+  method(Tuple, fn("get", 1, Tuple_get));
   method(Tuple, fn("map", 1, Tuple_map));
 }
 

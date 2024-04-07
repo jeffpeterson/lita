@@ -90,7 +90,6 @@ static Value Array_length(let this, int argc, let *args) {
 }
 
 static let Array_map(let this, int argc, let *args) {
-  if (!argc) return error("map() requires a callable argument");
   ObjArray *array = AS_ARRAY(this);
   let fun = args[0];
 
