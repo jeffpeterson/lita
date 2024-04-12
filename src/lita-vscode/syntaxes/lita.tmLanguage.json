@@ -139,7 +139,7 @@
       "patterns": [
         {
           "name": "constant.numeric.lita",
-          "match": "\\b[0-9]+(?:.[0-9]+)?\\b"
+          "match": "\\b[0-9]+(?:.[0-9]+)?"
         }
       ]
     },
@@ -147,11 +147,11 @@
       "patterns": [
         {
           "name": "entity.name.class.lita",
-          "match": "\\b[A-Z][A-Za-z0-9_]*\\b"
+          "match": "[A-Z][A-Za-z0-9_]*\\b"
         },
         {
           "name": "variable.other.readwrite.lita",
-          "match": "\\b[A-Za-z_][A-Za-z0-9_]*\\b"
+          "match": "[A-Za-z_][A-Za-z0-9_]*\\b"
         }
       ]
     },
