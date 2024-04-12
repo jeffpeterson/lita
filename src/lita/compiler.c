@@ -1068,7 +1068,8 @@ static void method() {
   bool is_c = match(TOKEN_CFN);
 
   if (is_c) {
-  } else match(TOKEN_FN); // optional
+  } else if (match(TOKEN_LET)) consumeIdent("Expect property name.");
+  else match(TOKEN_FN); // optional
   consumeIdent("Expect method name.");
 
   uint8_t constant = identifierConstant(&parser.previous);
