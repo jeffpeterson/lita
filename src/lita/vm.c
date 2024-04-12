@@ -188,11 +188,12 @@ void vm_swap(u8 a, u8 b) {
 }
 
 /**
- * Invoke a closure with arguments on the stack.
+ * Move the instruction pointer (ip) to a new a closure along with arguments on
+ * the stack.
  *
  * Returns whether or not the call was successful.
  */
-static bool call_closure(ObjClosure *closure, int argCount) {
+static bool move_into_closure(ObjClosure *closure, int argCount) {
   ObjFun *fun = closure->fun;
 
   if (argCount != fun->arity) {
@@ -210,7 +211,7 @@ static bool call_closure(ObjClosure *closure, int argCount) {
   frame->ip = fun->chunk.code; // Start instruction pointer at function's code.
 
   /**
-   * Account for args and the receiver (if method).
+   * Account for args and the receiver if method, else the callee.
    * stack: [..., this, arg1, arg2]
    *     receiver-^               ^-stackTop
    */
@@ -249,20 +250,15 @@ ObjClass *valueClass(Value v) {
  *
  * Returns whether or not the call was successful.
  */
-static bool callValue(Value callee, int argCount) {
-
-#ifdef DEBUG_TRACE_EXECUTION
-  printf("callValue: ");
-  inspect_value(stdout, callee);
-  printf("\n");
-#endif
+bool call_value(Value callee, int argCount) {
+  trace("callee", callee);
 
   if (is_obj(callee)) {
     switch (obj_type(callee)) {
     case OBJ_BOUND: {
       ObjBound *bound = AS_BOUND(callee);
       vm.stackTop[-argCount - 1] = bound->receiver;
-      return callValue(bound->method, argCount);
+      return call_value(bound->method, argCount);
     }
 
     case OBJ_CLASS: {
@@ -271,7 +267,7 @@ static bool callValue(Value callee, int argCount) {
       let init = findMethod(callee, obj(vm.str.init));
 
       if (not_nil(init)) {
-        return call_closure(as_fn(init), argCount);
+        return move_into_closure(as_fn(init), argCount);
       } else if (argCount != 0) {
         return !runtimeError("Expected 0 arguments but got %d.", argCount);
       }
@@ -279,7 +275,7 @@ static bool callValue(Value callee, int argCount) {
       return true;
     }
 
-    case OBJ_CLOSURE: return call_closure(AS_CLOSURE(callee), argCount);
+    case OBJ_CLOSURE: return move_into_closure(AS_CLOSURE(callee), argCount);
 
     case OBJ_NATIVE: {
       ObjNative *native = AS_NATIVE(callee);
@@ -320,7 +316,7 @@ static bool invokeFromClass(ObjClass *klass, ObjString *name, int argCount) {
     return invokeFromClass(klass->parent, name, argCount);
   }
 
-  return callValue(method, argCount);
+  return call_value(method, argCount);
 }
 
 /** [argCount self][0 ...args] */
@@ -335,7 +331,7 @@ InterpretResult vm_invoke(Value name, int argCount) {
     Value value;
     if (tableGet(&inst->fields, name, &value)) {
       vm.stackTop[-argCount - 1] = value;
-      return !callValue(value, argCount);
+      return !call_value(value, argCount);
     }
   }
 
@@ -474,7 +470,7 @@ InterpretResult vm_assert(Value src) {
 
 // [argc fn][1 arg1][0 ...args ] -> [0 return]
 InterpretResult vm_call(int argc) {
-  return callValue(peek(argc), argc) ? INTERPRET_OK : INTERPRET_RUNTIME_ERROR;
+  return call_value(peek(argc), argc) ? INTERPRET_OK : INTERPRET_RUNTIME_ERROR;
 }
 
 /** [1 a][0 b] -> [0 result] */
@@ -863,7 +859,7 @@ InterpretResult runFun(ObjFun *fun) {
   ObjClosure *closure = newClosure(fun);
   pop();
   push(OBJ_VAL(closure));
-  call_closure(closure, 0);
+  move_into_closure(closure, 0);
 
   return run();
 }

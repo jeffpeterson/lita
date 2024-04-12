@@ -1,5 +1,5 @@
 CC = clang
-LITA_FLAGS := -t
+LITA_FLAGS := # -t
 WARN_ERRORS := -Werror -Wno-error=unused-variable -Wno-error=unused-function
 CFLAGS := -g -Isrc -Wall $(WARN_ERRORS)
 

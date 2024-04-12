@@ -7,3 +7,9 @@ class Array
 		for let i = 0; i < length; i++
 			if get(i) != b.get(i): return false
 		return true
+
+	fn map(f)
+		let new = []
+		for let i = 0; i < length; i++
+			new << f(get(i))
+		return new

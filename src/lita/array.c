@@ -89,19 +89,6 @@ static Value Array_length(let this, int argc, let *args) {
   return NUMBER_VAL(AS_ARRAY(this)->length);
 }
 
-static let Array_map(let this, int argc, let *args) {
-  ObjArray *array = AS_ARRAY(this);
-  let fun = args[0];
-
-  for (u8 i = 0; i < array->length; i++) {
-    push(fun);
-    push(array->values[i]);
-    vm_call(1);
-  }
-  vm_array(array->length);
-  return pop();
-}
-
 static Value Array_plus(let this, int argc, let *args) {
   ObjArray *a = AS_ARRAY(this);
   ObjArray *b = as_array(args[0]);
@@ -131,7 +118,6 @@ static void array_natives(let Array) {
   runFun(array_lita());
   method(Array, fn("get", 1, Array_get));
   method(Array, fn("length", 0, Array_length));
-  method(Array, fn("map", 1, Array_map));
   method(Array, fn("push", 0, Array_push));
   method(Array, fn("slice", 0, Array_slice));
   method(Array, fn("+", 1, Array_plus));

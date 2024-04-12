@@ -116,6 +116,8 @@ void crash(const char *str);
  */
 void panic(const char *str);
 
+bool call_value(Value callee, int argCount);
+
 Value vm_peek(int i);
 InterpretResult vm_add();
 InterpretResult vm_multiply();
