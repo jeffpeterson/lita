@@ -59,6 +59,3 @@ class Compiler
 
 	let upvalues	// Variables this compiler has closed over.
 	let scopeDepth	// How many times beginScope() has been called.
-
-
-class Foo	// Comment line 1
