@@ -90,9 +90,9 @@ static Value fn2() {
 static ValueArray constants0() {
   ValueArray vals;
   initValueArray(&vals);
-  vals.count = vals.capacity = 12;
+  vals.count = vals.capacity = 13;
   Value values[] = {
-    str("compile"), /*compile*/fn1(), str("markCompilerRoots"), /*markCompilerRoots*/fn2(), str("Parser"), str("Object"), str("current"), str("previous"), str("indebt"), str("hadError"), str("panicMode"), str("Compiler"),
+    str("compile"), /*compile*/fn1(), str("markCompilerRoots"), /*markCompilerRoots*/fn2(), str("Parser"), str("Object"), str("current"), str("previous"), str("indebt"), str("hadError"), str("panicMode"), str("Context"), str("Compiler"),
   };
   vals.values = cloneMemory(values, sizeof(values));
   return vals;
@@ -102,13 +102,13 @@ static ValueArray constants0() {
 static Chunk chunk0() {
   Chunk c;
   initChunk(&c);
-  c.count = 49;
-  c.capacity = 49;
+  c.count = 61;
+  c.capacity = 61;
   u8 code[] = {
-    37, 1, 11, 0, 37, 3, 11, 2, 34, 4, 0, 14, 0, 44, 5, 35, 9, 1, 7, 7, 1, 11, 6, 1, 11, 7, 1, 11, 8, 1, 11, 9, 1, 11, 10, 34, 11, 0, 14, 0, 44, 5, 35, 9, 1, 7, 7, 1, 40,
+    37, 1, 11, 0, 37, 3, 11, 2, 34, 4, 0, 14, 0, 44, 5, 35, 9, 1, 7, 7, 1, 11, 6, 1, 11, 7, 1, 11, 8, 1, 11, 9, 1, 11, 10, 34, 11, 0, 14, 0, 44, 5, 35, 9, 1, 7, 7, 34, 12, 0, 14, 0, 44, 5, 35, 9, 1, 7, 7, 1, 40,
   };
   int lines[] = {
-    1, 1, 1, 1, 3, 3, 3, 3, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 7, 7, 7, 7, 7, 8, 8, 8, 9, 9, 9, 10, 10, 10, 11, 11, 11, 49, 49, 49, 49, 49, 49, 49, 49, 49, 49, 62, 62, 62, 62,
+    1, 1, 1, 1, 3, 3, 3, 3, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 7, 7, 7, 7, 7, 8, 8, 8, 9, 9, 9, 10, 10, 10, 11, 11, 11, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 59, 59, 59, 59, 59, 59, 59, 59, 59, 59, 59, 59, 72, 72, 72, 72,
   };
   c.code = cloneMemory(code, sizeof(code));
   c.lines = cloneMemory(lines, sizeof(lines));

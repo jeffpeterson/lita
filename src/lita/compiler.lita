@@ -46,6 +46,16 @@ class Parser
 // 	Call, tokens('., '(, '[)
 // 	Primary		// Higher Precedence
 
+// is Foo
+// is Bar
+
+// 'is, 'Foo
+// 'is, 'Bar
+
+class Context
+	let precedence // Current precedence level.
+	let can_assign // If we can parse assignments.
+
 class Compiler
 	let enclosing	// Compiler of the scope enclosing this one.
 	let function	// The function being compiled.

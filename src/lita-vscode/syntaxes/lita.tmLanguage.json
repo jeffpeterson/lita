@@ -25,7 +25,7 @@
         },
         {
           "name": "keyword.operator.logical.lita",
-          "match": "[+\\-*%&!@#^?/:;,.]+"
+          "match": "[+\\-*%&!@#^?/:;,.><]+"
         },
         {
           "name": "constant.language.null.lita",
@@ -137,6 +137,10 @@
     },
     "digits": {
       "patterns": [
+        {
+          "name": "constant.numeric.hex.lita",
+          "match": "0x[0-9a-fA-F]+"
+        },
         {
           "name": "constant.numeric.lita",
           "match": "\\b[0-9]+(?:.[0-9]+)?"

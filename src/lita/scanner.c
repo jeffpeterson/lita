@@ -51,11 +51,17 @@ static u32 codePoint(const char *str) {
   }
 }
 
+inline static bool in(u32 c, char start, char end) {
+  return c >= start && c <= end;
+}
 static bool isAtEnd() { return *scanner.current == '\0'; }
 static bool isAlpha(u32 c) {
-  return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || c == '_';
+  return in(c, 'a', 'z') || in(c, 'A', 'Z') || c == '_';
 }
-static bool isDigit(u32 c) { return c >= '0' && c <= '9'; }
+static bool isDigit(u32 c) { return in(c, '0', '9'); }
+static bool isHex(u32 c) {
+  return isDigit(c) || in(c, 'A', 'F') || in(c, 'a', 'f');
+}
 
 static bool isSubscript(u32 c) { return c >= 0x2080 && c <= 0x2089; }
 // static bool isSuperscript(u32 c) {
@@ -78,9 +84,14 @@ static u32 peekNext() {
 }
 
 static bool match(u32 expected) {
-  if (isAtEnd()) return false;
-  if (*scanner.current != expected) return false;
-  scanner.current++;
+  if (peek() != expected) return false;
+  advance();
+  return true;
+}
+
+static bool matches(bool fn(u32)) {
+  if (!fn(peek())) return false;
+  advance();
   return true;
 }
 
@@ -260,22 +271,23 @@ static TokenType identifierType() {
 }
 
 static Token identifier() {
-  while (isAlpha(peek()) || isDigit(peek())) advance();
-  while (isSubscript(peek())) advance();
-  while (peek() == '\'') advance();
+  while (matches(isAlpha) || matches(isDigit)) continue;
+  while (matches(isSubscript)) continue;
+  while (match('\'')) continue;
   return makeToken(identifierType());
 }
 
 static Token number() {
-  while (isDigit(peek())) advance();
+  if (match('x')) {
+    while (matches(isHex)) continue;
+    return makeToken(TOKEN_HEX);
+  }
+
+  while (matches(isDigit)) continue;
 
   // Look for the fractional part.
-  if (peek() == '.' && isDigit(peekNext())) {
-    // Consume the ".".
-    advance();
-
-    while (isDigit(peek())) advance();
-  }
+  if (isDigit(peekNext()) && match('.'))
+    while (matches(isDigit)) continue;
 
   return makeToken(TOKEN_NUMBER);
 }

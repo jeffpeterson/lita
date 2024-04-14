@@ -858,6 +858,11 @@ static void number(Ctx *ctx) {
   emitConstant(NUMBER_VAL(value));
 }
 
+static void hex(Ctx *ctx) {
+  u32 value = strtoul(parser.previous.start, NULL, 0);
+  emitConstant(NUMBER_VAL(value));
+}
+
 /**
  * Left-associative, but parsed in reverse.
  */
@@ -1473,6 +1478,7 @@ ParseRule rules[] = {
     [TOKEN_IDENTIFIER] = {variable, NULL, PREC_NONE},
     [TOKEN_STRING] = {string, NULL, PREC_NONE},
     [TOKEN_NUMBER] = {number, NULL, PREC_NONE},
+    [TOKEN_HEX] = {hex, NULL, PREC_NONE},
 
     [TOKEN_AND] = {NULL, and_, PREC_AND},
     [TOKEN_ASSERT] = {assert, NULL, PREC_NONE},

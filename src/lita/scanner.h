@@ -53,6 +53,7 @@ typedef enum {
 
   // Literals.
   TOKEN_NUMBER,
+  TOKEN_HEX,
   TOKEN_STRING,
 
   TOKEN_MINUS,
