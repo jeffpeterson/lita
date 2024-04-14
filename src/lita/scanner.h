@@ -94,9 +94,9 @@ typedef struct {
 } Token;
 
 typedef struct Indent {
-  int prev;       /** The previous indent level at which text was parsed. */
-  int cur;        /** The current number of indents we have parsed. */
-  bool indenting; /** When within a series of indents following a newline. */
+  int prev;    /** The previous indent level at which text was parsed. */
+  int cur;     /** The current number of indents we have parsed. */
+  bool inside; /** We are inside an indent. */
 } Indent;
 
 typedef struct {

@@ -16,7 +16,7 @@ void initScanner(const char *source) {
 
   scanner.indent.prev = 0;
   scanner.indent.cur = 0;
-  scanner.indent.indenting = true;
+  scanner.indent.inside = true;
 
   scanner.data = NULL;
   scanner.dataLength = 0;
@@ -137,55 +137,42 @@ static bool skipWhitespace() {
 
     switch (c) {
     case ' ':
-    case '\r':
-      in->indenting = false;
-      advance();
-      break;
+    case '\r': advance(); continue;
 
     case '\n':
       scanner.line++;
-      if (in->indenting && in->cur > 0) {
-        // Done indenting.
-        in->prev = in->cur;
-      } else {
-        newline = true;
-      }
-      in->indenting = true;
-      in->cur = 0;
+      newline = true;
+      in->inside = true;
+      in->cur = 0; // Ignore any indentation we found.
       advance();
-      break;
+      continue;
 
     case '\t':
-      if (in->indenting) {
-        // Consume indents up until the current level.
-        if (in->cur >= in->prev)
-          return false; // This indent is meaningful, return and ignore newline.
-
-        in->cur++;
-      } // else skip the tab like other whitespace
-
+      if (in->inside) in->cur++;
       advance();
-      break;
+      continue;
 
     case '\\':
       if (peekNext() == '\n') {
         scanner.line++;
+        in->inside = true;
+        in->cur = 0;
         advance();
         advance();
-        break;
-      } else {
-        return newline;
-      }
+        continue;
+      } else break;
 
     case '/':
-      if (peekNext() != '/') return newline;
+      if (peekNext() != '/') break;
     case '#':
       // A comment goes until the end of the line.
+      in->inside = false;
       while (peek() != '\n' && !isAtEnd()) advance();
-      break;
-
-    default: return newline;
+      continue;
     }
+
+    in->inside = false;
+    return newline;
   }
 }
 
@@ -321,12 +308,24 @@ static Token symbol() { return makeToken(TOKEN_QUOTE); }
 
 Token scanToken() {
   scanner.start = scanner.current;
-  if (skipWhitespace()) {
-    return makeToken(TOKEN_NEWLINE);
+  Indent *in = &scanner.indent;
+  bool scanned_newline = skipWhitespace();
+
+  if (in->cur < in->prev) {
+    // The indentation level has decreased and the current block is done.
+    in->prev--;
+    return makeToken(TOKEN_DEDENT);
+  } else if (scanned_newline) {
+    if (in->cur > in->prev) {
+      if (in->cur > in->prev + 1)
+        return errorToken("This line indented more than one level.");
+
+      in->prev = in->cur;
+      return makeToken(TOKEN_INDENT);
+    } else return makeToken(TOKEN_NEWLINE);
   }
 
   scanner.start = scanner.current;
-  Indent *in = &scanner.indent;
 
   if (isAtEnd()) {
     if (in->prev > 0) {
@@ -337,23 +336,6 @@ Token scanToken() {
   }
 
   char c = advance();
-
-  if (in->indenting) {
-    // skipWhitespace() ensures (in->cur <= in->prev)
-    if (c == '\t') {
-      // Consume indents
-      in->cur++;
-      return makeToken(TOKEN_INDENT);
-    } else if (in->cur < in->prev) {
-      // An indent has ended early.
-      in->prev--;
-      scanner.current--; // Undo the advance().
-      return makeToken(TOKEN_DEDENT);
-    }
-    // Done indenting.
-    in->indenting = false;
-    in->prev = in->cur;
-  }
 
   if (isAlpha(c)) return identifier();
 

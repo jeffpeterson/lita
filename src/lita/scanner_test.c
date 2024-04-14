@@ -4,7 +4,12 @@
 #include "lib.h"
 #include "scanner.h"
 
-#define expect(token) assert(scanToken().type == token)
+static Token log(Token token) {
+  // printf("Token[%2d]: \"%.*s\"\n", token.type, token.length, token.start);
+  return token;
+}
+
+#define expect(token) assert(log(scanToken()).type == token)
 
 void scanner_test() {
   initScanner("");
@@ -25,7 +30,6 @@ void scanner_test() {
   expect(TOKEN_IDENTIFIER);
   expect(TOKEN_LEFT_PAREN);
   expect(TOKEN_RIGHT_PAREN);
-  expect(TOKEN_NEWLINE);
   expect(TOKEN_DEDENT);
   expect(TOKEN_EOF);
 
@@ -59,8 +63,6 @@ void scanner_test() {
 
   initScanner("// comment\n"
               "\t// comment\n");
-  expect(TOKEN_INDENT);
-  expect(TOKEN_DEDENT);
   expect(TOKEN_EOF);
 
   initScanner("class Foo\n"
@@ -81,5 +83,40 @@ void scanner_test() {
   expect(TOKEN_INDENT);
   expect(TOKEN_IDENTIFIER);
   expect(TOKEN_DEDENT);
+  expect(TOKEN_EOF);
+
+  initScanner("class Foo\t// comment line 1\n"
+              "\t\t\t// comment line 2\n"
+              "\t\t// comment line 3\n"
+              "\tbar");
+  expect(TOKEN_CLASS);
+  expect(TOKEN_IDENTIFIER);
+  expect(TOKEN_INDENT);
+  expect(TOKEN_IDENTIFIER);
+  expect(TOKEN_DEDENT);
+  expect(TOKEN_EOF);
+
+  initScanner("class Foo\n"
+              "\t\n"
+              "\tfn bar(x)\n"
+              "\t\treturn x\n"
+              "let x = 1");
+  expect(TOKEN_CLASS);
+  expect(TOKEN_IDENTIFIER);
+  expect(TOKEN_INDENT);
+  expect(TOKEN_FN);
+  expect(TOKEN_IDENTIFIER);
+  expect(TOKEN_LEFT_PAREN);
+  expect(TOKEN_IDENTIFIER);
+  expect(TOKEN_RIGHT_PAREN);
+  expect(TOKEN_INDENT);
+  expect(TOKEN_RETURN);
+  expect(TOKEN_IDENTIFIER);
+  expect(TOKEN_DEDENT);
+  expect(TOKEN_DEDENT);
+  expect(TOKEN_LET);
+  expect(TOKEN_IDENTIFIER);
+  expect(TOKEN_EQUAL);
+  expect(TOKEN_NUMBER);
   expect(TOKEN_EOF);
 }

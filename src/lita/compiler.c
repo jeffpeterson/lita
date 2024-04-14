@@ -1065,11 +1065,15 @@ static void function(FunType type) {
 }
 
 static void method() {
+  if (match(TOKEN_LET)) {
+    consumeIdent("Expect property name.");
+    skipNewlines();
+    return;
+  }
+
   bool is_c = match(TOKEN_CFN);
 
-  if (is_c) {
-  } else if (match(TOKEN_LET)) consumeIdent("Expect property name.");
-  else match(TOKEN_FN); // optional
+  is_c || match(TOKEN_FN); // optional
   consumeIdent("Expect method name.");
 
   uint8_t constant = identifierConstant(&parser.previous);
@@ -1295,7 +1299,6 @@ static void returnStatement() {
     }
 
     expression();
-    consumeTerminator("Expect newline after return value.");
     emitByte(OP_RETURN);
   }
 }

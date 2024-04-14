@@ -1,0 +1,64 @@
+fn compile(source, name)
+
+fn markCompilerRoots
+
+
+class Parser
+  let current	// The current token being parsed.
+  let previous	// The previous token.
+  let indebt	// How many indentation levels deep the parser is.
+  let hadError	// Whether there was a syntax error.
+  let panicMode	// Whether the parser is in panic mode.
+
+// let precendence =
+// 	none:
+// 	semi: ';
+// 	arrow: '->
+// 	comma: ',
+// 	adjoining:
+// 	or: 'or
+// 	and: 'and
+// 	assignment: '-, '+=, '-=, '/=, '*=
+// 	equality: '==, '!=
+// 	comparison: '<, '>, '<=, '>=, '<<, '>>
+// 	term: '+, '-
+// 	factor: '*, '/
+// 	range: '..
+// 	prefix: '-, '++, '--, '!
+// 	call: '. '(, '[
+// 	primary: // Higher Precedence
+
+// enum Precedence
+// 	None
+// 	Semi, tokens(';, 'NEWLINE)
+// 	Arrow, tokens('->)
+// 	Comma, tokens(',)
+// 	Adjoining	// (x y z)
+// 	Or, tokens('or)
+// 	And, tokens('and)
+// 	Assignment, tokens('=, '+=, '-=, '/=, '*=) // (Term '=)
+// 	Equality, tokens('==, '!=)
+// 	Comparison, tokens('<, '>, '<=, '>=, '<<, '>>)
+// 	Term, tokens('+, '-)
+// 	Factor, tokens('*, '/)
+// 	Range, tokens('..)
+// 	Prefix, tokens('-, '++, '--, '!)
+// 	Call, tokens('., '(, '[)
+// 	Primary		// Higher Precedence
+
+class Compiler
+	let enclosing	// Compiler of the scope enclosing this one.
+	let function	// The function being compiled.
+	let type		// Regular function or a script (root-level anon function).
+
+	let locals		// Local variables declared in the current scope.
+					//
+					// During runtime, local variables are all that stays on the stack.
+					// So, the vm's stack will have the same indexes as these locals,
+					// and we can share offsets directly.
+
+	let upvalues	// Variables this compiler has closed over.
+	let scopeDepth	// How many times beginScope() has been called.
+
+
+class Foo	// Comment line 1
