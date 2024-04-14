@@ -1,5 +1,6 @@
 #include <stdio.h>
 
+#include "term.h"
 #include "vm.h"
 
 #define run(test)                                                              \
@@ -23,7 +24,7 @@ int main(int argc, const char *argv[]) {
   run(table_test);
   run(tree_test);
   run(scanner_test);
-  printf("\nTests passed.\n\n");
+  printf(FG_GREEN "\nTests passed.\n\n" FG_DEFAULT);
   freeVM();
   return 0;
 }
