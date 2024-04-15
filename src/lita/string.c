@@ -177,27 +177,29 @@ ObjString *stringf(const char *fmt, ...) {
 
 ObjString *vstring_format(const char *fmt, va_list args) {
   Buffer buf = newBuffer(8);
-  int offset = 0;
   int i = 0;
 
-  for (i = 0; fmt[i] != '\0'; i++) {
+  for (; fmt[i] != '\0'; i++) {
     char c = fmt[i];
 
     if (c == '{') {
       char c2 = fmt[i + 1];
       switch (c2) {
       case '{':
-        // Print string up to the first bracket
-        appendBuffer(&buf, (u8 *)fmt + offset, i - offset);
-        // Skip the second bracket.
-        offset += ++i;
-        break;
+        // Print string including the first bracket
+        appendBuffer(&buf, (u8 *)fmt, i);
+        fmt += i + 2;
+        i = 0;
+        continue;
       case '}': {
-        i++;
+        // Print string without the first bracket
+        appendBuffer(&buf, (u8 *)fmt, i);
+        fmt += i + 2;
+        i = 0;
         Value v = va_arg(args, Value);
         ObjString *show = as_string(to_string(v));
         appendBuffer(&buf, (u8 *)show->chars, show->length);
-        break;
+        continue;
       }
 
       default:
@@ -209,7 +211,7 @@ ObjString *vstring_format(const char *fmt, va_list args) {
   }
 
   // Append rest of fmt including null byte.
-  appendBuffer(&buf, (u8 *)fmt + offset, i - offset);
+  appendBuffer(&buf, (u8 *)fmt, i);
 
   growBuffer(&buf, buf.count);
   return take_string((char *)buf.bytes, buf.count);
