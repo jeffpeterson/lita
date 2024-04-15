@@ -69,7 +69,7 @@
     "statements": {
       "patterns": [
         {
-          "match": "\\b(let)\\s+([A-Za-z_][A-Za-z0-9_]*)\\b",
+          "match": "\\b(let)\\s+([A-Za-z_][A-Za-z0-9_]*[']*)",
           "captures": {
             "1": {"name": "storage.type.lita"},
             "2": {"name": "support.variable.lita"}
@@ -83,7 +83,7 @@
             "3": {
               "patterns": [
                 {
-                  "match": "\\b[A-Za-z_][A-Za-z0-9_]*\\b",
+                  "match": "\\b[A-Za-z_][A-Za-z0-9_]*[']*",
                   "name": "variable.parameter.lita"
                 }
               ]
@@ -92,7 +92,7 @@
           }
         },
         {
-          "match": "\\b(class)\\s+([A-Za-z_][A-Za-z0-9_]*)(?:\\s*(<)\\s*([A-Za-z_][A-Za-z0-9_]*))?\\b",
+          "match": "\\b(class)\\s+([A-Za-z_][A-Za-z0-9_]*[']*)(?:\\s*(<)\\s*([A-Za-z_][A-Za-z0-9_]*[']*))?",
           "captures": {
             "1": {"name": "storage.type.class.lita"},
             "2": {"name": "entity.name.type.class.lita"},
@@ -105,11 +105,11 @@
     "callables": {
       "patterns": [
         {
-          "match": "([A-Za-z_][A-Za-z0-9_]*)\\(",
+          "match": "([A-Za-z_][A-Za-z0-9_]*[']*)\\(",
           "name": "support.function.lita"
         },
         {
-          "match": "([A-Za-z_][A-Za-z0-9_]*)\\s*=>",
+          "match": "([A-Za-z_][A-Za-z0-9_]*[']*)\\s*=>",
           "captures": {
             "1": {"name": "support.function.lita"}
           }
@@ -151,11 +151,11 @@
       "patterns": [
         {
           "name": "entity.name.class.lita",
-          "match": "[A-Z][A-Za-z0-9_]*\\b"
+          "match": "[A-Z][A-Za-z0-9_]*[']*"
         },
         {
           "name": "variable.other.readwrite.lita",
-          "match": "[A-Za-z_][A-Za-z0-9_]*\\b"
+          "match": "[A-Za-z_][A-Za-z0-9_]*[']*"
         }
       ]
     },
