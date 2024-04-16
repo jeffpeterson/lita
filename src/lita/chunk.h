@@ -63,7 +63,7 @@ typedef enum OpCode {
                     /**/
   OP_INVOKE,        /** (name, n) [n self][0 ...args] -> [] */
   OP_SUPER_INVOKE,  /** (name, n) [n+1 self][1 ...args][0 super] -> [] */
-  OP_ASSERT,        /** [0 value] -> [0 value] */
+  OP_ASSERT,        /** (source_code) [0 value] -> [0 value] */
                     /**/
   OP_GET_VAR,       /** (name) [0 self] -> [0 value] */
   OP_SET_VAR,       /** (name) [1 self][0 value] -> [0 value] */

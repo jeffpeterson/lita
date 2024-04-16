@@ -83,6 +83,7 @@ typedef enum FunType {
   TYPE_FUNCTION,
   TYPE_INIT,
   TYPE_METHOD,
+  TYPE_GETTER, // let foo = expr
   TYPE_SCRIPT
 } FunType;
 
@@ -431,6 +432,10 @@ static void endScope() {
 /** Adds the token to the constants table. */
 static uint8_t identifierConstant(Token *name) {
   return makeConstant(identifierValue(name));
+}
+
+static u8 consumeIdentConstant(const char *message) {
+  return makeConstant(consumeIdent(message));
 }
 
 /** Do these tokens have the same source string? */
@@ -955,8 +960,7 @@ static void super_(Ctx *ctx) {
 
   // Todo: super() calls the current method.
   consume(TOKEN_DOT, "Expect '.' after 'super'.");
-  consume(TOKEN_IDENTIFIER, "Expect superclass method name.");
-  uint8_t name = identifierConstant(&parser.previous);
+  u8 name = consumeIdentConstant("Expect superclass method name.");
 
   namedVariable(syntheticToken("this"), ctx);
 
@@ -1069,19 +1073,37 @@ static void function(FunType type) {
   }
 }
 
-static void method() {
-  if (match(TOKEN_LET)) {
-    consumeIdent("Expect property name.");
-    skipNewlines();
-    return;
+static void getter() {
+  let name = consumeIdent("Expect property name.");
+
+  if (match(TOKEN_EQUAL)) {
+    u8 name_constant = makeConstant(name);
+    Compiler compiler;
+
+    initCompiler(&compiler, TYPE_METHOD, as_string(name));
+    beginScope();
+    if (!expression()) return error("Expect expression after `let ... =`.");
+    emitBytes(OP_SET_PROPERTY, name_constant);
+    emitByte(OP_RETURN);
+
+    ObjFun *fun = endCompiler();
+    emitBytes(OP_CLOSURE, makeConstant(OBJ_VAL(fun)));
+
+    emitBytes(OP_METHOD, name_constant);
   }
+
+  skipNewlines();
+}
+
+static void method() {
+  if (match(TOKEN_LET)) return getter();
 
   bool is_c = match(TOKEN_CFN);
 
   is_c || match(TOKEN_FN); // optional
   consumeIdent("Expect method name.");
 
-  uint8_t constant = identifierConstant(&parser.previous);
+  u8 constant = identifierConstant(&parser.previous);
   FunType type = TYPE_METHOD;
   if (parser.previous.length == 4 &&
       memcmp(parser.previous.start, "init", 4) == 0) {
@@ -1440,7 +1462,7 @@ ParseRule rules[] = {
     [TOKEN_RIGHT_PAREN] = {NULL, NULL, PREC_NONE},
     [TOKEN_LEFT_BRACE] = {NULL, NULL, PREC_NONE},
     [TOKEN_RIGHT_BRACE] = {NULL, NULL, PREC_NONE},
-    [TOKEN_LEFT_BRACKET] = {array, NULL, PREC_CALL},
+    [TOKEN_LEFT_BRACKET] = {array, NULL, PREC_NONE},
     [TOKEN_RIGHT_BRACKET] = {NULL, NULL, PREC_NONE},
 
     [TOKEN_ARROW] = {NULL, NULL, PREC_ARROW},

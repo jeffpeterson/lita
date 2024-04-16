@@ -451,14 +451,14 @@ InterpretResult vm_assert(Value src) {
 #endif
 
   if (isFalsey(value)) {
-    inspect_value(stderr, src);
-    fprintf(stderr, " //=> ");
-    inspect_value(stderr, value);
-    printf("\n");
-    fprintf(stderr, "RHS: ");
+    fprintf(stderr, "\n\n");
+    fstring_format(stderr, "{} -> {}", src, value);
     inspect_value(stderr, rhs);
-    printf("\n");
-    return runtimeError(FG_RED "Assertion failed." FG_DEFAULT);
+    fprintf(stderr, "\nStack:\t");
+    debugStack();
+    fprintf(stderr, "\n\n");
+
+    return runtimeError(FG_RED "Assertion failed.\n" FG_DEFAULT);
   }
 
 #ifdef DEBUG_ASSERTS

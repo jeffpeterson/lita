@@ -10,7 +10,7 @@
 
 #define TO_STRING(val) to_string(val)
 #define obj(o) OBJ_VAL(o)
-#define fmt(f, ...) obj(stringFormat(f, ...))
+#define fmt(f, ...) obj(string_format(f, ...))
 
 typedef Value _;
 
