@@ -179,22 +179,21 @@ ObjString *vstring_format(const char *fmt, va_list args) {
   Buffer buf = newBuffer(8);
   int i = 0;
 
-  for (; fmt[i] != '\0'; i++) {
+  while (fmt[i] != '\0') {
     char c = fmt[i];
 
-    if (c == '{') {
-      char c2 = fmt[i + 1];
-      switch (c2) {
+    if (c != '{') i++;
+    else switch (fmt[i + 1]) {
       case '{':
         // Print string including the first bracket
-        appendBuffer(&buf, (u8 *)fmt, i);
-        fmt += i + 2;
+        appendBuffer(&buf, (u8 *)fmt, ++i);
+        fmt += i + 1; // Skip the second bracket
         i = 0;
         continue;
       case '}': {
         // Print string without the first bracket
         appendBuffer(&buf, (u8 *)fmt, i);
-        fmt += i + 2;
+        fmt += i + 2; // Skip the first and second bracket
         i = 0;
         Value v = va_arg(args, Value);
         ObjString *show = as_string(to_string(v));
@@ -207,7 +206,6 @@ ObjString *vstring_format(const char *fmt, va_list args) {
         runtimeError("Invalid format: %s", fmt);
         crash("format");
       }
-    }
   }
 
   // Append rest of fmt including null byte.
