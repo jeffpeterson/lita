@@ -228,16 +228,6 @@ static Value consumeIdent(const char *message) {
   return identifierValue(&parser.previous);
 }
 
-static void consumeTerminator(const char *message) {
-  consume(TOKEN_NEWLINE, message);
-  if (parser.indebt) {
-    fprintf(stderr, "Warning: Indentation debt not paid off.");
-    parser.indebt--;
-    consume(TOKEN_DEDENT, "Expected end of indented expression.");
-  }
-  skipNewlines();
-}
-
 static void emitByte(uint8_t byte) {
   writeChunk(currentChunk(), byte, parser.previous.line);
 }
@@ -1058,7 +1048,7 @@ static void function(FunType type) {
   } else if (match(TOKEN_EQUAL) || match(TOKEN_FAT_ARROW)) {
     expression();
     emitByte(OP_RETURN);
-    consumeTerminator("Expect newline after single-line function.");
+    skipNewlines();
   } else if (match(TOKEN_INDENT)) {
     block();
   }
