@@ -4,6 +4,7 @@ WARN_ERRORS := -Werror -Wno-error=unused-variable -Wno-error=unused-function
 CFLAGS := -g -Isrc -Wall $(WARN_ERRORS)
 
 TARGET := .bin/lita
+DEV := .bin/lita-dev
 TEST := $(TARGET)-test
 LITA_LIB := _build/lita.so
 
@@ -44,12 +45,14 @@ db/test: $(TEST)
 db/%: $(TARGET)
 	@lldb lita examples/$*.lita
 
-%: examples/%.lita $(TARGET)
-	@$(TARGET) $(LITA_FLAGS) $<
+%: examples/%.lita $(DEV)
+	@$(DEV) $(LITA_FLAGS) $<
+	-git diff --quiet && git notes --ref=$@ add -fm OK 2>/dev/null
 
 lib: $(LITA_LIB)
 test: $(TEST)
 	@$(TEST) $(LITA_FLAGS)
+	@git notes --ref=test add -fm OK 2>/dev/null
 
 $(TARGET).wasm $(TARGET).js $(TARGET).html: $(TARGET_O:%.o=%.wasm.o)
 	@mkdir -p $(dir $@)
@@ -63,15 +66,19 @@ $(TARGET).zig.wasm: $(filter-out src/flecs/%,$(TARGET_C))
 # 	@mkdir -p $(dir $@)
 # 	emcc $(CFLAGS) -o $(TARGET).js $^
 
-$(TARGET): $(TARGET_O)
+$(DEV): $(TARGET_O) | test
 	@mkdir -p $(dir $@)
 	$(CC) $(CFLAGS) -o $@ $^
+
+$(TARGET): $(DEV) | assertions
+	cp $@ $@-$(date -r $@ "+%Y-%m-%d-%H:%M:%S")
+	cp $< $@
 
 $(TEST): $(TEST_O)
 	@mkdir -p $(dir $@)
 	$(CC) $(CFLAGS) -o $@ $^
 
-$(LITA_LIB): $(LITA_O) $(TARGET_O)
+$(LITA_LIB): $(LITA_O) $(TARGET_O) | test
 	@mkdir -p $(dir $@)
 	$(CC) $(CFLAGS) -shared -o $@ $^
 
