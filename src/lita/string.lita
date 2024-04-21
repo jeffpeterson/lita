@@ -1,5 +1,7 @@
 class String
-	fn * (b) = this + b.string
+	fn string = this
+	fn + (b) = concat(b.string)
+	fn * (b) = concat(b.string)
 	fn / (str) = this + "/" + str
 
 	fn bold      = "\e[1m" + this + "\e[21m"
