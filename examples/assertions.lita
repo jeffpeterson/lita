@@ -15,6 +15,10 @@ assert (1, 2)
 assert 1.class == Number
 assert (1, 2).class == Tuple
 
+/// Functions
+fn add(a, b) = a + b
+assert add(1, 2) == 3
+
 /// Natives
 assert clock()
 assert (3; 4) == 3
@@ -65,6 +69,7 @@ assert [1, 2].get(1) == 2
 assert [1, 2, 3].length == 3
 assert [1, 2] + [3] == [1, 2, 3]
 assert [1, 2] << 3 == [1, 2, 3]
+// print "" + [1, 2]
 
 /// Instances
 class Point(x, y)
@@ -112,5 +117,16 @@ fn num_to_ord(x)
 assert num_to_ord(1) == 'one
 assert num_to_ord(2) == 'two
 assert num_to_ord(3) == '3
+
+// class Foo(x)
+// 	let x' = x + 1
+
+// let foo = Foo(1)
+
+// assert foo.x == 1
+// assert foo.x' == 2
+// foo.x = 5
+// assert foo.x == 5
+// assert foo.x' == 2
 
 write "\n\nAssertions passed!\n".green
