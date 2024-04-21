@@ -1,5 +1,6 @@
 class Nil < Any
 	fn string = ""
+	fn dump = "nil"
 
 class Object < Any
 
@@ -8,7 +9,19 @@ class Object < Any
 // class Literal(String)
 // class Point(x, y)
 
+let fn_id = 0
 class Function
+	let id = fn_id++
+	fn dump = "/*" name "*/fn" id "()"
+	fn dump_global
+		"\n"
+		"// " name "\n"
+		"static ValueArray constants" id "() {\n"
+		"  ValueArray vals;\n"
+		"  initValueArray(&vals);\n"
+		"  vals.count = vals.capacity = %d;\n"
+		"  Value values[] = {"
+
 class Method < Function
 class NativeFunction < Function
 class Class < Function
@@ -16,9 +29,11 @@ class Class < Function
 class Bool
 	fn inspect = this ? 'true : 'false
 	fn string = inspect
+	fn dump = this ? "TRUE_VAL" : "FALSE_VAL"
 
 class Error
 class Number
+	fn dump = "NUMBER_VAL(" string ")"
 
 class Table
 	fn inspect = "{" + "}"
