@@ -28,7 +28,7 @@ TEST_O  := $(filter-out %/main.o,$(OBJECTS))
 .PRECIOUS: $(TARGET) %.c %.o
 .SUFFIXES: # disable crazy built-in rules that append .c
 
-default: test assertions
+default: test assertions $(TARGET)
 
 # zig not working yet
 zig: $(TARGET).zig.wasm
@@ -47,12 +47,12 @@ db/%: $(TARGET)
 
 %: examples/%.lita $(DEV)
 	@$(DEV) $(LITA_FLAGS) $<
-	-git diff --quiet && git notes --ref=$@ add -fm OK 2>/dev/null
+	@git diff --quiet && git notes --ref=$@ add -fm OK 2>/dev/null || true
 
 lib: $(LITA_LIB)
 test: $(TEST)
 	@$(TEST) $(LITA_FLAGS)
-	@git notes --ref=test add -fm OK 2>/dev/null
+	@git diff --quiet && git notes --ref=test add -fm OK 2>/dev/null || true
 
 $(TARGET).wasm $(TARGET).js $(TARGET).html: $(TARGET_O:%.o=%.wasm.o)
 	@mkdir -p $(dir $@)
@@ -71,8 +71,10 @@ $(DEV): $(TARGET_O) | test
 	$(CC) $(CFLAGS) -o $@ $^
 
 $(TARGET): $(DEV) | assertions
-	cp $@ $@-$(date -r $@ "+%Y-%m-%d-%H:%M:%S")
+	cp $@ $@-$(shell date -r $@ "+%Y-%m-%d-%H:%M:%S")
+	echo "Testing"
 	cp $< $@
+	chmod +x $@
 
 $(TEST): $(TEST_O)
 	@mkdir -p $(dir $@)
