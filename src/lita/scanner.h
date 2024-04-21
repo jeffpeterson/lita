@@ -3,6 +3,12 @@
 
 #include "common.h"
 
+bool in(u32 c, char start, char end);
+bool isAlpha(u32 c);
+bool isDigit(u32 c);
+bool isHex(u32 c);
+bool isSubscript(u32 c);
+
 typedef enum {
   TOKEN_ERROR,
   TOKEN_EOF,

@@ -3,6 +3,7 @@
 #include "dump.h"
 #include "lib.h"
 #include "object.h"
+#include "scanner.h"
 #include "string.h"
 
 int currentId = 0;
@@ -172,8 +173,7 @@ static int dumpFn(FILE *io, ObjFun *fun) {
 static char *parameterize(char *str) {
   for (int i = 0; str[i] != '\0'; i++) {
     char c = str[i];
-    if ((c >= '0' && c <= '9') || (c >= 'a' && c <= 'z') ||
-        (c >= 'A' && c <= 'Z') || c == '_') {
+    if (isAlpha(c) || isDigit(c)) {
     } else str[i] = '_';
   }
 

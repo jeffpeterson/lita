@@ -11,7 +11,7 @@ class Object < Any
 
 let fn_id = 0
 class Function
-	let id = fn_id++
+	// let id = fn_id++
 	fn dump = "/*" name "*/fn" id "()"
 	fn dump_global
 		"\n"
@@ -19,7 +19,7 @@ class Function
 		"static ValueArray constants" id "() {\n"
 		"  ValueArray vals;\n"
 		"  initValueArray(&vals);\n"
-		"  vals.count = vals.capacity = %d;\n"
+		"  vals.count = vals.capacity = "  ";\n"
 		"  Value values[] = {"
 
 class Method < Function

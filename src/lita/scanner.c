@@ -51,19 +51,13 @@ static u32 codePoint(const char *str) {
   }
 }
 
-inline static bool in(u32 c, char start, char end) {
-  return c >= start && c <= end;
-}
 static bool isAtEnd() { return *scanner.current == '\0'; }
-static bool isAlpha(u32 c) {
-  return in(c, 'a', 'z') || in(c, 'A', 'Z') || c == '_';
-}
-static bool isDigit(u32 c) { return in(c, '0', '9'); }
-static bool isHex(u32 c) {
-  return isDigit(c) || in(c, 'A', 'F') || in(c, 'a', 'f');
-}
+bool in(u32 c, char start, char end) { return c >= start && c <= end; }
+bool isAlpha(u32 c) { return in(c, 'a', 'z') || in(c, 'A', 'Z') || c == '_'; }
+bool isDigit(u32 c) { return in(c, '0', '9'); }
+bool isHex(u32 c) { return isDigit(c) || in(c, 'A', 'F') || in(c, 'a', 'f'); }
 
-static bool isSubscript(u32 c) { return c >= 0x2080 && c <= 0x2089; }
+bool isSubscript(u32 c) { return c >= 0x2080 && c <= 0x2089; }
 // static bool isSuperscript(u32 c) {
 //   return c == 0x00B2 || c == 0x00B3 || // 2,3
 //          c == 0x2070 || c == 0x00B9 || // 0,1
