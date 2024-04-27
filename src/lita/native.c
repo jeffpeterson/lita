@@ -71,8 +71,11 @@ static _ Any_string(_ this, int argc, _ *args) { return to_string(this); }
 static _ Function_arity(_ this, int argc, _ *args) {
   return NUMBER_VAL(arity(this));
 }
+static let Function_name(let this, int argc, _ *args) {
+  return OBJ_VAL(as_fn(this)->fun->name);
+}
 static _ Function_bytes(_ this, int argc, _ *args) {
-  if (!is_closure(this)) return error("Only Fns have bytes.");
+  if (!is_closure(this)) return error("Only Functions have bytes.");
 
   ObjFun *fn = AS_FUN(this);
 
@@ -145,6 +148,7 @@ InterpretResult defineNatives() {
   method(vm.Number, fn("*", 1, Number_star));
   method(vm.Number, fn("string", 0, Number_string));
 
+  method(vm.Function, fn("name", 0, Function_name));           // getter
   method(vm.Function, fn("arity", 0, Function_arity));         // getter
   method(vm.Function, fn("bytes", 0, Function_bytes));         // getter
   method(vm.Function, fn("byteCount", 0, Function_byteCount)); // getter

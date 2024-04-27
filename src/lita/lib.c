@@ -105,8 +105,7 @@ _ findMethod(_ klass, _ name) {
 
 _ find(_ self, _ key) {
   _ val;
-  if (is_instance(self) && tableGet(&as_inst(self)->fields, key, &val))
-    return val;
+  if (is_obj(self) && tableGet(&AS_OBJ(self)->fields, key, &val)) return val;
 
   return findMethod(classOf(self), key);
 }
@@ -131,8 +130,6 @@ u32 len(_ x) {
   case OBJ_CLOSURE:
   case OBJ_FUN:
   case OBJ_NATIVE: return arity(x);
-
-  case OBJ_INSTANCE: return as_inst(x)->fields.len;
 
   default: return 1;
   }
@@ -196,9 +193,6 @@ _ to_string(_ val) {
     case OBJ_NATIVE: return name(val);
 
     case OBJ_ERR: return OBJ_VAL(AS_ERR(val)->msg);
-    case OBJ_INSTANCE:
-      // get(val, string("to_string"));
-      return to_string(OBJ_VAL(AS_INSTANCE(val)->klass));
 
     // default: return str(objInfo[obj_type(val)].inspect);
     default: return send(val, str("string"), 0);
@@ -255,7 +249,6 @@ _ inspect(_ val) {
       ObjFun *fun = AS_FUN(val);
       return OBJ_VAL(stringf("<fn %s/%d>", fun->name->chars, fun->arity));
     }
-    case OBJ_INSTANCE: return to_string(OBJ_VAL(AS_INSTANCE(val)->klass));
     case OBJ_NATIVE: return OBJ_VAL(AS_NATIVE(val)->name);
     default: break;
     }

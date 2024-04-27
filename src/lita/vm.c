@@ -225,8 +225,7 @@ ObjClass *valueClass(Value v) {
   if (is_obj(v)) {
     Obj *obj = AS_OBJ(v);
 
-    if (obj->type == OBJ_INSTANCE) return ((ObjInstance *)obj)->klass;
-
+    if (obj->klass) return obj->klass;
     if (obj->def && obj->def->class_name) name = obj->def->class_name;
     else name = objInfo[obj->type].className;
   } else {
@@ -262,7 +261,7 @@ bool call_value(Value callee, int argCount) {
     }
 
     case OBJ_CLASS: {
-      vm.stackTop[-argCount - 1] = OBJ_VAL(newInstance(AS_CLASS(callee)));
+      vm.stackTop[-argCount - 1] = OBJ_VAL(newObject(AS_CLASS(callee)));
 
       let init = findMethod(callee, obj(vm.str.init));
 
@@ -325,11 +324,11 @@ InterpretResult vm_invoke(Value name, int argCount) {
 
   // Value value = find(receiver, name);
 
-  if (is_instance(receiver)) {
-    ObjInstance *inst = AS_INSTANCE(receiver);
+  if (is_obj(receiver)) {
+    Obj *obj = AS_OBJ(receiver);
 
     Value value;
-    if (tableGet(&inst->fields, name, &value)) {
+    if (tableGet(&obj->fields, name, &value)) {
       vm.stackTop[-argCount - 1] = value;
       return !call_value(value, argCount);
     }
@@ -519,18 +518,18 @@ InterpretResult vm_get_property(Value name) {
 
 // [1 self][0 value] -> [0 value]
 InterpretResult vm_set_property(Value name) {
-  if (!is_instance(peek(1))) {
-    return runtimeError("Only instances have properties.");
+  if (!is_obj(peek(1))) {
+    return runtimeError("Only objects have properties.");
   }
 
-  ObjInstance *inst = AS_INSTANCE(peek(1));
+  Obj *obj = AS_OBJ(peek(1));
 
   // Keep on stack to prevent GC collection.
   Value value = peek(0);
 
   // Assigning 'nil' is deletion.
-  if (is_nil(value)) tableDelete(&inst->fields, name);
-  else tableSet(&inst->fields, name, value);
+  if (is_nil(value)) tableDelete(&obj->fields, name);
+  else tableSet(&obj->fields, name, value);
 
   popn(2);
   push(value);

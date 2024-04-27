@@ -17,7 +17,6 @@ const ObjInfo objInfo[13] = {
     [OBJ_CUSTOM] = {"CUSTOM", NULL},
     [OBJ_ERR] = {"ERR", "Error"},
     [OBJ_FUN] = {"FUN", NULL},
-    [OBJ_INSTANCE] = {"INSTANCE", NULL},
     [OBJ_NATIVE] = {"NATIVE", "NativeFunction"},
     [OBJ_UPVALUE] = {"UPVALUE", NULL},
 };
@@ -31,6 +30,7 @@ Obj *allocateObject(size_t size, ObjType type) {
   obj->hash = hashBytes((char *)&val, sizeof(Value));
   obj->next = vm.objects;
   vm.objects = obj;
+  initTable(&obj->fields);
 
 #ifdef DEBUG_LOG_MEM
   fprintf(stderr, "%p allocate %zub for ", (void *)obj, size);
@@ -51,10 +51,6 @@ ObjClass *as_class(Value x) {
 ObjClosure *as_fn(Value x) {
   assert(is_closure(x));
   return AS_CLOSURE(x);
-}
-ObjInstance *as_inst(Value x) {
-  assert(is_instance(x));
-  return AS_INSTANCE(x);
 }
 ObjBound *as_bound(Value x) {
   assert(is_bound(x));
@@ -80,6 +76,12 @@ ObjBound *newBound(Value receiver, Value method) {
   return bound;
 }
 
+Obj *newObject(ObjClass *klass) {
+  Obj *obj = ALLOCATE_OBJ(Obj, OBJ_CUSTOM);
+  obj->klass = klass;
+  return obj;
+}
+
 ObjClass *newClass(ObjString *name) {
   ObjClass *klass = ALLOCATE_OBJ(ObjClass, OBJ_CLASS);
   klass->name = name;
@@ -103,13 +105,6 @@ ObjErr *newError(ObjString *msg) {
   ObjErr *err = ALLOCATE_OBJ(ObjErr, OBJ_ERR);
   err->msg = msg;
   return err;
-}
-
-ObjInstance *newInstance(ObjClass *klass) {
-  ObjInstance *inst = ALLOCATE_OBJ(ObjInstance, OBJ_INSTANCE);
-  inst->klass = klass;
-  initTable(&inst->fields);
-  return inst;
 }
 
 ObjFun *newFunction() {
@@ -180,11 +175,6 @@ int inspect_obj(FILE *io, Obj *obj) {
 
   case OBJ_FUN: return inspect_function(io, "ObjFun", (ObjFun *)obj);
 
-  case OBJ_INSTANCE: {
-    ObjInstance *inst = (ObjInstance *)obj;
-    return fprintf(io, "%s(", inst->klass->name->chars) +
-           inspect_table(io, &inst->fields) + fprintf(io, ")");
-  }
   case OBJ_NATIVE: {
     ObjNative *native = (ObjNative *)obj;
     return fprintf(io, FG_MAGENTA "<native %s/%d>" FG_DEFAULT,
@@ -198,7 +188,9 @@ int inspect_obj(FILE *io, Obj *obj) {
            fprintf(io, ">");
   }
 
-  default: fprintf(stderr, "inspect not implemented for this object"); exit(1);
+  default:
+    return fprintf(io, "%s(", obj->klass->name->chars) +
+           inspect_table(io, &obj->fields) + fprintf(io, ")");
   }
 }
 

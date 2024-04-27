@@ -19,7 +19,6 @@ typedef enum ObjType ObjType;
 #define is_custom(val) is_obj_type(val, OBJ_CUSTOM)
 #define is_err(val) is_obj_type(val, OBJ_ERR)
 #define is_fun(val) is_obj_type(val, OBJ_FUN)
-#define is_instance(val) is_obj_type(val, OBJ_INSTANCE)
 #define is_native(val) is_obj_type(val, OBJ_NATIVE)
 #define is_upvalue(val) is_obj_type(val, OBJ_UPVALUE)
 
@@ -28,7 +27,6 @@ typedef enum ObjType ObjType;
 #define AS_CLOSURE(val) ((ObjClosure *)AS_OBJ(val))
 #define AS_ERR(val) ((ObjErr *)AS_OBJ(val))
 #define AS_FUN(val) ((ObjFun *)AS_OBJ(val))
-#define AS_INSTANCE(val) ((ObjInstance *)AS_OBJ(val))
 #define AS_NATIVE(val) ((ObjNative *)AS_OBJ(val))
 #define AS_UPVALUE(val) ((ObjUpvalue *)AS_OBJ(val))
 
@@ -45,7 +43,6 @@ enum ObjType {
   OBJ_CUSTOM,
   OBJ_ERR,
   OBJ_FUN,
-  OBJ_INSTANCE,
   OBJ_NATIVE,
   OBJ_UPVALUE,
 };
@@ -72,12 +69,16 @@ typedef struct ObjDef {
   ObjNativesFn *natives;
 } ObjDef;
 
+typedef struct ObjClass ObjClass;
+
 struct Obj {
   ObjType type;
   const ObjDef *def;
   bool isMarked;    /** Is marked by GC in the current mark cycle. */
   struct Obj *next; /** Linked list of objects used for GC. */
   Hash hash;        /** All objects have a static hash value. */
+  ObjClass *klass;
+  Table fields; /** Fields assigned to this instance. */
 };
 
 /**
@@ -127,13 +128,6 @@ typedef struct ObjClass {
   Table methods;
 } ObjClass;
 
-typedef struct ObjInstance {
-  Obj obj;
-  ObjClass *klass;
-  // Value *children; /** Child values. */
-  Table fields; /** Fields assigned to this instance. */
-} ObjInstance;
-
 /** A closure bound to a receiver.  */
 typedef struct ObjBound {
   Obj obj;
@@ -166,13 +160,13 @@ Obj *allocateObject(size_t size, ObjType type);
 bool as_bool(Value x);
 ObjClass *as_class(Value x);
 ObjClosure *as_fn(Value x);
-ObjInstance *as_inst(Value x);
 ObjBound *as_bound(Value x);
 ObjNative *as_native(Value x);
 double as_num(Value x);
 Obj *as_obj(Value x);
 void *asPtr(Value x);
 
+Obj *newObject(ObjClass *klass);
 ObjBound *newBound(Value receiver, Value method);
 ObjClass *newClass(ObjString *name);
 ObjClosure *newClosure(ObjFun *fun);
@@ -181,7 +175,6 @@ ObjErr *newError(ObjString *msg);
 ObjFun *newFunction();
 int inspect_function(FILE *io, const char *kind, ObjFun *fun);
 
-ObjInstance *newInstance(ObjClass *klass);
 ObjNative *newNative(ObjString *name, int arity, NativeFn fun);
 
 ObjUpvalue *newUpvalue(Value *slot);

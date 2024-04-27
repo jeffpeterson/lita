@@ -106,6 +106,9 @@ static void blackenObject(Obj *obj) {
   fprintf(stderr, "\n");
 #endif
 
+  markObject((Obj *)obj->klass);
+  markTable(&obj->fields);
+
   if (obj->def && obj->def->mark) return obj->def->mark(obj);
 
   switch (obj->type) {
@@ -146,13 +149,6 @@ static void blackenObject(Obj *obj) {
     break;
   }
 
-  case OBJ_INSTANCE: {
-    ObjInstance *inst = (ObjInstance *)obj;
-    markObject((Obj *)inst->klass);
-    markTable(&inst->fields);
-    break;
-  }
-
   case OBJ_NATIVE: {
     ObjNative *native = (ObjNative *)obj;
     markObject((Obj *)native->name);
@@ -161,7 +157,7 @@ static void blackenObject(Obj *obj) {
 
   case OBJ_UPVALUE: markValue(((ObjUpvalue *)obj)->closed); break;
 
-  default: fprintf(stderr, "mark not implemented for this object"); exit(1);
+  default: break;
   }
 }
 
@@ -173,6 +169,8 @@ static void freeObject(Obj *obj) {
   inspect_obj(stderr, obj);
   fprintf(stderr, "\n");
 #endif
+
+  freeTable(&obj->fields);
 
   if (obj->def && obj->def->size) {
     if (obj->def->free) obj->def->free(obj);
@@ -206,17 +204,10 @@ static void freeObject(Obj *obj) {
     break;
   }
 
-  case OBJ_INSTANCE: {
-    ObjInstance *inst = (ObjInstance *)obj;
-    freeTable(&inst->fields);
-    FREE(ObjInstance, obj);
-    break;
-  }
-
   case OBJ_NATIVE: FREE(ObjNative, obj); break;
 
   case OBJ_UPVALUE: FREE(ObjUpvalue, obj); break;
-  default: fprintf(stderr, "free not implemented for this object"); exit(1);
+  default: break;
   }
 }
 
