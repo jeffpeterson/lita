@@ -36,6 +36,8 @@ typedef enum ObjType ObjType;
 #define ALLOCATE_OBJ(type, objectType)                                         \
   (type *)allocateObject(sizeof(type), objectType)
 
+typedef enum Ownership { UNOWNED, OWNED } Ownership;
+
 enum ObjType {
   OBJ_BOUND,
   OBJ_CLASS,

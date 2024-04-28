@@ -7,6 +7,7 @@
 #include "common.h"
 #include "compiler.h"
 #include "debug.h"
+#include "io.h"
 #include "lib.h"
 #include "memory.h"
 #include "native.h"
@@ -131,8 +132,14 @@ InterpretResult bootVM() {
   InterpretResult result = defineNatives();
   register_def(&string_def);
   register_def(&array_def);
+  register_def(&io_def);
   register_def(&range_def);
   register_def(&tuple_def);
+
+  setGlobal(str("stdin"), io(stdin, UNOWNED));
+  setGlobal(str("stdout"), io(stdout, UNOWNED));
+  setGlobal(str("stderr"), io(stderr, UNOWNED));
+
   return result;
 }
 

@@ -132,8 +132,50 @@ static Value fn3() {
   return obj(f);
 }
 
-// map
+// length
 static ValueArray constants4() {
+  ValueArray vals;
+  initValueArray(&vals);
+  vals.count = vals.capacity = 2;
+  Value values[] = {
+    str("end"), str("start"),
+  };
+  vals.values = cloneMemory(values, sizeof(values));
+  return vals;
+}
+
+// length
+static Chunk chunk4() {
+  Chunk c;
+  initChunk(&c);
+  c.count = 12;
+  c.capacity = 12;
+  u8 code[] = {
+    14, 0, 44, 0, 14, 0, 44, 1, 25, 40, 1, 40,
+  };
+  int lines[] = {
+    4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 5, 5,
+  };
+  c.code = cloneMemory(code, sizeof(code));
+  c.lines = cloneMemory(lines, sizeof(lines));
+                // length
+  c.constants = constants4();
+
+  return c;
+};
+
+// length
+static Value fn4() {
+  ObjFun *f = newFunction();  f->arity = 0;
+  f->upvalueCount = 0;
+  f->name = new_string("length");
+             // length
+  f->chunk = chunk4();
+  return obj(f);
+}
+
+// map
+static ValueArray constants5() {
   ValueArray vals;
   initValueArray(&vals);
   vals.count = vals.capacity = 2;
@@ -145,7 +187,7 @@ static ValueArray constants4() {
 }
 
 // map
-static Chunk chunk4() {
+static Chunk chunk5() {
   Chunk c;
   initChunk(&c);
   c.count = 20;
@@ -154,23 +196,23 @@ static Chunk chunk4() {
     14, 1, 14, 0, 44, 0, 33, 1, 14, 1, 14, 0, 44, 1, 33, 1, 4, 40, 1, 40,
   };
   int lines[] = {
-    4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 5, 5,
+    5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
   };
   c.code = cloneMemory(code, sizeof(code));
   c.lines = cloneMemory(lines, sizeof(lines));
                 // map
-  c.constants = constants4();
+  c.constants = constants5();
 
   return c;
 };
 
 // map
-static Value fn4() {
+static Value fn5() {
   ObjFun *f = newFunction();  f->arity = 1;
   f->upvalueCount = 0;
   f->name = new_string("map");
              // map
-  f->chunk = chunk4();
+  f->chunk = chunk5();
   return obj(f);
 }
 
@@ -178,9 +220,9 @@ static Value fn4() {
 static ValueArray constants0() {
   ValueArray vals;
   initValueArray(&vals);
-  vals.count = vals.capacity = 10;
+  vals.count = vals.capacity = 12;
   Value values[] = {
-    str("Range"), /*init*/fn1(), str("init"), str("Object"), str("inspect"), /*inspect*/fn2(), str("string"), /*string*/fn3(), str("map"), /*map*/fn4(),
+    str("Range"), /*init*/fn1(), str("init"), str("Object"), str("inspect"), /*inspect*/fn2(), str("string"), /*string*/fn3(), str("length"), /*length*/fn4(), str("map"), /*map*/fn5(),
   };
   vals.values = cloneMemory(values, sizeof(values));
   return vals;
@@ -190,13 +232,13 @@ static ValueArray constants0() {
 static Chunk chunk0() {
   Chunk c;
   initChunk(&c);
-  c.count = 30;
-  c.capacity = 30;
+  c.count = 34;
+  c.capacity = 34;
   u8 code[] = {
-    34, 0, 0, 37, 1, 36, 2, 14, 0, 44, 3, 35, 9, 1, 37, 5, 36, 4, 37, 7, 36, 6, 37, 9, 36, 8, 7, 7, 1, 40,
+    34, 0, 0, 37, 1, 36, 2, 14, 0, 44, 3, 35, 9, 1, 37, 5, 36, 4, 37, 7, 36, 6, 37, 9, 36, 8, 37, 11, 36, 10, 7, 7, 1, 40,
   };
   int lines[] = {
-    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 3, 3, 3, 3, 4, 4, 4, 4, 5, 5, 5, 5, 5, 5, 5, 5,
+    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 3, 3, 3, 3, 4, 4, 4, 4, 5, 5, 5, 5, 5, 5, 5, 5, 6, 6, 6, 6,
   };
   c.code = cloneMemory(code, sizeof(code));
   c.lines = cloneMemory(lines, sizeof(lines));
