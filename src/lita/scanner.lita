@@ -9,33 +9,27 @@ class Token(type, escaped, source, line)
 	let source
 	let line
 
+class Indent
+	let previous = 0
+	let current = 0
+	let inside = true
+
 class Scanner
-	let source		// Current source string.
-	let position	// Current position in the source.
-	let line = 1		// Current line number.
-	let indent		// Indent status.
-	let data		// __DATA__ buffer.
+	let source				// Current source string.
+	let position = 0..0		// Current position in the source.
+	let line = 1			// Current line number.
+	let indent = Indent()	// Indent status.
+	let data				// __DATA__ buffer.
 
 	fn init(input)
 		source = input
-		reset
-
-	fn reset
-		line = 1
-		position = 0..0
-
-		indent.prev = 0
-		indent.cur = 0
-		indent.inside = true
-		scanner.data = nil
-
 		skip_shebang
 		skip_whitespace
 
 	fn current		= source[span.end]
 	fn is_at_end	= position.start + position.end >= source.length
 
-fn is_alpha(c)		= c.in 'a..'z or c.in 'A..'Z or c == '_'
+fn is_alpha c		= c.in 'a..'z or c.in 'A..'Z or c == '_'
 fn is_digit(c)		= c.in '0..'9
 fn is_subscript(c)	= c.in 0x2080..0x2089
 
