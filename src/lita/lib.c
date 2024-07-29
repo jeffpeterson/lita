@@ -105,7 +105,13 @@ _ findMethod(_ klass, _ name) {
 
 _ find(_ self, _ key) {
   _ val;
-  if (is_obj(self) && tableGet(&AS_OBJ(self)->fields, key, &val)) return val;
+  if (is_obj(self)) {
+    if (tableGet(&AS_OBJ(self)->fields, key, &val)) return val;
+    if (is_class(self)) {
+      val = find(superOf(self), key);
+      if (not_nil(val)) return val;
+    }
+  }
 
   return findMethod(classOf(self), key);
 }
