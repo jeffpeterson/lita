@@ -15,7 +15,7 @@ ObjRange *make_range(Value start, Value end) {
   range->obj.def = &range_def;
   range->start = start;
   range->end = end;
-  range->obj.hash = hashBytes((char *)&range->start, sizeof(Value) * 2);
+  range->obj.hash = hash_bytes((char *)&range->start, sizeof(Value) * 2);
   return range;
 }
 

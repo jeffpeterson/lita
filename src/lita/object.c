@@ -27,7 +27,7 @@ Obj *allocateObject(size_t size, ObjType type) {
   obj->isMarked = false;
   // Todo: Only hash for non-interned objects.
   Value val = OBJ_VAL(obj);
-  obj->hash = hashBytes((char *)&val, sizeof(Value));
+  obj->hash = hash_bytes((char *)&val, sizeof(Value));
   obj->next = vm.objects;
   vm.objects = obj;
   initTable(&obj->fields);

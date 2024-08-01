@@ -143,13 +143,11 @@ void freeValueArray(ValueArray *array);
 int inspect_value(FILE *io, Value value);
 int trace(const char *label, Value value);
 
-typedef uint32_t Hash;
+typedef u32 Hash;
 
-Hash appendHash(Hash hash, uint32_t x);
-Hash hashBytes(const char *key, int length);
-Hash hashNumber(uint32_t x);
-Hash hashValue(Value val);
-Hash hashValues(Value *vals, int length);
+Hash hash_bytes(const char *key, usize length);
+Hash hash_value(Value val);
+Hash hash_values(Value *vals, usize length);
 
 static inline int as_int(Value x) { return AS_NUMBER(x); }
 

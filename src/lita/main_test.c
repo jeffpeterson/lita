@@ -9,6 +9,8 @@
     test();                                                                    \
   }
 
+void xxhash_test();
+
 void buffer_test();
 void ecs_test();
 void string_test();
@@ -20,6 +22,8 @@ int main(int argc, const char *argv[]) {
   initVM();
   bootVM();
   printf("\n\n");
+  run(xxhash_test);
+
   run(buffer_test);
   run(ecs_test);
   run(string_test);

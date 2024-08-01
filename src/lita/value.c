@@ -4,6 +4,7 @@
 #include "object.h"
 #include "term.h"
 #include "value.h"
+#include "xxhash.h"
 
 void initValueArray(ValueArray *array) {
   array->values = NULL;
@@ -83,25 +84,15 @@ int cmpValues(Value a, Value b) {
   return AS_NUMBER(a) - AS_NUMBER(b);
 }
 
-Hash appendHash(Hash hash, uint32_t x) {
-  hash ^= x;
-  hash *= 16777619;
-  return hash;
+Hash hash_bytes(const char *bytes, usize length) {
+  return XXH3_64bits(bytes, length);
 }
 
-Hash hashBytes(const char *bytes, int length) {
-  Hash hash = 2166136261u;
-  for (int i = 0; i < length; i++) hash = appendHash(hash, bytes[i]);
-  return hash;
-}
-
-Hash hashNumber(uint32_t x) { return appendHash(2166136261u, x); }
-
-Hash hashValue(Value val) {
+Hash hash_value(Value val) {
   return is_obj(val) ? AS_OBJ(val)->hash
-                     : hashBytes((char *)&val, sizeof(Value));
+                     : hash_bytes((char *)&val, sizeof(Value));
 }
 
-Hash hashValues(Value *vals, int length) {
-  return hashBytes((char *)vals, length * sizeof(Value));
+Hash hash_values(Value *vals, usize length) {
+  return hash_bytes((char *)vals, length * sizeof(Value));
 }

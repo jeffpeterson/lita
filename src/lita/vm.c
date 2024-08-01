@@ -881,6 +881,6 @@ Value intern(Value val) {
 }
 
 Obj *getInterned(Hash *hash, ObjType type, const char *bytes, int length) {
-  *hash = hashBytes(bytes, length);
+  *hash = hash_bytes(bytes, length);
   return tableFindObj(&vm.interned, type, bytes, length, *hash);
 }

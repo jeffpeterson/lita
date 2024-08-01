@@ -23,7 +23,7 @@ void freeTable(Table *table) {
 
 static Entry *findEntry(Entry *entries, int capacity, Value key) {
   uint32_t index =
-      hashValue(key) & (capacity - 1); // Optimized `% capacity` when 2^n
+      hash_value(key) & (capacity - 1); // Optimized `% capacity` when 2^n
 
   /**
    * Track the first tombstone we find so we can insert into it.

@@ -26,7 +26,7 @@ static _ native_clock(_ this, int argc, _ *args) {
 }
 
 static _ native_hash(_ this, int argc, _ *args) {
-  return num(hashValue(args[0]));
+  return num(hash_value(args[0]));
 }
 
 static _ native_pp(_ this, int argc, _ *args) {
@@ -59,7 +59,7 @@ static _ Any_eql(_ this, int argc, _ *args) {
   return BOOL_VAL(valuesEqual(this, args[0]));
 }
 static _ Any_hash(_ this, int argc, _ *args) {
-  return NUMBER_VAL(hashValue(this));
+  return NUMBER_VAL(hash_value(this));
 }
 static _ Any_inspect(_ this, int argc, _ *args) { return inspect(this); }
 static _ Any_objectId(_ this, int argc, _ *args) {

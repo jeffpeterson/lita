@@ -120,7 +120,7 @@ bool has(_ self, _ key) { return !is_nil(find(self, key)); }
 _ get(_ self, _ key) { return bindFn(self, find(self, key)); }
 _ set(_ self, _ key, _ value) { return error("Not implemented."); }
 
-_ hash(_ val) { return NUMBER_VAL(hashValue(val)); }
+_ hash(_ val) { return NUMBER_VAL(hash_value(val)); }
 
 u32 len(_ x) {
   if (!is_obj(x)) return 1;

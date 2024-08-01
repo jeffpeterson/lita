@@ -16,7 +16,7 @@ ObjIO *make_io(FILE *fp, Ownership ownership) {
   io->obj.def = &io_def;
   io->fp = fp;
   io->ownership = ownership;
-  io->obj.hash = hashBytes((char *)&io->fp, sizeof(Value) * 2);
+  io->obj.hash = hash_bytes((char *)&io->fp, sizeof(Value) * 2);
   return io;
 }
 
