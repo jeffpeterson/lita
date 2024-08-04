@@ -64,7 +64,7 @@ typedef struct ObjDef {
   ObjLengthFn *length;
   ObjFn *free;
   ObjFn *mark;
-  ObjIOFn *inspect;
+  ObjIOFn *inspect; /** NOTE: Why can't we invoke .inspect? */
   ObjIOFn *dump;
   ObjIOFn *dump_global;
   ObjBytesFn *bytes;
@@ -166,7 +166,6 @@ ObjBound *as_bound(Value x);
 ObjNative *as_native(Value x);
 double as_num(Value x);
 Obj *as_obj(Value x);
-void *asPtr(Value x);
 
 Obj *newObject(ObjClass *klass);
 ObjBound *newBound(Value receiver, Value method);
@@ -187,6 +186,8 @@ int inspect_obj_type(FILE *io, ObjType type);
 int inspect_obj(FILE *io, Obj *obj);
 
 int cmpObjects(Obj *a, Obj *b);
+
+Value init_obj(Value klass, int argc, Value *args);
 
 static inline bool is_obj_type(Value value, ObjType type) {
   return is_obj(value) && AS_OBJ(value)->type == type;

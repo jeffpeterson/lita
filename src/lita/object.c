@@ -208,3 +208,15 @@ int cmpObjects(Obj *a, Obj *b) {
     return a - b;
   }
 }
+
+// Value init_obj(Value klass, int argc, Value *args) {
+//   if (!is_class(klass)) return NIL_VAL;
+
+//   ObjClass *class = AS_CLASS(klass);
+//   Value obj = OBJ_VAL(newObject(class));
+
+//   Value init = findMethod(klass, str("init"));
+//   if (is_nil(init)) return obj;
+
+//   return call(init, obj, argc, args);
+// }

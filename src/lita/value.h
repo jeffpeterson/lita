@@ -52,6 +52,7 @@ typedef uint64_t Value;
 #define VOID_VAL ((Value)(uint64_t)(QNAN | TAG_VOID))
 #define NUMBER_VAL(num) numToValue(num)
 #define OBJ_VAL(obj) (Value)(TAG_OBJ | QNAN | (uint64_t)(uintptr_t)(obj))
+#define obj(o) OBJ_VAL(o)
 
 static inline double valueToNum(Value value) {
   double num;
