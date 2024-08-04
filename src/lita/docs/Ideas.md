@@ -65,3 +65,23 @@ but can be mutated to point to a different value. _ObjRef_?
 
 _ObjCursor_ is a pointer and an offset into some memory range. It can be mutated
 to point to a different offset via pointer arithmetic.
+
+---
+
+Reject inheritance. A `Name` is not a kind of `String`. A name is composed of
+a `String`. In fact, a `Name` could be composed of something else, as long as it
+behaves like a `Name`; and behaving like a `Name` means to be transformable to
+a `String`.
+
+---
+
+I don't like `x.in 1..9`. I think it should be `x in 1..9`.
+
+    def x 'in start..end
+        start <= x <= end
+
+However, this says the `'in` is a string literal, so that can't be quite right.
+Expressions could be designated with parentheses:
+
+    def (x) in (start..end)
+        start <= x <= end
