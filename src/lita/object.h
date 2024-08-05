@@ -62,6 +62,7 @@ typedef struct ObjDef {
   const uint8_t size;
   const bool interned;
   ObjLengthFn *length;
+  Obj *(*alloc)();
   ObjFn *free;
   ObjFn *mark;
   ObjIOFn *inspect; /** NOTE: Why can't we invoke .inspect? */

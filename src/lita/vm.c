@@ -122,10 +122,11 @@ void initVM() {
 }
 
 static void register_def(const ObjDef *def) {
-  if (def->natives) {
-    if (!def->class_name) error("def must have a class_name");
-    def->natives(global_class(def->class_name));
-  }
+  if (!def->class_name) error("def must have a class_name");
+
+  let klass = global_class(def->class_name);
+
+  if (def->natives) def->natives(klass);
 }
 
 InterpretResult bootVM() {
@@ -275,7 +276,8 @@ bool call_value(Value callee, int argCount) {
       if (not_nil(init)) {
         return move_into_closure(as_fn(init), argCount);
       } else if (argCount != 0) {
-        return !runtimeError("Expected 0 arguments but got %d.", argCount);
+        return !runtimeError("Class expects no arguments but got %d.",
+                             argCount);
       }
 
       return true;

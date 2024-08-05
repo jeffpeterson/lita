@@ -77,6 +77,12 @@ static int inspect_array(Obj *obj, FILE *io) {
   return fprintf(io, "]") + tot;
 }
 
+// static Value Array_init(let this, int argc, let *args) {
+//   ObjArray *arr = AS_ARRAY(this);
+//   for (int i = 0; i < argc; i++) append_array(arr, args[i]);
+//   return this;
+// }
+
 static Value Array_get(let this, int argc, let *args) {
   ObjArray *arr = AS_ARRAY(this);
   u32 idx = as_num(args[0]);
@@ -116,6 +122,7 @@ ObjFun *array_lita();
 
 static void array_natives(let Array) {
   runFun(array_lita());
+  // method(Array, fn("init", 0, Array_init));
   method(Array, fn("get", 1, Array_get));
   method(Array, fn("length", 0, Array_length));
   method(Array, fn("push", 0, Array_push));
