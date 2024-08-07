@@ -12,13 +12,6 @@ Value defineNative(const char *name, int arity, NativeFn fun) {
   return setGlobal(string(name), fn(name, arity, fun));
 }
 
-let global_class(const char *name) {
-  let vname = string(name);
-  let klass = global(vname);
-  if (is_class(klass)) return klass;
-  return setGlobal(vname, class(vname));
-}
-
 // # Native global functions
 
 static _ native_clock(_ this, int argc, _ *args) {

@@ -1,14 +1,19 @@
 // stdlib
-atom Duration(Number seconds)
+atom Seconds(Number)
+Minutes = Seconds / 60
+atom Duration(Seconds)
 
 // Music
 atom Name(String)
 atom Title(String)
 
+FullName(first " " last) =
+	FirstName(String first), LastName(String last)
 
 atom Song(Id) // Different tracks are often the same song.
 
-atom Track(Id)
+atom Track(Id, Title, Song, Duration, Album, Artist)
+	-> Id
 	-> Title
 	-> Song
 	-> Duration
@@ -23,12 +28,15 @@ atom Artist(Id)
 	-> Name
 
 
+Artist(Title t) = Artist(Name t)
+Album(Title t) = Album(Name t)
+
 Artist, Name("Alabama Shakes")
 
 Track,
 	Title "Sound & Color",
 	Artist.with(Name "Alabama Shakes"),
-	Album.with(Name "Sound & Color"),
+	Album.with(Title "Sound & Color"),
 	Duration(182)
 
 each: Track, Duration(60..180), Name(name) // tracks from 1 to 3 minutes

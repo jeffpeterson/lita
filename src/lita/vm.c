@@ -8,6 +8,7 @@
 #include "compiler.h"
 #include "debug.h"
 #include "io.h"
+#include "iterator.h"
 #include "lib.h"
 #include "memory.h"
 #include "native.h"
@@ -77,6 +78,13 @@ Value global(Value name) {
   return tableGet(&vm.globals, name, &name) ? name : nil;
 }
 
+Value global_class(const char *name) {
+  let vname = string(name);
+  let klass = global(vname);
+  if (is_class(klass)) return klass;
+  return setGlobal(vname, class(vname));
+}
+
 void initVM() {
   resetStack();
 
@@ -131,6 +139,8 @@ static void register_def(const ObjDef *def) {
 
 InterpretResult bootVM() {
   InterpretResult result = defineNatives();
+
+  register_def(&Iterator);
   register_def(&string_def);
   register_def(&array_def);
   register_def(&io_def);
@@ -269,7 +279,7 @@ bool call_value(Value callee, int argCount) {
     }
 
     case OBJ_CLASS: {
-      vm.stackTop[-argCount - 1] = OBJ_VAL(newObject(AS_CLASS(callee)));
+      vm.stackTop[-argCount - 1] = OBJ_VAL(new_instance(AS_CLASS(callee)));
 
       let init = findMethod(callee, obj(vm.str.init));
 
@@ -765,7 +775,7 @@ static InterpretResult run() {
       ObjClass *superclass = AS_CLASS(peek(0));
       ObjClass *subclass = AS_CLASS(peek(1));
       subclass->parent = superclass;
-      // tableAddAll(&superclass->methods, &subclass->methods);
+      // tableMerge(&superclass->methods, &subclass->methods);
       break;
     }
 

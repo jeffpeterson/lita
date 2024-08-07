@@ -5,6 +5,8 @@
 #include "object.h"
 #include "value.h"
 
+typedef struct ObjIterator ObjIterator;
+
 typedef struct Entry {
   Value key;
   Value value;
@@ -27,13 +29,17 @@ bool tableGet(Table *table, Value key, Value *value);
  */
 bool tableSet(Table *table, Value key, Value value);
 bool tableDelete(Table *table, Value key);
-void tableAddAll(Table *from, Table *to);
+void tableMerge(Table *from, Table *to);
 double tableInc(Table *table, Value key, double amt);
 
 Obj *tableFindObj(Table *table, ObjType type, const char *bytes, int length,
                   Hash hash);
+
+ObjIterator *iterate_table(Table *table);
+
 void tableRemoveWhite(Table *table);
 void markTable(Table *table);
+char *table_bytes(Table *table, int length);
 int inspect_table(FILE *io, Table *table);
 
 #endif

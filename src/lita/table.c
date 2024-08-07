@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "iterator.h"
 #include "memory.h"
 #include "object.h"
 #include "string.h"
@@ -107,6 +108,7 @@ bool tableSet(Table *table, Value key, Value value) {
   return isNewKey;
 }
 
+/** Increment the value at `key` by `amt`. */
 double tableInc(Table *table, Value key, double amt) {
   Value count;
   if (tableGet(table, key, &count) && is_num(count)) {
@@ -130,11 +132,58 @@ bool tableDelete(Table *table, Value key) {
   return true;
 }
 
-void tableAddAll(Table *from, Table *to) {
+void tableMerge(Table *from, Table *to) {
   for (int i = 0; i < from->capacity; i++) {
     Entry *entry = &from->entries[i];
     if (!is_void(entry->key)) tableSet(to, entry->key, entry->value);
   }
+}
+
+static void iterate_table_entries_next(ObjIterator *iter) {
+  Entry *entry = (Entry *)iter->current;
+  iter->current = (Value *)++entry;
+}
+
+/** Iterates over all entries of this table. */
+static ObjIterator *iterate_table_entries(Table *table) {
+  ObjIterator *iter = new_iterator();
+
+  iter->size = 2;
+  iter->total = table->capacity;
+  iter->current = (Value *)table->entries;
+  iter->next = iterate_table_entries_next;
+  iter->done = table->capacity == 0;
+
+  return iter;
+}
+
+static void iterate_table_next(ObjIterator *iter) {
+  Entry *entry = (Entry *)iter->current;
+  ObjIterator *entries = as_iterator(iter->state);
+
+  while (iterate_next(entries))
+    if (is_void(entry->key)) continue;
+    else {
+      iter->current = (Value *)entry;
+      return;
+    }
+
+  iter->done = true;
+}
+
+/** Iterates over the key-value pairs of this table. */
+ObjIterator *iterate_table(Table *table) {
+  ObjIterator *entries = iterate_table_entries(table);
+  ObjIterator *iter = new_iterator();
+
+  iter->state = OBJ_VAL(entries);
+  iter->size = 2;
+  iter->total = table->len;
+  iter->current = (Value *)table->entries;
+  iter->next = iterate_table_next;
+  iter->done = table->len == 0;
+
+  return iter;
 }
 
 Obj *tableFindObj(Table *table, ObjType type, const char *bytes, int length,
@@ -183,6 +232,11 @@ void markTable(Table *table) {
     markValue(entry->key);
     markValue(entry->value);
   }
+}
+
+char *table_bytes(Table *table, int length) {
+  if (length != table->len * sizeof(Entry)) return NULL;
+  return (char *)table->entries;
 }
 
 int inspect_table(FILE *io, Table *table) {

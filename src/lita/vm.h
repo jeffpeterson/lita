@@ -98,6 +98,8 @@ Value send(Value this, Value method_name, int argc, ...);
 Value global(Value name);
 Value setGlobal(Value name, Value val);
 
+Value global_class(const char *name);
+
 Value intern(Value val);
 Obj *getInterned(Hash *hash, ObjType type, const char *bytes, int length);
 

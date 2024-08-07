@@ -1,0 +1,8 @@
+EOF <- Input('\0)
+Alpha <- Input('a..'z or 'A..'Z or '_)
+Digit, Hex <- Input('0..'9)
+Hex <- Input('a..'f or 'A..'F)
+SubScript <- Input(>= 0x2080, <= 0x2089)
+
+Shebang <- Input(/#!.*\n/)
+Shebang <- Input("#!" _ '\n)

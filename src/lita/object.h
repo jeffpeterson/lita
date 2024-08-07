@@ -63,6 +63,7 @@ typedef struct ObjDef {
   const bool interned;
   ObjLengthFn *length;
   Obj *(*alloc)();
+  ObjFn *init;
   ObjFn *free;
   ObjFn *mark;
   ObjIOFn *inspect; /** NOTE: Why can't we invoke .inspect? */
@@ -168,7 +169,8 @@ ObjNative *as_native(Value x);
 double as_num(Value x);
 Obj *as_obj(Value x);
 
-Obj *newObject(ObjClass *klass);
+Obj *new_object(const ObjDef *def);
+Obj *new_instance(ObjClass *klass);
 ObjBound *newBound(Value receiver, Value method);
 ObjClass *newClass(ObjString *name);
 ObjClosure *newClosure(ObjFun *fun);

@@ -76,9 +76,16 @@ ObjBound *newBound(Value receiver, Value method) {
   return bound;
 }
 
-Obj *newObject(ObjClass *klass) {
+Obj *new_instance(ObjClass *klass) {
   Obj *obj = ALLOCATE_OBJ(Obj, OBJ_CUSTOM);
   obj->klass = klass;
+  return obj;
+}
+
+Obj *new_object(const ObjDef *def) {
+  Obj *obj = allocateObject(def->size, OBJ_CUSTOM);
+  obj->klass = as_class(global_class(def->class_name));
+  if (def->init) def->init(obj);
   return obj;
 }
 

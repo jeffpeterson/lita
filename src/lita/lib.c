@@ -35,7 +35,7 @@ _ subClass(_ name, _ parent) {
   ObjClass *parentObj = AS_CLASS(parent);
 
   klassObj->parent = parentObj;
-  tableAddAll(&parentObj->methods, &klassObj->methods);
+  tableMerge(&parentObj->methods, &klassObj->methods);
   return klass;
 }
 
