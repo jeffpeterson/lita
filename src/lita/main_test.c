@@ -9,6 +9,7 @@
     test();                                                                    \
   }
 
+void pcre2_test();
 void xxhash_test();
 
 void buffer_test();
@@ -22,6 +23,7 @@ int main(int argc, const char *argv[]) {
   initVM();
   bootVM();
   printf("\n\n");
+  run(pcre2_test);
   run(xxhash_test);
 
   run(buffer_test);
