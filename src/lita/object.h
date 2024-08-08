@@ -59,7 +59,7 @@ typedef const char *ObjBytesFn(Obj *obj, int length);
 
 typedef struct ObjDef {
   const char *class_name;
-  const uint8_t size;
+  const usize size;
   const bool interned;
   ObjLengthFn *length;
   Obj *(*alloc)();

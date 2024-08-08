@@ -1,5 +1,6 @@
 {
   "files.associations": {
+    "cli": "javascript",
     "assert.h": "c",
     "assertmacros.h": "c",
     "__node_handle": "c",
