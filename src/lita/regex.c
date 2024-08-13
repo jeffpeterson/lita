@@ -2,6 +2,7 @@
 
 #include "lib.h"
 #include "memory.h"
+#include "native.h"
 #include "regex.h"
 #include "vm.h"
 
@@ -42,6 +43,8 @@ static int inspect_regex(Obj *obj, FILE *io) {
   return fprintf(io, "/") + fputs(escape_string(regex->source)->chars, io) +
          fprintf(io, "/");
 }
+
+NATIVE_ACCESSOR(Regex, source, OBJ_VAL);
 
 // ObjFun *regex_lita();
 

@@ -1,6 +1,6 @@
 CC = clang
 LITA_FLAGS := # -t
-WARN_ERRORS := -Werror -Wno-error=unused-variable -Wno-error=unused-function -Wno-error=unused-command-line-argument
+WARN_ERRORS := -Werror -Wno-error=unused-variable -Wno-error=unused-function -Wno-unused-command-line-argument
 CFLAGS := -g -Isrc -lpcre2-8 -Wall $(WARN_ERRORS)
 
 TARGET := .bin/lita

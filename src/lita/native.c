@@ -128,6 +128,13 @@ InterpretResult defineNatives() {
   vm.Table = global_class("Table");
   vm.Tuple = global_class("Tuple");
 
+  foreach_native(native) {
+    printf("native: %s_%s/%d\n", native->class_name, native->name,
+           native->arity);
+    method(global_class(native->class_name),
+           fn(native->name, native->arity, native->fun));
+  }
+
   method(vm.Any, fn("==", 1, Any_eql));
   method(vm.Any, fn("self", 0, Any_self));
   method(vm.Any, fn("class", 0, Any_class));

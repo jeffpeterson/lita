@@ -14,6 +14,7 @@
 #include "native.h"
 #include "object.h"
 #include "range.h"
+#include "regex.h"
 #include "string.h"
 #include "system.h"
 #include "term.h"
@@ -145,6 +146,7 @@ InterpretResult bootVM() {
   register_def(&array_def);
   register_def(&io_def);
   register_def(&range_def);
+  register_def(&Regex);
   register_def(&tuple_def);
 
   setGlobal(str("stdin"), io(stdin, UNOWNED));

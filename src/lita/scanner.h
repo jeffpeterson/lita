@@ -61,6 +61,7 @@ typedef enum {
   TOKEN_NUMBER,
   TOKEN_HEX,
   TOKEN_STRING,
+  TOKEN_REGEX,
 
   TOKEN_MINUS,
   TOKEN_PLUS,

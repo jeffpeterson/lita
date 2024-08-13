@@ -20,7 +20,7 @@ typedef struct ObjRegex {
 
 #define AS_REGEX(val) ((ObjRegex *)AS_OBJ(val))
 #define is_regex(val) is_obj_def(val, &Regex)
-#define new_iterator() ((ObjRegex *)new_object(&Regex))
+#define new_regex() ((ObjRegex *)new_object(&Regex))
 
 ObjRegex *make_regex(ObjString *source);
 Value regex(const char *source);
