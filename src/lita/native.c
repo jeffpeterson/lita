@@ -6,12 +6,6 @@
 #include "tuple.h"
 #include "vm.h"
 
-// # Helpers
-
-Value defineNative(const char *name, int arity, NativeFn fun) {
-  return setGlobal(string(name), fn(name, arity, fun));
-}
-
 // # Native global functions
 
 NATIVE_FUNCTION(clock, 0) { return num((double)clock() / CLOCKS_PER_SEC); }
@@ -70,10 +64,7 @@ ObjFun *core_lita();
 InterpretResult defineNatives() {
   foreach_native(native) {
     let fun = fn(native->name, native->arity, native->fun);
-
-    fprintf(stderr, "%s: ", native->class_name);
-    inspect_value(stderr, fun);
-    fprintf(stderr, "\n");
+    trace(native->class_name, fun);
 
     if (native->class_name) method(global_class(native->class_name), fun);
     else setGlobal(string(native->name), fun);
@@ -82,7 +73,7 @@ InterpretResult defineNatives() {
   run_function(core_lita());
 
   foreach_boot_function(boot) {
-    printf("Booting %s\n", boot->name);
+    trace("Booting", OBJ_VAL(boot->fun));
     InterpretResult result = run_function(boot->fun());
     if (result) return result;
   }

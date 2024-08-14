@@ -64,8 +64,6 @@ typedef struct BootFunction {
   static BootFunction SECTION(boot_functions)                                  \
       name##_lita_boot = {#name, name##_lita};
 
-Value defineNative(const char *name, int arity, NativeFn fun);
-
 InterpretResult defineNatives();
 
 #endif
