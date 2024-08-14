@@ -1417,7 +1417,6 @@ ObjFun *compile(const char *source, ObjString *name) {
 #endif
 
   Compiler compiler;
-  name = string_to_c_ident(name);
   initCompiler(&compiler, TYPE_SCRIPT, name);
 
   parser.indebt = 0;

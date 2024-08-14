@@ -42,7 +42,8 @@ void dumpValue(FILE *io, Value v) {
     ObjFun *fun = AS_FUN(v);
 
     if (tableGet(&ids, v, &id)) {
-      fprintf(io, "/*%s*/fn%g()", fun->name->chars, as_num(id));
+      fprintf(io, "fn_%s_%g()", string_to_c_ident(fun->name)->chars,
+              as_num(id));
     } else {
       fprintf(io, "error(\"Could not find fn %s\")", fun->name->chars);
     }
@@ -75,7 +76,7 @@ static int dumpFn(FILE *io, ObjFun *fun) {
   int id;
   if (id_for(obj(fun), &id)) return id;
 
-  ObjString *name = fun->name;
+  ObjString *name = string_to_c_ident(fun->name);
   Chunk chunk = fun->chunk;
   ValueArray values = chunk.constants;
 
@@ -91,8 +92,7 @@ static int dumpFn(FILE *io, ObjFun *fun) {
 
   fprintf(io,
           "\n"
-          "// %s\n"
-          "static ValueArray constants%d() {\n"
+          "static ValueArray constants_%s_%d() {\n"
           "  ValueArray vals;\n"
           "  initValueArray(&vals);\n"
           "  vals.count = vals.capacity = %d;\n"
@@ -117,8 +117,7 @@ static int dumpFn(FILE *io, ObjFun *fun) {
 
   fprintf(io,
           "\n"
-          "// %s\n"
-          "static Chunk chunk%d() {\n"
+          "static Chunk chunk_%s_%d() {\n"
           "  Chunk c;\n"
           "  initChunk(&c);\n"
           "  c.count = %d;\n"
@@ -145,8 +144,7 @@ static int dumpFn(FILE *io, ObjFun *fun) {
           "  };\n"
           "  c.code = cloneMemory(code, sizeof(code));\n"
           "  c.lines = cloneMemory(lines, sizeof(lines));\n"
-          "                // %s\n"
-          "  c.constants = constants%d();\n"
+          "  c.constants = constants_%s_%d();\n"
           "\n"
           "  return c;\n"
           "};\n",
@@ -154,18 +152,17 @@ static int dumpFn(FILE *io, ObjFun *fun) {
 
   fprintf(io,
           "\n"
-          "// %s\n"
-          "static Value fn%d() {\n"
+          "             // %s\n"
+          "static Value fn_%s_%d() {\n"
           "  ObjFun *f = newFunction();"
           "  f->arity = %d;\n"
           "  f->upvalueCount = %d;\n"
           "  f->name = new_string(\"%s\");\n"
-          "             // %s\n"
-          "  f->chunk = chunk%d();\n"
+          "  f->chunk = chunk_%s_%d();\n"
           "  return obj(f);\n"
           "}\n",
-          name->chars, id, fun->arity, fun->upvalueCount, name->chars,
-          name->chars, id);
+          fun->name->chars, name->chars, id, fun->arity, fun->upvalueCount,
+          fun->name->chars, name->chars, id);
 
   return id;
 }
@@ -201,10 +198,9 @@ void dumpModule(FILE *io, ObjString *path, ObjFun *fun) {
   fprintf(io,
           "\n"
           "ObjFun *%s() {\n"
-          "                //%s\n"
-          "  return AS_FUN(fn%d());\n"
+          "  return AS_FUN(fn_%s_%d());\n"
           "}\n",
-          name->chars, fun->name->chars, id);
+          name->chars, string_to_c_ident(fun->name)->chars, id);
 
   freeTable(&ids);
 }
