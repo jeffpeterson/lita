@@ -6,8 +6,7 @@
 #include "lita/memory.h"
 #include "lita/string.h"
 
-// *
-static ValueArray constants1() {
+static ValueArray constants__star__1() {
   ValueArray vals;
   initValueArray(&vals);
   vals.count = vals.capacity = 1;
@@ -18,8 +17,7 @@ static ValueArray constants1() {
   return vals;
 }
 
-// *
-static Chunk chunk1() {
+static Chunk chunk__star__1() {
   Chunk c;
   initChunk(&c);
   c.count = 11;
@@ -32,24 +30,21 @@ static Chunk chunk1() {
   };
   c.code = cloneMemory(code, sizeof(code));
   c.lines = cloneMemory(lines, sizeof(lines));
-                // *
-  c.constants = constants1();
+  c.constants = constants__star__1();
 
   return c;
 };
 
-// *
-static Value fn1() {
+             // *
+static Value fn__star__1() {
   ObjFun *f = newFunction();  f->arity = 1;
   f->upvalueCount = 0;
   f->name = new_string("*");
-             // *
-  f->chunk = chunk1();
+  f->chunk = chunk__star__1();
   return obj(f);
 }
 
-// each
-static ValueArray constants2() {
+static ValueArray constants_each_2() {
   ValueArray vals;
   initValueArray(&vals);
   vals.count = vals.capacity = 4;
@@ -60,8 +55,7 @@ static ValueArray constants2() {
   return vals;
 }
 
-// each
-static Chunk chunk2() {
+static Chunk chunk_each_2() {
   Chunk c;
   initChunk(&c);
   c.count = 52;
@@ -74,36 +68,32 @@ static Chunk chunk2() {
   };
   c.code = cloneMemory(code, sizeof(code));
   c.lines = cloneMemory(lines, sizeof(lines));
-                // each
-  c.constants = constants2();
+  c.constants = constants_each_2();
 
   return c;
 };
 
-// each
-static Value fn2() {
+             // each
+static Value fn_each_2() {
   ObjFun *f = newFunction();  f->arity = 1;
   f->upvalueCount = 0;
   f->name = new_string("each");
-             // each
-  f->chunk = chunk2();
+  f->chunk = chunk_each_2();
   return obj(f);
 }
 
-// src_lita_tuple_lita
-static ValueArray constants0() {
+static ValueArray constants_src_slash_lita_slash_tuple_dot_lita_0() {
   ValueArray vals;
   initValueArray(&vals);
   vals.count = vals.capacity = 6;
   Value values[] = {
-    str("Tuple"), str("Object"), str("*"), /***/fn1(), str("each"), /*each*/fn2(),
+    str("Tuple"), str("Object"), str("*"), fn__star__1(), str("each"), fn_each_2(),
   };
   vals.values = cloneMemory(values, sizeof(values));
   return vals;
 }
 
-// src_lita_tuple_lita
-static Chunk chunk0() {
+static Chunk chunk_src_slash_lita_slash_tuple_dot_lita_0() {
   Chunk c;
   initChunk(&c);
   c.count = 22;
@@ -116,23 +106,20 @@ static Chunk chunk0() {
   };
   c.code = cloneMemory(code, sizeof(code));
   c.lines = cloneMemory(lines, sizeof(lines));
-                // src_lita_tuple_lita
-  c.constants = constants0();
+  c.constants = constants_src_slash_lita_slash_tuple_dot_lita_0();
 
   return c;
 };
 
-// src_lita_tuple_lita
-static Value fn0() {
+             // src/lita/tuple.lita
+static Value fn_src_slash_lita_slash_tuple_dot_lita_0() {
   ObjFun *f = newFunction();  f->arity = 0;
   f->upvalueCount = 0;
-  f->name = new_string("src_lita_tuple_lita");
-             // src_lita_tuple_lita
-  f->chunk = chunk0();
+  f->name = new_string("src/lita/tuple.lita");
+  f->chunk = chunk_src_slash_lita_slash_tuple_dot_lita_0();
   return obj(f);
 }
 
 ObjFun *tuple_lita() {
-                //src_lita_tuple_lita
-  return AS_FUN(fn0());
+  return AS_FUN(fn_src_slash_lita_slash_tuple_dot_lita_0());
 }

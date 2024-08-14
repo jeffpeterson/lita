@@ -6,8 +6,7 @@
 #include "lita/memory.h"
 #include "lita/string.h"
 
-// compile
-static ValueArray constants1() {
+static ValueArray constants_compile_1() {
   ValueArray vals;
   initValueArray(&vals);
   vals.count = vals.capacity = 0;
@@ -16,8 +15,7 @@ static ValueArray constants1() {
   return vals;
 }
 
-// compile
-static Chunk chunk1() {
+static Chunk chunk_compile_1() {
   Chunk c;
   initChunk(&c);
   c.count = 2;
@@ -30,24 +28,21 @@ static Chunk chunk1() {
   };
   c.code = cloneMemory(code, sizeof(code));
   c.lines = cloneMemory(lines, sizeof(lines));
-                // compile
-  c.constants = constants1();
+  c.constants = constants_compile_1();
 
   return c;
 };
 
-// compile
-static Value fn1() {
+             // compile
+static Value fn_compile_1() {
   ObjFun *f = newFunction();  f->arity = 2;
   f->upvalueCount = 0;
   f->name = new_string("compile");
-             // compile
-  f->chunk = chunk1();
+  f->chunk = chunk_compile_1();
   return obj(f);
 }
 
-// markCompilerRoots
-static ValueArray constants2() {
+static ValueArray constants_markCompilerRoots_2() {
   ValueArray vals;
   initValueArray(&vals);
   vals.count = vals.capacity = 0;
@@ -56,8 +51,7 @@ static ValueArray constants2() {
   return vals;
 }
 
-// markCompilerRoots
-static Chunk chunk2() {
+static Chunk chunk_markCompilerRoots_2() {
   Chunk c;
   initChunk(&c);
   c.count = 2;
@@ -70,36 +64,32 @@ static Chunk chunk2() {
   };
   c.code = cloneMemory(code, sizeof(code));
   c.lines = cloneMemory(lines, sizeof(lines));
-                // markCompilerRoots
-  c.constants = constants2();
+  c.constants = constants_markCompilerRoots_2();
 
   return c;
 };
 
-// markCompilerRoots
-static Value fn2() {
+             // markCompilerRoots
+static Value fn_markCompilerRoots_2() {
   ObjFun *f = newFunction();  f->arity = 0;
   f->upvalueCount = 0;
   f->name = new_string("markCompilerRoots");
-             // markCompilerRoots
-  f->chunk = chunk2();
+  f->chunk = chunk_markCompilerRoots_2();
   return obj(f);
 }
 
-// src_lita_compiler_lita
-static ValueArray constants0() {
+static ValueArray constants_src_slash_lita_slash_compiler_dot_lita_0() {
   ValueArray vals;
   initValueArray(&vals);
   vals.count = vals.capacity = 13;
   Value values[] = {
-    str("compile"), /*compile*/fn1(), str("markCompilerRoots"), /*markCompilerRoots*/fn2(), str("Parser"), str("Object"), str("current"), str("previous"), str("indebt"), str("hadError"), str("panicMode"), str("Context"), str("Compiler"),
+    str("compile"), fn_compile_1(), str("markCompilerRoots"), fn_markCompilerRoots_2(), str("Parser"), str("Object"), str("current"), str("previous"), str("indebt"), str("hadError"), str("panicMode"), str("Context"), str("Compiler"),
   };
   vals.values = cloneMemory(values, sizeof(values));
   return vals;
 }
 
-// src_lita_compiler_lita
-static Chunk chunk0() {
+static Chunk chunk_src_slash_lita_slash_compiler_dot_lita_0() {
   Chunk c;
   initChunk(&c);
   c.count = 61;
@@ -112,23 +102,20 @@ static Chunk chunk0() {
   };
   c.code = cloneMemory(code, sizeof(code));
   c.lines = cloneMemory(lines, sizeof(lines));
-                // src_lita_compiler_lita
-  c.constants = constants0();
+  c.constants = constants_src_slash_lita_slash_compiler_dot_lita_0();
 
   return c;
 };
 
-// src_lita_compiler_lita
-static Value fn0() {
+             // src/lita/compiler.lita
+static Value fn_src_slash_lita_slash_compiler_dot_lita_0() {
   ObjFun *f = newFunction();  f->arity = 0;
   f->upvalueCount = 0;
-  f->name = new_string("src_lita_compiler_lita");
-             // src_lita_compiler_lita
-  f->chunk = chunk0();
+  f->name = new_string("src/lita/compiler.lita");
+  f->chunk = chunk_src_slash_lita_slash_compiler_dot_lita_0();
   return obj(f);
 }
 
 ObjFun *compiler_lita() {
-                //src_lita_compiler_lita
-  return AS_FUN(fn0());
+  return AS_FUN(fn_src_slash_lita_slash_compiler_dot_lita_0());
 }

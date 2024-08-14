@@ -6,50 +6,7 @@
 #include "lita/memory.h"
 #include "lita/string.h"
 
-// init
-static ValueArray constants1() {
-  ValueArray vals;
-  initValueArray(&vals);
-  vals.count = vals.capacity = 2;
-  Value values[] = {
-    str("start"), str("end"),
-  };
-  vals.values = cloneMemory(values, sizeof(values));
-  return vals;
-}
-
-// init
-static Chunk chunk1() {
-  Chunk c;
-  initChunk(&c);
-  c.count = 17;
-  c.capacity = 17;
-  u8 code[] = {
-    14, 0, 14, 1, 17, 0, 7, 14, 0, 14, 2, 17, 1, 7, 14, 0, 40,
-  };
-  int lines[] = {
-    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-  };
-  c.code = cloneMemory(code, sizeof(code));
-  c.lines = cloneMemory(lines, sizeof(lines));
-                // init
-  c.constants = constants1();
-
-  return c;
-};
-
-// init
-static Value fn1() {
-  ObjFun *f = newFunction();  f->arity = 2;
-  f->upvalueCount = 0;
-  f->name = new_string("init");
-             // init
-  f->chunk = chunk1();
-  return obj(f);
-}
-
-// inspect
-static ValueArray constants2() {
+static ValueArray constants_inspect_1() {
   ValueArray vals;
   initValueArray(&vals);
   vals.count = vals.capacity = 4;
@@ -60,8 +17,7 @@ static ValueArray constants2() {
   return vals;
 }
 
-// inspect
-static Chunk chunk2() {
+static Chunk chunk_inspect_1() {
   Chunk c;
   initChunk(&c);
   c.count = 19;
@@ -74,24 +30,21 @@ static Chunk chunk2() {
   };
   c.code = cloneMemory(code, sizeof(code));
   c.lines = cloneMemory(lines, sizeof(lines));
-                // inspect
-  c.constants = constants2();
+  c.constants = constants_inspect_1();
 
   return c;
 };
 
-// inspect
-static Value fn2() {
+             // inspect
+static Value fn_inspect_1() {
   ObjFun *f = newFunction();  f->arity = 0;
   f->upvalueCount = 0;
   f->name = new_string("inspect");
-             // inspect
-  f->chunk = chunk2();
+  f->chunk = chunk_inspect_1();
   return obj(f);
 }
 
-// string
-static ValueArray constants3() {
+static ValueArray constants_string_2() {
   ValueArray vals;
   initValueArray(&vals);
   vals.count = vals.capacity = 4;
@@ -102,8 +55,7 @@ static ValueArray constants3() {
   return vals;
 }
 
-// string
-static Chunk chunk3() {
+static Chunk chunk_string_2() {
   Chunk c;
   initChunk(&c);
   c.count = 19;
@@ -116,24 +68,21 @@ static Chunk chunk3() {
   };
   c.code = cloneMemory(code, sizeof(code));
   c.lines = cloneMemory(lines, sizeof(lines));
-                // string
-  c.constants = constants3();
+  c.constants = constants_string_2();
 
   return c;
 };
 
-// string
-static Value fn3() {
+             // string
+static Value fn_string_2() {
   ObjFun *f = newFunction();  f->arity = 0;
   f->upvalueCount = 0;
   f->name = new_string("string");
-             // string
-  f->chunk = chunk3();
+  f->chunk = chunk_string_2();
   return obj(f);
 }
 
-// length
-static ValueArray constants4() {
+static ValueArray constants_length_3() {
   ValueArray vals;
   initValueArray(&vals);
   vals.count = vals.capacity = 2;
@@ -144,8 +93,7 @@ static ValueArray constants4() {
   return vals;
 }
 
-// length
-static Chunk chunk4() {
+static Chunk chunk_length_3() {
   Chunk c;
   initChunk(&c);
   c.count = 12;
@@ -158,24 +106,21 @@ static Chunk chunk4() {
   };
   c.code = cloneMemory(code, sizeof(code));
   c.lines = cloneMemory(lines, sizeof(lines));
-                // length
-  c.constants = constants4();
+  c.constants = constants_length_3();
 
   return c;
 };
 
-// length
-static Value fn4() {
+             // length
+static Value fn_length_3() {
   ObjFun *f = newFunction();  f->arity = 0;
   f->upvalueCount = 0;
   f->name = new_string("length");
-             // length
-  f->chunk = chunk4();
+  f->chunk = chunk_length_3();
   return obj(f);
 }
 
-// map
-static ValueArray constants5() {
+static ValueArray constants_map_4() {
   ValueArray vals;
   initValueArray(&vals);
   vals.count = vals.capacity = 2;
@@ -186,8 +131,7 @@ static ValueArray constants5() {
   return vals;
 }
 
-// map
-static Chunk chunk5() {
+static Chunk chunk_map_4() {
   Chunk c;
   initChunk(&c);
   c.count = 20;
@@ -200,65 +144,58 @@ static Chunk chunk5() {
   };
   c.code = cloneMemory(code, sizeof(code));
   c.lines = cloneMemory(lines, sizeof(lines));
-                // map
-  c.constants = constants5();
+  c.constants = constants_map_4();
 
   return c;
 };
 
-// map
-static Value fn5() {
+             // map
+static Value fn_map_4() {
   ObjFun *f = newFunction();  f->arity = 1;
   f->upvalueCount = 0;
   f->name = new_string("map");
-             // map
-  f->chunk = chunk5();
+  f->chunk = chunk_map_4();
   return obj(f);
 }
 
-// src_lita_range_lita
-static ValueArray constants0() {
+static ValueArray constants_src_slash_lita_slash_range_dot_lita_0() {
   ValueArray vals;
   initValueArray(&vals);
-  vals.count = vals.capacity = 12;
+  vals.count = vals.capacity = 10;
   Value values[] = {
-    str("Range"), /*init*/fn1(), str("init"), str("Object"), str("inspect"), /*inspect*/fn2(), str("string"), /*string*/fn3(), str("length"), /*length*/fn4(), str("map"), /*map*/fn5(),
+    str("Range"), str("Object"), str("inspect"), fn_inspect_1(), str("string"), fn_string_2(), str("length"), fn_length_3(), str("map"), fn_map_4(),
   };
   vals.values = cloneMemory(values, sizeof(values));
   return vals;
 }
 
-// src_lita_range_lita
-static Chunk chunk0() {
+static Chunk chunk_src_slash_lita_slash_range_dot_lita_0() {
   Chunk c;
   initChunk(&c);
-  c.count = 34;
-  c.capacity = 34;
+  c.count = 30;
+  c.capacity = 30;
   u8 code[] = {
-    34, 0, 0, 37, 1, 36, 2, 14, 0, 44, 3, 35, 9, 1, 37, 5, 36, 4, 37, 7, 36, 6, 37, 9, 36, 8, 37, 11, 36, 10, 7, 7, 1, 40,
+    34, 0, 0, 14, 0, 44, 1, 35, 9, 1, 37, 3, 36, 2, 37, 5, 36, 4, 37, 7, 36, 6, 37, 9, 36, 8, 7, 7, 1, 40,
   };
   int lines[] = {
-    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 3, 3, 3, 3, 4, 4, 4, 4, 5, 5, 5, 5, 5, 5, 5, 5, 6, 6, 6, 6,
+    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 3, 3, 3, 3, 4, 4, 4, 4, 5, 5, 5, 5, 5, 5, 5, 5, 6, 6, 6, 6,
   };
   c.code = cloneMemory(code, sizeof(code));
   c.lines = cloneMemory(lines, sizeof(lines));
-                // src_lita_range_lita
-  c.constants = constants0();
+  c.constants = constants_src_slash_lita_slash_range_dot_lita_0();
 
   return c;
 };
 
-// src_lita_range_lita
-static Value fn0() {
+             // src/lita/range.lita
+static Value fn_src_slash_lita_slash_range_dot_lita_0() {
   ObjFun *f = newFunction();  f->arity = 0;
   f->upvalueCount = 0;
-  f->name = new_string("src_lita_range_lita");
-             // src_lita_range_lita
-  f->chunk = chunk0();
+  f->name = new_string("src/lita/range.lita");
+  f->chunk = chunk_src_slash_lita_slash_range_dot_lita_0();
   return obj(f);
 }
 
 ObjFun *range_lita() {
-                //src_lita_range_lita
-  return AS_FUN(fn0());
+  return AS_FUN(fn_src_slash_lita_slash_range_dot_lita_0());
 }

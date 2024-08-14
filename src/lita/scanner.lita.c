@@ -563,11 +563,11 @@ static Chunk chunk_src_slash_lita_slash_scanner_dot_lita_0() {
   return c;
 };
 
-             // src_slash_lita_slash_scanner_dot_lita
+             // src/lita/scanner.lita
 static Value fn_src_slash_lita_slash_scanner_dot_lita_0() {
   ObjFun *f = newFunction();  f->arity = 0;
   f->upvalueCount = 0;
-  f->name = new_string("src_slash_lita_slash_scanner_dot_lita");
+  f->name = new_string("src/lita/scanner.lita");
   f->chunk = chunk_src_slash_lita_slash_scanner_dot_lita_0();
   return obj(f);
 }

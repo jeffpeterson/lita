@@ -6,8 +6,7 @@
 #include "lita/memory.h"
 #include "lita/string.h"
 
-// init
-static ValueArray constants1() {
+static ValueArray constants_init_1() {
   ValueArray vals;
   initValueArray(&vals);
   vals.count = vals.capacity = 1;
@@ -18,8 +17,7 @@ static ValueArray constants1() {
   return vals;
 }
 
-// init
-static Chunk chunk1() {
+static Chunk chunk_init_1() {
   Chunk c;
   initChunk(&c);
   c.count = 10;
@@ -32,36 +30,32 @@ static Chunk chunk1() {
   };
   c.code = cloneMemory(code, sizeof(code));
   c.lines = cloneMemory(lines, sizeof(lines));
-                // init
-  c.constants = constants1();
+  c.constants = constants_init_1();
 
   return c;
 };
 
-// init
-static Value fn1() {
+             // init
+static Value fn_init_1() {
   ObjFun *f = newFunction();  f->arity = 1;
   f->upvalueCount = 0;
   f->name = new_string("init");
-             // init
-  f->chunk = chunk1();
+  f->chunk = chunk_init_1();
   return obj(f);
 }
 
-// src_lita_lib_Parser_lita
-static ValueArray constants0() {
+static ValueArray constants_src_slash_lita_slash_lib_slash_Parser_dot_lita_0() {
   ValueArray vals;
   initValueArray(&vals);
   vals.count = vals.capacity = 4;
   Value values[] = {
-    str("Parser"), str("Object"), str("init"), /*init*/fn1(),
+    str("Parser"), str("Object"), str("init"), fn_init_1(),
   };
   vals.values = cloneMemory(values, sizeof(values));
   return vals;
 }
 
-// src_lita_lib_Parser_lita
-static Chunk chunk0() {
+static Chunk chunk_src_slash_lita_slash_lib_slash_Parser_dot_lita_0() {
   Chunk c;
   initChunk(&c);
   c.count = 18;
@@ -74,23 +68,20 @@ static Chunk chunk0() {
   };
   c.code = cloneMemory(code, sizeof(code));
   c.lines = cloneMemory(lines, sizeof(lines));
-                // src_lita_lib_Parser_lita
-  c.constants = constants0();
+  c.constants = constants_src_slash_lita_slash_lib_slash_Parser_dot_lita_0();
 
   return c;
 };
 
-// src_lita_lib_Parser_lita
-static Value fn0() {
+             // src/lita/lib/Parser.lita
+static Value fn_src_slash_lita_slash_lib_slash_Parser_dot_lita_0() {
   ObjFun *f = newFunction();  f->arity = 0;
   f->upvalueCount = 0;
-  f->name = new_string("src_lita_lib_Parser_lita");
-             // src_lita_lib_Parser_lita
-  f->chunk = chunk0();
+  f->name = new_string("src/lita/lib/Parser.lita");
+  f->chunk = chunk_src_slash_lita_slash_lib_slash_Parser_dot_lita_0();
   return obj(f);
 }
 
 ObjFun *Parser_lita() {
-                //src_lita_lib_Parser_lita
-  return AS_FUN(fn0());
+  return AS_FUN(fn_src_slash_lita_slash_lib_slash_Parser_dot_lita_0());
 }
