@@ -12,11 +12,11 @@ typedef struct ObjRange {
 } ObjRange;
 
 #define AS_RANGE(val) ((ObjRange *)AS_OBJ(val))
-#define is_range(val) is_obj_def(val, &range_def)
+#define is_range(val) is_obj_def(val, &Range)
 
 ObjRange *make_range(Value start, Value end);
 Value range(Value start, Value end);
 
-extern const ObjDef range_def;
+extern const ObjDef Range;
 
 #endif

@@ -26,19 +26,6 @@ _ class(_ name) {
 
   return pope(OBJ_VAL(newClass(AS_STRING(push(name)))));
 }
-
-_ subClass(_ name, _ parent) {
-  if (!is_class(parent)) return nil;
-
-  _ klass = class(name);
-  ObjClass *klassObj = AS_CLASS(klass);
-  ObjClass *parentObj = AS_CLASS(parent);
-
-  klassObj->parent = parentObj;
-  tableMerge(&parentObj->methods, &klassObj->methods);
-  return klass;
-}
-
 _ method(_ klass, _ fun) {
   assert(is_class(klass));
 

@@ -12,11 +12,11 @@ typedef struct ObjIO {
 } ObjIO;
 
 #define AS_IO(val) ((ObjIO *)AS_OBJ(val))
-#define is_io(val) is_obj_def(val, &io_def)
+#define is_io(val) is_obj_def(val, &IO)
 
 ObjIO *make_io(FILE *fp, Ownership ownership);
 Value io(FILE *fp, Ownership ownership);
 
-extern const ObjDef io_def;
+extern const ObjDef IO;
 
 #endif

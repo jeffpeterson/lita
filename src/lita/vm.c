@@ -125,13 +125,7 @@ static void register_def(const ObjDef *def) {
 InterpretResult bootVM() {
   InterpretResult result = defineNatives();
 
-  register_def(&Iterator);
-  register_def(&String);
-  register_def(&array_def);
-  register_def(&io_def);
-  register_def(&range_def);
-  register_def(&Regex);
-  register_def(&tuple_def);
+  foreach_obj_def(def) register_def(*def);
 
   setGlobal(str("stdin"), io(stdin, UNOWNED));
   setGlobal(str("stdout"), io(stdout, UNOWNED));

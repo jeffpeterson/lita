@@ -5,7 +5,7 @@
 #include "object.h"
 
 #define AS_TUPLE(val) ((ObjTuple *)AS_OBJ(val))
-#define is_tuple(val) is_obj_def(val, &tuple_def)
+#define is_tuple(val) is_obj_def(val, &Tuple)
 
 typedef struct ObjTuple {
   Obj obj;
@@ -13,7 +13,7 @@ typedef struct ObjTuple {
   Value *values;
 } ObjTuple;
 
-extern const ObjDef tuple_def;
+extern const ObjDef Tuple;
 
 ObjTuple *as_tuple(Value val);
 ObjTuple *copy_tuple(Value *values, uint8_t length);

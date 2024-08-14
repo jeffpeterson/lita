@@ -12,8 +12,7 @@ ObjIO *as_io(let x) {
 }
 
 ObjIO *make_io(FILE *fp, Ownership ownership) {
-  ObjIO *io = ALLOCATE_OBJ(ObjIO, OBJ_CUSTOM);
-  io->obj.def = &io_def;
+  ObjIO *io = (ObjIO *)new_object(&IO);
   io->fp = fp;
   io->ownership = ownership;
   io->obj.hash = hash_bytes((char *)&io->fp, sizeof(Value) * 2);
@@ -47,7 +46,8 @@ static let IO_write(let this, int argc, let *args) {
 
 static void io_natives(let IO) { method(IO, fn("write", 1, IO_write)); }
 
-const ObjDef io_def = {
+REGISTER_OBJECT_DEF(IO);
+const ObjDef IO = {
     .class_name = "IO",
     .size = sizeof(ObjIO),
     .free = free_io,

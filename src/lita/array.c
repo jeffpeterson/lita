@@ -12,14 +12,11 @@ ObjArray *as_array(let x) {
   return AS_ARRAY(x);
 }
 
-/** Allocate a new empty ObjArray. */
-ObjArray *new_array() {
-  ObjArray *arr = ALLOCATE_OBJ(ObjArray, OBJ_CUSTOM);
-  arr->obj.def = &array_def;
+static void array_init(Obj *obj) {
+  ObjArray *arr = (ObjArray *)obj;
   arr->length = 0;
   arr->capacity = 0;
   arr->values = NULL;
-  return arr;
 }
 
 ObjArray *copy_array(Value *values, u32 length) {
@@ -114,11 +111,12 @@ NATIVE_METHOD(Array, slice, 0) {
 }
 
 COMPILED_SOURCE(array);
-
-const ObjDef array_def = {
+REGISTER_OBJECT_DEF(Array);
+const ObjDef Array = {
     .class_name = "Array",
     .size = sizeof(ObjArray),
     .interned = false,
+    .init = array_init,
     .free = free_array,
     .mark = mark_array,
     .inspect = inspect_array,

@@ -45,6 +45,7 @@ bool iterate_next(ObjIterator *iter) {
   return !iter->done;
 }
 
+REGISTER_OBJECT_DEF(Iterator);
 const ObjDef Iterator = {
     .class_name = "Iterator",
     .size = sizeof(ObjIterator),

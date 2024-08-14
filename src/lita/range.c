@@ -13,8 +13,7 @@ ObjRange *as_range(Value x) {
 }
 
 ObjRange *make_range(Value start, Value end) {
-  ObjRange *range = ALLOCATE_OBJ(ObjRange, OBJ_CUSTOM);
-  range->obj.def = &range_def;
+  ObjRange *range = (ObjRange *)new_object(&Range);
   range->start = start;
   range->end = end;
   range->obj.hash = hash_bytes((char *)&range->start, sizeof(Value) * 2);
@@ -54,7 +53,8 @@ NATIVE_METHOD(Range, init, 2) {
   return this;
 }
 
-const ObjDef range_def = {
+REGISTER_OBJECT_DEF(Range);
+const ObjDef Range = {
     .class_name = "Range",
     .size = sizeof(ObjRange),
     .interned = true,

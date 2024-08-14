@@ -36,6 +36,10 @@ typedef enum ObjType ObjType;
 #define ALLOCATE_OBJ(type, objectType)                                         \
   (type *)allocateObject(sizeof(type), objectType)
 
+#define REGISTER_OBJECT_DEF(def) const SECTION(defs) ObjDef *def##_def = &def;
+
+#define foreach_obj_def(var) section_foreach_entry(defs, ObjDef *, var)
+
 typedef enum Ownership { UNOWNED, OWNED } Ownership;
 
 enum ObjType {

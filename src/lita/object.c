@@ -84,6 +84,7 @@ Obj *new_instance(ObjClass *klass) {
 
 Obj *new_object(const ObjDef *def) {
   Obj *obj = allocateObject(def->size, OBJ_CUSTOM);
+  obj->def = def;
   obj->klass = as_class(global_class(def->class_name));
   if (def->init) def->init(obj);
   return obj;

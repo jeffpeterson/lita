@@ -301,6 +301,7 @@ int dump_string(Obj *obj, FILE *io) {
   return fprintf(io, "str(%.*s)", str->length, str->chars);
 }
 
+REGISTER_OBJECT_DEF(String);
 const ObjDef String = {
     .class_name = "String",
     .size = sizeof(ObjString),

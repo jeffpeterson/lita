@@ -44,7 +44,6 @@ u32 len(_ val);
 _ name(_ val);
 
 _ class(_ name);
-_ subClass(_ name, _ parent);
 _ method(_ klass, _ fun);
 
 _ pp(_ x);

@@ -46,6 +46,7 @@ static int inspect_regex(Obj *obj, FILE *io) {
 
 NATIVE_GETTER(Regex, source, OBJ_VAL);
 
+REGISTER_OBJECT_DEF(Regex);
 const ObjDef Regex = {
     .class_name = "Regex",
     .size = sizeof(ObjRegex),

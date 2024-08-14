@@ -56,8 +56,7 @@ ObjTuple *as_tuple(Value x) {
  * Allocate an ObjTuple for a series of values.
  */
 static ObjTuple *allocate_tuple(Value *vals, int length, Hash hash) {
-  ObjTuple *tuple = ALLOCATE_OBJ(ObjTuple, OBJ_CUSTOM);
-  tuple->obj.def = &tuple_def;
+  ObjTuple *tuple = (ObjTuple *)new_object(&Tuple);
   tuple->length = length;
   tuple->values = vals;
   tuple->obj.hash = hash;
@@ -150,7 +149,8 @@ static void tuple_natives(let Tuple) {
   method(Tuple, fn("map", 1, Tuple_map));
 }
 
-const ObjDef tuple_def = {
+REGISTER_OBJECT_DEF(Tuple);
+const ObjDef Tuple = {
     .class_name = "Tuple",
     .size = sizeof(ObjTuple),
     .interned = true,
