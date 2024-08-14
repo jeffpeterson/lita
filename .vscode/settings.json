@@ -73,7 +73,16 @@
     "streambuf": "c",
     "typeinfo": "c",
     "variant": "c",
-    "pcre2.h": "c"
+    "pcre2.h": "c",
+    "__tree": "c",
+    "deque": "c",
+    "map": "c",
+    "queue": "c",
+    "set": "c",
+    "span": "c",
+    "stack": "c",
+    "unordered_set": "c",
+    "format": "c"
   },
   "C_Cpp.default.includePath": ["src"],
   "C_Cpp.default.compilerArgs": ["-Wall", "-Werror"],
