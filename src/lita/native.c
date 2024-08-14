@@ -36,7 +36,9 @@ NATIVE_METHOD(Any, string, 0) { return to_string(this); }
 
 // # Function
 NATIVE_METHOD(Function, arity, 0) { return NUMBER_VAL(arity(this)); }
-NATIVE_METHOD(Function, name, 0) { return OBJ_VAL(as_fn(this)->fun->name); }
+NATIVE_METHOD(Function, name, 0) {
+  return OBJ_VAL(as_closure(this)->fun->name);
+}
 NATIVE_METHOD(Function, bytes, 0) {
   if (!is_closure(this)) return error("Only Functions have bytes.");
   ObjFun *fn = AS_FUN(this);

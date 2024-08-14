@@ -51,6 +51,7 @@ typedef struct Config {
 
 extern Config config;
 
+#define DEPRECATED(msg) __attribute__((deprecated(msg)))
 #define SECTION(name) __attribute__((used, section("__DATA," #name)))
 #define SECTION_START(name) __asm("section$start$__DATA$" #name)
 #define SECTION_STOP(name) __asm("section$end$__DATA$" #name)

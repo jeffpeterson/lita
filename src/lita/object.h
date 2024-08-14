@@ -163,7 +163,7 @@ Obj *allocateObject(size_t size, ObjType type);
 
 bool as_bool(Value x);
 ObjClass *as_class(Value x);
-ObjClosure *as_fn(Value x);
+ObjClosure *as_closure(Value x);
 ObjBound *as_bound(Value x);
 ObjNative *as_native(Value x);
 double as_num(Value x);

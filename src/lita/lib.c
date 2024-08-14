@@ -78,7 +78,7 @@ _ multiply(_ a, _ b) {
 /** Returns arity of fun, -1 if not callable. */
 int arity(_ fun) {
   if (is_bound(fun)) return arity(as_bound(fun)->method);
-  if (is_closure(fun)) return as_fn(fun)->fun->arity;
+  if (is_closure(fun)) return as_closure(fun)->fun->arity;
   if (is_native(fun)) return as_native(fun)->arity;
   if (is_class(fun)) return arity(findMethod(fun, str("init")));
 

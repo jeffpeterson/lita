@@ -48,7 +48,7 @@ ObjClass *as_class(Value x) {
   assert(is_class(x));
   return AS_CLASS(x);
 }
-ObjClosure *as_fn(Value x) {
+ObjClosure *as_closure(Value x) {
   assert(is_closure(x));
   return AS_CLOSURE(x);
 }

@@ -270,7 +270,7 @@ bool call_value(Value callee, int argCount) {
       let init = findMethod(callee, obj(vm.str.init));
 
       if (not_nil(init)) {
-        return move_into_closure(as_fn(init), argCount);
+        return move_into_closure(as_closure(init), argCount);
       } else if (argCount != 0) {
         return !runtimeError("Class expects no arguments but got %d.",
                              argCount);
