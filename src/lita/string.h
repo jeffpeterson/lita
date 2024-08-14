@@ -8,7 +8,7 @@
 #define is_string(val) is_obj_def(val, &String)
 #define AS_STRING(val) ((ObjString *)AS_OBJ(val))
 
-extern const ObjDef String;
+const ObjDef String;
 
 ObjString *as_string(let x);
 

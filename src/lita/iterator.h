@@ -21,7 +21,7 @@ typedef struct ObjIterator {
   bool done;      /** True if the iteration is ended. */
 } ObjIterator;
 
-extern const ObjDef Iterator;
+const ObjDef Iterator;
 
 ObjIterator *as_iterator(Value val);
 

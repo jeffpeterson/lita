@@ -25,6 +25,6 @@ typedef struct ObjRegex {
 ObjRegex *make_regex(ObjString *source);
 Value regex(const char *source);
 
-extern const ObjDef Regex;
+const ObjDef Regex;
 
 #endif

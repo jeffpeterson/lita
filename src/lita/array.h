@@ -24,6 +24,6 @@ void write_array(ObjArray *arr, u32 index, Value *values, u32 length);
 void append_array(ObjArray *arr, Value value);
 Value read_array(ObjArray *arr, u32 index);
 
-extern const ObjDef Array;
+const ObjDef Array;
 
 #endif

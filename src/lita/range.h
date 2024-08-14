@@ -17,6 +17,6 @@ typedef struct ObjRange {
 ObjRange *make_range(Value start, Value end);
 Value range(Value start, Value end);
 
-extern const ObjDef Range;
+const ObjDef Range;
 
 #endif

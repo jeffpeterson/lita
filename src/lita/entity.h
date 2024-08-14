@@ -14,7 +14,7 @@ typedef struct ObjEntity {
   Table *values;
 } ObjEntity;
 
-extern const ObjDef Entity;
+const ObjDef Entity;
 
 ObjEntity *as_entity(Value val);
 ObjEntity *copy_entity(Value *values, uint8_t length);

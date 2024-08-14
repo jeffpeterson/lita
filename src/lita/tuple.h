@@ -13,7 +13,7 @@ typedef struct ObjTuple {
   Value *values;
 } ObjTuple;
 
-extern const ObjDef Tuple;
+const ObjDef Tuple;
 
 ObjTuple *as_tuple(Value val);
 ObjTuple *copy_tuple(Value *values, uint8_t length);

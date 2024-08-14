@@ -17,6 +17,6 @@ typedef struct ObjIO {
 ObjIO *make_io(FILE *fp, Ownership ownership);
 Value io(FILE *fp, Ownership ownership);
 
-extern const ObjDef IO;
+const ObjDef IO;
 
 #endif
