@@ -25,7 +25,7 @@ ObjString *take_string(char *chars, int length);
 /**
  * Copy existing chars into a newly allocated Obj.
  */
-ObjString *copy_string(const char *chars, int length);
+ObjString *copy_string(const char *chars, usize length);
 ObjString *concat_strings(ObjString *a, ObjString *b);
 ObjString *buffer_to_string(Buffer *buf);
 

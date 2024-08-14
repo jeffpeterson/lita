@@ -55,7 +55,7 @@ ObjString *take_string(char *chars, int length) {
   return allocate_string(chars, length, hash);
 }
 
-ObjString *copy_string(const char *chars, int length) {
+ObjString *copy_string(const char *chars, usize length) {
   Hash hash;
   ObjString *interned =
       (ObjString *)getInterned(&hash, OBJ_CUSTOM, chars, length);
@@ -142,25 +142,57 @@ ObjString *unescape_string(ObjString *str) {
 }
 
 ObjString *string_to_c_ident(ObjString *str) {
-  // Extra byte in case of leading "_"
-  char *out = ALLOCATE(char, str->length + 2);
-  int len = 0;
+  char *out = NULL;
+  usize size = 0;
+  FILE *io = open_memstream(&out, &size);
 
   for (int i = 0; i < str->length; i++) {
     char ch = str->chars[i];
-    bool isAlpha = (ch >= 'a' && ch <= 'z') || (ch >= 'A' && ch <= 'Z');
-    bool isWord = isAlpha || ch == '_';
-    bool isDigit = ch >= '0' && ch <= '9';
 
-    if (i == 0 && !isWord) out[len++] = '_';
-    if (!isWord && !isDigit) ch = '_';
+    switch (ch) {
+    case ' ': fputc('_', io); break;
+    case '@': fputs("_at_", io); break;
+    case '*': fputs("_star_", io); break;
+    case '+': fputs("_plus_", io); break;
+    case '-': fputs("_minus_", io); break;
+    case '/': fputs("_slash_", io); break;
+    case '%': fputs("_mod_", io); break;
+    case '=': fputs("_eq_", io); break;
+    case '!': fputs("_not_", io); break;
+    case '<': fputs("_lt_", io); break;
+    case '>': fputs("_gt_", io); break;
+    case '&': fputs("_and_", io); break;
+    case '|': fputs("_or_", io); break;
+    case '^': fputs("_xor_", io); break;
+    case '~': fputs("_tilde_", io); break;
+    case '(': fputs("_lparen_", io); break;
+    case ')': fputs("_rparen_", io); break;
+    case '[': fputs("_lbrack_", io); break;
+    case ']': fputs("_rbrack_", io); break;
+    case '{': fputs("_lcurly_", io); break;
+    case '}': fputs("_rcurly_", io); break;
+    case ',': fputs("_comma_", io); break;
+    case '`': fputs("_backtick_", io); break;
+    case '.': fputs("_dot_", io); break;
+    case ':': fputs("_colon_", io); break;
+    case '#': fputs("_bang_", io); break;
+    case ';': fputs("_semi_", io); break;
+    case '?': fputs("_question_", io); break;
 
-    out[len++] = ch;
+    default: {
+      bool is_alpha = (ch >= 'a' && ch <= 'z') || (ch >= 'A' && ch <= 'Z');
+      bool is_word = is_alpha || ch == '_';
+      bool is_digit = ch >= '0' && ch <= '9';
+
+      if (i == 0 && !is_word) fputc('_', io);
+      if (is_word || is_digit) fputc(ch, io);
+      else runtimeError("Invalid identifier: %s", str->chars);
+    }
+    }
   }
 
-  out[len] = '\0';
-
-  return take_string(GROW_ARRAY(char, out, str->length + 2, len + 1), len);
+  fclose(io);
+  return copy_string(out, size);
 }
 
 ObjString *stringf(const char *fmt, ...) {
