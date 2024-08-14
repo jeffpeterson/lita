@@ -89,7 +89,7 @@ bool tableGet(Table *table, Value key, Value *value) {
   Entry *entry = findEntry(table->entries, table->capacity, key);
   if (is_void(entry->key)) return false;
 
-  *value = entry->value;
+  if (value) *value = entry->value;
   return true;
 }
 
