@@ -45,17 +45,17 @@ void dumpValue(FILE *io, Value v) {
       fprintf(io, "fn_%s_%g()", string_to_c_ident(fun->name)->chars,
               as_num(id));
     } else {
-      fprintf(io, "error(\"Could not find fn %s\")", fun->name->chars);
+      fprintf(io, "crash(\"Could not find fn %s\")", fun->name->chars);
     }
     return;
   }
 
   case OBJ_CUSTOM:
-    fprintf(io, "error(\"custom obj without dump: %s\")", obj->def->class_name);
+    fprintf(io, "crash(\"custom obj without dump: %s\")", obj->def->class_name);
     break;
 
   default:
-    fprintf(io, "error(\"unknown obj type: %s\")", objInfo[obj->type].inspect);
+    fprintf(io, "crash(\"unknown obj type: %s\")", objInfo[obj->type].inspect);
     break;
   }
 }

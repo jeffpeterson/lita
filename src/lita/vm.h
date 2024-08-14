@@ -94,7 +94,7 @@ InterpretResult runtimeError(const char *format, ...);
 void assertOkResult(InterpretResult result);
 
 /** Something went wrong. Stop the VM and exit. */
-void crash(const char *str);
+let crash(const char *str);
 
 /**
  * Something went terribly wrong.

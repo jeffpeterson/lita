@@ -13,8 +13,6 @@
 
 typedef Value _;
 
-let error(const char *msg);
-
 _ fn(const char *name, int arity, NativeFn fun);
 _ memory(u8 *bytes, int length);
 _ num(double num);

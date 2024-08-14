@@ -10,12 +10,11 @@
 #include "term.h"
 #include "vm.h"
 
-const ObjInfo objInfo[13] = {
+const ObjInfo objInfo[7] = {
     [OBJ_BOUND] = {"BOUND", "Method"},
     [OBJ_CLASS] = {"CLASS", "Class"},
     [OBJ_CLOSURE] = {"CLOSURE", "Function"},
     [OBJ_CUSTOM] = {"CUSTOM", NULL},
-    [OBJ_ERR] = {"ERR", "Error"},
     [OBJ_FUN] = {"FUN", NULL},
     [OBJ_NATIVE] = {"NATIVE", "NativeFunction"},
     [OBJ_UPVALUE] = {"UPVALUE", NULL},
@@ -109,12 +108,6 @@ ObjClosure *newClosure(ObjFun *fun) {
   return closure;
 }
 
-ObjErr *newError(ObjString *msg) {
-  ObjErr *err = ALLOCATE_OBJ(ObjErr, OBJ_ERR);
-  err->msg = msg;
-  return err;
-}
-
 ObjFun *newFunction() {
   ObjFun *fun = ALLOCATE_OBJ(ObjFun, OBJ_FUN);
   fun->arity = 0;
@@ -176,8 +169,6 @@ int inspect_obj(FILE *io, Obj *obj) {
   }
 
   case OBJ_CLOSURE: return inspect_function(io, "fn", ((ObjClosure *)obj)->fun);
-
-  case OBJ_ERR: return fprintf(io, "Error: %s", ((ObjErr *)obj)->msg->chars);
 
   case OBJ_FUN: return inspect_function(io, "ObjFun", (ObjFun *)obj);
 

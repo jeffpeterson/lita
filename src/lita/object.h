@@ -17,7 +17,6 @@ typedef enum ObjType ObjType;
 #define is_class(val) is_obj_type(val, OBJ_CLASS)
 #define is_closure(val) is_obj_type(val, OBJ_CLOSURE)
 #define is_custom(val) is_obj_type(val, OBJ_CUSTOM)
-#define is_err(val) is_obj_type(val, OBJ_ERR)
 #define is_fun(val) is_obj_type(val, OBJ_FUN)
 #define is_native(val) is_obj_type(val, OBJ_NATIVE)
 #define is_upvalue(val) is_obj_type(val, OBJ_UPVALUE)
@@ -47,7 +46,6 @@ enum ObjType {
   OBJ_CLASS,
   OBJ_CLOSURE,
   OBJ_CUSTOM,
-  OBJ_ERR,
   OBJ_FUN,
   OBJ_NATIVE,
   OBJ_UPVALUE,
@@ -161,7 +159,7 @@ typedef struct ObjInfo {
   const char *className;
 } ObjInfo;
 
-extern const ObjInfo objInfo[13];
+extern const ObjInfo objInfo[7];
 
 Obj *allocateObject(size_t size, ObjType type);
 
@@ -178,7 +176,6 @@ Obj *new_instance(ObjClass *klass);
 ObjBound *newBound(Value receiver, Value method);
 ObjClass *newClass(ObjString *name);
 ObjClosure *newClosure(ObjFun *fun);
-ObjErr *newError(ObjString *msg);
 
 ObjFun *newFunction();
 int inspect_function(FILE *io, const char *kind, ObjFun *fun);

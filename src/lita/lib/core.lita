@@ -31,7 +31,6 @@ class Bool
 	fn string = inspect
 	fn dump = this ? "TRUE_VAL" : "FALSE_VAL"
 
-class Error
 class Number
 	fn dump = "NUMBER_VAL(" string ")"
 

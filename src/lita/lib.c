@@ -9,8 +9,6 @@
 #include "tuple.h"
 #include "vm.h"
 
-let error(const char *msg) { return obj(newError(new_string(msg))); }
-
 _ fn(const char *name, int arity, NativeFn fun) {
   return obj(newNative(new_string(name), arity, fun));
 }
@@ -32,7 +30,7 @@ _ method(_ klass, _ fun) {
   let key = name(fun);
 
   if (is_nil(key)) {
-    return error("Method must be callable.");
+    return crash("Method must be callable.");
   }
 
   tableSet(&AS_CLASS(klass)->methods, key, fun);
@@ -105,7 +103,7 @@ _ find(_ self, _ key) {
 
 bool has(_ self, _ key) { return !is_nil(find(self, key)); }
 _ get(_ self, _ key) { return bindFn(self, find(self, key)); }
-_ set(_ self, _ key, _ value) { return error("Not implemented."); }
+_ set(_ self, _ key, _ value) { return crash("Not implemented."); }
 
 _ hash(_ val) { return NUMBER_VAL(hash_value(val)); }
 
@@ -140,29 +138,29 @@ _ name(_ self) {
 }
 
 _ read(_ path) {
-  if (!is_string(path)) return error("path must be a string.");
+  if (!is_string(path)) return crash("path must be a string.");
 
   return obj(readFile(AS_STRING(path)));
 }
 
 _ write(_ path, _ content) {
-  if (!is_string(path)) return error("path must be a string.");
+  if (!is_string(path)) return crash("path must be a string.");
 
   let data = to_string(content);
 
   if (!writeFile(AS_STRING(path), AS_STRING(data)))
-    return error("Could not write to file.");
+    return crash("Could not write to file.");
 
   return data;
 }
 
 _ append(_ path, _ content) {
-  if (!is_string(path)) return error("path must be a string.");
+  if (!is_string(path)) return crash("path must be a string.");
 
   let data = to_string(content);
 
   if (!appendFile(AS_STRING(path), AS_STRING(data)))
-    return error("Could not append to file.");
+    return crash("Could not append to file.");
 
   return data;
 }
@@ -184,8 +182,6 @@ _ to_string(_ val) {
     case OBJ_CLOSURE:
     case OBJ_FUN:
     case OBJ_NATIVE: return name(val);
-
-    case OBJ_ERR: return OBJ_VAL(AS_ERR(val)->msg);
 
     // default: return str(objInfo[obj_type(val)].inspect);
     default: return send(val, str("string"), 0);
@@ -235,8 +231,6 @@ _ inspect(_ val) {
     case OBJ_CLOSURE: return to_string(OBJ_VAL(AS_CLOSURE(val)->fun));
 
     case OBJ_CUSTOM: return OBJ_VAL(stringf("<%s>", obj->def->class_name));
-
-    case OBJ_ERR: return OBJ_VAL(stringf("Error(%s)", AS_ERR(val)->msg->chars));
 
     case OBJ_FUN: {
       ObjFun *fun = AS_FUN(val);

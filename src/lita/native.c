@@ -40,12 +40,12 @@ NATIVE_METHOD(Function, name, 0) {
   return OBJ_VAL(as_closure(this)->fun->name);
 }
 NATIVE_METHOD(Function, bytes, 0) {
-  if (!is_closure(this)) return error("Only Functions have bytes.");
+  if (!is_closure(this)) return crash("Only Functions have bytes.");
   ObjFun *fn = AS_FUN(this);
   return memory(fn->chunk.code, fn->chunk.count);
 }
 NATIVE_METHOD(Function, byte_count, 0) {
-  if (!is_closure(this)) return error("Only Functions have bytes.");
+  if (!is_closure(this)) return crash("Only Functions have bytes.");
   ObjFun *fn = AS_FUN(this);
   return num(fn->chunk.count);
 }

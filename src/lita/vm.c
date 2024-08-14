@@ -58,7 +58,7 @@ void assertOkResult(InterpretResult result) {
   if (result == INTERPRET_RUNTIME_ERROR) exit(70);
 }
 
-void crash(const char *str) {
+let crash(const char *str) {
   runtimeError("Crash: %s", str);
   freeVM();
   exit(70);
@@ -115,7 +115,7 @@ void initVM() {
 }
 
 static void register_def(const ObjDef *def) {
-  if (!def->class_name) error("def must have a class_name");
+  if (!def->class_name) crash("def must have a class_name");
 
   let klass = global_class(def->class_name);
 

@@ -136,12 +136,6 @@ static void blackenObject(Obj *obj) {
     break;
   }
 
-  case OBJ_ERR: {
-    ObjErr *err = (ObjErr *)obj;
-    markObject((Obj *)err->msg);
-    break;
-  }
-
   case OBJ_FUN: {
     ObjFun *fun = (ObjFun *)obj;
     markObject((Obj *)fun->name);
@@ -194,8 +188,6 @@ static void freeObject(Obj *obj) {
     FREE(ObjClosure, obj);
     break;
   }
-
-  case OBJ_ERR: FREE(ObjErr, obj); break;
 
   case OBJ_FUN: {
     ObjFun *fun = (ObjFun *)obj;
