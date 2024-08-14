@@ -3,7 +3,7 @@ class Array
 
 	fn == (b)
 		if length != b.length: return false
-		if objectId == b.objectId: return true
+		if object_id == b.object_id: return true
 		for let i = 0; i < length; i++
 			if get(i) != b.get(i): return false
 		return true

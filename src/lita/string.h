@@ -5,10 +5,10 @@
 #include "common.h"
 #include "object.h"
 
-#define is_string(val) is_obj_def(val, &string_def)
+#define is_string(val) is_obj_def(val, &String)
 #define AS_STRING(val) ((ObjString *)AS_OBJ(val))
 
-extern const ObjDef string_def;
+extern const ObjDef String;
 
 ObjString *as_string(let x);
 

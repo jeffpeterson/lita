@@ -21,7 +21,7 @@ ObjString *as_string(let x) {
  */
 static ObjString *allocate_string(char *chars, int length, Hash hash) {
   ObjString *string = ALLOCATE_OBJ(ObjString, OBJ_CUSTOM);
-  string->obj.def = &string_def;
+  string->obj.def = &String;
   string->length = length;
   string->chars = chars;
   string->obj.hash = hash;
@@ -238,20 +238,16 @@ static const char *string_bytes(Obj *obj, int length) {
 }
 
 // # Natives
-static _ String_concat(_ this, int argc, _ *args) {
+COMPILED_SOURCE(string);
+NATIVE_METHOD(String, string, 0) { return this; }
+NATIVE_METHOD(String, concat, 1) {
   let other = to_string(args[0]);
   return obj(concat_strings(as_string(this), as_string(other)));
 }
-
-ObjFun *string_lita();
-
-static void string_natives(let String) {
-  runFun(string_lita());
-
-  method(vm.String, fn("string", 0, Any_self));
-  method(vm.String, fn("concat", 1, String_concat));
-  method(vm.String, fn("+", 1, String_concat));
-  method(vm.String, fn("*", 1, String_concat));
+ALIAS_OPERATOR(String, concat, plus, "+", 1);
+ALIAS_OPERATOR(String, concat, star, "*", 1);
+NATIVE_METHOD(String, escape, 0) {
+  return OBJ_VAL(escape_string(AS_STRING(this)));
 }
 
 static int string_length(Obj *obj) { return ((ObjString *)obj)->length; }
@@ -273,7 +269,7 @@ int dump_string(Obj *obj, FILE *io) {
   return fprintf(io, "str(%.*s)", str->length, str->chars);
 }
 
-const ObjDef string_def = {
+const ObjDef String = {
     .class_name = "String",
     .size = sizeof(ObjString),
     .interned = true,
@@ -283,5 +279,4 @@ const ObjDef string_def = {
     .inspect = inspect_string,
     .dump = dump_string,
     .length = string_length,
-    .natives = string_natives,
 };

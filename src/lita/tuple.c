@@ -143,7 +143,7 @@ static let Tuple_multiply(let this, int argc, let *args) {
 ObjFun *tuple_lita();
 
 static void tuple_natives(let Tuple) {
-  runFun(tuple_lita());
+  run_function(tuple_lita());
   method(Tuple, fn("*", 1, Tuple_multiply));
   method(Tuple, fn("+", 1, Tuple_add));
   method(Tuple, fn("get", 1, Tuple_get));

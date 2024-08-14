@@ -1,8 +1,10 @@
+#include <assert.h>
+
 #include "array.h"
 #include "lib.h"
 #include "memory.h"
+#include "native.h"
 #include "vm.h"
-#include <assert.h>
 
 /** Safely convert val to array pointer. */
 ObjArray *as_array(let x) {
@@ -77,25 +79,20 @@ static int inspect_array(Obj *obj, FILE *io) {
   return fprintf(io, "]") + tot;
 }
 
-// static Value Array_init(let this, int argc, let *args) {
+// NATIVE_METHOD(Array, init, 0) {
 //   ObjArray *arr = AS_ARRAY(this);
 //   for (int i = 0; i < argc; i++) append_array(arr, args[i]);
 //   return this;
 // }
-
-static Value Array_get(let this, int argc, let *args) {
+NATIVE_METHOD(Array, get, 1) {
   ObjArray *arr = AS_ARRAY(this);
   u32 idx = as_num(args[0]);
   if (idx >= arr->length) return nil;
 
   return arr->values[idx];
 }
-
-static Value Array_length(let this, int argc, let *args) {
-  return NUMBER_VAL(AS_ARRAY(this)->length);
-}
-
-static Value Array_plus(let this, int argc, let *args) {
+NATIVE_GETTER(Array, length, NUMBER_VAL);
+NATIVE_METHOD_NAMED(Array, plus, "+", 1) {
   ObjArray *a = AS_ARRAY(this);
   ObjArray *b = as_array(args[0]);
   ObjArray *out = new_array();
@@ -104,31 +101,19 @@ static Value Array_plus(let this, int argc, let *args) {
   write_array(out, a->length, b->values, b->length);
   return OBJ_VAL(out);
 }
-
-static Value Array_push(let this, int argc, let *args) {
+NATIVE_METHOD(Array, push, 0) {
   ObjArray *arr = AS_ARRAY(this);
   for (int i = 0; i < argc; i++) append_array(arr, args[i]);
   return this;
 }
-
-static Value Array_slice(let this, int argc, let *args) {
+NATIVE_METHOD(Array, slice, 0) {
   ObjArray *arr = AS_ARRAY(this);
   int start = argc > 0 ? as_num(args[0]) : 0;
   int len = argc > 1 ? as_num(args[1]) : arr->length - start;
   return OBJ_VAL(copy_array(arr->values + start, len));
 }
 
-ObjFun *array_lita();
-
-static void array_natives(let Array) {
-  runFun(array_lita());
-  // method(Array, fn("init", 0, Array_init));
-  method(Array, fn("get", 1, Array_get));
-  method(Array, fn("length", 0, Array_length));
-  method(Array, fn("push", 0, Array_push));
-  method(Array, fn("slice", 0, Array_slice));
-  method(Array, fn("+", 1, Array_plus));
-}
+COMPILED_SOURCE(array);
 
 const ObjDef array_def = {
     .class_name = "Array",
@@ -139,5 +124,4 @@ const ObjDef array_def = {
     .inspect = inspect_array,
     // .dump = dump_array,
     .length = array_length,
-    .natives = array_natives,
 };

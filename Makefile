@@ -101,4 +101,4 @@ serve: html
 	python -m http.server 8000 --directory .bin
 
 clean:
-	-rm -f $(TARGET) $(TEST) $(shell find _build -name "*.o")
+	-rm -f $(DEV) $(TEST) $(shell find _build -name "*.o")

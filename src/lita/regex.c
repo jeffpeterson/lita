@@ -44,13 +44,7 @@ static int inspect_regex(Obj *obj, FILE *io) {
          fprintf(io, "/");
 }
 
-NATIVE_ACCESSOR(Regex, source, OBJ_VAL);
-
-// ObjFun *regex_lita();
-
-static void regex_natives(let Regex) {
-  // runFun(regex_lita());
-}
+NATIVE_GETTER(Regex, source, OBJ_VAL);
 
 const ObjDef Regex = {
     .class_name = "Regex",
@@ -59,7 +53,6 @@ const ObjDef Regex = {
     .inspect = inspect_regex,
     // .dump = dump_regex,
     .length = regex_length,
-    .natives = regex_natives,
 };
 
 Value regex(const char *source) { return obj(make_regex(new_string(source))); }

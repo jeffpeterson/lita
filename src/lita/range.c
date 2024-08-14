@@ -44,7 +44,7 @@ static int inspect_range(Obj *obj, FILE *io) {
 
 ObjFun *range_lita();
 
-static void range_natives(let Range) { runFun(range_lita()); }
+static void range_natives(let Range) { run_function(range_lita()); }
 
 const ObjDef range_def = {
     .class_name = "Range",

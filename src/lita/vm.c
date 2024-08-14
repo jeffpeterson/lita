@@ -104,22 +104,6 @@ void initVM() {
 
   vm.str.init = new_string("init");
 
-  vm.Any = nil;
-  vm.Array = nil;
-  vm.Bool = nil;
-  vm.Class = nil;
-  vm.Error = nil;
-  vm.Function = nil;
-  vm.Method = nil;
-  vm.NativeFunction = nil;
-  vm.Nil = nil;
-  vm.Number = nil;
-  vm.Object = nil;
-  vm.Range = nil;
-  vm.String = nil;
-  vm.Table = nil;
-  vm.Tuple = nil;
-
   // inspect_table(stderr, &vm.globals);
   // pp(global(str("hash")));
   // pp(global(str("Any")));
@@ -142,7 +126,7 @@ InterpretResult bootVM() {
   InterpretResult result = defineNatives();
 
   register_def(&Iterator);
-  register_def(&string_def);
+  register_def(&String);
   register_def(&array_def);
   register_def(&io_def);
   register_def(&range_def);
@@ -306,6 +290,12 @@ bool call_value(Value callee, int argCount) {
         return false;
       }
 
+      // TODO: This is broken. Native functions are called immediately, but
+      // closures are simply moved into a call frame but remain uncalled until
+      // we next return to the VM run() function. Instead, we should make a kind
+      // of frame for native functions and use move_into_native(). Additionally,
+      // we should stop returning Values from all helper functions. Everything
+      // must communicate via the stack.
       Value result =
           native->fun(peek(argCount), argCount, vm.stackTop - argCount);
       popn(argCount + 1);
@@ -588,8 +578,9 @@ void vm_tuple(u8 length) {
   push(OBJ_VAL(tuple));
 }
 
-static InterpretResult run() {
-  register CallFrame *frame = &vm.frames[vm.frameCount - 1];
+static InterpretResult vm_run() {
+  int starting_frame_count = vm.frameCount - 1;
+  register CallFrame *frame = &vm.frames[starting_frame_count];
 
 #define READ_BYTE() (*frame->ip++)
 /** Update the cached frame variable. Idempotent. */
@@ -854,6 +845,9 @@ static InterpretResult run() {
 
       vm.stackTop = frame->slots;
       push(result);
+
+      if (vm.frameCount == starting_frame_count) return INTERPRET_OK;
+
       SYNC_FRAME();
       break;
     }
@@ -872,20 +866,23 @@ static InterpretResult run() {
 #undef SYNC_FRAME
 }
 
-InterpretResult runFun(ObjFun *fun) {
+InterpretResult run_function(ObjFun *fun) {
   if (fun == NULL) return INTERPRET_COMPILE_ERROR;
 
   push(OBJ_VAL(fun));
   ObjClosure *closure = newClosure(fun);
   pop();
+  return run_closure(closure);
+}
+
+InterpretResult run_closure(ObjClosure *closure) {
   push(OBJ_VAL(closure));
   move_into_closure(closure, 0);
-
-  return run();
+  return vm_run();
 }
 
 InterpretResult interpret(const char *source, ObjString *name) {
-  return runFun(compile(source, name));
+  return run_function(compile(source, name));
 }
 
 Value intern(Value val) {

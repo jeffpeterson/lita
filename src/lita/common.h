@@ -51,17 +51,17 @@ typedef struct Config {
 
 extern Config config;
 
-#define STRINGIFY(x) #x
+#define SECTION(name) __attribute__((used, section("__DATA," #name)))
+#define SECTION_START(name) __asm("section$start$__DATA$" #name)
+#define SECTION_STOP(name) __asm("section$end$__DATA$" #name)
 
 #define section_foreach_entry(section_name, type_t, elem)                      \
   for (type_t *elem = ({                                                       \
-         extern type_t __start_##section_name __asm(                           \
-             "section$start$__DATA$" #section_name);                           \
+         extern type_t __start_##section_name SECTION_START(section_name);     \
          &__start_##section_name;                                              \
        });                                                                     \
-       elem < ({                                                              \
-         extern type_t __stop_##section_name __asm(                            \
-             "section$end$__DATA$" #section_name);                             \
+       elem < ({                                                               \
+         extern type_t __stop_##section_name SECTION_STOP(section_name);       \
          &__stop_##section_name;                                               \
        });                                                                     \
        elem++)

@@ -5,6 +5,7 @@
 #include "iterator.h"
 #include "lib.h"
 #include "memory.h"
+#include "native.h"
 #include "vm.h"
 
 static void free_entity(Obj *obj) {
@@ -94,18 +95,11 @@ ObjEntity *take_entity(Value *values, uint8_t length) {
 
 // # Natives
 
-static Value Entity_get(let this, int argc, let *args) {
+NATIVE_METHOD(Entity, get, 1) {
   ObjEntity *entity = AS_ENTITY(this);
   let val;
   tableGet(entity->values, args[0], &val);
   return val;
-}
-
-// ObjFun *entity_lita();
-
-static void entity_natives(let Entity) {
-  // runFun(entity_lita());
-  method(Entity, fn("get", 1, Entity_get));
 }
 
 const ObjDef Entity = {
@@ -117,7 +111,6 @@ const ObjDef Entity = {
     .inspect = inspect_entity,
     .dump = dump_entity,
     .length = entity_length,
-    .natives = entity_natives,
 };
 
 let ent(int len, let *vals) { return obj(copy_entity(vals, len)); }

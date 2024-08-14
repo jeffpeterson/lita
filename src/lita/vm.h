@@ -48,23 +48,6 @@ typedef struct VM {
   struct str { /** Static strings. */
     ObjString *init;
   } str;
-
-  /** The language built-in values. */
-  Value Any;
-  Value Array;
-  Value Bool;
-  Value Class;
-  Value Error;
-  Value Function;
-  Value Method;
-  Value NativeFunction;
-  Value Nil;
-  Value Number;
-  Value Object;
-  Value Range;
-  Value String;
-  Value Table;
-  Value Tuple;
 } VM;
 
 typedef enum InterpretResult {
@@ -78,7 +61,8 @@ extern VM vm;
 void initVM();
 void freeVM();
 InterpretResult bootVM();
-InterpretResult runFun(ObjFun *fun);
+InterpretResult run_function(ObjFun *fun);
+InterpretResult run_closure(ObjClosure *closure);
 InterpretResult interpret(const char *source, ObjString *name);
 
 /** Push a value onto the stack and return it. */

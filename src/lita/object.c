@@ -176,8 +176,6 @@ int inspect_obj(FILE *io, Obj *obj) {
 
   case OBJ_CLOSURE: return inspect_function(io, "fn", ((ObjClosure *)obj)->fun);
 
-  case OBJ_CUSTOM: return fprintf(io, "<custom %s>", obj->def->class_name);
-
   case OBJ_ERR: return fprintf(io, "Error: %s", ((ObjErr *)obj)->msg->chars);
 
   case OBJ_FUN: return inspect_function(io, "ObjFun", (ObjFun *)obj);

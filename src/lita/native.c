@@ -14,31 +14,15 @@ Value defineNative(const char *name, int arity, NativeFn fun) {
 
 // # Native global functions
 
-static _ native_clock(_ this, int argc, _ *args) {
-  return num((double)clock() / CLOCKS_PER_SEC);
-}
-
-static _ native_hash(_ this, int argc, _ *args) {
-  return num(hash_value(args[0]));
-}
-
-static _ native_pp(_ this, int argc, _ *args) {
-  if (argc == 1) return pp(args[0]);
-
-  return pp(t(argc, args));
-}
-
-static _ native_read(_ this, int argc, _ *args) {
-  let path = argc == 0 ? str("/dev/stdin") : args[0];
-  return read(path);
-}
-
-static _ native_write(_ this, int argc, _ *args) {
+NATIVE_FUNCTION(clock, 0) { return num((double)clock() / CLOCKS_PER_SEC); }
+NATIVE_FUNCTION(hash, 1) { return num(hash_value(args[0])); }
+NATIVE_FUNCTION(pp, 1) { return argc > 1 ? pp(t(argc, args)) : pp(args[0]); }
+NATIVE_FUNCTION(read, 0) { return read(argc ? args[0] : str("/dev/stdin")); }
+NATIVE_FUNCTION(write, 1) {
   let path = argc == 1 ? str("/dev/stdout") : args[0];
   return write(path, args[argc - 1]);
 }
-
-static _ native_append(_ this, int argc, _ *args) {
+NATIVE_FUNCTION(append, 1) {
   let path = argc == 1 ? str("/dev/stdout") : args[0];
   return append(path, args[argc - 1]);
 }
@@ -46,112 +30,62 @@ static _ native_append(_ this, int argc, _ *args) {
 // # Native methods
 
 // # Any
-let Any_self(let this, int argc, let *args) { return this; }
-static _ Any_class(_ this, int argc, _ *args) { return classOf(this); }
-static _ Any_eql(_ this, int argc, _ *args) {
+NATIVE_METHOD(Any, self, 0) { return this; }
+NATIVE_METHOD(Any, class, 0) { return classOf(this); }
+NATIVE_METHOD_NAMED(Any, eql, "==", 1) {
   return BOOL_VAL(valuesEqual(this, args[0]));
 }
-static _ Any_hash(_ this, int argc, _ *args) {
-  return NUMBER_VAL(hash_value(this));
-}
-static _ Any_inspect(_ this, int argc, _ *args) { return inspect(this); }
-static _ Any_objectId(_ this, int argc, _ *args) {
-  return NUMBER_VAL((u64)AS_OBJ(this));
-}
-static _ Any_string(_ this, int argc, _ *args) { return to_string(this); }
+NATIVE_METHOD(Any, hash, 1) { return NUMBER_VAL(hash_value(this)); }
+NATIVE_METHOD(Any, inspect, 0) { return inspect(this); }
+NATIVE_METHOD(Any, object_id, 0) { return NUMBER_VAL((u64)AS_OBJ(this)); }
+NATIVE_METHOD(Any, string, 0) { return to_string(this); }
 
 // # Function
-static _ Function_arity(_ this, int argc, _ *args) {
-  return NUMBER_VAL(arity(this));
-}
-static let Function_name(let this, int argc, _ *args) {
-  return OBJ_VAL(as_fn(this)->fun->name);
-}
-static _ Function_bytes(_ this, int argc, _ *args) {
+NATIVE_METHOD(Function, arity, 0) { return NUMBER_VAL(arity(this)); }
+NATIVE_METHOD(Function, name, 0) { return OBJ_VAL(as_fn(this)->fun->name); }
+NATIVE_METHOD(Function, bytes, 0) {
   if (!is_closure(this)) return error("Only Functions have bytes.");
-
   ObjFun *fn = AS_FUN(this);
-
   return memory(fn->chunk.code, fn->chunk.count);
 }
-static _ Function_byteCount(_ this, int argc, _ *args) {
-  if (!is_closure(this)) return error("Only Fns have bytes.");
-
+NATIVE_METHOD(Function, byte_count, 0) {
+  if (!is_closure(this)) return error("Only Functions have bytes.");
   ObjFun *fn = AS_FUN(this);
-
   return num(fn->chunk.count);
 }
 
 // # Number
-static _ Number_eql(_ this, int argc, _ *args) {
+NATIVE_METHOD_NAMED(Number, eql, "==", 1) {
   return BOOL_VAL(AS_NUMBER(this) == AS_NUMBER(args[0]));
 }
-static _ Number_star(_ this, int argc, _ *args) {
-  let arg = args[0];
-
-  if (is_num(arg)) return NUMBER_VAL(AS_NUMBER(this) * AS_NUMBER(arg));
-
-  return error("Cannot multiply these values.");
+NATIVE_METHOD_NAMED(Number, star, "*", 1) {
+  return NUMBER_VAL(AS_NUMBER(this) * as_num(args[0]));
 }
-static _ Number_string(_ this, int argc, _ *args) {
+NATIVE_METHOD(Number, string, 0) {
   return OBJ_VAL(stringf("%g", AS_NUMBER(this)));
 }
 
 ObjFun *core_lita();
 
 InterpretResult defineNatives() {
-  defineNative("clock", 0, native_clock);
-  defineNative("hash", 1, native_hash);
-  defineNative("pp", 1, native_pp);
-  defineNative("read", 0, native_read);
-  defineNative("write", 1, native_write);
-  defineNative("append", 1, native_append);
-
-  vm.Any = global_class("Any");
-
-  InterpretResult result = runFun(core_lita());
-
-  if (result) return result;
-
-  vm.Array = global_class("Array");
-  vm.Bool = global_class("Bool");
-  vm.Class = global_class("Class");
-  vm.Error = global_class("Error");
-  vm.Function = global_class("Function");
-  vm.Method = global_class("Method");
-  vm.NativeFunction = global_class("NativeFunction");
-  vm.Nil = global_class("Nil");
-  vm.Number = global_class("Number");
-  vm.Object = global_class("Object");
-  vm.Range = global_class("Range");
-  vm.String = global_class("String");
-  vm.Table = global_class("Table");
-  vm.Tuple = global_class("Tuple");
-
   foreach_native(native) {
-    printf("native: %s_%s/%d\n", native->class_name, native->name,
-           native->arity);
-    method(global_class(native->class_name),
-           fn(native->name, native->arity, native->fun));
+    let fun = fn(native->name, native->arity, native->fun);
+
+    fprintf(stderr, "%s: ", native->class_name);
+    inspect_value(stderr, fun);
+    fprintf(stderr, "\n");
+
+    if (native->class_name) method(global_class(native->class_name), fun);
+    else setGlobal(string(native->name), fun);
   }
 
-  method(vm.Any, fn("==", 1, Any_eql));
-  method(vm.Any, fn("self", 0, Any_self));
-  method(vm.Any, fn("class", 0, Any_class));
-  method(vm.Any, fn("hash", 0, Any_hash));
-  method(vm.Any, fn("inspect", 0, Any_inspect));
-  method(vm.Any, fn("objectId", 0, Any_objectId));
-  method(vm.Any, fn("string", 0, Any_string));
-  method(vm.Any, fn("to_string", 0, Any_string));
+  run_function(core_lita());
 
-  method(vm.Number, fn("==", 1, Number_eql));
-  method(vm.Number, fn("*", 1, Number_star));
-  method(vm.Number, fn("string", 0, Number_string));
+  foreach_boot_function(boot) {
+    printf("Booting %s\n", boot->name);
+    InterpretResult result = run_function(boot->fun());
+    if (result) return result;
+  }
 
-  method(vm.Function, fn("name", 0, Function_name));           // getter
-  method(vm.Function, fn("arity", 0, Function_arity));         // getter
-  method(vm.Function, fn("bytes", 0, Function_bytes));         // getter
-  method(vm.Function, fn("byteCount", 0, Function_byteCount)); // getter
-
-  return result;
+  return INTERPRET_OK;
 }
