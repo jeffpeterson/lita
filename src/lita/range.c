@@ -1,8 +1,10 @@
-#include "range.h"
+#include <assert.h>
+
 #include "lib.h"
 #include "memory.h"
+#include "native.h"
+#include "range.h"
 #include "vm.h"
-#include <assert.h>
 
 /** Safely convert val to range pointer. */
 ObjRange *as_range(Value x) {
@@ -42,9 +44,15 @@ static int inspect_range(Obj *obj, FILE *io) {
          inspect_value(io, range->end);
 }
 
-ObjFun *range_lita();
-
-static void range_natives(let Range) { run_function(range_lita()); }
+COMPILED_SOURCE(range);
+NATIVE_GETTER(Range, start, );
+NATIVE_GETTER(Range, end, );
+NATIVE_METHOD(Range, init, 2) {
+  ObjRange *range = as_range(this);
+  range->start = args[0];
+  range->end = args[1];
+  return this;
+}
 
 const ObjDef range_def = {
     .class_name = "Range",
@@ -53,9 +61,7 @@ const ObjDef range_def = {
     .bytes = range_bytes,
     .mark = mark_range,
     .inspect = inspect_range,
-    // .dump = dump_range,
     .length = range_length,
-    .natives = range_natives,
 };
 
 Value range(Value start, Value end) { return obj(make_range(start, end)); }
