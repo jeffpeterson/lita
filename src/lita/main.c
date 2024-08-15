@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "array.h"
 #include "chunk.h"
 #include "common.h"
 #include "debug.h"
@@ -29,35 +30,45 @@ int main(int argc, char *argv[]) {
   initVM();
 
   int opt;
-  bool startRepl = false;
+  bool start_repl = false;
   enum { COMPILE, INTERPRET } mode = INTERPRET;
 
   while ((opt = getopt(argc, argv, "cirte:")) != -1) {
     switch (opt) {
     case 'c': mode = COMPILE; break;
     case 'i': mode = INTERPRET; break;
-    case 'r': startRepl = true; break;
+    case 'r': start_repl = true; break;
     case 't': config.tracing = true; break;
     case 'e': assertOkResult(interpret(optarg, new_string("eval flag"))); break;
     case '?': exit(1);
     }
   }
 
-  bool noFiles = optind >= argc;
+  assertOkResult(bootVM());
 
-  if (mode == INTERPRET) assertOkResult(bootVM());
+  ObjArray *args = new_array();
+  ObjString *path;
 
-  for (int i = optind; i < argc; i++) {
-    ObjString *path = new_string(argv[i]);
+  switch (mode) {
+  case COMPILE:
+    for (int i = optind; i < argc; i++) compileFile(new_string(argv[i]));
+    break;
 
-    if (mode == INTERPRET) {
+  case INTERPRET: {
+    if (optind < argc) {
+      path = new_string(argv[optind]);
+
+      for (int i = optind + 1; i < argc; i++)
+        append_array(args, string(argv[i]));
+
+      setGlobal(string("ARGV"), OBJ_VAL(args));
+
       runFile(path);
     }
-
-    if (mode == COMPILE) compileFile(path);
+  }
   }
 
-  if (startRepl || noFiles) repl();
+  if (start_repl || !path) repl();
 
   freeVM();
   return 0;

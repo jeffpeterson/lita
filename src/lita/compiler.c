@@ -76,7 +76,7 @@ typedef struct {
 typedef struct {
   uint8_t index; /** The local slot being closed over. */
   bool isLocal;  /** Local slot or enclosing upvalue? */
-} Upvalue;
+} ClosedUpvalue;
 
 typedef enum FunType {
   TYPE_CLASS,
@@ -104,9 +104,10 @@ typedef struct Compiler {
    * and we can share offsets directly.
    */
   Local locals[UINT8_COUNT];
-  int localCount;                /** Number of locals currently in scope. */
-  Upvalue upvalues[UINT8_COUNT]; /** Variables this compiler has closed over. */
-  int scopeDepth; /** How many times beginScope() has been called. */
+  int localCount;            /** Number of locals currently in scope. */
+  ClosedUpvalue              /** Variables this compiler has closed over. */
+      upvalues[UINT8_COUNT]; /** How many times beginScope() has been called. */
+  int scopeDepth;
 } Compiler;
 
 /** The current, innermost class being compiled. */
@@ -461,7 +462,7 @@ static int addUpvalue(Compiler *compiler, uint8_t index, bool isLocal) {
 
   // Re-use existing upvalues referring to the same slot index.
   for (int i = 0; i < upvalueCount; i++) {
-    Upvalue *upvalue = &compiler->upvalues[i];
+    ClosedUpvalue *upvalue = &compiler->upvalues[i];
     if (upvalue->index == index && upvalue->isLocal == isLocal) return i;
   }
 
@@ -876,7 +877,7 @@ static void print(Ctx *ctx) {
   emitByte(OP_PRINT);
 }
 
-static void string(Ctx *ctx) {
+static void string_(Ctx *ctx) {
   Token token = parser.previous;
   ObjString *str = copy_string(token.start + 1, token.length - 2);
   if (token.escaped) str = unescape_string(str);
@@ -1487,7 +1488,7 @@ ParseRule rules[] = {
     [TOKEN_GREATER_GREATER] = {NULL, binary, PREC_COMPARISON},
 
     [TOKEN_IDENTIFIER] = {variable, NULL, PREC_NONE},
-    [TOKEN_STRING] = {string, NULL, PREC_NONE},
+    [TOKEN_STRING] = {string_, NULL, PREC_NONE},
     [TOKEN_NUMBER] = {number, NULL, PREC_NONE},
     [TOKEN_HEX] = {hex, NULL, PREC_NONE},
 

@@ -68,6 +68,31 @@ Obj *as_obj(Value x) {
   return AS_OBJ(x);
 }
 
+// REGISTER_OBJECT_DEF(Bound);
+// const ObjDef Bound = {.class_name = "Bound",
+//                       .size = sizeof(ObjBound),
+//                       .inspect = inspect_bound,
+//                       .free};
+
+// REGISTER_OBJECT_DEF(Class);
+// const ObjDef Class = {
+//     .class_name = "Class",
+//     .size = sizeof(ObjClass),
+//     .inspect = inspect_class,
+// };
+
+// REGISTER_OBJECT_DEF(Closure);
+// const ObjDef Closure;
+
+// REGISTER_OBJECT_DEF(Function);
+// const ObjDef Function;
+
+// REGISTER_OBJECT_DEF(Native);
+// const ObjDef Native;
+
+// REGISTER_OBJECT_DEF(Upvalue);
+// const ObjDef Upvalue;
+
 ObjBound *newBound(Value receiver, Value method) {
   ObjBound *bound = ALLOCATE_OBJ(ObjBound, OBJ_BOUND);
   bound->receiver = receiver;

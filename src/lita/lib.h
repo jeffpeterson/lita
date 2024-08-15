@@ -17,7 +17,6 @@ _ fn(const char *name, int arity, NativeFn fun);
 _ memory(u8 *bytes, int length);
 _ num(double num);
 _ str(const char *str);
-_ string(const char *str);
 
 _ to_string(_ val);
 

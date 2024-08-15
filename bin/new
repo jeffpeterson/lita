@@ -1,0 +1,5 @@
+#!lita
+
+let c_contents = read("src/lita/example.c")
+
+print c_contents

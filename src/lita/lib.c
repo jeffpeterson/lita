@@ -17,7 +17,6 @@ _ memory(u8 *bytes, int length) {
 }
 _ num(double num) { return NUMBER_VAL(num); }
 _ str(const char *str) { return obj(new_string(str)); }
-_ string(const char *str) { return obj(new_string(str)); }
 
 _ class(_ name) {
   if (!is_string(name)) return nil;

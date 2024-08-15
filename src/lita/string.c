@@ -16,6 +16,8 @@ ObjString *as_string(let x) {
   return AS_STRING(x);
 }
 
+Value string(const char *str) { return obj(new_string(str)); }
+
 /**
  * Allocate an ObjString for a (null-terminated) char string.
  */

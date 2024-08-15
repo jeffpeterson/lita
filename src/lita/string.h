@@ -10,6 +10,8 @@
 
 const ObjDef String;
 
+Value string(const char *str);
+
 ObjString *as_string(let x);
 
 ObjString *new_string(const char *chars);
