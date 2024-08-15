@@ -191,30 +191,48 @@ void vm_swap(u8 a, u8 b) {
  *
  * Returns whether or not the call was successful.
  */
-static bool move_into_closure(ObjClosure *closure, int argCount) {
+static InterpretResult move_into_closure(ObjClosure *closure, int argCount) {
   ObjFun *fun = closure->fun;
 
-  if (argCount != fun->arity) {
-    runtimeError("Expected %d arguments but got %d.", fun->arity, argCount);
-    return false;
-  }
+  if (argCount != fun->arity)
+    return runtimeError("Expected %d arguments but got %d.", fun->arity,
+                        argCount);
 
-  if (vm.frameCount == FRAMES_MAX) {
-    runtimeError("Call stack overflow.");
-    return false;
-  }
+  if (vm.frameCount == FRAMES_MAX) return runtimeError("Call stack overflow.");
 
   CallFrame *frame = &vm.frames[vm.frameCount++];
-  frame->closure = closure;
-  frame->ip = fun->chunk.code; // Start instruction pointer at function's code.
-
   /**
    * Account for args and the receiver if method, else the callee.
    * stack: [..., this, arg1, arg2]
    *     receiver-^               ^-stackTop
    */
   frame->slots = vm.stackTop - argCount - 1;
-  return true;
+  frame->native = NULL;
+  frame->closure = closure;
+  frame->ip = fun->chunk.code; // Start instruction pointer at function's code.
+  return INTERPRET_OK;
+}
+
+static InterpretResult move_into_native(ObjNative *native, int argc) {
+  if (argc < native->arity)
+    return runtimeError("Expected %d arguments but got %d.", native->arity,
+                        argc);
+
+  if (vm.frameCount == FRAMES_MAX) return runtimeError("Call stack overflow.");
+
+  CallFrame *frame = &vm.frames[vm.frameCount++];
+
+  /**
+   * Account for args and the receiver if method, else the callee.
+   * stack: [..., this, arg1, arg2]
+   *     receiver-^               ^-stackTop
+   */
+  frame->slots = vm.stackTop - argc - 1;
+  frame->closure = NULL;
+  frame->ip = NULL;
+  frame->native = native;
+
+  return INTERPRET_OK;
 }
 
 ObjClass *valueClass(Value v) {
@@ -264,7 +282,7 @@ bool call_value(Value callee, int argCount) {
       let init = findMethod(callee, obj(vm.str.init));
 
       if (not_nil(init)) {
-        return move_into_closure(as_closure(init), argCount);
+        return !move_into_closure(as_closure(init), argCount);
       } else if (argCount != 0) {
         return !runtimeError("Class expects no arguments but got %d.",
                              argCount);
@@ -273,7 +291,7 @@ bool call_value(Value callee, int argCount) {
       return true;
     }
 
-    case OBJ_CLOSURE: return move_into_closure(AS_CLOSURE(callee), argCount);
+    case OBJ_CLOSURE: return !move_into_closure(AS_CLOSURE(callee), argCount);
 
     case OBJ_NATIVE: {
       ObjNative *native = AS_NATIVE(callee);
@@ -572,13 +590,23 @@ void vm_tuple(u8 length) {
   push(OBJ_VAL(tuple));
 }
 
+static void vm_return() {
+  CallFrame *frame = CURRENT_FRAME;
+  Value result = pop(); // Pop return value off stack.
+  closeUpvalues(frame->slots);
+  vm.frameCount--;
+  vm.stackTop = frame->slots; // Reset stack top to the last frame.
+  push(result);
+}
+
 static InterpretResult vm_run() {
-  int starting_frame_count = vm.frameCount - 1;
-  register CallFrame *frame = &vm.frames[starting_frame_count];
+  if (vm.frameCount == 0) return runtimeError("No function to run.");
+
+  register CallFrame *frame = CURRENT_FRAME;
 
 #define READ_BYTE() (*frame->ip++)
 /** Update the cached frame variable. Idempotent. */
-#define SYNC_FRAME() (frame = &vm.frames[vm.frameCount - 1])
+#define SYNC_FRAME() (frame = CURRENT_FRAME)
 #define READ_SHORT()                                                           \
   (frame->ip += 2, (uint16_t)((frame->ip[-2] << 8) | frame->ip[-1]))
 #define READ_CONSTANT()                                                        \
@@ -601,6 +629,23 @@ static InterpretResult vm_run() {
 #endif
 
     vm.stackHigh = vm.stackTop;
+
+    // TODO: move this to SYNC_FRAME or similar? Only need to check if the
+    // frame has changed.
+    if (frame->native) {
+      int argc = vm.stackTop - frame->slots;
+      push(frame->native->fun(peek(argc), argc, frame->slots));
+
+      vm_return();
+
+      if (vm.frameCount == 0) {
+        resetStack();
+        return INTERPRET_OK;
+      }
+
+      SYNC_FRAME();
+      continue;
+    }
 
     InterpretResult err;
     uint8_t instruction;
@@ -828,19 +873,12 @@ static InterpretResult vm_run() {
       break;
 
     case OP_RETURN: {
-      Value result = pop(); // Pop return value off stack.
-      closeUpvalues(frame->slots);
-      vm.frameCount--;
+      vm_return();
 
-      if (vm.frameCount == 0) {
-        pop(); // Pop <script> function off stack.
+      if (!vm.frameCount) {
+        resetStack(); // Pop <script> function off stack.
         return INTERPRET_OK;
       }
-
-      vm.stackTop = frame->slots;
-      push(result);
-
-      if (vm.frameCount == starting_frame_count) return INTERPRET_OK;
 
       SYNC_FRAME();
       break;

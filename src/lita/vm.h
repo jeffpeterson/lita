@@ -7,8 +7,10 @@
 
 #define FRAMES_MAX 64
 #define STACK_MAX (FRAMES_MAX * UINT8_COUNT)
+#define CURRENT_FRAME &vm.frames[vm.frameCount - 1]
 
 typedef struct CallFrame {
+  ObjNative *native;   /** Native function being executed. */
   ObjClosure *closure; /** Fn containing the code. */
   uint8_t *ip;         /** Current instruction pointer. */
   Value *slots;        /** Points into the VM's value stack. */
@@ -20,7 +22,7 @@ typedef struct VM {
 
   Value stack[STACK_MAX]; /** Stack of values referenced by our call frames. */
   Value *stackTop;        /** Pointer to the top of the value stack. */
-  Value *stackHigh;       /** The highest point the stack has been this tick. */
+  Value *stackHigh; /** The highest point the stack has been this cycle. */
 
   Table globals;  /** Global variables hashed by name. */
   Table interned; /** Interned object table. */
