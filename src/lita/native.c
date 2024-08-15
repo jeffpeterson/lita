@@ -9,7 +9,9 @@
 // # Native global functions
 
 NATIVE_FUNCTION(clock, 0) { return num((double)clock() / CLOCKS_PER_SEC); }
-NATIVE_FUNCTION(hash, 1) { return num(hash_value(args[0])); }
+NATIVE_FUNCTION(hash, 1) {
+  return OBJ_VAL(stringf("%#x", hash_value(args[0])));
+}
 NATIVE_FUNCTION(pp, 1) { return argc > 1 ? pp(t(argc, args)) : pp(args[0]); }
 NATIVE_FUNCTION(read, 0) { return read(argc ? args[0] : str("/dev/stdin")); }
 NATIVE_FUNCTION(write, 1) {
@@ -29,7 +31,9 @@ NATIVE_METHOD(Any, class, 0) { return classOf(this); }
 NATIVE_METHOD_NAMED(Any, eql, "==", 1) {
   return BOOL_VAL(valuesEqual(this, args[0]));
 }
-NATIVE_METHOD(Any, hash, 1) { return NUMBER_VAL(hash_value(this)); }
+NATIVE_METHOD(Any, hash, 0) {
+  return OBJ_VAL(stringf("%#x", hash_value(this)));
+}
 NATIVE_METHOD(Any, inspect, 0) { return inspect(this); }
 NATIVE_METHOD(Any, object_id, 0) { return NUMBER_VAL((u64)AS_OBJ(this)); }
 NATIVE_METHOD(Any, string, 0) { return to_string(this); }

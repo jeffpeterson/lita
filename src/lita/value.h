@@ -144,7 +144,7 @@ void freeValueArray(ValueArray *array);
 int inspect_value(FILE *io, Value value);
 int trace(const char *label, Value value);
 
-typedef u32 Hash;
+typedef u64 Hash;
 
 Hash hash_bytes(const char *key, usize length);
 Hash hash_value(Value val);

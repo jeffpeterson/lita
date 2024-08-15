@@ -22,6 +22,8 @@ assert add(1, 2) == 3
 /// Natives
 assert clock()
 assert (3; 4) == 3
+assert hash(1) == "0x65497e01"
+assert hash(nil) == "0x85dfeebb"
 
 /// Math
 let a = 2
@@ -44,6 +46,7 @@ assert "" nil == ""
 assert nil.string == ""
 assert "" 3 == "3"
 assert "" 3.5 == "3.5"
+assert "hi".hash == "0xd7ea6e9a"
 
 /// Inspect
 assert "hi".inspect == "\e[32m\"hi\"\e[39m"
