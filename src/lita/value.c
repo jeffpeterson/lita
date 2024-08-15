@@ -29,6 +29,14 @@ void freeValueArray(ValueArray *array) {
   initValueArray(array);
 }
 
+int print_value(FILE *io, Value val) {
+  if (is_nil(val)) return 0;
+  if (is_bool(val)) return fputs(AS_BOOL(val) ? "true" : "false", io);
+  if (is_num(val)) return fprintf(io, "%g", AS_NUMBER(val));
+  if (is_obj(val)) return print_object(io, AS_OBJ(val));
+  return 0;
+}
+
 int inspect_value(FILE *io, Value val) {
   if (is_bool(val))
     return fprintf(io, FG_YELLOW "%s" FG_DEFAULT,

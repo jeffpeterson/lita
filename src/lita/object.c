@@ -216,6 +216,11 @@ int inspect_obj(FILE *io, Obj *obj) {
   }
 }
 
+int print_object(FILE *io, Obj *obj) {
+  // TODO: print
+  return inspect_obj(io, obj);
+}
+
 int cmpObjects(Obj *a, Obj *b) {
   int td = a->type - b->type;
 

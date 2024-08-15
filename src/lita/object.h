@@ -196,6 +196,7 @@ const char *objectBytes(Obj *obj, int length);
 
 int inspect_obj_type(FILE *io, ObjType type);
 int inspect_obj(FILE *io, Obj *obj);
+int print_object(FILE *io, Obj *obj);
 
 int cmpObjects(Obj *a, Obj *b);
 

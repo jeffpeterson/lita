@@ -142,6 +142,7 @@ void writeValueArray(ValueArray *array, Value value);
 void freeValueArray(ValueArray *array);
 
 int inspect_value(FILE *io, Value value);
+int print_value(FILE *io, Value value);
 int trace(const char *label, Value value);
 
 typedef u64 Hash;

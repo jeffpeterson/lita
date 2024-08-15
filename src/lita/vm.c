@@ -823,7 +823,7 @@ static InterpretResult vm_run() {
       break;
 
     case OP_PRINT:
-      inspect_value(stdout, peek(0));
+      print_value(stdout, peek(0));
       printf("\n");
       break;
 
