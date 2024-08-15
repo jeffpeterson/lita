@@ -4,6 +4,7 @@
 #include <stdarg.h>
 
 typedef enum ObjType ObjType;
+typedef struct ObjDef ObjDef;
 
 #include "chunk.h"
 #include "common.h"

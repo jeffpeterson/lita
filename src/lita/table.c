@@ -186,6 +186,7 @@ ObjIterator *iterate_table(Table *table) {
   return iter;
 }
 
+// TODO: Obj *table_find_object_key(Table *table, ObjDef *def, Hash hash)
 Obj *tableFindObj(Table *table, ObjType type, const char *bytes, int length,
                   Hash hash) {
   if (table->total == 0) return NULL;

@@ -3,6 +3,7 @@
 #include "io.h"
 #include "lib.h"
 #include "memory.h"
+#include "native.h"
 #include "vm.h"
 
 /** Safely convert val to io pointer. */
@@ -15,15 +16,16 @@ ObjIO *make_io(FILE *fp, Ownership ownership) {
   ObjIO *io = (ObjIO *)new_object(&IO);
   io->fp = fp;
   io->ownership = ownership;
-  io->obj.hash = hash_bytes((char *)&io->fp, sizeof(Value) * 2);
+  // TODO: Handle this with getInterned or something:
+  io->obj.hash = hash_bytes((char *)&io->fp, sizeof(&io->fp));
   return io;
 }
 
 let io(FILE *fp, Ownership ownership) { return obj(make_io(fp, ownership)); }
 
 const char *io_bytes(Obj *obj, int length) {
-  if (length != sizeof(FILE *)) return NULL;
   ObjIO *io = (ObjIO *)obj;
+  if (length != sizeof(&io->fp)) return NULL;
   return (char *)&io->fp;
 }
 
@@ -37,14 +39,12 @@ static void free_io(Obj *obj) {
   if (io->ownership) fclose(io->fp);
 }
 
-static let IO_write(let this, int argc, let *args) {
+NATIVE_METHOD(IO, write, 1) {
   ObjIO *io = as_io(this);
   ObjString *str = as_string(to_string(args[0]));
   fwrite(str->chars, sizeof(char), str->length, io->fp);
   return this;
 }
-
-static void io_natives(let IO) { method(IO, fn("write", 1, IO_write)); }
 
 REGISTER_OBJECT_DEF(IO);
 const ObjDef IO = {
@@ -54,5 +54,4 @@ const ObjDef IO = {
     .interned = true,
     .bytes = io_bytes,
     .inspect = inspect_io,
-    .natives = io_natives,
 };
