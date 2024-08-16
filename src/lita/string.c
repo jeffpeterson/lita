@@ -210,8 +210,17 @@ ObjString *stringf(const char *fmt, ...) {
 }
 
 ObjString *vstring_format(const char *fmt, va_list args) {
-  Buffer buf = newBuffer(8);
+  char *out = NULL;
+  usize size = 0;
+  FILE *io = open_memstream(&out, &size);
+  vfstring_format(io, fmt, args);
+  fclose(io);
+  return take_string(out, size);
+}
+
+int vfstring_format(FILE *io, const char *fmt, va_list args) {
   int i = 0;
+  int count = 0;
 
   while (fmt[i] != '\0') {
     char c = fmt[i];
@@ -220,18 +229,17 @@ ObjString *vstring_format(const char *fmt, va_list args) {
     else switch (fmt[i + 1]) {
       case '{':
         // Print string including the first bracket
-        appendBuffer(&buf, (u8 *)fmt, ++i);
-        fmt += i + 1; // Skip the second bracket
+        count += fprintf(io, "%.*s", ++i, fmt);
+        fmt += i + 1; // Skip over the second bracket
         i = 0;
         continue;
       case '}': {
         // Print string without the first bracket
-        appendBuffer(&buf, (u8 *)fmt, i);
+        count += fprintf(io, "%.*s", i, fmt);
         fmt += i + 2; // Skip the first and second bracket
         i = 0;
         Value v = va_arg(args, Value);
-        ObjString *show = as_string(to_string(v));
-        appendBuffer(&buf, (u8 *)show->chars, show->length);
+        count += inspect_value(io, v);
         continue;
       }
 
@@ -241,12 +249,8 @@ ObjString *vstring_format(const char *fmt, va_list args) {
         crash("format");
       }
   }
-
-  // Append rest of fmt including null byte.
-  appendBuffer(&buf, (u8 *)fmt, i);
-
-  growBuffer(&buf, buf.count);
-  return take_string((char *)buf.bytes, buf.count);
+  // Print the rest of the string
+  return fprintf(io, "%s", fmt) + count;
 }
 
 ObjString *string_format(const char *fmt, ...) {
@@ -260,9 +264,9 @@ ObjString *string_format(const char *fmt, ...) {
 int fstring_format(FILE *io, const char *fmt, ...) {
   va_list args;
   va_start(args, fmt);
-  ObjString *str = vstring_format(fmt, args);
+  int result = vfstring_format(io, fmt, args);
   va_end(args);
-  return fwrite(str->chars, sizeof(char), str->length, io);
+  return result;
 }
 
 static const char *string_bytes(Obj *obj, int length) {
@@ -275,8 +279,12 @@ static const char *string_bytes(Obj *obj, int length) {
 COMPILED_SOURCE(string);
 NATIVE_METHOD(String, string, 0) { return this; }
 NATIVE_METHOD(String, concat, 1) {
-  let other = to_string(args[0]);
-  return obj(concat_strings(as_string(this), as_string(other)));
+  if (!is_string(args[0])) {
+    vm_invoke(string("string"), 0);
+    return VOID;
+  }
+
+  return obj(concat_strings(as_string(this), as_string(args[0])));
 }
 ALIAS_OPERATOR(String, concat, plus, "+", 1);
 ALIAS_OPERATOR(String, concat, star, "*", 1);

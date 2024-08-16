@@ -22,7 +22,7 @@ void scanner_test();
 int main(int argc, const char *argv[]) {
   initVM();
   bootVM();
-  printf("\n\n");
+  printf("\n");
   run(pcre2_test);
   run(xxhash_test);
 

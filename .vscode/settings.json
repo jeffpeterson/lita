@@ -82,7 +82,8 @@
     "span": "c",
     "stack": "c",
     "unordered_set": "c",
-    "format": "c"
+    "format": "c",
+    "*.tcc": "c"
   },
   "C_Cpp.default.includePath": ["src"],
   "C_Cpp.default.compilerArgs": ["-Wall", "-Werror"],

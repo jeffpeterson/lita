@@ -138,7 +138,7 @@ typedef struct ObjClass {
   Obj obj;
   ObjString *name;
   struct ObjClass *parent;
-  // ValueArray children; /** Classes of child values. */
+  ObjDef *instance_def;
   Table methods;
 } ObjClass;
 

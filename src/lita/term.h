@@ -33,6 +33,7 @@
 #define FG_WHITE "\e[37m"
 #define FG_SET "\e[38m"
 #define FG_DEFAULT "\e[39m"
+#define FG_SIZE sizeof(FG_DEFAULT)
 
 #define BG_BLACK "\e[40m"
 #define BG_RED "\e[41m"

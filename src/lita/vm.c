@@ -40,14 +40,25 @@ InterpretResult runtimeError(const char *format, ...) {
   fprintf(stderr, "%d frames:\n", vm.frameCount);
   for (int i = vm.frameCount - 1; i >= 0; i--) {
     CallFrame *frame = &vm.frames[i];
-    ObjFun *fun = frame->closure->fun;
-    size_t instruction = frame->ip - fun->chunk.code - 1;
-    int line = fun->chunk.lines[instruction];
-    fprintf(stderr, "[line %d] in ", line);
-    inspect_function(stderr, "ObjFun", fun);
-    fprintf(stderr, "\n");
-  }
 
+    if (frame->closure) {
+      ObjFun *fun = frame->closure->fun;
+      size_t instruction = frame->ip - fun->chunk.code - 1;
+      int line = fun->chunk.lines[instruction];
+
+#if defined(DEBUG_ERRORS)
+      disassembleChunk(&fun->chunk, fun->name->chars, instruction);
+#endif
+
+      fprintf(stderr, "[line %d] in ", line);
+      inspect_function(stderr, "ObjFun", fun);
+      fprintf(stderr, "\n");
+    } else if (frame->native) {
+      inspect_obj(stderr, (Obj *)frame->native);
+    }
+  }
+  fprintf(stderr, "\nStack:\t");
+  debugStack();
   resetStack();
   return INTERPRET_RUNTIME_ERROR;
 }
@@ -114,10 +125,11 @@ void initVM() {
   vm.nextGC = 1024 * 1024;
 }
 
-static void register_def(const ObjDef *def) {
+static void register_def(ObjDef *def) {
   if (!def->class_name) crash("def must have a class_name");
 
   let klass = global_class(def->class_name);
+  AS_CLASS(klass)->instance_def = def;
 
   if (def->natives) def->natives(klass);
 }
@@ -167,7 +179,7 @@ inline Value *popn(u8 n) {
 }
 
 // invoke the method on this
-Value send(Value this, Value method_name, int argc, ...) {
+InterpretResult send(Value this, Value method_name, int argc, ...) {
   push(this);
   va_list args;
 
@@ -175,8 +187,7 @@ Value send(Value this, Value method_name, int argc, ...) {
   for (int i = 0; i < argc; i++) push(va_arg(args, Value));
   va_end(args);
 
-  vm_invoke(method_name, argc);
-  return pop();
+  return vm_invoke(method_name, argc);
 }
 
 void vm_swap(u8 a, u8 b) {
@@ -266,7 +277,7 @@ ObjClass *valueClass(Value v) {
  * Returns whether or not the call was successful.
  */
 bool call_value(Value callee, int argCount) {
-  trace("callee", callee);
+  trace("call_value", callee);
 
   if (is_obj(callee)) {
     switch (obj_type(callee)) {
@@ -277,55 +288,19 @@ bool call_value(Value callee, int argCount) {
     }
 
     case OBJ_CLASS: {
+      // Replace the class with a new instance.
       vm.stackTop[-argCount - 1] = OBJ_VAL(new_instance(AS_CLASS(callee)));
-
-      let init = findMethod(callee, obj(vm.str.init));
-
-      if (not_nil(init)) {
-        return !move_into_closure(as_closure(init), argCount);
-      } else if (argCount != 0) {
-        return !runtimeError("Class expects no arguments but got %d.",
-                             argCount);
-      }
-
-      return true;
+      return !vm_invoke(OBJ_VAL(vm.str.init), argCount);
     }
 
     case OBJ_CLOSURE: return !move_into_closure(AS_CLOSURE(callee), argCount);
-
-    case OBJ_NATIVE: {
-      ObjNative *native = AS_NATIVE(callee);
-
-      if (argCount < native->arity) {
-        runtimeError("Expected %d arguments but got %d.", native->arity,
-                     argCount);
-        return false;
-      }
-
-      // TODO: This is broken. Native functions are called immediately, but
-      // closures are simply moved into a call frame but remain uncalled until
-      // we next return to the VM run() function. Instead, we should make a kind
-      // of frame for native functions and use move_into_native(). Additionally,
-      // we should stop returning Values from all helper functions. Everything
-      // must communicate via the stack.
-      Value result =
-          native->fun(peek(argCount), argCount, vm.stackTop - argCount);
-      popn(argCount + 1);
-      push(result);
-      return true;
-    }
+    case OBJ_NATIVE: return !move_into_native(AS_NATIVE(callee), argCount);
 
     default: break; // Non-callable object type.
     }
   }
 
-  if (argCount == 1) {
-    let b = pop();
-    let a = pop();
-    push(multiply(a, b));
-    return true;
-  }
-
+  if (argCount == 1) return !vm_multiply();
   return false;
 }
 
@@ -345,7 +320,13 @@ static bool invokeFromClass(ObjClass *klass, ObjString *name, int argCount) {
 InterpretResult vm_invoke(Value name, int argCount) {
   Value receiver = peek(argCount);
 
-  // Value value = find(receiver, name);
+  // if (config.tracing) fstring_format(stderr, "[TRACE] invoke: {} on ", name);
+
+  if (config.tracing) {
+    fprintf(stderr, "[TRACE] vm_invoke(%s, %d) on: ", as_string(name)->chars,
+            argCount),
+        inspect_value(stderr, receiver), fprintf(stderr, "\n");
+  }
 
   if (is_obj(receiver)) {
     Obj *obj = AS_OBJ(receiver);
@@ -359,9 +340,9 @@ InterpretResult vm_invoke(Value name, int argCount) {
 
   ObjClass *klass = valueClass(receiver);
 
-#ifdef DEBUG_TRACE_EXECUTION
-  printf("invoke: %s.%s()\n", klass->name->chars, as_string(name)->chars);
-#endif
+  if (config.tracing)
+    fprintf(stderr, "[TRACE] invoking %s.%s()\n", klass->name->chars,
+            as_string(name)->chars);
 
   if (!invokeFromClass(klass, as_string(name), argCount)) {
     return runtimeError("Undefined property '%s' on %s.",
@@ -465,7 +446,6 @@ void vm_array(u32 length) {
 
 InterpretResult vm_assert(Value src) {
   let value = peek(0);
-  let rhs = peek(-1);
 
 #ifdef DEBUG_ASSERT_CODE
   inspect_value(stderr, src);
@@ -475,9 +455,6 @@ InterpretResult vm_assert(Value src) {
   if (isFalsey(value)) {
     fprintf(stderr, "\n\n");
     fstring_format(stderr, "{} -> {}", src, value);
-    inspect_value(stderr, rhs);
-    fprintf(stderr, "\nStack:\t");
-    debugStack();
     fprintf(stderr, "\n\n");
 
     return runtimeError(FG_RED "Assertion failed.\n" FG_DEFAULT);
@@ -633,10 +610,16 @@ static InterpretResult vm_run() {
     // TODO: move this to SYNC_FRAME or similar? Only need to check if the
     // frame has changed.
     if (frame->native) {
-      int argc = vm.stackTop - frame->slots;
-      push(frame->native->fun(peek(argc), argc, frame->slots));
+      int argc = vm.stackTop - frame->slots - 1;
+      if (config.tracing)
+        fprintf(stderr, "[TRACE] Calling native %s with %d args\n",
+                frame->native->name->chars, argc);
+      let result = frame->native->fun(peek(argc), argc, frame->slots + 1);
 
-      vm_return();
+      if (not_void(result)) {
+        push(result);
+        vm_return();
+      }
 
       if (vm.frameCount == 0) {
         resetStack();
@@ -734,7 +717,7 @@ static InterpretResult vm_run() {
 
     case OP_MATCH: // TODO: More sophisticated matching.
     case OP_EQUAL:
-      vm_invoke(str("=="), 1);
+      vm_invoke(string("=="), 1);
       SYNC_FRAME();
       break;
 

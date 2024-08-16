@@ -79,7 +79,7 @@ Value pope(Value val);
 /** pop() n values off the stack. */
 Value *popn(uint8_t n);
 
-Value send(Value this, Value method_name, int argc, ...);
+InterpretResult send(Value this, Value method_name, int argc, ...);
 
 Value global(Value name);
 Value setGlobal(Value name, Value val);

@@ -1,5 +1,5 @@
 CC = clang
-LITA_FLAGS := # -t
+FLAGS := # -t
 WARN_ERRORS := -Werror -Wno-error=unused-variable -Wno-error=unused-function -Wno-unused-command-line-argument
 CFLAGS := -g -Isrc -lpcre2-8 -Wall $(WARN_ERRORS)
 
@@ -24,10 +24,6 @@ TARGET_O  := $(TARGET_C:src/%.c=_build/%.o)
 # TARGET_O  := $(filter-out %.lita.o,$(TARGET_O))
 TEST_O  := $(filter-out %/main.o,$(OBJECTS))
 
-.PHONY: default all clean test db db/test lib
-.PRECIOUS: $(TARGET) %.c %.o
-.SUFFIXES: # disable crazy built-in rules that append .c
-
 default: test assertions $(TARGET)
 
 # zig not working yet
@@ -40,18 +36,18 @@ html: $(TARGET).html
 lita: $(TARGET)
 all: default $(TEST) lib
 db/test: $(TEST)
-	@lldb $(TEST)
+	@lldb -- $(TEST)
 
-db/%: $(TARGET)
-	@lldb lita examples/$*.lita
+db/%: $(DEV)
+	@lldb -- $(DEV) $(FLAGS) examples/$*.lita
 
 %: examples/%.lita $(DEV)
-	@$(DEV) $(LITA_FLAGS) $<
+	@$(DEV) $(FLAGS) $<
 	@git diff --quiet && git notes --ref=$@ add -fm OK 2>/dev/null || true
 
 lib: $(LITA_LIB)
 test: $(TEST)
-	@$(TEST) $(LITA_FLAGS)
+	$(TEST) $(FLAGS)
 	@git diff --quiet && git notes --ref=test add -fm OK 2>/dev/null || true
 
 $(TARGET).wasm $(TARGET).js $(TARGET).html: $(TARGET_O:%.o=%.wasm.o)
@@ -72,7 +68,6 @@ $(DEV): $(TARGET_O) | test
 
 $(TARGET): $(DEV) | assertions
 	cp $@ $@-$(shell date -r $@ "+%Y-%m-%d-%H:%M:%S")
-	echo "Testing"
 	cp $< $@
 	chmod +x $@
 
@@ -102,3 +97,8 @@ serve: html
 
 clean:
 	-rm -f $(DEV) $(TEST) $(shell find _build -name "*.o")
+
+.PHONY: default all clean test db db/test lib
+.PRECIOUS: $(TARGET) %.c %.o
+.SUFFIXES: # disable crazy built-in rules that append .c
+$(VERBOSE).SILENT:

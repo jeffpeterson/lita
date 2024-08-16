@@ -2,6 +2,7 @@
 
 #include "memory.h"
 #include "object.h"
+#include "string.h"
 #include "term.h"
 #include "value.h"
 #include "xxhash.h"
@@ -38,25 +39,52 @@ int print_value(FILE *io, Value val) {
 }
 
 int inspect_value(FILE *io, Value val) {
-  if (is_bool(val))
+  switch (val) {
+  case True:
+  case False:
     return fprintf(io, FG_YELLOW "%s" FG_DEFAULT,
                    AS_BOOL(val) ? "true" : "false") -
-           10;
-  if (is_nil(val)) return fprintf(io, FG_MAGENTA "%s" FG_DEFAULT, "nil") - 10;
+           FG_SIZE * 2;
+  case VOID: return fputs(FG_RED "void" FG_DEFAULT, io) - FG_SIZE * 2;
+  case nil: return fputs(FG_MAGENTA "nil" FG_DEFAULT, io) - FG_SIZE * 2;
+  default: break;
+  }
 
   if (is_num(val))
-    return fprintf(io, FG_BLUE "%g" FG_DEFAULT, AS_NUMBER(val)) - 10;
+    return fprintf(io, FG_BLUE "%g" FG_DEFAULT, AS_NUMBER(val)) - FG_SIZE * 2;
 
   if (is_obj(val)) return inspect_obj(io, AS_OBJ(val));
-
   return 0;
+}
+
+let show(let val) {
+  char *str = NULL;
+  size_t len = 0;
+  FILE *io = open_memstream(&str, &len);
+  print_value(io, val);
+  fclose(io);
+  return OBJ_VAL(take_string(str, len));
+}
+
+let inspect(let val) {
+  char *str = NULL;
+  size_t len = 0;
+  FILE *io = open_memstream(&str, &len);
+  inspect_value(io, val);
+  fclose(io);
+  return OBJ_VAL(take_string(str, len));
 }
 
 int trace(const char *label, Value value) {
   if (config.tracing)
-    return fprintf(stderr, "%s: ", label) + inspect_value(stderr, value) +
-           fprintf(stderr, "\n");
+    return fprintf(stderr, "[TRACE] %s: ", label) +
+           inspect_value(stderr, value) + fprintf(stderr, "\n");
   else return 0;
+}
+
+let pp(let val) {
+  inspect_value(stderr, val);
+  return val;
 }
 
 bool valuesEqual(Value a, Value b) {

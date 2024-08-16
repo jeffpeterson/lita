@@ -267,7 +267,7 @@ static TokenType identifierType() {
 static Token identifier() {
   while (matches(isAlpha) || matches(isDigit)) continue;
   while (matches(isSubscript)) continue;
-  while (match('\'')) continue;
+  while (match('\'') || match('?') || match('!')) continue;
   return makeToken(identifierType());
 }
 

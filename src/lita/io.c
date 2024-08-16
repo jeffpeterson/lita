@@ -41,7 +41,7 @@ static void free_io(Obj *obj) {
 
 NATIVE_METHOD(IO, write, 1) {
   ObjIO *io = as_io(this);
-  ObjString *str = as_string(to_string(args[0]));
+  ObjString *str = as_string(args[0]);
   fwrite(str->chars, sizeof(char), str->length, io->fp);
   return this;
 }

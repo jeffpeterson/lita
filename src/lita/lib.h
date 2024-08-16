@@ -8,7 +8,6 @@
 #include "string.h"
 #include "value.h"
 
-#define TO_STRING(val) to_string(val)
 #define fmt(f, ...) obj(string_format(f, ...))
 
 typedef Value _;
@@ -17,8 +16,6 @@ _ fn(const char *name, int arity, NativeFn fun);
 _ memory(u8 *bytes, int length);
 _ num(double num);
 _ str(const char *str);
-
-_ to_string(_ val);
 
 int arity(_ fun);
 
@@ -43,14 +40,9 @@ _ name(_ val);
 _ class(_ name);
 _ method(_ klass, _ fun);
 
-_ pp(_ x);
-_ fprint(FILE *io, _ x);
-_ print(_ x);
-_ inspect(_ val);
-
 // # Files
-_ read(_ path);
-_ write(_ path, _ content);
-_ append(_ path, _ content);
+let read(let path);
+let write(let path, let content);
+let append(let path, let content);
 
 #endif

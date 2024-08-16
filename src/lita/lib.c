@@ -6,6 +6,7 @@
 #include "memory.h"
 #include "string.h"
 #include "system.h"
+#include "term.h"
 #include "tuple.h"
 #include "vm.h"
 
@@ -142,103 +143,18 @@ _ read(_ path) {
   return obj(readFile(AS_STRING(path)));
 }
 
-_ write(_ path, _ content) {
-  if (!is_string(path)) return crash("path must be a string.");
-
-  let data = to_string(content);
-
-  if (!writeFile(AS_STRING(path), AS_STRING(data)))
+let write(let path, let content) {
+  if (!writeFile(as_string(path), as_string(content)))
     return crash("Could not write to file.");
 
-  return data;
+  return content;
 }
 
 _ append(_ path, _ content) {
   if (!is_string(path)) return crash("path must be a string.");
 
-  let data = to_string(content);
-
-  if (!appendFile(AS_STRING(path), AS_STRING(data)))
+  if (!appendFile(as_string(path), as_string(content)))
     return crash("Could not append to file.");
 
-  return data;
-}
-
-_ to_string(_ val) {
-  if (is_int(val)) return OBJ_VAL(stringf("%d", as_int(val)));
-
-  if (is_num(val)) return OBJ_VAL(stringf("%g", AS_NUMBER(val)));
-
-  if (is_bool(val)) return string(AS_BOOL(val) ? "true" : "false");
-
-  if (is_nil(val)) return string("nil");
-
-  if (is_obj(val)) {
-    switch (obj_type(val)) {
-    case OBJ_CLASS: return OBJ_VAL(AS_CLASS(val)->name);
-
-    case OBJ_BOUND:
-    case OBJ_CLOSURE:
-    case OBJ_FUN:
-    case OBJ_NATIVE: return name(val);
-
-    // default: return str(objInfo[obj_type(val)].inspect);
-    default: return send(val, str("string"), 0);
-    }
-  }
-
-  return obj(stringf("<unknown type %64x>", val));
-}
-
-_ fprint(FILE *io, _ x) {
-  fprintf(io, "%s\n", AS_STRING(to_string(x))->chars);
-  return x;
-}
-_ print(_ x) {
-  return fprint(stdout, x);
-  return x;
-}
-
-_ pp(_ x) {
-  fprint(stderr, inspect(x));
-  return x;
-}
-
-_ inspect(_ val) {
-  if (is_bool(val) || is_num(val) || is_nil(val)) return to_string(val);
-
-  if (is_obj(val)) {
-    Obj *obj = AS_OBJ(val);
-
-    if (obj->def && obj->def->inspect) {
-      char *str = NULL;
-      size_t len = 0;
-      FILE *io = open_memstream(&str, &len);
-      obj->def->inspect(obj, io);
-      fclose(io);
-      let val = OBJ_VAL(take_string(str, len));
-
-      return val;
-    }
-
-    switch (obj->type) {
-    case OBJ_BOUND: return add(str("bound:"), inspect(AS_BOUND(val)->method));
-
-    case OBJ_CLASS:
-      return OBJ_VAL(stringf("<class %s>", AS_CLASS(val)->name->chars));
-
-    case OBJ_CLOSURE: return to_string(OBJ_VAL(AS_CLOSURE(val)->fun));
-
-    case OBJ_CUSTOM: return OBJ_VAL(stringf("<%s>", obj->def->class_name));
-
-    case OBJ_FUN: {
-      ObjFun *fun = AS_FUN(val);
-      return OBJ_VAL(stringf("<fn %s/%d>", fun->name->chars, fun->arity));
-    }
-    case OBJ_NATIVE: return OBJ_VAL(AS_NATIVE(val)->name);
-    default: break;
-    }
-  }
-
-  return to_string(val);
+  return content;
 }

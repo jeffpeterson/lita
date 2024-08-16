@@ -29,6 +29,8 @@ NATIVE_FUNCTION(append, 1) {
 NATIVE_METHOD(Any, self, 0) { return this; }
 NATIVE_METHOD(Any, class, 0) { return classOf(this); }
 NATIVE_METHOD_NAMED(Any, eql, "==", 1) {
+  trace("this", this);
+  trace("args[0]", args[0]);
   return BOOL_VAL(valuesEqual(this, args[0]));
 }
 NATIVE_METHOD(Any, hash, 0) {
@@ -36,7 +38,7 @@ NATIVE_METHOD(Any, hash, 0) {
 }
 NATIVE_METHOD(Any, inspect, 0) { return inspect(this); }
 NATIVE_METHOD(Any, object_id, 0) { return NUMBER_VAL((u64)AS_OBJ(this)); }
-NATIVE_METHOD(Any, string, 0) { return to_string(this); }
+NATIVE_METHOD(Any, string, 0) { return inspect(this); }
 
 // # Function
 NATIVE_METHOD(Function, arity, 0) { return NUMBER_VAL(arity(this)); }
@@ -56,6 +58,8 @@ NATIVE_METHOD(Function, byte_count, 0) {
 
 // # Number
 NATIVE_METHOD_NAMED(Number, eql, "==", 1) {
+  trace("this", this);
+  trace("args[0]", args[0]);
   return BOOL_VAL(AS_NUMBER(this) == AS_NUMBER(args[0]));
 }
 NATIVE_METHOD_NAMED(Number, star, "*", 1) {
@@ -79,8 +83,9 @@ InterpretResult defineNatives() {
   run_function(core_lita());
 
   foreach_boot_function(boot) {
-    trace("Booting", OBJ_VAL(boot->fun));
-    InterpretResult result = run_function(boot->fun());
+    ObjFun *fun = boot->fun();
+    trace("Booting", OBJ_VAL(fun));
+    InterpretResult result = run_function(fun);
     if (result) return result;
   }
 

@@ -100,15 +100,21 @@ static Color color(OpType type) {
   }
 }
 
-void disassembleChunk(Chunk *chunk, const char *name) {
-  fprintf(stderr, "=== %s ===\n", name);
-  fprintf(stderr, "Byte Line OpCode               Operands\n");
-  fprintf(stderr, "---- ---- -------------------- --------\n");
+void disassembleChunk(Chunk *chunk, const char *name, int until) {
+  if (until < 0 || until > chunk->count) until = chunk->count;
 
-  for (int offset = 0; offset < chunk->count;) {
+  fprintf(stderr, "╔═════════════════════════════════════════╗\r");
+  fprintf(stderr, "╔═ " FG_MAGENTA "%s" FG_DEFAULT " \n", name);
+  fprintf(stderr, "║ Byte Line OpCode               Operands ║\n");
+  fprintf(stderr, "╟───── ──── ──────────────────── ─────────╢\n");
+
+  for (int offset = 0; offset < until;) {
     offset = disassembleInstruction(chunk, offset);
   }
-  fprintf(stderr, "---- ---- -------------------- --------\n");
+  fprintf(stderr, "╟───── ──── ──────────────────── ─────────╢\n");
+  fprintf(stderr, "║ Byte Line OpCode               Operands ║\n");
+  fprintf(stderr, "╚═════════════════════════════════════════╝\r");
+  fprintf(stderr, "╚═ " FG_MAGENTA "%s" FG_DEFAULT " \n", name);
 }
 
 static void byte(uint8_t arg) { fprintf(stderr, " %02x", arg); }
@@ -117,10 +123,10 @@ static void newline() { fputs("\n", stderr); }
 
 int disassembleInstruction(Chunk *chunk, int offset) {
   uint8_t *code = chunk->code;
-  fprintf(stderr, "%04x ", offset);
+  fprintf(stderr, RESET "║ %04x ", offset);
 
   if (offset > 0 && chunk->lines[offset] == chunk->lines[offset - 1])
-    fprintf(stderr, "   | ");
+    fprintf(stderr, DIM "   │ " NO_DIM);
   else fprintf(stderr, FG_CYAN "%4d " FG_DEFAULT, chunk->lines[offset]);
 
   uint8_t instruction = code[offset++];
@@ -192,7 +198,7 @@ int disassembleInstruction(Chunk *chunk, int offset) {
     for (int j = 0; j < fun->upvalueCount; j++) {
       int isLocal = code[offset++];
       int index = code[offset++];
-      fprintf(stderr, "\n%04d      |->                  ", offset - 2);
+      fprintf(stderr, "\n%04d      │->                  ", offset - 2);
       byte(isLocal);
       byte(index);
       arrow();
@@ -243,14 +249,17 @@ void debugTokens() {
 
     switch (token.type) {
     case TOKEN_NEWLINE:
+      fg(color);
       fprintf(stderr, "[newline]\n");
       printIndents(indent);
       break;
     case TOKEN_DEDENT:
+      fg(color);
       fputs("[dedent]\n", stderr);
       printIndents(--indent);
       break;
     case TOKEN_ERROR:
+      fg(color);
       fprintf(stderr, "[error: %.*s]\n", token.length, token.start);
       printIndents(indent);
       break;
@@ -282,7 +291,7 @@ void debugStack() {
 static CallFrame *prev_frame;
 
 void debugExecution() {
-  fprintf(stderr, DIM "        |  -->" NO_DIM);
+  fprintf(stderr, RESET "║" DIM "      -->" NO_DIM);
   debugStack();
   // int frameSizes[vm.frameCount];
 
@@ -303,14 +312,18 @@ void debugExecution() {
 
   if (frame != prev_frame) {
     fprintf(stderr, "\n");
-    for (int i = 0; i < vm.frameCount; i++) {
-      fprintf(stderr, "[ Frame %s ]", vm.frames[i].closure->fun->name->chars);
-    }
+    for (int i = 0; i < vm.frameCount; i++)
+      if (vm.frames[i].closure)
+        fprintf(stderr, "[ Frame %s ]", vm.frames[i].closure->fun->name->chars);
+      else if (vm.frames[i].native)
+        fprintf(stderr, "[ Native %s ]", vm.frames[i].native->name->chars);
+      else fprintf(stderr, "[ Unknown frame ]");
   }
 
   fprintf(stderr, DIM "\n");
-  disassembleInstruction(&frame->closure->fun->chunk,
-                         (int)(frame->ip - frame->closure->fun->chunk.code));
+  if (frame->ip)
+    disassembleInstruction(&frame->closure->fun->chunk,
+                           (int)(frame->ip - frame->closure->fun->chunk.code));
   fprintf(stderr, NO_DIM);
   prev_frame = frame;
 }

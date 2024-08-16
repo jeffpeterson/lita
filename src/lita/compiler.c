@@ -153,9 +153,7 @@ static void errorAt(Token *token, const char *message) {
   parser.panicMode = true;
 
 #if defined(DEBUG_ERRORS) || defined(DEBUG_PRINT_CODE)
-  disassembleChunk(currentChunk(), current->fun->name != NULL
-                                       ? current->fun->name->chars
-                                       : "<script>");
+  disassembleChunk(currentChunk(), current->fun->name->chars, -1);
   fprintf(stderr, "Compilation failed. Current chunk above. ^^^\n");
 #endif
 
@@ -363,8 +361,7 @@ static ObjFun *endCompiler() {
 
 #ifdef DEBUG_PRINT_CODE
   if (!parser.hadError) {
-    disassembleChunk(currentChunk(),
-                     fun->name != NULL ? fun->name->chars : "<script>");
+    disassembleChunk(currentChunk(), fun->name->chars, -1);
   }
 #endif
 

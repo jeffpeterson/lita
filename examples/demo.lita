@@ -3,7 +3,7 @@ fn fib(n)
 	return fib(n - 2) + fib(n - 1)
 
 // pp "Lita Demo:"
-print 4567.to_string
+print 4567.string
 
 let x = 42
 print 3(x)

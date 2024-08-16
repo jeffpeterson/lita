@@ -39,6 +39,8 @@ ObjString *unescape_string(ObjString *str);
 
 ObjString *vstring_format(const char *fmt, va_list args);
 ObjString *string_format(const char *fmt, ...);
+
+int vfstring_format(FILE *io, const char *fmt, va_list args);
 int fstring_format(FILE *io, const char *fmt, ...);
 
 #endif

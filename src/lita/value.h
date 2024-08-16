@@ -9,6 +9,14 @@
 typedef struct Obj Obj;
 typedef struct ObjString ObjString;
 
+typedef enum {
+  VAL_VOID,
+  VAL_NIL,
+  VAL_BOOL,
+  VAL_NUMBER,
+  VAL_OBJ,
+} ValueType;
+
 #ifdef NAN_BOXING
 
 //      quiet -v v- 50 mantisa bits -v
@@ -72,14 +80,6 @@ static inline bool valueIsObj(Value val) {
 
 #else // else if !NAN_BOXING
 
-typedef enum {
-  VAL_VOID,
-  VAL_NIL,
-  VAL_BOOL,
-  VAL_NUMBER,
-  VAL_OBJ,
-} ValueType;
-
 typedef struct {
   ValueType type;
   union {
@@ -88,16 +88,6 @@ typedef struct {
     Obj *obj;
   } as;
 } Value;
-
-// typedef struct {
-//   ValueType type;
-//   union {
-//     bool boolean;
-//     double number;
-//     uint64_t object_id;
-//   } as;
-//   Obj *unit;
-// } ValueWithUnit;
 
 #define is_bool(value) ((value).type == VAL_BOOL)
 #define is_void(value) ((value).type == VAL_VOID)
@@ -120,11 +110,13 @@ typedef struct {
 
 #endif
 
+#define VOID VOID_VAL
 #define nil NIL_VAL
 #define True TRUE_VAL
 #define False FALSE_VAL
 
 #define not_nil(val) (!is_nil(val))
+#define not_void(val) (!is_void(val))
 
 typedef Value let;
 
@@ -144,6 +136,10 @@ void freeValueArray(ValueArray *array);
 int inspect_value(FILE *io, Value value);
 int print_value(FILE *io, Value value);
 int trace(const char *label, Value value);
+
+let show(let val);
+let inspect(let val);
+let pp(let val);
 
 typedef u64 Hash;
 
