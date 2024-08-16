@@ -3,6 +3,7 @@
 #include "dump.h"
 #include "lib.h"
 #include "memory.h"
+#include "native.h"
 #include "tuple.h"
 #include "vm.h"
 
@@ -109,45 +110,37 @@ ObjTuple *zip_tuples(ObjTuple *a, ObjTuple *b, Value (*fn)(Value, Value)) {
 
 // # Natives
 
-static let Tuple_add(let this, int argc, let *args) {
+NATIVE_METHOD_NAMED(Tuple, add, "+", 1) {
   return obj(zip_tuples(as_tuple(this), as_tuple(args[0]), add));
 }
 
-static Value Tuple_get(let this, int argc, let *args) {
+NATIVE_METHOD(Tuple, get, 1) {
   ObjTuple *tuple = AS_TUPLE(this);
   u32 idx = as_num(args[0]);
   if (idx >= tuple->length) return nil;
   return tuple->values[idx];
 }
 
-static let Tuple_map(let this, int argc, let *args) {
-  ObjTuple *tuple = AS_TUPLE(this);
-  let fun = args[0];
+// NATIVE_METHOD(Tuple, map, 1) {
+//   ObjTuple *tuple = AS_TUPLE(this);
+//   let fun = args[0];
 
-  for (u8 i = 0; i < tuple->length; i++) {
-    push(fun);
-    push(tuple->values[i]);
-    vm_call(1);
-  }
-  vm_tuple(tuple->length);
-  return pop();
-}
+//   for (u8 i = 0; i < tuple->length; i++) {
+//     push(fun);
+//     push(tuple->values[i]);
+//     vm_call(1);
+//   }
+//   vm_tuple(tuple->length);
+//   return pop();
+// }
 
-static let Tuple_multiply(let this, int argc, let *args) {
-  if (is_tuple(args[0]))
-    return obj(zip_tuples(as_tuple(this), as_tuple(args[0]), multiply));
-  else return Tuple_map(this, argc, args);
-}
+// NATIVE_METHOD_NAMED(Tuple, star, "*", 1) {
+//   if (is_tuple(args[0]))
+//     return obj(zip_tuples(as_tuple(this), as_tuple(args[0]), multiply));
+//   else return Tuple_map(this, argc, args);
+// }
 
-ObjFun *tuple_lita();
-
-static void tuple_natives(let Tuple) {
-  run_function(tuple_lita());
-  method(Tuple, fn("*", 1, Tuple_multiply));
-  method(Tuple, fn("+", 1, Tuple_add));
-  method(Tuple, fn("get", 1, Tuple_get));
-  method(Tuple, fn("map", 1, Tuple_map));
-}
+COMPILED_SOURCE(tuple);
 
 REGISTER_OBJECT_DEF(Tuple);
 const ObjDef Tuple = {
@@ -160,7 +153,6 @@ const ObjDef Tuple = {
     .inspect = inspect_tuple,
     .dump = dump_tuple,
     .length = tuple_length,
-    .natives = tuple_natives,
 };
 
 let t(int len, let *vals) { return obj(copy_tuple(vals, len)); }
