@@ -26,3 +26,6 @@ class String
 	fn bg_magenta = "\e[45m" + this + "\e[39m"
 	fn bg_cyan    = "\e[46m" + this + "\e[39m"
 	fn bg_white   = "\e[47m" + this + "\e[39m"
+
+	fn print(io)
+		return io.write(this)

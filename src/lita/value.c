@@ -84,6 +84,7 @@ int trace(const char *label, Value value) {
 
 let pp(let val) {
   inspect_value(stderr, val);
+  fputc('\n', stderr);
   return val;
 }
 

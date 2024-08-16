@@ -32,12 +32,10 @@ static void resetStack() {
 
 InterpretResult runtimeError(const char *format, ...) {
   va_list args;
-  va_start(args, format);
-  vfprintf(stderr, format, args);
-  va_end(args);
-  fputs("\n", stderr);
+  fprintf(stderr, "\nStack:\t");
+  debugStack();
 
-  fprintf(stderr, "%d frames:\n", vm.frameCount);
+  fprintf(stderr, "\n\n%d frames:\n", vm.frameCount);
   for (int i = vm.frameCount - 1; i >= 0; i--) {
     CallFrame *frame = &vm.frames[i];
 
@@ -57,9 +55,15 @@ InterpretResult runtimeError(const char *format, ...) {
       inspect_obj(stderr, (Obj *)frame->native);
     }
   }
-  fprintf(stderr, "\nStack:\t");
-  debugStack();
+
+  fputs(FG_RED "\nRUNTIME ERROR: " FG_DEFAULT, stderr);
+  va_start(args, format);
+  vfprintf(stderr, format, args);
+  va_end(args);
+  fputs("\n", stderr);
+
   resetStack();
+
   return INTERPRET_RUNTIME_ERROR;
 }
 
@@ -345,8 +349,9 @@ InterpretResult vm_invoke(Value name, int argCount) {
             as_string(name)->chars);
 
   if (!invokeFromClass(klass, as_string(name), argCount)) {
-    return runtimeError("Undefined property '%s' on %s.",
-                        as_string(name)->chars, klass->name->chars);
+    return runtimeError("Undefined method %s on %s.",
+                        as_string(inspect(name))->chars,
+                        as_string(inspect(OBJ_VAL(klass)))->chars);
   }
 
   return INTERPRET_OK;
@@ -790,6 +795,7 @@ static InterpretResult vm_run() {
       ObjClass *superclass = AS_CLASS(peek(0));
       ObjClass *subclass = AS_CLASS(peek(1));
       subclass->parent = superclass;
+      subclass->instance_def = superclass->instance_def;
       // tableMerge(&superclass->methods, &subclass->methods);
       break;
     }
@@ -851,8 +857,10 @@ static InterpretResult vm_run() {
       break;
 
     case OP_PRINT:
-      print_value(stdout, peek(0));
+      vm_get_global(string("stdout"));
+      if ((err = vm_invoke(string("print"), 1))) return err;
       printf("\n");
+      SYNC_FRAME();
       break;
 
     case OP_RETURN: {

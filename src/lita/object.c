@@ -189,8 +189,8 @@ int inspect_obj(FILE *io, Obj *obj) {
 
   case OBJ_CLASS: {
     ObjClass *klass = (ObjClass *)obj;
-    return fprintf(io, "%s { ", klass->name->chars) +
-           inspect_table(io, &klass->methods) + fputs(" }", io);
+    return fprintf(io, FG_MAGENTA "%s" FG_DEFAULT, klass->name->chars) -
+           FG_SIZE * 2;
   }
 
   case OBJ_CLOSURE: return inspect_function(io, "fn", ((ObjClosure *)obj)->fun);
