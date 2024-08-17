@@ -66,6 +66,8 @@ let show(let val) {
   return OBJ_VAL(take_string(str, len));
 }
 
+const char *inspectc(let val) { return as_string(inspect(val))->chars; }
+
 let inspect(let val) {
   char *str = NULL;
   size_t len = 0;

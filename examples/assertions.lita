@@ -19,6 +19,15 @@ assert (1, 2).class == Tuple
 fn add(a, b) = a + b
 assert add(1, 2) == 3
 
+// Variadic Functions
+fn sum(...xs)
+	let n = 0
+	for let i = 0; i < xs.length; i++
+		n += xs.get(i)
+	return n
+
+assert sum(1, 2, 3) == 6
+
 /// Natives
 assert clock()
 assert (3; 4) == 3
@@ -38,6 +47,7 @@ assert (2 b) == 8
 assert "Strings"
 assert ('0 + '5) == '05
 assert ("hi " + "there") == "hi there"
+// assert ("hi " x' "there") == "hi 1 there"
 assert 'foo / 'bar == "foo/bar"
 assert '/ == "/"
 assert '"hi there" == "\"hi there\""

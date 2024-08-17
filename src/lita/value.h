@@ -139,6 +139,7 @@ int trace(const char *label, Value value);
 
 let show(let val);
 let inspect(let val);
+const char *inspectc(let val);
 let pp(let val);
 
 typedef u64 Hash;

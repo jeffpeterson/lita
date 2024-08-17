@@ -1,5 +1,10 @@
 #!lita
 
-let c_contents = read("src/lita/example.c")
+if !$1:
+	print "Usage: " + $0 + " <name>\n"
+	return 1
 
-print c_contents
+let c_contents = read("src/lita/example.c")
+let h_contents = read("src/lita/example.h")
+
+print $1 "\n"

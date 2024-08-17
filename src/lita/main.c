@@ -58,9 +58,13 @@ int main(int argc, char *argv[]) {
     if (optind < argc) {
       path = new_string(argv[optind]);
 
-      for (int i = optind + 1; i < argc; i++)
-        append_array(args, string(argv[i]));
+      for (int i = optind + 1; i < argc; i++) {
+        let arg = string(argv[i]);
+        append_array(args, arg);
+        setGlobal(OBJ_VAL(stringf("$%d", i - optind)), arg);
+      }
 
+      setGlobal(string("$0"), OBJ_VAL(path));
       setGlobal(string("ARGV"), OBJ_VAL(args));
 
       runFile(path);

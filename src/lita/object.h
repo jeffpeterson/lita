@@ -118,6 +118,7 @@ typedef struct ObjErr {
 typedef struct ObjFun {
   Obj obj;
   int arity;
+  bool variadic;
   ObjString *name;
   int upvalueCount;
   Chunk chunk;

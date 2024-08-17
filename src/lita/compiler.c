@@ -1019,6 +1019,16 @@ static void function(FunType type) {
   if (match(TOKEN_LEFT_PAREN)) {
     if (!check(TOKEN_RIGHT_PAREN)) {
       do {
+        if (match(TOKEN_ELLIPSIS)) {
+          compiler.fun->variadic = true;
+          uint8_t constant = 0;
+          if (check(TOKEN_IDENTIFIER))
+            constant = parseVariable("Expect parameter name after \"...\".");
+          else declareVariable();
+          defineVariable(constant);
+          break;
+        }
+
         current->fun->arity++;
         if (current->fun->arity > 255)
           errorAtCurrent("Can't have more than 255 parameters.");

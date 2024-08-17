@@ -111,10 +111,10 @@ void disassembleChunk(Chunk *chunk, const char *name, int until) {
   for (int offset = 0; offset < until;) {
     offset = disassembleInstruction(chunk, offset);
   }
-  fprintf(stderr, "╟───── ──── ──────────────────── ─────────╢\n");
-  fprintf(stderr, "║ Byte Line OpCode               Operands ║\n");
-  fprintf(stderr, "╚═════════════════════════════════════════╝\r");
-  fprintf(stderr, "╚═ " FG_MAGENTA "%s" FG_DEFAULT " \n", name);
+  if (until < chunk->count)
+    fprintf(stderr, "║ …         …                    …        ║\n"
+                    "╙┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄╜\n");
+  else fprintf(stderr, "╚═════════════════════════════════════════╝\n");
 }
 
 static void byte(uint8_t arg) { fprintf(stderr, " %02x", arg); }

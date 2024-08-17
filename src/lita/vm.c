@@ -32,10 +32,8 @@ static void resetStack() {
 
 InterpretResult runtimeError(const char *format, ...) {
   va_list args;
-  fprintf(stderr, "\nStack:\t");
-  debugStack();
 
-  fprintf(stderr, "\n\n%d frames:\n", vm.frameCount);
+  fprintf(stderr, "\n%d frames:\n", vm.frameCount);
   for (int i = vm.frameCount - 1; i >= 0; i--) {
     CallFrame *frame = &vm.frames[i];
 
@@ -56,7 +54,10 @@ InterpretResult runtimeError(const char *format, ...) {
     }
   }
 
-  fputs(FG_RED "\nRUNTIME ERROR: " FG_DEFAULT, stderr);
+  fprintf(stderr, "\nStack:\t");
+  debugStack();
+
+  fputs(FG_RED "\n\nRUNTIME ERROR: " FG_DEFAULT, stderr);
   va_start(args, format);
   vfprintf(stderr, format, args);
   va_end(args);
@@ -209,9 +210,14 @@ void vm_swap(u8 a, u8 b) {
 static InterpretResult move_into_closure(ObjClosure *closure, int argCount) {
   ObjFun *fun = closure->fun;
 
-  if (argCount != fun->arity)
+  if (argCount < fun->arity)
     return runtimeError("Expected %d arguments but got %d.", fun->arity,
                         argCount);
+
+  if (fun->variadic) {
+    vm_array(argCount - fun->arity);
+    argCount = fun->arity + 1;
+  }
 
   if (vm.frameCount == FRAMES_MAX) return runtimeError("Call stack overflow.");
 
@@ -462,7 +468,8 @@ InterpretResult vm_assert(Value src) {
     fstring_format(stderr, "{} -> {}", src, value);
     fprintf(stderr, "\n\n");
 
-    return runtimeError(FG_RED "Assertion failed.\n" FG_DEFAULT);
+    return runtimeError(FG_CYAN "%s" FG_DEFAULT " -> %s", as_string(src)->chars,
+                        inspectc(value));
   }
 
 #ifdef DEBUG_ASSERTS
@@ -498,8 +505,9 @@ InterpretResult vm_get_global(Value name) {
 
   if (!tableGet(&vm.globals, name, &value)) {
     if (is_nil(value = get_env(name)))
-      return runtimeError("Cannot get undefined variable '%s'.",
-                          as_string(name)->chars);
+      if (!is_string(name) || *as_string(name)->chars != '$')
+        return runtimeError("Cannot get undefined variable '%s'.",
+                            as_string(name)->chars);
   }
   push(value);
   return INTERPRET_OK;
