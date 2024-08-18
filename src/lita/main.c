@@ -1,4 +1,6 @@
 #include <getopt.h>
+#include <readline/history.h>
+#include <readline/readline.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -13,15 +15,17 @@
 
 static void repl() {
   ObjString *name = new_string("REPL");
-  char line[1024];
+  ObjString *history =
+      concat_strings(new_string(getenv("HOME")), new_string("/.lita_history"));
+
+  push(obj(history));
+  push(obj(name));
+
+  read_history(history->chars);
   for (;;) {
-    printf("> ");
-
-    if (!fgets(line, sizeof(line), stdin)) {
-      printf("\n");
-      break;
-    }
-
+    char *line = readline("> ");
+    add_history(line);
+    write_history(history->chars);
     interpret(line, name);
   }
 }

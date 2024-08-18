@@ -83,7 +83,9 @@
     "stack": "c",
     "unordered_set": "c",
     "format": "c",
-    "*.tcc": "c"
+    "*.tcc": "c",
+    "readline.h": "c",
+    "history.h": "c"
   },
   "C_Cpp.default.includePath": ["src"],
   "C_Cpp.default.compilerArgs": ["-Wall", "-Werror"],

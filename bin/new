@@ -13,7 +13,7 @@ fn replace(string)
 let c_contents = read("src/lita/example.c")
 let h_contents = read("src/lita/example.h")
 
-write "src/lita/" + $.underscore + ".c", replace(c_contents)
-write "src/lita/" + $.underscore + ".h", replace(h_contents)
+write "src/lita/" + $1.underscore + ".c", replace(c_contents)
+write "src/lita/" + $1.underscore + ".h", replace(h_contents)
 
-print "Created " + $.underscore + ".c and " + $.underscore + ".h\n"
+print "Created " + $1.underscore + ".c and " + $1.underscore + ".h\n"

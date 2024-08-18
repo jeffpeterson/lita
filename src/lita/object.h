@@ -76,12 +76,12 @@ typedef struct ObjDef {
   ObjNativesFn *natives;
 } ObjDef;
 
-const ObjDef Bound;
-const ObjDef Class;
-const ObjDef Closure;
-const ObjDef Function;
-const ObjDef Native;
-const ObjDef Upvalue;
+// const ObjDef Bound;
+// const ObjDef Class;
+// const ObjDef Closure;
+// const ObjDef Function;
+// const ObjDef Native;
+// const ObjDef Upvalue;
 
 typedef struct ObjClass ObjClass;
 
