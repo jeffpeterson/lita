@@ -4,7 +4,16 @@ if !$1:
 	print "Usage: " + $0 + " <name>\n"
 	return 1
 
+fn replace(string)
+	return string \
+		.replace("example", $1.underscore) \
+		.replace("Example", $1.camelize.capitalize) \
+		.replace("EXAMPLE", $1.uppercase)
+
 let c_contents = read("src/lita/example.c")
 let h_contents = read("src/lita/example.h")
 
-print c_contents.replace("example", $1) "\n"
+write "src/lita/" + $.underscore + ".c", replace(c_contents)
+write "src/lita/" + $.underscore + ".h", replace(h_contents)
+
+print "Created " + $.underscore + ".c and " + $.underscore + ".h\n"
