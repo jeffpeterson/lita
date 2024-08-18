@@ -1,5 +1,6 @@
 CC = clang
 FLAGS := # -t
+SHELL := /bin/bash
 WARN_ERRORS := -Werror -Wno-error=unused-variable -Wno-error=unused-function -Wno-unused-command-line-argument
 CFLAGS := -g -Isrc -I/opt/homebrew/include -L/opt/homebrew/lib -lpcre2-8 -lreadline -Wall $(WARN_ERRORS)
 
@@ -68,8 +69,8 @@ $(DEV): $(TARGET_O) | test
 
 $(TARGET): $(DEV) | assertions
 	-cp $@ $@-$(shell date -r $@ "+%Y-%m-%d-%H:%M:%S")
-	-cp $< $@
-	-chmod +x $@
+	cp $< $@
+	chmod +x $@
 
 $(TEST): $(TEST_O)
 	@mkdir -p $(dir $@)
