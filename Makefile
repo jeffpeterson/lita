@@ -67,9 +67,9 @@ $(DEV): $(TARGET_O) | test
 	$(CC) $(CFLAGS) -o $@ $^
 
 $(TARGET): $(DEV) | assertions
-	cp $@ $@-$(shell date -r $@ "+%Y-%m-%d-%H:%M:%S")
-	cp $< $@
-	chmod +x $@
+	-cp $@ $@-$(shell date -r $@ "+%Y-%m-%d-%H:%M:%S")
+	-cp $< $@
+	-chmod +x $@
 
 $(TEST): $(TEST_O)
 	@mkdir -p $(dir $@)
@@ -101,4 +101,3 @@ clean:
 .PHONY: default all clean test db db/test lib
 .PRECIOUS: $(TARGET) %.c %.o
 .SUFFIXES: # disable crazy built-in rules that append .c
-$(VERBOSE).SILENT:
