@@ -22,8 +22,11 @@ typedef struct ObjRegex {
 #define is_regex(val) is_obj_def(val, &Regex)
 #define new_regex() ((ObjRegex *)new_object(&Regex))
 
+ObjRegex *as_regex(Value x);
 ObjRegex *make_regex(ObjString *source);
 Value regex(const char *source);
+ObjString *replace_regex(ObjString *subject, ObjRegex *regex,
+                         ObjString *replacement);
 
 const ObjDef Regex;
 

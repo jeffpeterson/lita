@@ -27,5 +27,13 @@ class String
 	fn bg_cyan    = "\e[46m" + this + "\e[39m"
 	fn bg_white   = "\e[47m" + this + "\e[39m"
 
+	fn uppercase = replace(`[a-z]+`, "\\U$0")
+	fn lowercase = replace(`[A-Z]+`, "\\L$0")
+	fn capitalize = replace(`^(\W*?)([a-z])`, "$1\\u$2")
+	fn decapitalize = replace(`^(\W*?)([A-Z])`, "$1\\l$2")
+	fn camelize = replace(`_(\w)`, "\\u$1")
+	fn underscore = decapitalize.replace(`([a-z])([A-Z])`, "$1_\\l$2")
+	fn dasherize = underscore.replace(`_`, "-")
+
 	fn print(io)
 		return io.write(this)

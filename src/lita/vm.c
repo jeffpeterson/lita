@@ -14,12 +14,15 @@
 #include "native.h"
 #include "object.h"
 #include "range.h"
-#include "regex.h"
 #include "string.h"
 #include "system.h"
 #include "term.h"
 #include "tuple.h"
 #include "vm.h"
+
+#ifdef ENABLE_REGEX
+#include "regex.h"
+#endif
 
 VM vm;
 InterpretResult ok = INTERPRET_OK;
@@ -30,9 +33,7 @@ static void resetStack() {
   vm.openUpvalues = NULL;
 }
 
-InterpretResult runtimeError(const char *format, ...) {
-  va_list args;
-
+static InterpretResult vruntimeError(const char *format, va_list args) {
   fprintf(stderr, "\n%d frames:\n", vm.frameCount);
   for (int i = vm.frameCount - 1; i >= 0; i--) {
     CallFrame *frame = &vm.frames[i];
@@ -58,14 +59,20 @@ InterpretResult runtimeError(const char *format, ...) {
   debugStack();
 
   fputs(FG_RED "\n\nRUNTIME ERROR: " FG_DEFAULT, stderr);
-  va_start(args, format);
   vfprintf(stderr, format, args);
-  va_end(args);
   fputs("\n", stderr);
 
   resetStack();
 
   return INTERPRET_RUNTIME_ERROR;
+}
+
+InterpretResult runtimeError(const char *format, ...) {
+  va_list args;
+  va_start(args, format);
+  InterpretResult result = vruntimeError(format, args);
+  va_end(args);
+  return result;
 }
 
 void assertOkResult(InterpretResult result) {
@@ -74,8 +81,11 @@ void assertOkResult(InterpretResult result) {
   if (result == INTERPRET_RUNTIME_ERROR) exit(70);
 }
 
-let crash(const char *str) {
-  runtimeError("Crash: %s", str);
+let crash(const char *fmt, ...) {
+  va_list args;
+  va_start(args, fmt);
+  vruntimeError(fmt, args);
+  va_end(args);
   freeVM();
   exit(70);
 }

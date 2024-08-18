@@ -7,4 +7,4 @@ if !$1:
 let c_contents = read("src/lita/example.c")
 let h_contents = read("src/lita/example.h")
 
-print $1 "\n"
+print c_contents.replace("example", $1) "\n"

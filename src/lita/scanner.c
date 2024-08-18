@@ -286,6 +286,30 @@ static Token number() {
   return makeToken(TOKEN_NUMBER);
 }
 
+static Token backticks() {
+  bool escaped = false;
+
+  while (!isAtEnd()) {
+    char ch = peek();
+
+    if (ch == '`' && scanner.current[-1] != '\\') break;
+
+    if (ch == '\n') scanner.line++;
+    if (ch == '\\') escaped = true;
+
+    advance();
+  }
+
+  if (isAtEnd()) return errorToken("Unterminated string.");
+
+  // The closing backtick.
+  advance();
+
+  Token token = makeToken(TOKEN_BACKTICK_STRING);
+  token.escaped = escaped;
+  return token;
+}
+
 static Token string() {
   bool escaped = false;
 
@@ -389,6 +413,7 @@ Token scanToken() {
                                   : TOKEN_GREATER);
   case '\'': return symbol();
   case '"': return string();
+  case '`': return backticks();
   }
 
   return errorToken("Unexpected character.");

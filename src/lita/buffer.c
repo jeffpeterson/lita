@@ -4,52 +4,57 @@
 #include "memory.h"
 #include "string.h"
 
-Buffer newBuffer(int capacity) {
+Buffer new_buffer(usize capacity) {
   Buffer buf;
-  initBuffer(&buf);
-  growBuffer(&buf, capacity);
+  init_buffer(&buf);
+  resize_buffer(&buf, capacity);
   return buf;
 }
 
-void initBuffer(Buffer *buf) {
+void init_buffer(Buffer *buf) {
   buf->count = 0;
   buf->capacity = 0;
   buf->bytes = NULL;
 }
 
-void freeBuffer(Buffer *buf) {
-  FREE_ARRAY(u8, buf->bytes, buf->capacity);
-  initBuffer(buf);
-}
+void free_buffer(Buffer *buf) { resize_buffer(buf, 0); }
 
-void growBuffer(Buffer *buf, u32 capacity) {
+void resize_buffer(Buffer *buf, usize capacity) {
   if (capacity == buf->capacity) return;
   buf->bytes = GROW_ARRAY(u8, buf->bytes, buf->capacity, capacity);
   buf->capacity = capacity;
+  if (capacity < buf->count) buf->count = capacity;
 }
 
-u32 readBuffer(Buffer *buf, u32 offset, u8 *bytes, u32 count) {
+void grow_buffer(Buffer *buf, usize min_size) {
+  if (min_size <= buf->capacity) return;
+  usize capacity = buf->capacity || 1;
+  while (capacity < min_size) capacity *= 2;
+  resize_buffer(buf, capacity);
+}
+
+usize read_buffer(Buffer *buf, usize offset, u8 *bytes, usize count) {
   memcpy(bytes, buf->bytes + offset, count);
   return offset + count;
 }
 
-u32 writeBuffer(Buffer *buf, u32 offset, u8 *bytes, u32 count) {
-  u32 minSize = offset + count;
-  if (minSize > buf->capacity) growBuffer(buf, minSize);
-  if (minSize > buf->count) buf->count = minSize;
+usize write_buffer(Buffer *buf, usize offset, u8 *bytes, usize count) {
+  usize min_size = offset + count;
+  grow_buffer(buf, min_size);
+  if (min_size > buf->count) buf->count = min_size;
 
   memcpy(buf->bytes + offset, bytes, count);
   return offset + count;
 }
 
-u32 appendBuffer(Buffer *buf, u8 *bytes, u32 count) {
-  return writeBuffer(buf, buf->count, bytes, count);
+usize append_buffer(Buffer *buf, u8 *bytes, usize count) {
+  return write_buffer(buf, buf->count, bytes, count);
 }
 
-u32 appendCharToBuffer(Buffer *buf, char ch) {
-  return appendBuffer(buf, (u8 *)&ch, 1);
+usize append_char_to_buffer(Buffer *buf, char ch) {
+  return append_buffer(buf, (u8 *)&ch, 1);
 }
 
-u32 appendStrToBuffer(Buffer *buf, char *str) {
-  return appendBuffer(buf, (u8 *)str, strlen(str));
+usize append_str_to_buffer(Buffer *buf, char *str, usize length) {
+  return append_buffer(buf, (u8 *)str, length);
 }

@@ -11,6 +11,10 @@
 #include "value.h"
 #include "vm.h"
 
+#ifdef ENABLE_REGEX
+#include "regex.h"
+#endif
+
 ObjString *as_string(let x) {
   assert(is_string(x));
   return AS_STRING(x);
@@ -18,9 +22,7 @@ ObjString *as_string(let x) {
 
 Value string(const char *str) { return obj(new_string(str)); }
 
-/**
- * Allocate an ObjString for a (null-terminated) char string.
- */
+/** Allocate an ObjString for a (null-terminated) char string. */
 static ObjString *allocate_string(char *chars, int length, Hash hash) {
   ObjString *string = ALLOCATE_OBJ(ObjString, OBJ_CUSTOM);
   string->obj.def = &String;
@@ -72,24 +74,26 @@ ObjString *copy_string(const char *chars, usize length) {
 
 ObjString *buffer_to_string(Buffer *buf) {
   if (buf->count == 0 || buf->bytes[buf->count - 1] != '\0')
-    appendCharToBuffer(buf, '\0');
-  growBuffer(buf, buf->count);
+    append_char_to_buffer(buf, '\0');
+  resize_buffer(buf, buf->count);
   return take_string((char *)buf->bytes, buf->count - 1);
 }
 
 ObjString *escape_string(ObjString *str) {
-  Buffer out = newBuffer(str->length + 3);
-  appendCharToBuffer(&out, '"');
+  Buffer out = new_buffer(str->length + 3);
+  append_char_to_buffer(&out, '"');
 
   for (int i = 0; i < str->length; i++) {
     u8 ch = str->chars[i];
 
+    if (ch == '\\') append_char_to_buffer(&out, ch);
+
     if (isprint(ch) || ch > 127) {
-      appendCharToBuffer(&out, ch);
+      append_char_to_buffer(&out, ch);
       continue;
     }
 
-    appendCharToBuffer(&out, '\\');
+    append_char_to_buffer(&out, '\\');
 
     ch = ch >= '\0' && ch <= '\6'  ? ch + '0'
          : ch == '\a'              ? 'a'
@@ -101,10 +105,10 @@ ObjString *escape_string(ObjString *str) {
          : ch == '\t'              ? 't'
          : ch == '\\' || ch == '"' ? ch
                                    : 'x';
-    appendCharToBuffer(&out, ch);
+    append_char_to_buffer(&out, ch);
   }
 
-  appendCharToBuffer(&out, '"');
+  append_char_to_buffer(&out, '"');
 
   return buffer_to_string(&out);
 }
@@ -243,10 +247,7 @@ int vfstring_format(FILE *io, const char *fmt, va_list args) {
         continue;
       }
 
-      default:
-        // Format error
-        runtimeError("Invalid format: %s", fmt);
-        crash("format");
+      default: crash("Invalid format: %s", fmt);
       }
   }
   // Print the rest of the string
@@ -290,6 +291,31 @@ ALIAS_OPERATOR(String, concat, plus, "+", 1);
 ALIAS_OPERATOR(String, concat, star, "*", 1);
 NATIVE_METHOD(String, escape, 0) {
   return OBJ_VAL(escape_string(AS_STRING(this)));
+}
+
+NATIVE_METHOD(String, replace, 2) {
+  ObjString *str = as_string(this);
+  ObjString *to = as_string(args[1]);
+
+#ifdef ENABLE_REGEX
+  if (is_regex(args[0]))
+    return OBJ_VAL(replace_regex(str, as_regex(args[0]), to));
+
+#endif
+
+  ObjString *from = as_string(args[0]);
+  Buffer out = new_buffer(str->length);
+
+  for (int i = 0; i < str->length; i++) {
+    if (strncmp(str->chars + i, from->chars, from->length) == 0) {
+      append_str_to_buffer(&out, to->chars, to->length);
+      i += from->length - 1;
+    } else {
+      append_char_to_buffer(&out, str->chars[i]);
+    }
+  }
+
+  return OBJ_VAL(buffer_to_string(&out));
 }
 
 static int string_length(Obj *obj) { return ((ObjString *)obj)->length; }

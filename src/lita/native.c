@@ -76,8 +76,12 @@ InterpretResult defineNatives() {
     let fun = fn(native->name, native->arity, native->fun);
     trace(native->class_name, fun);
 
-    if (native->class_name) method(global_class(native->class_name), fun);
-    else setGlobal(string(native->name), fun);
+    if (native->class_name) {
+      let klass = global_class(native->class_name);
+      if (native->is_static) static_method(klass, fun);
+      else method(klass, fun);
+
+    } else setGlobal(string(native->name), fun);
   }
 
   run_function(core_lita());

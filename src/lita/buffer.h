@@ -4,20 +4,24 @@
 #include "common.h"
 
 typedef struct {
-  u32 count;
-  u32 capacity;
-  u8 *bytes;
+  usize count;
+  usize capacity;
+  union {
+    u8 *bytes;
+    char *chars;
+  };
 } Buffer;
 
-Buffer newBuffer(int capacity);
-void initBuffer(Buffer *buf);
-void freeBuffer(Buffer *buf);
+Buffer new_buffer(usize capacity);
+void init_buffer(Buffer *buf);
+void free_buffer(Buffer *buf);
 
-void growBuffer(Buffer *buf, u32 capacity);
-u32 readBuffer(Buffer *buf, u32 offset, u8 *bytes, u32 count);
-u32 writeBuffer(Buffer *buf, u32 offset, u8 *bytes, u32 count);
-u32 appendBuffer(Buffer *buf, u8 *bytes, u32 count);
-u32 appendCharToBuffer(Buffer *buf, char ch);
-u32 appendStrToBuffer(Buffer *buf, char *str);
+void resize_buffer(Buffer *buf, usize capacity);
+void grow_buffer(Buffer *buf, usize min_size);
+usize read_buffer(Buffer *buf, usize offset, u8 *bytes, usize count);
+usize write_buffer(Buffer *buf, usize offset, u8 *bytes, usize count);
+usize append_buffer(Buffer *buf, u8 *bytes, usize count);
+usize append_char_to_buffer(Buffer *buf, char ch);
+usize append_str_to_buffer(Buffer *buf, char *str, usize length);
 
 #endif

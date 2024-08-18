@@ -7,6 +7,8 @@
 
 #define NAN_BOXING "Cram all Value types into 64-bits."
 
+#define ENABLE_REGEX "Enable regex support."
+
 #define DEBUG_ERRORS "Log extra debug information on error."
 
 #define DEBUG_TRACE "Log trace calls."

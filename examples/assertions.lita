@@ -57,6 +57,23 @@ assert nil.string == ""
 assert "" 3 == "3"
 assert "" 3.5 == "3.5"
 assert "hi".hash == "0xd7ea6e9a"
+assert "hi there".replace("hi", "hello") == "hello there"
+assert "hi there".replace(`\w+`, "x") == "x x"
+assert "hi there".replace(`\b(\w)(\w+)`, "\\u$1$2") == "Hi There"
+
+assert "howdy".capitalize == "Howdy"
+assert " howdy".capitalize == " Howdy"
+assert "Howdy".capitalize == "Howdy"
+
+assert "camel_case".camelize == "camelCase"
+assert "CamelCase".underscore == "camel_case"
+assert "CamelCase".dasherize == "camel-case"
+
+assert "HeLLO".lowercase == "hello"
+assert "hEllo".uppercase == "HELLO"
+
+// Regular Expressions
+assert `[a-z]`
 
 /// Inspect
 assert "hi".inspect == "\e[32m\"hi\"\e[39m"

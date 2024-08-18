@@ -12,6 +12,8 @@ ObjRegex *as_regex(Value x) {
   return AS_REGEX(x);
 }
 
+Value regex(const char *source) { return obj(make_regex(new_string(source))); }
+
 ObjRegex *make_regex(ObjString *source) {
   ObjRegex *regex = ALLOCATE_OBJ(ObjRegex, OBJ_CUSTOM);
   regex->obj.def = &Regex;
@@ -23,7 +25,7 @@ ObjRegex *make_regex(ObjString *source) {
   if (regex->re == NULL) {
     pcre2_get_error_message(regex->error_code, regex->error_message,
                             sizeof(regex->error_message));
-    crash((char *)regex->error_message);
+    crash("pcre2_compile: %s", (char *)regex->error_message);
   }
   return regex;
 }
@@ -40,8 +42,40 @@ static void mark_regex(Obj *obj) {
 
 static int inspect_regex(Obj *obj, FILE *io) {
   ObjRegex *regex = (ObjRegex *)obj;
-  return fprintf(io, "/") + fputs(escape_string(regex->source)->chars, io) +
-         fprintf(io, "/");
+  return fprintf(io, "`") + fputs(regex->source->chars, io) + fprintf(io, "`");
+}
+
+static int dump_regex(Obj *obj, FILE *io) {
+  ObjRegex *regex = (ObjRegex *)obj;
+  ObjString *source = escape_string(regex->source);
+  return fprintf(io, "regex(%.*s)", source->length, source->chars);
+}
+
+ObjString *replace_regex(ObjString *subject, ObjRegex *regex,
+                         ObjString *replacement) {
+  uint32_t options = PCRE2_SUBSTITUTE_GLOBAL | PCRE2_SUBSTITUTE_EXTENDED |
+                     PCRE2_SUBSTITUTE_OVERFLOW_LENGTH;
+  Buffer output = new_buffer(subject->length * 2);
+  output.count = output.capacity;
+
+  int result;
+
+substitute:
+  result =
+      pcre2_substitute(regex->re, (PCRE2_SPTR)subject->chars, subject->length,
+                       0, options, NULL, NULL, (PCRE2_SPTR)replacement->chars,
+                       replacement->length, output.bytes, &output.count);
+
+  if (result == PCRE2_ERROR_NOMEMORY) {
+    resize_buffer(&output, output.count);
+    goto substitute;
+  } else if (result < 0) {
+    PCRE2_UCHAR8 error_message[256];
+    pcre2_get_error_message(result, error_message, sizeof(error_message));
+    crash("pcre2_substitute(%d): %s", result, (char *)error_message);
+  }
+
+  return buffer_to_string(&output);
 }
 
 NATIVE_GETTER(Regex, source, OBJ_VAL);
@@ -52,8 +86,6 @@ const ObjDef Regex = {
     .size = sizeof(ObjRegex),
     .mark = mark_regex,
     .inspect = inspect_regex,
-    // .dump = dump_regex,
+    .dump = dump_regex,
     .length = regex_length,
 };
-
-Value regex(const char *source) { return obj(make_regex(new_string(source))); }

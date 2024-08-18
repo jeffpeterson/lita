@@ -5,9 +5,9 @@
 #include "string.h"
 
 void buffer_test() {
-  Buffer buf = newBuffer(0);
-  appendStrToBuffer(&buf, "abc");
-  appendBuffer(&buf, (u8 *)"def", 3);
+  Buffer buf = new_buffer(0);
+  append_str_to_buffer(&buf, "abc", 3);
+  append_buffer(&buf, (u8 *)"def", 3);
 
   assert(buf.count == 6);
 

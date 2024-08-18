@@ -8,6 +8,10 @@
 #include "scanner.h"
 #include "string.h"
 
+#ifdef ENABLE_REGEX
+#include "regex.h"
+#endif
+
 #if defined(DEBUG_PRINT_CODE) || defined(DEBUG_TOKENS) || defined(DEBUG_ERRORS)
 #include "debug.h"
 #endif
@@ -874,6 +878,18 @@ static void print(Ctx *ctx) {
   emitByte(OP_PRINT);
 }
 
+static void backticks(Ctx *ctx) {
+  Token token = parser.previous;
+  ObjString *source = copy_string(token.start + 1, token.length - 2);
+
+#ifdef ENABLE_REGEX
+  ObjRegex *reg = make_regex(source);
+  emitConstant(OBJ_VAL(reg));
+#else
+  error("Regex not enabled.");
+#endif
+}
+
 static void string_(Ctx *ctx) {
   Token token = parser.previous;
   ObjString *str = copy_string(token.start + 1, token.length - 2);
@@ -1496,6 +1512,7 @@ ParseRule rules[] = {
 
     [TOKEN_IDENTIFIER] = {variable, NULL, PREC_NONE},
     [TOKEN_STRING] = {string_, NULL, PREC_NONE},
+    [TOKEN_BACKTICK_STRING] = {backticks, NULL, PREC_NONE},
     [TOKEN_NUMBER] = {number, NULL, PREC_NONE},
     [TOKEN_HEX] = {hex, NULL, PREC_NONE},
 

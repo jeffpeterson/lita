@@ -10,6 +10,7 @@
     {"include": "#ident"},
     {"include": "#embeds"},
     {"include": "#strings"},
+    {"include": "#regex"},
     {"include": "#digits"},
     {"include": "#shebang"}
   ],
@@ -142,6 +143,21 @@
         {
           "name": "string.quoted.single.lita",
           "match": "'(\\.\\.|[^\\s][^\\s;,)\\]}.]*)"
+        }
+      ]
+    },
+    "regex": {
+      "patterns": [
+        {
+          "name": "string.regexp.classic.lita",
+          "begin": "`",
+          "end": "`",
+          "patterns": [
+            {
+              "match": "\\\\[0tnr\"`'\\\\]",
+              "name": "constant.character.escape.lita"
+            }
+          ]
         }
       ]
     },

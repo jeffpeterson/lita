@@ -11,6 +11,7 @@ typedef struct NativeMethod {
   const char *name;
   int arity;
   NativeFn *fun;
+  bool is_static;
 } NativeMethod;
 
 typedef struct BootFunction {
@@ -58,6 +59,16 @@ typedef struct BootFunction {
       arity,                                                                   \
       klass##_##from,                                                          \
   }
+
+#define STATIC_METHOD_NAMED(klass, attr, name, arity)                          \
+  static Value klass_static##_##attr(Value this, int argc, Value *args);       \
+  static NativeMethod SECTION(natives) klass##_##attr##_native = {             \
+      #klass, name, arity, klass##_##attr, true,                               \
+  };                                                                           \
+  static Value klass_static##_##attr(Value this, int argc, Value *args)
+
+#define STATIC_METHOD(klass, attr, arity)                                      \
+  STATIC_METHOD_NAMED(klass, attr, #attr, arity)
 
 #define COMPILED_SOURCE(name)                                                  \
   extern ObjFun *name##_lita();                                                \

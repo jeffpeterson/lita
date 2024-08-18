@@ -39,6 +39,7 @@ _ name(_ val);
 
 _ class(_ name);
 _ method(_ klass, _ fun);
+let static_method(_ klass, _ fun);
 
 // # Files
 let read(let path);

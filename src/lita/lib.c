@@ -38,6 +38,13 @@ _ method(_ klass, _ fun) {
   return fun;
 }
 
+let static_method(let klass, let fun) {
+  assert(is_class(klass));
+  let key = name(fun);
+  set(klass, key, fun);
+  return klass;
+}
+
 let add(let a, let b) {
   push(a);
   push(b);
@@ -137,11 +144,7 @@ _ name(_ self) {
   }
 }
 
-_ read(_ path) {
-  if (!is_string(path)) return crash("path must be a string.");
-
-  return obj(readFile(AS_STRING(path)));
-}
+_ read(_ path) { return obj(readFile(as_string(path))); }
 
 let write(let path, let content) {
   if (!writeFile(as_string(path), as_string(content)))
@@ -151,8 +154,6 @@ let write(let path, let content) {
 }
 
 _ append(_ path, _ content) {
-  if (!is_string(path)) return crash("path must be a string.");
-
   if (!appendFile(as_string(path), as_string(content)))
     return crash("Could not append to file.");
 
