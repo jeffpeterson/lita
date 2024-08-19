@@ -151,7 +151,7 @@ assert num_to_ord(3) == '3
 
 // Check for tail-call optimization
 fn loop(n, count)
-	if n <= 0: return count
+	n <= 0 and return count // return is an expression
 	return loop(n - 1, count + 1)
 
 assert loop(10000, 0) == 10000
@@ -175,4 +175,4 @@ assert fib(10) == 55
 // assert foo.x == 5
 // assert foo.x' == 2
 
-write "\n\nAssertions passed!\n".green
+write "Assertions passed!\n".green

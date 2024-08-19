@@ -1330,7 +1330,7 @@ static void matchStatement() {
   consume(TOKEN_DEDENT, "Expect dedent after match block.");
 }
 
-static void returnStatement() {
+static void return_() {
   if (match(TOKEN_NEWLINE)) emitReturn();
   else {
     if (current->type == TYPE_INIT) {
@@ -1415,8 +1415,6 @@ static void statement() {
     ifStatement();
   } else if (match(TOKEN_MATCH)) {
     matchStatement();
-  } else if (match(TOKEN_RETURN)) {
-    returnStatement();
   } else if (match(TOKEN_WHILE)) {
     whileStatement();
   } else {
@@ -1526,7 +1524,7 @@ ParseRule rules[] = {
     [TOKEN_NIL] = {literal, NULL, PREC_NONE},
     [TOKEN_OR] = {NULL, or_, PREC_OR},
     [TOKEN_PRINT] = {print, NULL, PREC_NONE},
-    [TOKEN_RETURN] = {NULL, NULL, PREC_NONE},
+    [TOKEN_RETURN] = {return_, NULL, PREC_NONE},
     [TOKEN_SUPER] = {super_, NULL, PREC_NONE},
     [TOKEN_THIS] = {this_, NULL, PREC_NONE},
     [TOKEN_TRUE] = {literal, NULL, PREC_NONE},
