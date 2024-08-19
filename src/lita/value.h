@@ -128,6 +128,7 @@ typedef struct {
 
 bool valuesEqual(Value a, Value b);
 int cmpValues(Value a, Value b);
+void copy_values(Value *source, Value *dest, usize count);
 
 void initValueArray(ValueArray *array);
 void writeValueArray(ValueArray *array, Value value);

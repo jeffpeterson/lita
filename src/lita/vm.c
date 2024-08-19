@@ -229,6 +229,17 @@ static InterpretResult move_into_closure(ObjClosure *closure, int argCount) {
     argCount = fun->arity + 1;
   }
 
+  CallFrame *existing_frame = &vm.frames[vm.frameCount - 1];
+
+  if (existing_frame->closure == closure &&
+      *(existing_frame->ip) == OP_RETURN) {
+    // Tail-call optimization.
+    copy_values(vm.stackTop - argCount, existing_frame->slots + 1, argCount);
+    vm.stackTop = existing_frame->slots + argCount + 1;
+    existing_frame->ip = fun->chunk.code;
+    return INTERPRET_OK;
+  }
+
   if (vm.frameCount == FRAMES_MAX) return runtimeError("Call stack overflow.");
 
   CallFrame *frame = &vm.frames[vm.frameCount++];
@@ -784,7 +795,7 @@ static InterpretResult vm_run() {
     }
 
     case OP_CALL:
-      vm_call(READ_BYTE());
+      if ((err = vm_call(READ_BYTE()))) return err;
       SYNC_FRAME();
       break;
 
@@ -916,8 +927,7 @@ InterpretResult run_function(ObjFun *fun) {
 
 InterpretResult run_closure(ObjClosure *closure) {
   push(OBJ_VAL(closure));
-  move_into_closure(closure, 0);
-  return vm_run();
+  return move_into_closure(closure, 0) || vm_run();
 }
 
 InterpretResult interpret(const char *source, ObjString *name) {

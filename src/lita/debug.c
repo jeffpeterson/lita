@@ -284,7 +284,7 @@ static void debugValues(Value *start, int length) {
 void debugStack() {
   debugValues(vm.stack, vm.stackTop - vm.stack);
   fputs(DIM, stderr);
-  debugValues(vm.stackTop, vm.stackSinceGC - vm.stackTop);
+  debugValues(vm.stackTop, vm.stackHigh - vm.stackTop);
   fputs(NO_DIM, stderr);
 }
 

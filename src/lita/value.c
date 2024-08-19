@@ -30,6 +30,10 @@ void freeValueArray(ValueArray *array) {
   initValueArray(array);
 }
 
+void copy_values(Value *source, Value *dest, usize count) {
+  memcpy(dest, source, count * sizeof(Value));
+}
+
 int print_value(FILE *io, Value val) {
   if (is_nil(val)) return 0;
   if (is_bool(val)) return fputs(AS_BOOL(val) ? "true" : "false", io);

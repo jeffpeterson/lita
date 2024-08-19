@@ -149,6 +149,21 @@ assert num_to_ord(1) == 'one
 assert num_to_ord(2) == 'two
 assert num_to_ord(3) == '3
 
+// Check for tail-call optimization
+fn loop(n, count)
+	if n <= 0: return count
+	return loop(n - 1, count + 1)
+
+assert loop(10000, 0) == 10000
+
+// Check for broken tail-call implementation.
+// (Re-using frames for all self-calls, not just tail-calls)
+fn fib(n)
+	if n < 2: return n
+	return fib(n - 2) + fib(n - 1)
+
+assert fib(10) == 55
+
 // class Foo(x)
 // 	let x' = x + 1
 
