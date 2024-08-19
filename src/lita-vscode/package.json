@@ -32,7 +32,7 @@
         "extensions": [
           ".lita"
         ],
-        "firstLine": "^#!.*\\blita\\b",
+        "firstLine": "^#!.*?\\blita\\b",
         "configuration": "./language-configuration.json"
       }
     ],

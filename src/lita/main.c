@@ -28,6 +28,7 @@ static void repl() {
     add_history(line);
     write_history(history->chars);
     interpret(line, name);
+    free(line);
   }
   printf("\n");
 }

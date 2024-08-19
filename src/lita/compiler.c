@@ -626,7 +626,11 @@ static u8 adjoining() {
   return count;
 }
 
-static bool expression() { return parseAbove(PREC_NONE); }
+static bool expression(const char *message) {
+  bool success = parseAbove(PREC_NONE);
+  if (message && !success) error(message);
+  return success;
+}
 
 static void statement();
 static void declaration();
@@ -658,7 +662,7 @@ static bool assignment(Ctx *ctx, OpCode getOp, OpCode setOp, uint8_t arg,
   switch (type) {
   case TOKEN_EQUAL:
     advance();
-    expression();
+    expression("Expect expression after '='.");
     emitBytes(setOp, arg);
     return true;
 
@@ -698,7 +702,7 @@ static bool assignment(Ctx *ctx, OpCode getOp, OpCode setOp, uint8_t arg,
 
     emitBytes(getOp, arg);
     emitDefault(NUMBER_VAL(0));
-    expression();
+    expression("Expect expression after assignment.");
 
     emitByte(type == TOKEN_PLUS_EQUAL    ? OP_ADD
              : type == TOKEN_MINUS_EQUAL ? OP_SUBTRACT
@@ -842,7 +846,7 @@ static void literal(Ctx *ctx) {
 }
 
 static void grouping(Ctx *ctx) {
-  if (!expression()) emit(nil);
+  if (!expression(NULL)) emit(nil);
   consume(TOKEN_RIGHT_PAREN, "Expect ')' after expression.");
 }
 
@@ -874,7 +878,7 @@ static void or_(Ctx *ctx) {
 }
 
 static void print(Ctx *ctx) {
-  expression();
+  expression("Expect expression after 'print'.");
   emitByte(OP_PRINT);
 }
 
@@ -1070,7 +1074,7 @@ static void function(FunType type) {
       emitByte(OP_POP); // Pop the value
     }
   } else if (match(TOKEN_EQUAL) || match(TOKEN_FAT_ARROW)) {
-    expression();
+    expression("Expect expression as function body.");
     emitByte(OP_RETURN);
     skipNewlines();
   } else if (match(TOKEN_INDENT)) {
@@ -1096,7 +1100,7 @@ static void getter() {
 
     initCompiler(&compiler, TYPE_METHOD, as_string(name));
     beginScope();
-    if (!expression()) return error("Expect expression after `let ... =`.");
+    expression("Expect expression after `let ... =`.");
     emitBytes(OP_SET_PROPERTY, name_constant);
     emitByte(OP_RETURN);
 
@@ -1269,7 +1273,7 @@ static void forStatement() {
 }
 
 static void ifStatement() {
-  expression(); // [0 cond]
+  expression("Expect expression after 'if'"); // [0 cond]
 
   if (!check(TOKEN_INDENT))
     consume(TOKEN_COLON, "Expect ':' or block after condition.");
@@ -1291,7 +1295,7 @@ static void ifStatement() {
 }
 
 static void matchStatement() {
-  expression(); // [0 match expr]
+  expression("Expect expression after 'match'."); // [0 match expr]
   consume(TOKEN_INDENT, "Expect block after match expression.");
 
   int start_jump = emitJump(OP_JUMP); // Jump over the exit jump.
@@ -1339,7 +1343,7 @@ static void returnStatement() {
       error("Can't return a value from init().");
     }
 
-    expression();
+    if (!expression(NULL)) emitByte(OP_NIL);
     emitByte(OP_RETURN);
   }
 }
@@ -1347,7 +1351,7 @@ static void returnStatement() {
 static void whileStatement() {
   int loop_start = currentChunk()->count;
 
-  expression(); // [0 condition]
+  expression("Expect expression after 'while'."); // [0 condition]
 
   if (!check(TOKEN_INDENT))
     consume(TOKEN_COLON, "Expect ':' or block after condition.");
@@ -1422,7 +1426,7 @@ static void statement() {
   } else if (match(TOKEN_WHILE)) {
     whileStatement();
   } else {
-    expression();
+    expression("Expected expression.");
     emitByte(OP_POP);
   }
 
