@@ -1,4 +1,5 @@
-#!lita
+#!lldb lita
+
 
 if !$1:
 	print "Usage: " + $0 + " <name>\n"
@@ -13,7 +14,7 @@ fn replace(string)
 let c_contents = read("src/lita/example.c")
 let h_contents = read("src/lita/example.h")
 
-write "src/lita/" + $1.underscore + ".c", replace(c_contents)
-write "src/lita/" + $1.underscore + ".h", replace(h_contents)
+write("src/lita/" + $1.underscore + ".c", replace(c_contents))
+write("src/lita/" + $1.underscore + ".h", replace(h_contents))
 
 print "Created " + $1.underscore + ".c and " + $1.underscore + ".h\n"

@@ -1,3 +1,4 @@
+#include <sys/stat.h>
 #include <time.h>
 
 #include "array.h"
@@ -14,6 +15,7 @@ NATIVE_FUNCTION(hash, 1) {
 }
 NATIVE_FUNCTION(pp, 1) { return argc > 1 ? pp(t(argc, args)) : pp(args[0]); }
 NATIVE_FUNCTION(read, 0) { return read(argc ? args[0] : str("/dev/stdin")); }
+NATIVE_FUNCTION(mkdir, 1) { return mkdir(as_string(args[0])->chars, 0777); }
 NATIVE_FUNCTION(write, 1) {
   let path = argc == 1 ? str("/dev/stdout") : args[0];
   return write(path, args[argc - 1]);
