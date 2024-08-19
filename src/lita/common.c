@@ -1,3 +1,3 @@
 #include "common.h"
 
-Config config = {.tracing = false};
+Config config = {.tracing = false, .debug = 0};

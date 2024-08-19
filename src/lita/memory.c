@@ -6,7 +6,7 @@
 #include "table.h"
 #include "vm.h"
 
-#if defined(DEBUG_LOG_GC) || defined(DEBUG_LOG_MEM)
+#if DEBUG_LOG_GC || DEBUG_LOG_MEM
 #include "debug.h"
 #include <stdio.h>
 #endif
@@ -30,7 +30,7 @@ void *reallocate(void *pointer, size_t oldSize, size_t newSize) {
   // interleaved periodically during program execution—often at function
   // call boundaries or when a backward jump occurs.
   if (newSize > oldSize) {
-#ifdef DEBUG_STRESS_GC
+#if DEBUG_STRESS_GC
     collectGarbage();
 #endif
     if (vm.bytesAllocated > vm.nextGC) collectGarbage();
@@ -60,7 +60,7 @@ void markObject(Obj *obj) {
   if (obj == NULL) return;
   if (obj->isMarked) return;
 
-#ifdef DEBUG_LOG_GC
+#if DEBUG_LOG_GC
   fprintf(stderr, "%p mark gray ", (void *)obj);
   inspect_value(stderr, OBJ_VAL(obj));
   fprintf(stderr, "\n");
@@ -100,7 +100,7 @@ static void markArray(ValueArray *array) {
 }
 
 static void blackenObject(Obj *obj) {
-#ifdef DEBUG_LOG_GC
+#if DEBUG_LOG_GC
   fprintf(stderr, "%p mark black ", (void *)obj);
   inspect_value(stderr, OBJ_VAL(obj));
   fprintf(stderr, "\n");
@@ -156,7 +156,7 @@ static void blackenObject(Obj *obj) {
 }
 
 static void freeObject(Obj *obj) {
-#ifdef DEBUG_LOG_MEM
+#if DEBUG_LOG_MEM
   fprintf(stderr, "%p free ", (void *)obj);
   inspect_obj_type(stderr, obj->type);
   fprintf(stderr, " ");
@@ -232,6 +232,8 @@ static void traceReferences() {
 }
 
 static void sweep() {
+  vm.stackSinceGC = vm.stackHigh;
+
   Obj *prev = NULL;
   Obj *obj = vm.objects;
 
@@ -255,7 +257,7 @@ static void sweep() {
       vm.objects = obj;
     }
 
-#ifdef DEBUG_LOG_GC
+#if DEBUG_LOG_GC
     fprintf(stderr, "%p free ", (void *)unreached);
     inspect_obj_type(stderr, unreached->type);
     fprintf(stderr, " ");
@@ -268,31 +270,31 @@ static void sweep() {
 }
 
 void collectGarbage() {
-#ifdef DEBUG_LOG_GC
+#if DEBUG_LOG_GC
   size_t before = vm.bytesAllocated;
   fprintf(stderr, "-- gc begin\n");
   fprintf(stderr, "-- mark roots\n");
 #endif
   markRoots();
 
-#ifdef DEBUG_LOG_GC
+#if DEBUG_LOG_GC
   fprintf(stderr, "-- trace references\n");
 #endif
   traceReferences();
 
-#ifdef DEBUG_LOG_GC
+#if DEBUG_LOG_GC
   fprintf(stderr, "-- remove white interned values\n");
 #endif
   tableRemoveWhite(&vm.interned);
 
-#ifdef DEBUG_LOG_GC
+#if DEBUG_LOG_GC
   fprintf(stderr, "-- sweep\n");
 #endif
   sweep();
 
   vm.nextGC = vm.bytesAllocated * GC_HEAP_GROW_FACTOR;
 
-#ifdef DEBUG_LOG_GC
+#if DEBUG_LOG_GC
   fprintf(stderr, "-- gc end\n");
   fprintf(stderr, "   collected %zu bytes (from %zu to %zu) next at %zu\n",
           before - vm.bytesAllocated, before, vm.bytesAllocated, vm.nextGC);

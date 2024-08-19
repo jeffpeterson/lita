@@ -13,13 +13,27 @@
 #include "system.h"
 #include "vm.h"
 
+static void usage() {
+  printf("Usage:\n"
+         "  lita [options] [file]\n"
+         "\n"
+         "Options:\n"
+         "  -c \t\tCompile the source file to C.\n"
+         "  -i \t\tInterpret the source file.\n"
+         "  -r \t\tStart the REPL.\n"
+         "  -t \t\tEnable some tracing logs.\n"
+         "  -d[dd] \tEnable debug output. Additional increase verbosity.\n"
+         "  -e <code> \tEvaluate the given code.\n"
+         "  -h \t\tPrint this help.\n");
+}
+
 static void repl() {
   ObjString *name = new_string("REPL");
   ObjString *history =
       concat_strings(new_string(getenv("HOME")), new_string("/.lita_history"));
 
-  push(obj(history));
-  push(obj(name));
+  setGlobal(string("REPL"), OBJ_VAL(name));
+  setGlobal(string("HISTORY_LOCATION"), OBJ_VAL(history));
 
   read_history(history->chars);
   char *line;
@@ -29,7 +43,13 @@ static void repl() {
     write_history(history->chars);
     interpret(line, name);
     free(line);
+
+    if (config.debug >= 2) {
+      debugStack();
+      fprintf(stderr, "\n");
+    }
   }
+
   printf("\n");
 }
 
@@ -40,14 +60,16 @@ int main(int argc, char *argv[]) {
   bool start_repl = false;
   enum { COMPILE, INTERPRET } mode = INTERPRET;
 
-  while ((opt = getopt(argc, argv, "cirte:")) != -1) {
+  while ((opt = getopt(argc, argv, "hcirtde:")) != -1) {
     switch (opt) {
     case 'c': mode = COMPILE; break;
     case 'i': mode = INTERPRET; break;
     case 'r': start_repl = true; break;
     case 't': config.tracing = true; break;
+    case 'd': config.debug++; break;
     case 'e': assertOkResult(interpret(optarg, new_string("eval flag"))); break;
-    case '?': exit(1);
+    case 'h': usage(); exit(0);
+    case '?': usage(); exit(1);
     }
   }
 

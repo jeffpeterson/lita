@@ -7,7 +7,7 @@
 #include "lita/string.h"
 #include "lita/vm.h"
 
-#ifdef ENABLE_REGEX
+#if ENABLE_REGEX
 #include "lita/regex.h"
 #endif
 

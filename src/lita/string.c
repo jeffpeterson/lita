@@ -11,7 +11,7 @@
 #include "value.h"
 #include "vm.h"
 
-#ifdef ENABLE_REGEX
+#if ENABLE_REGEX
 #include "regex.h"
 #endif
 
@@ -297,7 +297,7 @@ NATIVE_METHOD(String, replace, 2) {
   ObjString *str = as_string(this);
   ObjString *to = as_string(args[1]);
 
-#ifdef ENABLE_REGEX
+#if ENABLE_REGEX
   if (is_regex(args[0]))
     return OBJ_VAL(replace_regex(str, as_regex(args[0]), to));
 

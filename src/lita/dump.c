@@ -192,7 +192,7 @@ void dumpModule(FILE *io, ObjString *path, ObjFun *fun) {
           "#include \"lita/string.h\"\n"
           "#include \"lita/vm.h\"\n"
           "\n"
-          "#ifdef ENABLE_REGEX\n"
+          "#if ENABLE_REGEX\n"
           "#include \"lita/regex.h\"\n"
           "#endif\n"
           "",

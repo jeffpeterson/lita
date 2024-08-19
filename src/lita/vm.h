@@ -22,7 +22,8 @@ typedef struct VM {
 
   Value stack[STACK_MAX]; /** Stack of values referenced by our call frames. */
   Value *stackTop;        /** Pointer to the top of the value stack. */
-  Value *stackHigh; /** The highest point the stack has been this cycle. */
+  Value *stackHigh;    /** The highest point the stack has been this cycle. */
+  Value *stackSinceGC; /** The highest point the stack has been since GC. */
 
   Table globals;  /** Global variables hashed by name. */
   Table interned; /** Interned object table. */

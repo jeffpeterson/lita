@@ -42,8 +42,7 @@ void writeChunk(Chunk *chunk, u8 byte, int line) {
 
 int addConstant(Chunk *chunk, Value value) {
   for (int i = 0; i < chunk->constants.count; i++) {
-    if (valuesEqual(value, chunk->constants.values[i]))
-      return i;
+    if (valuesEqual(value, chunk->constants.values[i])) return i;
   }
 
   push(value);

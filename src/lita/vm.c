@@ -20,7 +20,7 @@
 #include "tuple.h"
 #include "vm.h"
 
-#ifdef ENABLE_REGEX
+#if ENABLE_REGEX
 #include "regex.h"
 #endif
 
@@ -28,7 +28,7 @@ VM vm;
 InterpretResult ok = INTERPRET_OK;
 
 static void resetStack() {
-  vm.stackTop = vm.stackHigh = vm.stack;
+  vm.stackTop = vm.stack;
   vm.frameCount = 0;
   vm.openUpvalues = NULL;
 }
@@ -43,9 +43,8 @@ static InterpretResult vruntimeError(const char *format, va_list args) {
       size_t instruction = frame->ip - fun->chunk.code - 1;
       int line = fun->chunk.lines[instruction];
 
-#if defined(DEBUG_ERRORS)
-      disassembleChunk(&fun->chunk, fun->name->chars, instruction);
-#endif
+      if (DEBUG_ERRORS || config.debug)
+        disassembleChunk(&fun->chunk, fun->name->chars, instruction);
 
       fprintf(stderr, "[line %d] in ", line);
       inspect_function(stderr, "ObjFun", fun);
@@ -172,6 +171,7 @@ Value push(Value value) {
   vm.stackTop++;
 
   if (vm.stackTop > vm.stackHigh) vm.stackHigh = vm.stackTop;
+  if (vm.stackTop > vm.stackSinceGC) vm.stackSinceGC = vm.stackTop;
 
   return value;
 }
@@ -468,7 +468,7 @@ void vm_array(u32 length) {
 InterpretResult vm_assert(Value src) {
   let value = peek(0);
 
-#ifdef DEBUG_ASSERT_CODE
+#if DEBUG_ASSERT_CODE
   inspect_value(stderr, src);
   fprintf(stderr, "\n");
 #endif
@@ -482,7 +482,7 @@ InterpretResult vm_assert(Value src) {
                         inspectc(value));
   }
 
-#ifdef DEBUG_ASSERTS
+#if DEBUG_ASSERTS
   fprintf(stderr, "%s", FG_GREEN "." FG_DEFAULT);
 #endif
 
@@ -624,9 +624,7 @@ static InterpretResult vm_run() {
   } while (false)
 
   for (;;) {
-#ifdef DEBUG_TRACE_EXECUTION
-    debugExecution();
-#endif
+    if (DEBUG_TRACE_EXECUTION || config.debug >= 3) debugExecution();
 
     vm.stackHigh = vm.stackTop;
 

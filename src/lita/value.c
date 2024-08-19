@@ -91,7 +91,7 @@ let pp(let val) {
 }
 
 bool valuesEqual(Value a, Value b) {
-#ifdef NAN_BOXING
+#if NAN_BOXING
   if (is_num(a)) return is_num(b) && AS_NUMBER(a) == AS_NUMBER(b);
   return a == b;
 #else

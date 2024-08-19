@@ -31,7 +31,7 @@ Obj *allocateObject(size_t size, ObjType type) {
   vm.objects = obj;
   initTable(&obj->fields);
 
-#ifdef DEBUG_LOG_MEM
+#if DEBUG_LOG_MEM
   fprintf(stderr, "%p allocate %zub for ", (void *)obj, size);
   inspect_obj_type(stderr, type);
   fprintf(stderr, "\n");

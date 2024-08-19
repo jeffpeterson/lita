@@ -5,32 +5,41 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#define NAN_BOXING "Cram all Value types into 64-bits."
+// "Cram all Value types into 64-bits."
+#define NAN_BOXING 1
 
-#define ENABLE_REGEX "Enable regex support."
+// "Enable regex support."
+#define ENABLE_REGEX 1
 
-#define DEBUG_ERRORS "Log extra debug information on error."
+// "Log extra debug information on error."
+#define DEBUG_ERRORS 1
 
-#define DEBUG_TRACE "Log trace calls."
+// "Log assert calls."
+#define DEBUG_ASSERTS 0
 
-#define DEBUG_ASSERTS "Log assert calls."
+// "Log assert source."
+#define DEBUG_ASSERT_CODE 0
 
-// #define DEBUG_ASSERT_CODE "Log assert source."
+// "Log tokens."
+#define DEBUG_TOKENS 0
 
-// #define DEBUG_TOKENS "Log tokens."
+// "Log each chunk to stderr after it is compiled."
+#define DEBUG_PRINT_CODE 0
 
-// #define DEBUG_PRINT_CODE "Log each chunk to stderr after it is compiled."
+// "Log each instruction as it is executed by the VM."
+#define DEBUG_TRACE_EXECUTION 0
 
-// #define DEBUG_TRACE_EXECUTION                                                  \
-//   "Log each instruction as it is executed by the VM."
+// "Log all frames during execution tracing."
+#define DEBUG_TRACE_FRAMES 0
 
-// #define DEBUG_TRACE_FRAMES "Log all frames during execution tracing."
+// "Enable memory (de)allocation logging."
+#define DEBUG_LOG_MEM 0
 
-// #define DEBUG_LOG_MEM "Enable memory (de)allocation logging."
+// "Enable garbage collection logging."
+#define DEBUG_LOG_GC 0
 
-// #define DEBUG_LOG_GC "Enable garbage collection logging."
-
-// #define DEBUG_STRESS_GC "Causes GC to be run as often as possible."
+// "Causes GC to be run as often as possible."
+#define DEBUG_STRESS_GC 0
 
 #define UINT8_COUNT (UINT8_MAX + 1)
 
@@ -49,6 +58,7 @@ typedef size_t usize;
 
 typedef struct Config {
   bool tracing;
+  u8 debug;
 } Config;
 
 extern Config config;

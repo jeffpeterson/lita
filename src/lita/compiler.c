@@ -4,16 +4,13 @@
 
 #include "common.h"
 #include "compiler.h"
+#include "debug.h"
 #include "memory.h"
 #include "scanner.h"
 #include "string.h"
 
-#ifdef ENABLE_REGEX
+#if ENABLE_REGEX
 #include "regex.h"
-#endif
-
-#if defined(DEBUG_PRINT_CODE) || defined(DEBUG_TOKENS) || defined(DEBUG_ERRORS)
-#include "debug.h"
 #endif
 
 typedef struct {
@@ -156,10 +153,10 @@ static void errorAt(Token *token, const char *message) {
 
   parser.panicMode = true;
 
-#if defined(DEBUG_ERRORS) || defined(DEBUG_PRINT_CODE)
-  disassembleChunk(currentChunk(), current->fun->name->chars, -1);
-  fprintf(stderr, "Compilation failed. Current chunk above. ^^^\n");
-#endif
+  if (config.debug || DEBUG_ERRORS || DEBUG_PRINT_CODE) {
+    disassembleChunk(currentChunk(), current->fun->name->chars, -1);
+    fprintf(stderr, "Compilation failed. Current chunk above. ^^^\n");
+  }
 
   fprintf(stderr, "[line %d] Error", token->line);
 
@@ -363,11 +360,8 @@ static ObjFun *endCompiler() {
   emitReturn();
   ObjFun *fun = current->fun;
 
-#ifdef DEBUG_PRINT_CODE
-  if (!parser.hadError) {
+  if (!parser.hadError && config.debug || DEBUG_PRINT_CODE)
     disassembleChunk(currentChunk(), fun->name->chars, -1);
-  }
-#endif
 
   current = current->enclosing;
   return fun;
@@ -886,7 +880,7 @@ static void backticks(Ctx *ctx) {
   Token token = parser.previous;
   ObjString *source = copy_string(token.start + 1, token.length - 2);
 
-#ifdef ENABLE_REGEX
+#if ENABLE_REGEX
   ObjRegex *reg = make_regex(source);
   emitConstant(OBJ_VAL(reg));
 #else
@@ -1440,7 +1434,7 @@ static void statement() {
 ObjFun *compile(const char *source, ObjString *name) {
   initScanner(source);
 
-#ifdef DEBUG_TOKENS
+#if DEBUG_TOKENS
   debugTokens();
 #endif
 
