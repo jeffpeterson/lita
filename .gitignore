@@ -1,3 +1,5 @@
 *.o
 _build/
 .bin/
+tmp/
+!tmp/.keep
