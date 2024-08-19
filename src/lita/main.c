@@ -22,12 +22,14 @@ static void repl() {
   push(obj(name));
 
   read_history(history->chars);
-  for (;;) {
-    char *line = readline("> ");
+  char *line;
+
+  while ((line = readline("lita> "))) {
     add_history(line);
     write_history(history->chars);
     interpret(line, name);
   }
+  printf("\n");
 }
 
 int main(int argc, char *argv[]) {
@@ -51,7 +53,7 @@ int main(int argc, char *argv[]) {
   assertOkResult(bootVM());
 
   ObjArray *args = new_array();
-  ObjString *path;
+  ObjString *path = NULL;
 
   switch (mode) {
   case COMPILE:

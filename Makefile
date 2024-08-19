@@ -93,6 +93,12 @@ _build/%.wasm.o: src/%.c $(HEADERS)
 %.lita.c: %.lita $(NON_LITA_C)
 	$(TARGET) -c $<
 
+repl: $(DEV)
+	@$(DEV) -r $(FLAGS)
+
+db/repl: $(DEV)
+	@lldb -- $(DEV) -r $(FLAGS)
+
 serve: html
 	python -m http.server 8000 --directory .bin
 

@@ -5,6 +5,11 @@
 #include "lita/lib.h"
 #include "lita/memory.h"
 #include "lita/string.h"
+#include "lita/vm.h"
+
+#ifdef ENABLE_REGEX
+#include "lita/regex.h"
+#endif
 
 static ValueArray constants_string_1() {
   ValueArray vals;
