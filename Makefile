@@ -36,6 +36,7 @@ html: $(TARGET).html
 
 lita: $(TARGET)
 all: default $(TEST) lib
+db: db/assertions
 db/test: $(TEST)
 	@lldb -- $(TEST)
 

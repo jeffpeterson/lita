@@ -8,8 +8,15 @@ class Array
 			if get(i) != b.get(i): return false
 		return true
 
+	fn each(f)
+		for let i = 0; i < length; i++
+			f(get(i))
+
 	fn map(f)
 		let new = []
 		for let i = 0; i < length; i++
 			new << f(get(i))
 		return new
+
+	fn print(io)
+		each(.print(io))

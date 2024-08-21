@@ -87,6 +87,8 @@ OpInfo infos[] = {
     [OP_SUPER_INVOKE] = {"OP_SUPER_INVOKE", INVOKE},
 
     [OP_ARRAY] = {"OP_ARRAY", CONSTANT},
+    [OP_DEBUG_STACK] = {"OP_DEBUG_STACK", CONSTANT},
+    [OP_ASSERT_STACK] = {"OP_ASSERT_STACK", BYTE},
 };
 
 static Color color(OpType type) {
@@ -108,8 +110,12 @@ void disassembleChunk(Chunk *chunk, const char *name, int until) {
   fprintf(stderr, "║ Byte Line OpCode               Operands ║\n");
   fprintf(stderr, "╟───── ──── ──────────────────── ─────────╢\n");
 
+  if (until > 50)
+    fprintf(stderr, "║ …         …                    …        ║\n");
+
   for (int offset = 0; offset < until;) {
     offset = disassembleInstruction(chunk, offset);
+    if (until - offset > 50) fprintf(stderr, "\r\033[A\033[K");
   }
   if (until < chunk->count)
     fprintf(stderr, "║ …         …                    …        ║\n"

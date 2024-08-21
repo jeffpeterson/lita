@@ -1,7 +1,11 @@
+#include <readline/history.h>
+#include <readline/readline.h>
+#include <stdlib.h>
 #include <sys/stat.h>
 #include <time.h>
 
 #include "array.h"
+#include "debug.h"
 #include "lib.h"
 #include "native.h"
 #include "tuple.h"
@@ -23,6 +27,10 @@ NATIVE_FUNCTION(write, 1) {
 NATIVE_FUNCTION(append, 1) {
   let path = argc == 1 ? str("/dev/stdout") : args[0];
   return append(path, args[argc - 1]);
+}
+NATIVE_FUNCTION(repl, 0) {
+  repl();
+  return nil;
 }
 
 // # Native methods

@@ -123,4 +123,6 @@ void vm_swap(u8 a, u8 b);
 void vm_array(u32 length);
 void vm_tuple(u8 length);
 
+void repl();
+
 #endif

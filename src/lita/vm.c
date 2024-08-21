@@ -1,3 +1,6 @@
+#include <assert.h>
+#include <readline/history.h>
+#include <readline/readline.h>
 #include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -612,6 +615,7 @@ static void vm_return() {
 
 static InterpretResult vm_run() {
   if (vm.frameCount == 0) return runtimeError("No function to run.");
+  if (vm.frameCount > 1) return runtimeError("VM already running.");
 
   register CallFrame *frame = CURRENT_FRAME;
 
@@ -886,7 +890,7 @@ static InterpretResult vm_run() {
     case OP_PRINT:
       vm_get_global(string("stdout"));
       if ((err = vm_invoke(string("print"), 1))) return err;
-      printf("\n");
+      // printf("\n");
       SYNC_FRAME();
       break;
 
@@ -899,6 +903,23 @@ static InterpretResult vm_run() {
       }
 
       SYNC_FRAME();
+      break;
+    }
+
+    case OP_DEBUG_STACK: {
+      let tag = READ_CONSTANT();
+      fprintf(stderr, "[DEBUG] %s: ", as_string(tag)->chars);
+      debugStack();
+      fprintf(stderr, "\n");
+      break;
+    }
+
+    case OP_ASSERT_STACK: {
+      u8 size = READ_BYTE();
+      if (size != vm.stackTop - frame->slots) {
+        return runtimeError("Stack size mismatch: Expected %d and got %d", size,
+                            vm.stackTop - frame->slots);
+      }
       break;
     }
 
@@ -943,4 +964,30 @@ Value intern(Value val) {
 Obj *getInterned(Hash *hash, ObjType type, const char *bytes, int length) {
   *hash = hash_bytes(bytes, length);
   return tableFindObj(&vm.interned, type, bytes, length, *hash);
+}
+
+void repl() {
+  ObjString *name = new_string("REPL");
+  ObjString *history =
+      concat_strings(new_string(getenv("HOME")), new_string("/.lita_history"));
+
+  setGlobal(string("REPL"), OBJ_VAL(name));
+  setGlobal(string("HISTORY_LOCATION"), OBJ_VAL(history));
+
+  read_history(history->chars);
+  char *line;
+
+  while ((line = readline("lita> "))) {
+    add_history(line);
+    write_history(history->chars);
+    interpret(line, name);
+    free(line);
+
+    if (config.debug >= 2) {
+      debugStack();
+      fprintf(stderr, "\n");
+    }
+  }
+
+  printf("\n");
 }

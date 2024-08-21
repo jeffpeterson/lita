@@ -20,8 +20,11 @@
 // "Log assert source."
 #define DEBUG_ASSERT_CODE 0
 
-// "Log tokens."
+// "Log tokens for each file."
 #define DEBUG_TOKENS 0
+
+// "Log each token as it is consumed by the compiler."
+#define DEBUG_PRINT_EACH_TOKEN 0
 
 // "Log each chunk to stderr after it is compiled."
 #define DEBUG_PRINT_CODE 0

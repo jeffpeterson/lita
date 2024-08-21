@@ -70,6 +70,8 @@ typedef enum OpCode {
                     /**/
   OP_ARRAY,         /** (n) [n ...args][0 arg] -> [0 array] */
   OP_MATCH,         /** [1 value][0 pattern] -> [0 Bool] */
+  OP_DEBUG_STACK,   /** (tag) Logs the stack. */
+  OP_ASSERT_STACK,  /** (size) Asserts the stack is the expected size. */
 } OpCode;
 
 typedef struct {

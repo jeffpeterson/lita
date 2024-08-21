@@ -1,5 +1,9 @@
 class Tuple
 	fn * (x) = map(x)
+	fn head = get(0)
 	fn each(f)
 		for let i = 0; i < length; i++
 			f(get(i))
+
+	fn print(io)
+		each(.print(io))

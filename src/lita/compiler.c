@@ -8,12 +8,13 @@
 #include "memory.h"
 #include "scanner.h"
 #include "string.h"
+#include "term.h"
 
 #if ENABLE_REGEX
 #include "regex.h"
 #endif
 
-typedef struct {
+typedef struct Parser {
   Token current;
   Token previous;
   int indebt;
@@ -32,8 +33,9 @@ typedef struct {
  * 3 > 2 > 1 == 1
  */
 
-typedef enum {     // Lower precedence
-  PREC_NONE,       //
+typedef enum Precedence {
+  PREC_NONE,       // Lower precedence
+  PREC_KEYWORD,    // if else while for
   PREC_SEMI,       // ; NEWLINE
   PREC_ARROW,      // ->
   PREC_COMMA,      // ,
@@ -58,7 +60,7 @@ typedef struct Ctx {
 
 typedef void ParseFn(Ctx *ctx);
 
-typedef struct {
+typedef struct ParseRule {
   ParseFn *prefix;
   ParseFn *infix; // AKA "postfix"
   Precedence precedence;
@@ -67,14 +69,14 @@ typedef struct {
 ParseRule rules[];
 
 /** A variable defined deeper than the global scope. */
-typedef struct {
+typedef struct Local {
   Token name;      /** Name of the local variable. */
   int depth;       /** How many scopes deep this local is. -1 until defined. */
   bool isCaptured; /** Has a closure captured this local? */
 } Local;
 
 /** A local variable that has been closed over by a function. */
-typedef struct {
+typedef struct ClosedUpvalue {
   uint8_t index; /** The local slot being closed over. */
   bool isLocal;  /** Local slot or enclosing upvalue? */
 } ClosedUpvalue;
@@ -155,10 +157,12 @@ static void errorAt(Token *token, const char *message) {
 
   if (config.debug || DEBUG_ERRORS || DEBUG_PRINT_CODE) {
     disassembleChunk(currentChunk(), current->fun->name->chars, -1);
-    fprintf(stderr, "Compilation failed. Current chunk above. ^^^\n");
+    fprintf(stderr, "Compilation failed. Current chunk above ^^^\n\n");
   }
 
-  fprintf(stderr, "[line %d] Error", token->line);
+  fprintf(stderr,
+          "[line " FG_BLUE "%d" FG_DEFAULT "] " FG_RED "ERROR" FG_DEFAULT,
+          token->line);
 
   if (token->type == TOKEN_EOF) {
     fprintf(stderr, " at end");
@@ -168,7 +172,7 @@ static void errorAt(Token *token, const char *message) {
     fprintf(stderr, " at '%.*s'", token->length, token->start);
   }
 
-  fprintf(stderr, ": %s\n", message);
+  fprintf(stderr, ": %s\n\n", message);
   parser.hadError = true;
   exit(1);
 }
@@ -181,6 +185,12 @@ static void errorAtCurrent(const char *message) {
 
 static void advance() {
   parser.previous = parser.current;
+
+  if (config.debug >= 4 || DEBUG_PRINT_EACH_TOKEN) {
+    fprintf(stderr, "Token: %.*s\n", parser.previous.length,
+            parser.previous.start);
+  }
+
   for (;;) {
     parser.current = scanToken();
     if (parser.current.type != TOKEN_ERROR) break;
@@ -281,6 +291,14 @@ static uint8_t makeConstant(Value value) {
   return (uint8_t)constant;
 }
 
+static void emitDebugStack(const char *tag) {
+  emitBytes(OP_DEBUG_STACK, makeConstant(string(tag)));
+}
+
+static void assertStackSize(u8 size) {
+  emitBytes(OP_ASSERT_STACK, size + current->localCount);
+}
+
 /**
  * Puts the given value in the constant table and writes an instruction
  * to push it onto the VM stack.
@@ -301,26 +319,24 @@ static void emit(Value val) {
 
 /**
  * Emits the given JUMP command with a temp `short` operand.
- * Returns the offset pointing to the start of the `short`.
+ * Returns the offset pointing to the start of the instruction.
  */
 static int emitJump(uint8_t instruction) {
   emitByte(instruction);
   emitBytes(0xff, 0xff);
-  return currentChunk()->count - 2;
-}
-
-static void emitJumpTo(uint8_t instruction, int offset) {
-  emitByte(instruction);
-  emitBytes((offset >> 8) & 0xff, offset & 0xff);
+  return currentChunk()->count - 3;
 }
 
 /**
+ * Specify that a jump should land here.
+ *
  * Patches a previously emitted JUMP instruction at the given offset.
  * The new jump operand will point to the next instruction that is
  * emitted after this call to `patchJump`.
  */
 static void patchJump(int offset) {
-  // -2 to adjust for the jump offset itself.
+  offset++; // +1 to skip the instruction.
+  // -2 to account for the jump offset itself.
   int jump = currentChunk()->count - offset - 2;
 
   if (jump > UINT16_MAX) {
@@ -328,6 +344,9 @@ static void patchJump(int offset) {
     error("Too much code to jump over.");
   }
 
+  // The jump expects a two-byte number representing the number of bytes
+  // to jump over in the current chunk. The offset we were given is the offset
+  // from the beginning of the chunk.
   patchBytes((jump >> 8) & 0xff, jump & 0xff, offset);
 }
 
@@ -360,7 +379,7 @@ static ObjFun *endCompiler() {
   emitReturn();
   ObjFun *fun = current->fun;
 
-  if (!parser.hadError && config.debug || DEBUG_PRINT_CODE)
+  if (!parser.hadError && (config.debug || DEBUG_PRINT_CODE))
     disassembleChunk(currentChunk(), fun->name->chars, -1);
 
   current = current->enclosing;
@@ -410,7 +429,7 @@ static void endScope() {
          current->locals[current->localCount - 1].depth > current->scopeDepth) {
     if (current->locals[current->localCount - 1].isCaptured)
       emitByte(OP_CLOSE_UPVALUE);
-    else emitByte(OP_POP);
+    else emitByte(OP_POP); // It wasn't closed over, discard it.
     current->localCount--;
   }
 }
@@ -985,9 +1004,7 @@ static void this_(Ctx *ctx) {
   variable(ctx);
 }
 
-/**
- * Right-associative.
- */
+/** Right-associative. */
 static void prefix(Ctx *ctx) {
   TokenType operatorType = parser.previous.type;
 
@@ -1288,7 +1305,7 @@ static void ifStatement() {
   patchJump(elseJump); // End of else branch.
 }
 
-static void matchStatement() {
+static void match_() {
   expression("Expect expression after 'match'."); // [0 match expr]
   consume(TOKEN_INDENT, "Expect block after match expression.");
 
@@ -1296,34 +1313,42 @@ static void matchStatement() {
   int exit_jump = emitJump(OP_JUMP);  // Below, we use this to exit.
   patchJump(start_jump);
 
+  // For each pattern in the match block:
   while (!check(TOKEN_DEDENT) && !check(TOKEN_EOF) && !check(TOKEN_ELSE)) {
-    emitBytes(OP_PEEK, 0); // [1 match expr][0 match expr]
+    beginScope();
+
+    // Duplicate the match value because OP_MATCH pops the pattern.
+    emitBytes(OP_PEEK, 0); // [match expr][match expr]
 
     // TODO: Handle multiple patterns.
     // do {...} while (parseAbove(PREC_COMMA)));
-
-    if (parseAbove(PREC_COMMA)) { // [2 match expr][1 match expr][0 pattern]
+    if (parseAbove(PREC_ARROW)) { // [match expr][match expr][pattern]
       consume(TOKEN_ARROW, "Expect '->' after pattern.");
-      emitByte(OP_MATCH); // [1 match expr][0 bool]
+      emitByte(OP_MATCH); // [match expr][bool]
+      assertStackSize(2);
 
       int skip_jump = emitJump(
           OP_JUMP_IF_FALSE); // Jump to next pattern if this one doesn't match.
                              // TODO: OP_JUMP_IF_VOID and matching sets locals.
 
-      emitBytes(OP_POP, OP_POP); // []
-      statement();               // []
-      emitJumpTo(OP_JUMP, exit_jump);
+      emitBytes(OP_POP, OP_POP); // [] pop match success value and match expr
+      assertStackSize(0);
+
+      expression("Expected expression after '->'."); // [expr]
+      skipNewlines();
+      emitLoop(exit_jump);
 
       patchJump(skip_jump);
-      emitByte(OP_POP); // [1 match expr] Pop the bool match result.
+      emitByte(OP_POP); // [match expr] Pop the bool match result.
     } else {
       error("Expect pattern and then '->'.");
     }
+    endScope();
   }
 
   if (match(TOKEN_ELSE)) {
-    emitBytes(OP_POP, OP_POP); // []
-    statement();               // []
+    emitBytes(OP_POP, OP_POP); // [] pop match fail value and match expr
+    expression("Expected expression after 'else'."); // [expr]
   }
 
   patchJump(exit_jump);
@@ -1413,8 +1438,6 @@ static void statement() {
     forStatement();
   } else if (match(TOKEN_IF)) {
     ifStatement();
-  } else if (match(TOKEN_MATCH)) {
-    matchStatement();
   } else if (match(TOKEN_WHILE)) {
     whileStatement();
   } else {
@@ -1463,18 +1486,10 @@ void markCompilerRoots() {
 }
 
 ParseRule rules[] = {
-
     //                {prefix, infix, precedence}
-    // [TOKEN_NEWLINE] = {NULL, NULL, PREC_ADJOINING},
-    // [TOKEN_INDENT] = {NULL, indent, PREC_ADJOINING + 1},
     [TOKEN_LEFT_PAREN] = {grouping, call, PREC_CALL},
-    [TOKEN_RIGHT_PAREN] = {NULL, NULL, PREC_NONE},
-    [TOKEN_LEFT_BRACE] = {NULL, NULL, PREC_NONE},
-    [TOKEN_RIGHT_BRACE] = {NULL, NULL, PREC_NONE},
     [TOKEN_LEFT_BRACKET] = {array, NULL, PREC_NONE},
-    [TOKEN_RIGHT_BRACKET] = {NULL, NULL, PREC_NONE},
 
-    [TOKEN_ARROW] = {NULL, NULL, PREC_ARROW},
     [TOKEN_COMMA] = {NULL, tuple, PREC_COMMA},
     [TOKEN_DOT] = {dot_sugar, dot, PREC_CALL},
     [TOKEN_DOT_DOT] = {NULL, binary, PREC_RANGE},
@@ -1496,7 +1511,6 @@ ParseRule rules[] = {
 
     [TOKEN_BANG] = {prefix, NULL, PREC_NONE},
     [TOKEN_BANG_EQUAL] = {NULL, binary, PREC_EQUALITY},
-    [TOKEN_EQUAL] = {NULL, NULL, PREC_NONE},
     [TOKEN_EQUAL_EQUAL] = {NULL, binary, PREC_EQUALITY},
     [TOKEN_GREATER] = {NULL, binary, PREC_COMPARISON},
     [TOKEN_GREATER_EQUAL] = {NULL, binary, PREC_COMPARISON},
@@ -1513,24 +1527,15 @@ ParseRule rules[] = {
     [TOKEN_HEX] = {hex, NULL, PREC_NONE},
 
     [TOKEN_AND] = {NULL, and_, PREC_AND},
-    [TOKEN_ASSERT] = {assert, NULL, PREC_NONE},
-    [TOKEN_CLASS] = {NULL, NULL, PREC_NONE},
-    [TOKEN_ELSE] = {NULL, NULL, PREC_NONE},
+    [TOKEN_ASSERT] = {assert, NULL, PREC_KEYWORD},
     [TOKEN_FALSE] = {literal, NULL, PREC_NONE},
-    [TOKEN_FOR] = {NULL, NULL, PREC_NONE},
-    [TOKEN_FN] = {NULL, NULL, PREC_NONE},
-    [TOKEN_IF] = {NULL, NULL, PREC_NONE},
-    [TOKEN_MATCH] = {NULL, NULL, PREC_NONE},
+    [TOKEN_MATCH] = {match_, NULL, PREC_KEYWORD},
     [TOKEN_NIL] = {literal, NULL, PREC_NONE},
     [TOKEN_OR] = {NULL, or_, PREC_OR},
-    [TOKEN_PRINT] = {print, NULL, PREC_NONE},
-    [TOKEN_RETURN] = {return_, NULL, PREC_NONE},
+    [TOKEN_PRINT] = {print, NULL, PREC_KEYWORD},
+    [TOKEN_RETURN] = {return_, NULL, PREC_KEYWORD},
     [TOKEN_SUPER] = {super_, NULL, PREC_NONE},
     [TOKEN_THIS] = {this_, NULL, PREC_NONE},
     [TOKEN_TRUE] = {literal, NULL, PREC_NONE},
-    [TOKEN_LET] = {NULL, NULL, PREC_NONE},
-    [TOKEN_WHILE] = {NULL, NULL, PREC_NONE},
 
-    [TOKEN_ERROR] = {NULL, NULL, PREC_NONE},
-    [TOKEN_EOF] = {NULL, NULL, PREC_NONE},
 };
