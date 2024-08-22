@@ -79,13 +79,14 @@ typedef struct {
   int capacity;
   u8 *code;
   int *lines;
+  char **comments;
   ValueArray constants;
 } Chunk;
 
 void initChunk(Chunk *chunk);
 void freeChunk(Chunk *chunk);
 void growChunk(Chunk *chunk, int capacity);
-void writeChunk(Chunk *chunk, u8 byte, int line);
+void writeChunk(Chunk *chunk, u8 byte, int line, char *comment);
 int addConstant(Chunk *chunk, Value value);
 
 #endif

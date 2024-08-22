@@ -4,6 +4,7 @@
 #include "debug.h"
 #include "object.h"
 #include "scanner.h"
+#include "string.h"
 #include "term.h"
 #include "value.h"
 #include "vm.h"
@@ -210,19 +211,24 @@ int disassembleInstruction(Chunk *chunk, int offset) {
       arrow();
       fprintf(stderr, "%s %d", isLocal ? "local" : "upvalue", index);
     }
-    newline();
     break;
   }
 
   case OP_SWAP: {
     uint8_t args = code[offset - 1];
     arrow();
-    fprintf(stderr, "%x %x\n", args >> 4, args & 0x0f);
+    fprintf(stderr, "%x %x", args >> 4, args & 0x0f);
     break;
   }
-  default: newline();
+  default:;
   }
 
+  if (chunk->comments && chunk->comments[offset - 1]) {
+    ObjString *str = escape_string(new_string(chunk->comments[offset - 1]));
+    fprintf(stderr, DIM "\t// %s" NO_DIM, str->chars);
+  }
+
+  newline();
   return offset;
 }
 

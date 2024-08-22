@@ -250,7 +250,16 @@ static Value consumeIdent(const char *message) {
 }
 
 static void emitByte(uint8_t byte) {
-  writeChunk(currentChunk(), byte, parser.previous.line);
+  Token token = parser.previous;
+  char *comment = NULL;
+
+  if (config.debug) {
+    comment = malloc(token.length + 1);
+    strncpy(comment, token.start, token.length);
+    comment[token.length] = '\0';
+  }
+
+  writeChunk(currentChunk(), byte, token.line, comment);
 }
 
 static void emitBytes(uint8_t byte1, uint8_t byte2) {
@@ -1341,7 +1350,7 @@ static void match_() {
           OP_JUMP_IF_FALSE); // Jump to next pattern if this one doesn't match.
                              // TODO: OP_JUMP_IF_VOID and matching sets locals.
 
-      emitBytes(OP_POP, OP_POP); // [] pop match success value and match expr
+      emitBytes(OP_POP, OP_POP); // [] pop match success and match expr
       assertStackSize(0);
 
       expression("Expected expression after '->'."); // [expr]
@@ -1349,7 +1358,7 @@ static void match_() {
       emitLoop(exit_jump);
 
       patchJump(skip_jump);
-      emitByte(OP_POP); // [match expr] Pop the bool match result.
+      emitByte(OP_POP); // [match expr] Pop the match failure.
     } else {
       error("Expect pattern and then '->'.");
     }
@@ -1357,7 +1366,7 @@ static void match_() {
   }
 
   if (match(TOKEN_ELSE)) {
-    emitBytes(OP_POP, OP_POP); // [] pop match fail value and match expr
+    emitByte(OP_POP);                                // [] pop the match expr
     expression("Expected expression after 'else'."); // [expr]
   }
 
