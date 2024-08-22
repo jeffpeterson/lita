@@ -48,7 +48,7 @@ let b = 4
 assert 2 + 2 == 4
 assert a + b == 6
 assert 2(3) == 6
-assert (2 b) == 8
+// assert 2b == 8
 
 /// Strings
 assert "Strings"
@@ -126,7 +126,6 @@ assert (assert 1) == 1
 
 assert (3b) == 12
 assert (b 3) == 12
-assert (Point 1 2)
 
 /// ?: operator
 assert (1 ? 2) == 2

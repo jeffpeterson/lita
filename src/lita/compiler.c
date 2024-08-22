@@ -33,13 +33,18 @@ typedef struct Parser {
  * 3 > 2 > 1 == 1
  */
 
+// pp x == 1
+// 3x == 12
+
+// 3x³ + 4x = 0
+
+/** Higher precedence means tighter binding. */
 typedef enum Precedence {
   PREC_NONE,       // Lower precedence
   PREC_KEYWORD,    // if else while for etc...
   PREC_SEMI,       // ; NEWLINE
   PREC_ARROW,      // ->
   PREC_COMMA,      // ,
-  PREC_ADJOINING,  // (x y z)
   PREC_OR,         // or
   PREC_AND,        // and
   PREC_ASSIGNMENT, // = += -= /= *=
@@ -47,6 +52,7 @@ typedef enum Precedence {
   PREC_COMPARISON, // < > <= >= << >>
   PREC_TERM,       // + -
   PREC_FACTOR,     // * /
+  PREC_ADJOINING,  // (x y z)
   PREC_RANGE,      // ..
   PREC_PREFIX,     // - ++ -- !
   PREC_DOT,        // .
@@ -584,7 +590,8 @@ static void defineVariable(uint8_t global) {
 }
 
 static ParseRule *getRule(TokenType type) { return &rules[type]; }
-static u8 adjoining();
+
+static bool parseAbove(Precedence precedence);
 
 /**
  * Parse at this precedence or above.
@@ -606,8 +613,12 @@ static bool parseAt(Precedence precedence) {
   ctx.canAssign = precedence <= PREC_ASSIGNMENT;
   prefix(&ctx);
 
-  while ((rule = getRule(parser.current.type)) &&
-         precedence <= rule->precedence) {
+  while ((rule = getRule(parser.current.type))) {
+    if (rule->precedence <= precedence)
+      break; // We are the LHS to the next token.
+
+    // if (rule->precedence >= PREC_TOUCHING && !is_touching()) break;
+
     advance();
     ParseFn *infix = rule->infix;
     if (infix == NULL) {
@@ -622,10 +633,8 @@ static bool parseAt(Precedence precedence) {
     return false;
   }
 
-  if (ctx.precedence <= PREC_ADJOINING) {
-    u8 argc = adjoining();
-    if (argc) emitBytes(OP_CALL, argc);
-  }
+  if (ctx.precedence <= PREC_ADJOINING)
+    if (parseAbove(PREC_ADJOINING)) emitBytes(OP_CALL, 1);
 
   return true;
 }
@@ -636,16 +645,6 @@ static bool parseAt(Precedence precedence) {
  */
 static bool parseAbove(Precedence precedence) {
   return parseAt(precedence + 1);
-}
-
-/**
- * Parse whitespace-separated expressions.
- * Returns the number of expressions parsed.
- */
-static u8 adjoining() {
-  u8 count = 0;
-  while (parseAbove(PREC_ADJOINING)) count++;
-  return count;
 }
 
 static bool expression(const char *message) {
@@ -1018,7 +1017,7 @@ static void prefix(Ctx *ctx) {
   TokenType operatorType = parser.previous.type;
 
   // Compile the operand.
-  parseAt(PREC_PREFIX);
+  if (!parseAt(PREC_PREFIX)) error("Expect expression after prefix operator.");
 
   // Emit the operator instruction.
   switch (operatorType) {
@@ -1233,7 +1232,8 @@ static void varDeclaration() {
 static void assert(Ctx *ctx) {
   const char *start = parser.previous.start;
 
-  if (!parseAt(ctx->precedence))
+  if (match(TOKEN_COLON)) expression("Expect expression after assert.");
+  else if (!parseAt(ctx->precedence))
     return error("Expect expression after assert.");
 
   emitBytes(OP_ASSERT, makeConstant(source_since(start)));
@@ -1315,6 +1315,7 @@ static void ifStatement() {
 }
 
 static void match_() {
+  assertStackSize(0);
   expression("Expect expression after 'match'."); // [0 match expr]
   consume(TOKEN_INDENT, "Expect block after match expression.");
 
