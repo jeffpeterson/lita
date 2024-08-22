@@ -46,6 +46,8 @@
 #define BG_SET "\e[48m"
 #define BG_DEFAULT "\e[49m"
 
+#define LINK(name, url) "\e]8;;" url "\e\\" name "\e]8;;\e\\"
+
 /**
  * Prefix with '3' for foreground. And with '4' for background.
  */

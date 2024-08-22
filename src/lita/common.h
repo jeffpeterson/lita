@@ -66,6 +66,8 @@ typedef struct Config {
 
 extern Config config;
 
+#define STRINGIFY_(x) #x
+#define STRINGIFY(x) STRINGIFY_(x)
 #define DEPRECATED(msg) __attribute__((deprecated(msg)))
 #define SECTION(name) __attribute__((used, section("__DATA," #name)))
 #define SECTION_START(name) __asm("section$start$__DATA$" #name)

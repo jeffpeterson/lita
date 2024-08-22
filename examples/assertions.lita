@@ -1,3 +1,10 @@
+/// Truthy and falsy values
+assert true
+assert !false
+assert !nil
+assert ""
+assert 0
+
 /// Identifiers
 let x
 let x' = 1

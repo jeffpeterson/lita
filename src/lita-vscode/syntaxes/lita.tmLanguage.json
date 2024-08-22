@@ -28,7 +28,7 @@
       "patterns": [
         {
           "name": "keyword.control.lita",
-          "match": "\\b(and|atom|else|for|if|in|macro|match|or|proc|return|while)\\b"
+          "match": "\\b(and|atom|else|for|if|in|macro|match|or|proc|return|while|print|assert)\\b"
         },
         {
           "name": "keyword.operator.lita",
@@ -48,7 +48,7 @@
         },
         {
           "name": "support.function.builtin.lita",
-          "match": "\\b(pp|print|assert|clock|read|write)\\b"
+          "match": "\\b(pp|clock|read|write)\\b"
         },
         {
           "name": "variable.language.this.lita",
@@ -116,11 +116,19 @@
     "callables": {
       "patterns": [
         {
-          "match": "([$A-Za-z_][A-Za-z0-9_]*['?!]*)\\(",
-          "name": "support.function.lita"
+          "match": "([$A-Za-z_][A-Za-z0-9_]*['?!]*)\\s*\\(",
+          "captures": {
+            "1": {"name": "support.function.lita"}
+          }
         },
         {
-          "match": "([$A-Za-z_][A-Za-z0-9_]*['?!]*)\\s*=>",
+          "match": "([$A-Za-z_][A-Za-z0-9_]*['?!]*)\\s+[\\w\\d$_]",
+          "captures": {
+            "1": {"name": "support.function.lita"}
+          }
+        },
+        {
+          "match": "([$A-Za-z_][A-Za-z0-9_]*['?!]*)\\s*[=-]>",
           "captures": {
             "1": {"name": "support.function.lita"}
           }

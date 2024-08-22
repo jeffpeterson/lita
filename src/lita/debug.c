@@ -88,7 +88,7 @@ OpInfo infos[] = {
 
     [OP_ARRAY] = {"OP_ARRAY", CONSTANT},
     [OP_DEBUG_STACK] = {"OP_DEBUG_STACK", CONSTANT},
-    [OP_ASSERT_STACK] = {"OP_ASSERT_STACK", BYTE},
+    [OP_ASSERT_STACK] = {"OP_ASSERT_STACK", CONSTANT_BYTE},
 };
 
 static Color color(OpType type) {
@@ -288,10 +288,11 @@ static void debugValues(Value *start, int length) {
 }
 
 void debugStack() {
+  fputs(BG_WHITE, stderr);
   debugValues(vm.stack, vm.stackTop - vm.stack);
   fputs(DIM, stderr);
   debugValues(vm.stackTop, vm.stackHigh - vm.stackTop);
-  fputs(NO_DIM, stderr);
+  fputs(NO_DIM BG_DEFAULT, stderr);
 }
 
 static CallFrame *prev_frame;

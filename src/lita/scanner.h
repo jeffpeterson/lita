@@ -32,6 +32,7 @@ typedef enum {
   TOKEN_SEMICOLON,
   TOKEN_QUESTION,
   TOKEN_QUOTE,
+  TOKEN_PIPE,
 
   TOKEN_ARROW,     // ->
   TOKEN_FAT_ARROW, // =>
@@ -96,6 +97,7 @@ typedef enum {
 typedef struct {
   TokenType type;
   bool escaped;
+  bool had_gap;
   const char *start;
   int length;
   int line;
@@ -113,6 +115,7 @@ typedef struct {
   const char *current; /** Current char being scanned. */
   int line;            /** Current line number. */
   Indent indent;       /** Indent status. */
+  bool gap;            /** Space between this and the prior token? */
   const char *data;
   unsigned int dataLength;
 } Scanner;

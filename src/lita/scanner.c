@@ -13,6 +13,7 @@ void initScanner(const char *source) {
   scanner.start = source;
   scanner.current = source;
   scanner.line = 1;
+  scanner.gap = false;
 
   scanner.indent.prev = 0;
   scanner.indent.cur = 0;
@@ -111,6 +112,8 @@ static Token makeToken(TokenType type) {
   Token token;
   token.type = type;
   token.escaped = false;
+  token.had_gap = scanner.gap;
+  scanner.gap = false;
   token.start = scanner.start;
   token.length = (int)(scanner.current - scanner.start);
   token.line = scanner.line;
@@ -142,7 +145,10 @@ static bool skipWhitespace() {
 
     switch (c) {
     case ' ':
-    case '\r': advance(); continue;
+    case '\r':
+      scanner.gap = true;
+      advance();
+      continue;
 
     case '\n':
       scanner.line++;
@@ -154,6 +160,7 @@ static bool skipWhitespace() {
 
     case '\t':
       if (in->inside) in->cur++;
+      else scanner.gap = true;
       advance();
       continue;
 
@@ -172,6 +179,7 @@ static bool skipWhitespace() {
     case '#':
       // A comment goes until the end of the line.
       in->inside = false;
+      scanner.gap = true;
       while (peek() != '\n' && !isAtEnd()) advance();
       continue;
     }
@@ -382,6 +390,7 @@ Token scanToken() {
   case ':': return makeToken(TOKEN_COLON);
   case ',': return makeToken(TOKEN_COMMA);
   case '?': return makeToken(TOKEN_QUESTION);
+  case '|': return makeToken(TOKEN_PIPE);
   case '$': return identifier();
   case '.':
     return makeToken(match('.') ? (match('.') ? TOKEN_ELLIPSIS : TOKEN_DOT_DOT)

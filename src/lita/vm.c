@@ -915,10 +915,13 @@ static InterpretResult vm_run() {
     }
 
     case OP_ASSERT_STACK: {
+      let comment = READ_CONSTANT();
       u8 size = READ_BYTE();
       if (size != vm.stackTop - frame->slots) {
-        return runtimeError("Stack size mismatch: Expected %d and got %d", size,
-                            vm.stackTop - frame->slots);
+        return runtimeError(
+            "Stack size mismatch: Expected " FG_BLUE "%d" FG_DEFAULT
+            " and got " FG_BLUE "%d" FG_DEFAULT ". %s",
+            size, vm.stackTop - frame->slots, as_string(comment)->chars);
       }
       break;
     }

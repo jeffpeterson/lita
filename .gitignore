@@ -3,3 +3,4 @@ _build/
 .bin/
 tmp/
 !tmp/.keep
+.DS_Store

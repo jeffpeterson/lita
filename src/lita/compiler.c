@@ -35,7 +35,7 @@ typedef struct Parser {
 
 typedef enum Precedence {
   PREC_NONE,       // Lower precedence
-  PREC_KEYWORD,    // if else while for
+  PREC_KEYWORD,    // if else while for etc...
   PREC_SEMI,       // ; NEWLINE
   PREC_ARROW,      // ->
   PREC_COMMA,      // ,
@@ -49,7 +49,9 @@ typedef enum Precedence {
   PREC_FACTOR,     // * /
   PREC_RANGE,      // ..
   PREC_PREFIX,     // - ++ -- !
-  PREC_CALL,       // . () []
+  PREC_DOT,        // .
+  PREC_TOUCHING,   // 3x
+  PREC_CALL,       // () []
   PREC_PRIMARY     //
 } Precedence;      // Higher Precedence
 
@@ -62,8 +64,8 @@ typedef void ParseFn(Ctx *ctx);
 
 typedef struct ParseRule {
   ParseFn *prefix;
-  ParseFn *infix; // AKA "postfix"
-  Precedence precedence;
+  ParseFn *infix;        // AKA "postfix"
+  Precedence precedence; // Higher precedence means tighter binding.
 } ParseRule;
 
 ParseRule rules[];
@@ -186,7 +188,7 @@ static void errorAtCurrent(const char *message) {
 static void advance() {
   parser.previous = parser.current;
 
-  if (config.debug >= 4 || DEBUG_PRINT_EACH_TOKEN) {
+  if (DEBUG_PRINT_EACH_TOKEN) {
     fprintf(stderr, "Token: %.*s\n", parser.previous.length,
             parser.previous.start);
   }
@@ -198,6 +200,9 @@ static void advance() {
     errorAtCurrent(parser.current.start);
   }
 }
+
+/** Was the current token touching the previous token? */
+static bool is_touching() { return !parser.current.had_gap; }
 
 /** Is this the type of the current token? */
 static bool check(TokenType type) { return parser.current.type == type; }
@@ -295,9 +300,14 @@ static void emitDebugStack(const char *tag) {
   emitBytes(OP_DEBUG_STACK, makeConstant(string(tag)));
 }
 
-static void assertStackSize(u8 size) {
-  emitBytes(OP_ASSERT_STACK, size + current->localCount);
+static void emitAssertStackSize(u8 size, const char *comment) {
+  let cmnt = makeConstant(string(comment));
+  emitBytes(OP_ASSERT_STACK, cmnt);
+  emitByte(size + current->localCount);
 }
+
+#define assertStackSize(size)                                                  \
+  emitAssertStackSize(size, "At " __FILE__ ":" STRINGIFY(__LINE__))
 
 /**
  * Puts the given value in the constant table and writes an instruction
@@ -633,8 +643,7 @@ static bool parseAbove(Precedence precedence) {
  * Returns the number of expressions parsed.
  */
 static u8 adjoining() {
-  if (!parseAbove(PREC_ADJOINING)) return 0;
-  u8 count = 1;
+  u8 count = 0;
   while (parseAbove(PREC_ADJOINING)) count++;
   return count;
 }
@@ -1455,9 +1464,7 @@ static void statement() {
 ObjFun *compile(const char *source, ObjString *name) {
   initScanner(source);
 
-#if DEBUG_TOKENS
-  debugTokens();
-#endif
+  if (DEBUG_TOKENS || config.debug >= 4) debugTokens();
 
   Compiler compiler;
   initCompiler(&compiler, TYPE_SCRIPT, name);
@@ -1487,55 +1494,66 @@ void markCompilerRoots() {
 
 ParseRule rules[] = {
     //                {prefix, infix, precedence}
-    [TOKEN_LEFT_PAREN] = {grouping, call, PREC_CALL},
-    [TOKEN_LEFT_BRACKET] = {array, NULL, PREC_NONE},
-
-    [TOKEN_COMMA] = {NULL, tuple, PREC_COMMA},
-    [TOKEN_DOT] = {dot_sugar, dot, PREC_CALL},
-    [TOKEN_DOT_DOT] = {NULL, binary, PREC_RANGE},
-    [TOKEN_SEMICOLON] = {NULL, semi, PREC_SEMI},
-    [TOKEN_QUESTION] = {NULL, question, PREC_SEMI},
+    [TOKEN_IDENTIFIER] = {variable, NULL, PREC_NONE},
+    [TOKEN_STRING] = {string_, NULL, PREC_NONE},
+    [TOKEN_BACKTICK_STRING] = {backticks, NULL, PREC_NONE},
     [TOKEN_QUOTE] = {symbol, NULL, PREC_NONE},
 
-    [TOKEN_MINUS] = {prefix, binary, PREC_TERM},
-    [TOKEN_MINUS_EQUAL] = {NULL, NULL, PREC_ASSIGNMENT},
-    [TOKEN_PLUS] = {NULL, binary, PREC_TERM},
-    [TOKEN_PLUS_EQUAL] = {NULL, NULL, PREC_ASSIGNMENT},
-    [TOKEN_SLASH] = {NULL, binary, PREC_FACTOR},
-    [TOKEN_SLASH_EQUAL] = {NULL, NULL, PREC_ASSIGNMENT},
-    [TOKEN_STAR] = {NULL, binary, PREC_FACTOR},
-    [TOKEN_STAR_EQUAL] = {NULL, NULL, PREC_ASSIGNMENT},
+    [TOKEN_FALSE] = {literal, NULL, PREC_NONE},
+    [TOKEN_NIL] = {literal, NULL, PREC_NONE},
+    [TOKEN_TRUE] = {literal, NULL, PREC_NONE},
 
-    [TOKEN_PLUS_PLUS] = {prefix, postfix, PREC_PREFIX},
-    [TOKEN_MINUS_MINUS] = {prefix, postfix, PREC_PREFIX},
+    [TOKEN_NUMBER] = {number, NULL, PREC_NONE},
+    [TOKEN_HEX] = {hex, NULL, PREC_NONE},
+
+    [TOKEN_LEFT_BRACKET] = {array, NULL, PREC_NONE},
 
     [TOKEN_BANG] = {prefix, NULL, PREC_NONE},
+
+    [TOKEN_ASSERT] = {assert, NULL, PREC_NONE},
+    [TOKEN_SUPER] = {super_, NULL, PREC_NONE},
+    [TOKEN_THIS] = {this_, NULL, PREC_NONE},
+
+    [TOKEN_MATCH] = {match_, NULL, PREC_KEYWORD},
+    [TOKEN_PRINT] = {print, NULL, PREC_KEYWORD},
+    [TOKEN_RETURN] = {return_, NULL, PREC_KEYWORD},
+
+    [TOKEN_SEMICOLON] = {NULL, semi, PREC_SEMI},
+    [TOKEN_QUESTION] = {NULL, question, PREC_SEMI},
+
+    [TOKEN_COMMA] = {NULL, tuple, PREC_COMMA},
+
+    [TOKEN_OR] = {NULL, or_, PREC_OR},
+
+    [TOKEN_AND] = {NULL, and_, PREC_AND},
+
+    [TOKEN_MINUS_EQUAL] = {NULL, NULL, PREC_ASSIGNMENT},
+    [TOKEN_PLUS_EQUAL] = {NULL, NULL, PREC_ASSIGNMENT},
+    [TOKEN_SLASH_EQUAL] = {NULL, NULL, PREC_ASSIGNMENT},
+    [TOKEN_STAR_EQUAL] = {NULL, NULL, PREC_ASSIGNMENT},
+
     [TOKEN_BANG_EQUAL] = {NULL, binary, PREC_EQUALITY},
     [TOKEN_EQUAL_EQUAL] = {NULL, binary, PREC_EQUALITY},
+
+    [TOKEN_LESS_LESS] = {NULL, binary, PREC_COMPARISON},
+    [TOKEN_GREATER_GREATER] = {NULL, binary, PREC_COMPARISON},
     [TOKEN_GREATER] = {NULL, binary, PREC_COMPARISON},
     [TOKEN_GREATER_EQUAL] = {NULL, binary, PREC_COMPARISON},
     [TOKEN_LESS] = {NULL, binary, PREC_COMPARISON},
     [TOKEN_LESS_EQUAL] = {NULL, binary, PREC_COMPARISON},
 
-    [TOKEN_LESS_LESS] = {NULL, binary, PREC_COMPARISON},
-    [TOKEN_GREATER_GREATER] = {NULL, binary, PREC_COMPARISON},
+    [TOKEN_MINUS] = {prefix, binary, PREC_TERM},
+    [TOKEN_PLUS] = {NULL, binary, PREC_TERM},
 
-    [TOKEN_IDENTIFIER] = {variable, NULL, PREC_NONE},
-    [TOKEN_STRING] = {string_, NULL, PREC_NONE},
-    [TOKEN_BACKTICK_STRING] = {backticks, NULL, PREC_NONE},
-    [TOKEN_NUMBER] = {number, NULL, PREC_NONE},
-    [TOKEN_HEX] = {hex, NULL, PREC_NONE},
+    [TOKEN_SLASH] = {NULL, binary, PREC_FACTOR},
+    [TOKEN_STAR] = {NULL, binary, PREC_FACTOR},
 
-    [TOKEN_AND] = {NULL, and_, PREC_AND},
-    [TOKEN_ASSERT] = {assert, NULL, PREC_KEYWORD},
-    [TOKEN_FALSE] = {literal, NULL, PREC_NONE},
-    [TOKEN_MATCH] = {match_, NULL, PREC_KEYWORD},
-    [TOKEN_NIL] = {literal, NULL, PREC_NONE},
-    [TOKEN_OR] = {NULL, or_, PREC_OR},
-    [TOKEN_PRINT] = {print, NULL, PREC_KEYWORD},
-    [TOKEN_RETURN] = {return_, NULL, PREC_KEYWORD},
-    [TOKEN_SUPER] = {super_, NULL, PREC_NONE},
-    [TOKEN_THIS] = {this_, NULL, PREC_NONE},
-    [TOKEN_TRUE] = {literal, NULL, PREC_NONE},
+    [TOKEN_DOT_DOT] = {NULL, binary, PREC_RANGE},
 
+    [TOKEN_PLUS_PLUS] = {prefix, postfix, PREC_PREFIX},
+    [TOKEN_MINUS_MINUS] = {prefix, postfix, PREC_PREFIX},
+
+    [TOKEN_DOT] = {dot_sugar, dot, PREC_DOT},
+
+    [TOKEN_LEFT_PAREN] = {grouping, call, PREC_CALL},
 };
