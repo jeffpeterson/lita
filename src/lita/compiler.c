@@ -51,8 +51,8 @@ typedef enum Precedence {
   PREC_EQUALITY,   // == !=
   PREC_COMPARISON, // < > <= >= << >>
   PREC_TERM,       // + -
-  PREC_FACTOR,     // * /
   PREC_ADJOINING,  // (x y z)
+  PREC_FACTOR,     // * /
   PREC_RANGE,      // ..
   PREC_PREFIX,     // - ++ -- !
   PREC_DOT,        // .
@@ -633,7 +633,7 @@ static bool parseAt(Precedence precedence) {
     return false;
   }
 
-  if (ctx.precedence <= PREC_ADJOINING)
+  if (ctx.precedence <= PREC_ADJOINING && parser.previous.type != TOKEN_DEDENT)
     if (parseAbove(PREC_ADJOINING)) emitBytes(OP_CALL, 1);
 
   return true;

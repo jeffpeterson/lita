@@ -150,6 +150,10 @@ assert match 1
 	1 -> true
 	else false
 
+assert match 2
+	1 -> false
+	else true
+
 fn num_to_ord(x)
 	return match x
 		1 -> 'one
