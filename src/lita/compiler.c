@@ -1303,24 +1303,22 @@ static void forStatement() {
 
 static void ifStatement() {
   expression("Expect expression after 'if'"); // [0 cond]
+  assertStackSize(1);
 
   if (!check(TOKEN_INDENT))
     consume(TOKEN_COLON, "Expect ':' or block after condition.");
 
   int thenJump =
-      emitJump(OP_JUMP_IF_FALSE);   // Jump to else if condition is false.
-  emitByte(OP_POP);                 // [] pop condition
-  statement();                      // Then branch.
+      emitJump(OP_JUMP_IF_FALSE); // Jump to else if condition is false.
+  emitByte(OP_POP);               // [] pop condition
+  statement();                    // Then branch.
+
   int elseJump = emitJump(OP_JUMP); // Jump over else branch.
+  patchJump(thenJump);              // End of then branch. Start of else branch.
 
-  patchJump(thenJump); // End of then branch. Start of else branch.
-  emitByte(OP_POP);    // [] pop condition
-
-  if (match(TOKEN_ELSE)) {
-    statement(); // Else branch.
-  }
-
-  patchJump(elseJump); // End of else branch.
+  emitByte(OP_POP);                   // [] pop condition
+  if (match(TOKEN_ELSE)) statement(); // Else branch.
+  patchJump(elseJump);                // End of else branch.
 }
 
 static void match_() {
@@ -1390,6 +1388,7 @@ static void whileStatement() {
   int loop_start = currentChunk()->count;
 
   expression("Expect expression after 'while'."); // [0 condition]
+  assertStackSize(1);
 
   if (!check(TOKEN_INDENT))
     consume(TOKEN_COLON, "Expect ':' or block after condition.");
@@ -1401,6 +1400,7 @@ static void whileStatement() {
 
   patchJump(exit_jump); // Exit the loop.
   emitByte(OP_POP);     // []
+  assertStackSize(0);
 }
 
 static void synchronize() {
