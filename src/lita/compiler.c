@@ -288,41 +288,17 @@ static void emitSwap(uint8_t a, uint8_t b) {
   emitBytes(OP_SWAP, (a << 4) | (b & 0x0f));
 }
 
-static void emitReturn() {
-  switch (current->type) {
-  case TYPE_INIT:
-  case TYPE_CLASS:
-    emitBytes(OP_GET_LOCAL, 0); // init() methods always return self.
-    break;
-  default: emitByte(OP_NIL);
-  }
-
-  emitByte(OP_RETURN);
-}
-
-/** Puts the given value in the constant table and returns its index. */
-static uint8_t makeConstant(Value value) {
-  int constant = addConstant(currentChunk(), value);
-  if (constant > UINT8_MAX) {
-    error("Too many constants in one chunk.");
-    return 0;
-  }
-
-  return (uint8_t)constant;
-}
-
 static void emitDebugStack(const char *tag) {
   emitBytes(OP_DEBUG_STACK, makeConstant(string(tag)));
 }
 
+#define assertStackSize(size)                                                  \
+  emitAssertStackSize(size, "At " __FILE__ ":" STRINGIFY(__LINE__))
 static void emitAssertStackSize(u8 size, const char *comment) {
   let cmnt = makeConstant(string(comment));
   emitBytes(OP_ASSERT_STACK, cmnt);
   emitByte(size + current->localCount);
 }
-
-#define assertStackSize(size)                                                  \
-  emitAssertStackSize(size, "At " __FILE__ ":" STRINGIFY(__LINE__))
 
 /**
  * Puts the given value in the constant table and writes an instruction

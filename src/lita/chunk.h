@@ -19,7 +19,7 @@ typedef enum OpCode {
   OP_POP,           /** [0 x] -> [] */
   OP_POPN,          /** [n x][...] -> [] */
   OP_SWAP,          /** (ab) [a x][b y] -> [a y][b x] */
-  OP_DEFAULT,       /** (x) [] -> [0 x] */
+  OP_DEFAULT,       /** (x) [0 nil] -> [0 x] */
                     /**/
   OP_DEFINE_GLOBAL, /** (name) [0 value] -> [] */
   OP_GET_GLOBAL,    /** (name) [] -> [0 value] */
@@ -61,17 +61,17 @@ typedef enum OpCode {
   OP_PRINT,         /** [0 value] -> [0 value] */
   OP_RETURN,        /** [0 x] -> [] */
                     /**/
-  OP_INVOKE,        /** (name, n) [n self][0 ...args] -> [] */
-  OP_SUPER_INVOKE,  /** (name, n) [n+1 self][1 ...args][0 super] -> [] */
-  OP_ASSERT,        /** (source_code) [0 value] -> [0 value] */
-                    /**/
-  OP_GET_VAR,       /** (name) [0 self] -> [0 value] */
-  OP_SET_VAR,       /** (name) [1 self][0 value] -> [0 value] */
-                    /**/
-  OP_ARRAY,         /** (n) [n ...args][0 arg] -> [0 array] */
-  OP_MATCH,         /** [1 value][0 pattern] -> [0 Bool] */
-  OP_DEBUG_STACK,   /** (tag) Logs the stack. */
-  OP_ASSERT_STACK,  /** (size) Asserts the stack is the expected size. */
+  OP_INVOKE,        /** (name, n) [n self][0 ...args] -> [0 return] */
+  OP_SUPER_INVOKE, /** (name, n) [n+1 self][1 ...args][0 super] -> [0 return] */
+  OP_ASSERT,       /** (source_code) [0 value] -> [0 value] */
+                   /**/
+  OP_GET_VAR,      /** (name) [0 self] -> [0 value] */
+  OP_SET_VAR,      /** (name) [1 self][0 value] -> [0 value] */
+                   /**/
+  OP_ARRAY,        /** (n) [n ...args][0 arg] -> [0 array] */
+  OP_MATCH,        /** [1 value][0 pattern] -> [0 Bool] */
+  OP_DEBUG_STACK,  /** (tag) Logs the stack. */
+  OP_ASSERT_STACK, /** (size) Asserts the stack is the expected size. */
 } OpCode;
 
 typedef struct {
