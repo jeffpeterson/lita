@@ -697,7 +697,7 @@ static InterpretResult vm_run() {
       break;
 
     case OP_RANGE: vm_range(); break;
-    case OP_ARRAY: vm_array(AS_NUMBER(READ_CONSTANT())); break;
+    case OP_ARRAY: vm_array(as_num(READ_CONSTANT())); break;
     case OP_TUPLE: vm_tuple(READ_BYTE()); break;
 
     case OP_DEFINE_GLOBAL: tableSet(&vm.globals, READ_CONSTANT(), pop()); break;

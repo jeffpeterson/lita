@@ -72,6 +72,8 @@ typedef enum OpCode {
   OP_MATCH,        /** [1 value][0 pattern] -> [0 Bool] */
   OP_DEBUG_STACK,  /** (tag) Logs the stack. */
   OP_ASSERT_STACK, /** (size) Asserts the stack is the expected size. */
+
+  OP_LAST = OP_ASSERT_STACK,
 } OpCode;
 
 typedef struct {
@@ -83,10 +85,33 @@ typedef struct {
   ValueArray constants;
 } Chunk;
 
+typedef enum OpType {
+  SIMPLE,
+  BYTE,
+  CONSTANT,
+  INVOKE,
+  JUMP,
+  CONSTANT_BYTE,
+} OpType;
+
+typedef struct OpInfo {
+  const char *name;
+  OpType type;
+  i8 inputs;
+  i8 outputs;
+} OpInfo;
+
 void initChunk(Chunk *chunk);
 void freeChunk(Chunk *chunk);
 void growChunk(Chunk *chunk, int capacity);
 void writeChunk(Chunk *chunk, u8 byte, int line, char *comment);
 int addConstant(Chunk *chunk, Value value);
+Value get_constant(Chunk *chunk, int id);
+
+extern OpInfo op_info[];
+
+int input_count(Chunk *chunk, u8 *ip);
+int output_count(Chunk *chunk, u8 *ip);
+int input_output_delta(Chunk *chunk, u8 *ip);
 
 #endif
