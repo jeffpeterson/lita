@@ -12,8 +12,11 @@
 typedef struct CallFrame {
   ObjNative *native;   /** Native function being executed. */
   ObjClosure *closure; /** Fn containing the code. */
-  uint8_t *ip;         /** Current instruction pointer. */
+  u8 *ip;              /** Current instruction pointer. */
   Value *slots;        /** Points into the VM's value stack. */
+
+  u8 *prev_ip;       /** Pointer to last instruction. */
+  Value *prev_stack; /** Slots prior to last instruction. */
 } CallFrame;
 
 typedef struct VM {

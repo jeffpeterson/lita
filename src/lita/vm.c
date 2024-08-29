@@ -214,6 +214,18 @@ void vm_swap(u8 a, u8 b) {
   vm.stackTop[-1 - b] = aa;
 }
 
+static CallFrame *new_frame(usize slots) {
+  CallFrame *frame = &vm.frames[vm.frameCount++];
+
+  frame->closure = NULL;
+  frame->native = NULL;
+  frame->ip = NULL;
+  frame->slots = vm.stackTop - slots;
+  frame->prev_stack = vm.stackTop;
+  frame->prev_ip = NULL;
+  return frame;
+}
+
 /**
  * Move the instruction pointer (ip) to a new a closure along with arguments on
  * the stack.
@@ -245,16 +257,15 @@ static InterpretResult move_into_closure(ObjClosure *closure, int argCount) {
 
   if (vm.frameCount == FRAMES_MAX) return runtimeError("Call stack overflow.");
 
-  CallFrame *frame = &vm.frames[vm.frameCount++];
   /**
    * Account for args and the receiver if method, else the callee.
    * stack: [..., this, arg1, arg2]
    *     receiver-^               ^-stackTop
    */
-  frame->slots = vm.stackTop - argCount - 1;
-  frame->native = NULL;
+  CallFrame *frame = new_frame(argCount + 1);
   frame->closure = closure;
-  frame->ip = fun->chunk.code; // Start instruction pointer at function's code.
+  frame->ip = fun->chunk.code;
+
   return INTERPRET_OK;
 }
 
@@ -265,16 +276,12 @@ static InterpretResult move_into_native(ObjNative *native, int argc) {
 
   if (vm.frameCount == FRAMES_MAX) return runtimeError("Call stack overflow.");
 
-  CallFrame *frame = &vm.frames[vm.frameCount++];
-
   /**
    * Account for args and the receiver if method, else the callee.
    * stack: [..., this, arg1, arg2]
    *     receiver-^               ^-stackTop
    */
-  frame->slots = vm.stackTop - argc - 1;
-  frame->closure = NULL;
-  frame->ip = NULL;
+  CallFrame *frame = new_frame(argc + 1);
   frame->native = native;
 
   return INTERPRET_OK;
@@ -666,10 +673,26 @@ static InterpretResult vm_run() {
       continue;
     }
 
-    InterpretResult err;
-    uint8_t instruction;
-    switch (instruction = READ_BYTE()) {
+    if (frame->prev_ip) {
+      int actual = vm.stackTop - frame->prev_stack;
+      int expected =
+          input_output_delta(&frame->closure->fun->chunk, frame->prev_ip);
 
+      if (actual != expected) {
+        OpInfo op = op_info[*frame->prev_ip];
+        return runtimeError(
+            "Stack size mismatch after %s: Expected %+d and got %+d.", op.name,
+            expected, actual);
+      }
+    }
+
+    frame->prev_stack = vm.stackTop;
+    frame->prev_ip = frame->ip;
+
+    InterpretResult err;
+    u8 instruction = READ_BYTE();
+
+    switch (instruction) {
     case OP_CONSTANT: {
       push(READ_CONSTANT());
       break;
