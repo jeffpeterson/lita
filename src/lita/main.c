@@ -75,11 +75,11 @@ int main(int argc, char *argv[]) {
       setGlobal(string("ARGV"), OBJ_VAL(args));
 
       runFile(path);
-    }
+    } else repl();
   }
   }
 
-  if (start_repl || !path) repl();
+  if (start_repl) repl();
 
   freeVM();
   return 0;
