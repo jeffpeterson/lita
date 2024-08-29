@@ -1,21 +1,24 @@
 class Array
-	fn << (x) = this.push(x)
+	fn << (x) = push(x)
 
 	fn == (b)
 		if length != b.length: return false
 		if object_id == b.object_id: return true
-		for let i = 0; i < length; i++
-			if get(i) != b.get(i): return false
+		let i = 0
+		while i < length
+			if get(i) != b.get(i++): return false
 		return true
 
 	fn each(f)
-		for let i = 0; i < length; i++
-			f(get(i))
+		let i = 0
+		while i < length
+			f(get(i++))
 
 	fn map(f)
 		let new = []
-		for let i = 0; i < length; i++
-			new << f(get(i))
+		let i = 0
+		while i < length
+			new << f(get(i++))
 		return new
 
 	fn print(io)

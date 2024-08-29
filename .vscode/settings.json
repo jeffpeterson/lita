@@ -85,7 +85,11 @@
     "format": "c",
     "*.tcc": "c",
     "readline.h": "c",
-    "history.h": "c"
+    "history.h": "c",
+    "random": "c",
+    "__threading_support": "c",
+    "numbers": "c",
+    "*.inc": "c"
   },
   "C_Cpp.default.includePath": ["src"],
   "C_Cpp.default.compilerArgs": ["-Wall", "-Werror"],

@@ -73,7 +73,7 @@ typedef enum OpCode {
   OP_DEBUG_STACK,  /** (tag) Logs the stack. */
   OP_ASSERT_STACK, /** (size) Asserts the stack is the expected size. */
 
-  OP_LAST = OP_ASSERT_STACK,
+  OP_LAST,
 } OpCode;
 
 typedef struct {

@@ -44,7 +44,7 @@ void writeChunk(Chunk *chunk, u8 byte, int line, char *comment) {
 
   chunk->code[chunk->count] = byte;
   chunk->lines[chunk->count] = line;
-  chunk->comments[chunk->count] = comment;
+  if (chunk->comments) chunk->comments[chunk->count] = comment;
   chunk->count++;
 }
 
@@ -132,13 +132,15 @@ OpInfo op_info[] = {
 
 int input_count(Chunk *chunk, u8 *ip) {
   OpInfo op = op_info[*ip];
-  if (op.inputs > 0) return op.inputs;
-  else switch (op.type) {
-    case BYTE: return ip[1];
-    case INVOKE: return ip[2];
-    case CONSTANT: return as_num(get_constant(chunk, ip[1]));
-    default: return op.inputs;
-    }
+  switch (*ip) {
+  case OP_CALL: return ip[1] + 1;
+  case OP_SUPER_INVOKE:
+  case OP_INVOKE: return ip[2] + 1;
+  case OP_POPN:
+  case OP_TUPLE: return ip[1];
+  case OP_ARRAY: return as_num(get_constant(chunk, ip[1]));
+  default: return op.inputs;
+  }
 }
 
 int output_count(Chunk *chunk, u8 *ip) {

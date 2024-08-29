@@ -135,6 +135,13 @@ typedef struct ObjClosure {
   ObjUpvalue **upvalues; /** Array of upvalue pointers being closed-over. */
 } ObjClosure;
 
+// TODO: Use this for yield keyword?
+// typedef struct ObjContinuation {
+//   Obj obj;
+//   ObjClosure *closure;
+//   CallFrame frame; // must be moved; can't require vm.h
+// } ObjContinuation;
+
 typedef struct ObjClass {
   Obj obj;
   ObjString *name;

@@ -35,5 +35,4 @@ class String
 	fn underscore = decapitalize.replace(`([a-z])([A-Z])`, "$1_\\l$2")
 	fn dasherize = underscore.replace(`_`, "-")
 
-	fn print(io)
-		return io.write(this)
+	fn print(io) = io.write(this)

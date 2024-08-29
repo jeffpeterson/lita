@@ -411,7 +411,6 @@ static void addLocal(Token name) {
 static int markDefined() {
   if (current->scopeDepth == 0) return -1;
   int local = current->localCount - 1;
-
   current->locals[local].depth = current->scopeDepth;
   return local;
 }
@@ -1216,6 +1215,9 @@ static void varDeclaration() {
 
 static void assert(Ctx *ctx) {
   const char *start = parser.previous.start;
+
+  // TODO: parse above ==, etc. and parse LHS and RHS separately
+  // Then emitBytes(OP_ASSERT, OP_EQUAL)
 
   if (match(TOKEN_COLON)) expression("Expect expression after assert.");
   else if (!parseAt(ctx->precedence))

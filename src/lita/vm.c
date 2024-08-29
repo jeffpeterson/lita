@@ -38,7 +38,7 @@ static void resetStack() {
 
 static InterpretResult vruntimeError(const char *format, va_list args) {
   fprintf(stderr, "\n%d frames:\n", vm.frameCount);
-  for (int i = vm.frameCount - 1; i >= 0; i--) {
+  for (int i = 0; i < vm.frameCount; i++) {
     CallFrame *frame = &vm.frames[i];
 
     if (frame->closure) {
@@ -47,7 +47,7 @@ static InterpretResult vruntimeError(const char *format, va_list args) {
       int line = fun->chunk.lines[instruction];
 
       if (DEBUG_ERRORS || config.debug)
-        disassembleChunk(&fun->chunk, fun->name->chars, instruction);
+        disassembleChunk(&fun->chunk, fun->name->chars, instruction + 1);
 
       fprintf(stderr, "[line %d] in ", line);
       inspect_function(stderr, "ObjFun", fun);
@@ -62,7 +62,7 @@ static InterpretResult vruntimeError(const char *format, va_list args) {
 
   fputs(FG_RED "\n\nRUNTIME ERROR: " FG_DEFAULT, stderr);
   vfprintf(stderr, format, args);
-  fputs("\n", stderr);
+  fputs("\n\n", stderr);
 
   resetStack();
 
@@ -927,8 +927,8 @@ static InterpretResult vm_run() {
     }
 
     default:
-      runtimeError("Error: Instruction not implemented: 0x%02x.", instruction);
-      return INTERPRET_RUNTIME_ERROR;
+      return runtimeError("Error: Instruction not implemented: 0x%02x.",
+                          instruction);
     }
   }
 

@@ -1,7 +1,7 @@
 CC = clang
 FLAGS := # -t
 SHELL := /bin/bash
-WARN_ERRORS := -Werror -Wno-error=unused-variable -Wno-error=unused-function -Wno-unused-command-line-argument
+WARN_ERRORS := -Werror -Wno-error=unused-variable -Wno-unused-function -Wno-unused-command-line-argument
 CFLAGS := -g -Isrc -I/opt/homebrew/include -L/opt/homebrew/lib -lpcre2-8 -lreadline -Wall $(WARN_ERRORS)
 
 TARGET := .bin/lita
