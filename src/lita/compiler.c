@@ -191,6 +191,17 @@ static void errorAtCurrent(const char *message) {
   errorAt(&parser.current, message);
 }
 
+/** Puts the given value in the constant table and returns its index. */
+static uint8_t makeConstant(Value value) {
+  int constant = addConstant(currentChunk(), value);
+  if (constant > UINT8_MAX) {
+    error("Too many constants in one chunk.");
+    return 0;
+  }
+
+  return (uint8_t)constant;
+}
+
 static void advance() {
   parser.previous = parser.current;
 
@@ -249,52 +260,63 @@ static Value consumeIdent(const char *message) {
   return identifierValue(&parser.previous);
 }
 
-static void emitByte(uint8_t byte) {
+#define emitByte(size) emit_byte_(size, "At " __FILE__ ":" STRINGIFY(__LINE__))
+static void emit_byte_(uint8_t byte, char *comment) {
   Token token = parser.previous;
-  char *comment = NULL;
 
   if (config.debug) {
-    comment = malloc(token.length + 1);
-    strncpy(comment, token.start, token.length);
-    comment[token.length] = '\0';
+    asprintf(&comment, "(%.*s) %s", token.length, token.start, comment);
   }
 
   writeChunk(currentChunk(), byte, token.line, comment);
 }
 
-static void emitBytes(uint8_t byte1, uint8_t byte2) {
-  emitByte(byte1);
-  emitByte(byte2);
+#define emitBytes(a, b)                                                        \
+  emit_bytes_(a, b, "At " __FILE__ ":" STRINGIFY(__LINE__))
+static void emit_bytes_(uint8_t byte1, uint8_t byte2, char *comment) {
+  emit_byte_(byte1, comment);
+  emit_byte_(byte2, comment);
 }
 
-static void emitLoop(int loopStart) {
-  emitByte(OP_LOOP);
+#define emitLoop(start) emitLoop_(start, "At " __FILE__ ":" STRINGIFY(__LINE__))
+static void emitLoop_(int loopStart, char *comment) {
+  emit_byte_(OP_LOOP, comment);
   int offset = currentChunk()->count - loopStart + 2;
   if (offset > UINT16_MAX) error("Loop body too large.");
 
-  emitBytes((offset >> 8) & 0xff, offset & 0xff);
+  emit_bytes_((offset >> 8) & 0xff, offset & 0xff, comment);
 }
 
-static void patchByte(uint8_t byte, int offset) {
-  currentChunk()->code[offset] = byte;
+#define patchByte(byte, offset)                                                \
+  patch_byte_(byte, offset, "At " __FILE__ ":" STRINGIFY(__LINE__))
+static void patch_byte_(uint8_t byte, int offset, char *comment) {
+  Chunk *chunk = currentChunk();
+  chunk->code[offset] = byte;
+  if (chunk->comments) chunk->comments[offset] = comment;
 }
 
-static void patchBytes(uint8_t byte1, uint8_t byte2, int offset) {
-  patchByte(byte1, offset);
-  patchByte(byte2, offset + 1);
+#define patchBytes(byte1, byte2, offset)                                       \
+  patchBytes_(byte1, byte2, offset, "At " __FILE__ ":" STRINGIFY(__LINE__))
+static void patchBytes_(uint8_t byte1, uint8_t byte2, int offset,
+                        char *comment) {
+  patch_byte_(byte1, offset, comment);
+  patch_byte_(byte2, offset + 1, comment);
 }
 
-static void emitSwap(uint8_t a, uint8_t b) {
-  emitBytes(OP_SWAP, (a << 4) | (b & 0x0f));
+#define emitSwap(a, b) emit_swap_(a, b, "At " __FILE__ ":" STRINGIFY(__LINE__))
+static void emit_swap_(uint8_t a, uint8_t b, char *comment) {
+  emit_bytes_(OP_SWAP, (a << 4) | (b & 0x0f), comment);
 }
 
-static void emitDebugStack(const char *tag) {
-  emitBytes(OP_DEBUG_STACK, makeConstant(string(tag)));
+#define emitDebugStack(tag)                                                    \
+  emit_debug_stack_(tag, "At " __FILE__ ":" STRINGIFY(__LINE__))
+static void emit_debug_stack_(const char *tag, char *comment) {
+  emit_bytes_(OP_DEBUG_STACK, makeConstant(string(tag)), comment);
 }
 
 #define assertStackSize(size)                                                  \
-  emitAssertStackSize(size, "At " __FILE__ ":" STRINGIFY(__LINE__))
-static void emitAssertStackSize(u8 size, const char *comment) {
+  assert_stack_size_(size, "At " __FILE__ ":" STRINGIFY(__LINE__))
+static void assert_stack_size_(u8 size, const char *comment) {
   let cmnt = makeConstant(string(comment));
   emitBytes(OP_ASSERT_STACK, cmnt);
   emitByte(size + current->localCount);
@@ -304,27 +326,34 @@ static void emitAssertStackSize(u8 size, const char *comment) {
  * Puts the given value in the constant table and writes an instruction
  * to push it onto the VM stack.
  */
-static void emitConstant(Value value) {
-  emitBytes(OP_CONSTANT, makeConstant(value));
+#define emitConstant(value)                                                    \
+  emit_constant_(value, "At " __FILE__ ":" STRINGIFY(__LINE__))
+static void emit_constant_(Value value, char *comment) {
+  emit_bytes_(OP_CONSTANT, makeConstant(value), comment);
 }
 
-static void emitDefault(Value value) {
-  emitBytes(OP_DEFAULT, makeConstant(value));
+#define emitDefault(value)                                                     \
+  emit_default_(value, "At " __FILE__ ":" STRINGIFY(__LINE__))
+static void emit_default_(Value value, char *comment) {
+  emit_bytes_(OP_DEFAULT, makeConstant(value), comment);
 }
 
-static void emit(Value val) {
-  if (is_nil(val)) return emitByte(OP_NIL);
-  if (is_bool(val)) return emitByte(AS_BOOL(val) ? OP_TRUE : OP_FALSE);
-  return emitConstant(val);
+#define emit(value) emit_(value, "At " __FILE__ ":" STRINGIFY(__LINE__))
+static void emit_(Value val, char *comment) {
+  if (is_nil(val)) return emit_byte_(OP_NIL, comment);
+  if (is_bool(val))
+    return emit_byte_(AS_BOOL(val) ? OP_TRUE : OP_FALSE, comment);
+  return emit_constant_(val, comment);
 }
 
 /**
  * Emits the given JUMP command with a temp `short` operand.
  * Returns the offset pointing to the start of the instruction.
  */
-static int emitJump(uint8_t instruction) {
-  emitByte(instruction);
-  emitBytes(0xff, 0xff);
+#define emitJump(op) emit_jump_(op, "At " __FILE__ ":" STRINGIFY(__LINE__))
+static int emit_jump_(uint8_t instruction, char *comment) {
+  emit_byte_(instruction, comment);
+  emit_bytes_(0xff, 0xff, comment);
   return currentChunk()->count - 3;
 }
 
@@ -335,7 +364,9 @@ static int emitJump(uint8_t instruction) {
  * The new jump operand will point to the next instruction that is
  * emitted after this call to `patchJump`.
  */
-static void patchJump(int offset) {
+#define patchJump(offset)                                                      \
+  patch_jump_(offset, "At " __FILE__ ":" STRINGIFY(__LINE__))
+static void patch_jump_(int offset, char *comment) {
   offset++; // +1 to skip the instruction.
   // -2 to account for the jump offset itself.
   int jump = currentChunk()->count - offset - 2;
@@ -348,7 +379,20 @@ static void patchJump(int offset) {
   // The jump expects a two-byte number representing the number of bytes
   // to jump over in the current chunk. The offset we were given is the offset
   // from the beginning of the chunk.
-  patchBytes((jump >> 8) & 0xff, jump & 0xff, offset);
+  patchBytes_((jump >> 8) & 0xff, jump & 0xff, offset, comment);
+}
+
+#define emitReturn() emit_return_("At " __FILE__ ":" STRINGIFY(__LINE__))
+static void emit_return_(char *comment) {
+  switch (current->type) {
+  case TYPE_INIT:
+  case TYPE_CLASS:
+    emit_bytes_(OP_GET_LOCAL, 0, comment); // init() methods always return self.
+    break;
+  default: emit_byte_(OP_NIL, comment);
+  }
+
+  emit_byte_(OP_RETURN, comment);
 }
 
 static void initCompiler(Compiler *compiler, FunType type, ObjString *name) {
