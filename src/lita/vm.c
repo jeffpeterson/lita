@@ -252,6 +252,7 @@ static InterpretResult move_into_closure(ObjClosure *closure, int argCount) {
     copy_values(vm.stackTop - argCount, existing_frame->slots + 1, argCount);
     vm.stackTop = existing_frame->slots + argCount + 1;
     existing_frame->ip = fun->chunk.code;
+    existing_frame->prev_ip = NULL;
     return INTERPRET_OK;
   }
 

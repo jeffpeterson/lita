@@ -22,23 +22,26 @@ void growChunk(Chunk *chunk, int capacity) {
     chunk->code = GROW_ARRAY(u8, chunk->code, chunk->capacity, capacity);
     chunk->lines = GROW_ARRAY(int, chunk->lines, chunk->capacity, capacity);
     chunk->comments =
-        GROW_ARRAY(char *, chunk->comments, chunk->capacity, capacity);
+        GROW_ARRAY(Value, chunk->comments, chunk->capacity, capacity);
     chunk->capacity = capacity;
   }
+}
+
+void markChunk(Chunk *chunk) {
+  markArray(&chunk->constants);
+  if (chunk->comments)
+    for (int i = 0; i < chunk->capacity; i++) markValue(chunk->comments[i]);
 }
 
 void freeChunk(Chunk *chunk) {
   FREE_ARRAY(u8, chunk->code, chunk->capacity);
   FREE_ARRAY(int, chunk->lines, chunk->capacity);
-  if (chunk->comments) {
-    for (int i = 0; i < chunk->count; i++) free(chunk->comments[i]);
-    FREE_ARRAY(char *, chunk->comments, chunk->capacity);
-  }
+  if (chunk->comments) FREE_ARRAY(Value, chunk->comments, chunk->capacity);
   freeValueArray(&chunk->constants);
   initChunk(chunk);
 }
 
-void writeChunk(Chunk *chunk, u8 byte, int line, char *comment) {
+void writeChunk(Chunk *chunk, u8 byte, int line, Value comment) {
   if (chunk->capacity < chunk->count + 1)
     growChunk(chunk, GROW_CAPACITY(chunk->capacity));
 

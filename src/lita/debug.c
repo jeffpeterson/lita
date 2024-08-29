@@ -141,8 +141,9 @@ int disassembleInstruction(Chunk *chunk, int offset) {
   }
 
   if (chunk->comments && chunk->comments[offset - 1]) {
-    ObjString *str = escape_string(new_string(chunk->comments[offset - 1]));
-    fprintf(stderr, DIM "\t// %s" NO_DIM, str->chars);
+    fprintf(stderr, DIM "\t// ");
+    inspect_value(stderr, chunk->comments[offset - 1]);
+    fprintf(stderr, NO_DIM);
   }
 
   newline();

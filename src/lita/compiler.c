@@ -263,12 +263,13 @@ static Value consumeIdent(const char *message) {
 #define emitByte(size) emit_byte_(size, "At " __FILE__ ":" STRINGIFY(__LINE__))
 static void emit_byte_(uint8_t byte, char *comment) {
   Token token = parser.previous;
+  ObjString *str;
 
-  if (config.debug) {
-    asprintf(&comment, "(%.*s) %s", token.length, token.start, comment);
-  }
+  if (config.debug)
+    str = stringf("(%.*s) %s", token.length, token.start, comment);
+  else str = new_string(comment);
 
-  writeChunk(currentChunk(), byte, token.line, comment);
+  writeChunk(currentChunk(), byte, token.line, OBJ_VAL(str));
 }
 
 #define emitBytes(a, b)                                                        \
@@ -292,7 +293,7 @@ static void emitLoop_(int loopStart, char *comment) {
 static void patch_byte_(uint8_t byte, int offset, char *comment) {
   Chunk *chunk = currentChunk();
   chunk->code[offset] = byte;
-  if (chunk->comments) chunk->comments[offset] = comment;
+  if (chunk->comments) chunk->comments[offset] = string(comment);
 }
 
 #define patchBytes(byte1, byte2, offset)                                       \

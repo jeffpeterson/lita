@@ -81,7 +81,7 @@ typedef struct {
   int capacity;
   u8 *code;
   int *lines;
-  char **comments;
+  Value *comments;
   ValueArray constants;
 } Chunk;
 
@@ -102,9 +102,10 @@ typedef struct OpInfo {
 } OpInfo;
 
 void initChunk(Chunk *chunk);
+void markChunk(Chunk *chunk);
 void freeChunk(Chunk *chunk);
 void growChunk(Chunk *chunk, int capacity);
-void writeChunk(Chunk *chunk, u8 byte, int line, char *comment);
+void writeChunk(Chunk *chunk, u8 byte, int line, Value comment);
 int addConstant(Chunk *chunk, Value value);
 Value get_constant(Chunk *chunk, int id);
 

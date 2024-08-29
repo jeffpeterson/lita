@@ -1,5 +1,5 @@
 class Array
-	fn << (x) = push(x)
+	fn << (x) = this.push(x)
 
 	fn == (b)
 		if length != b.length: return false

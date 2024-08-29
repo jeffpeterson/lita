@@ -25,13 +25,13 @@ static ValueArray constants__lt__lt__1() {
 static Chunk chunk__lt__lt__1() {
   Chunk c;
   initChunk(&c);
-  c.count = 11;
-  c.capacity = 11;
+  c.count = 10;
+  c.capacity = 10;
   u8 code[] = {
-    14, 0, 44, 0, 14, 1, 33, 1, 40, 1, 40,
+    14, 0, 14, 1, 41, 0, 1, 40, 1, 40,
   };
   int lines[] = {
-    2, 2, 2, 2, 2, 2, 2, 2, 2, 4, 4,
+    2, 2, 2, 2, 2, 2, 2, 2, 4, 4,
   };
   c.code = cloneMemory(code, sizeof(code));
   c.lines = cloneMemory(lines, sizeof(lines));

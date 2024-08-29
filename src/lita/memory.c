@@ -93,7 +93,7 @@ void markValue(Value value) {
   if (is_obj(value)) markObject(AS_OBJ(value));
 }
 
-static void markArray(ValueArray *array) {
+void markArray(ValueArray *array) {
   for (int i = 0; i < array->count; i++) {
     markValue(array->values[i]);
   }
@@ -139,7 +139,7 @@ static void blackenObject(Obj *obj) {
   case OBJ_FUN: {
     ObjFun *fun = (ObjFun *)obj;
     markObject((Obj *)fun->name);
-    markArray(&fun->chunk.constants);
+    markChunk(&fun->chunk);
     break;
   }
 
