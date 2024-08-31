@@ -261,7 +261,7 @@ static Value consumeIdent(const char *message) {
 }
 
 #define emitByte(size) emit_byte_(size, "At " __FILE__ ":" STRINGIFY(__LINE__))
-static void emit_byte_(uint8_t byte, char *comment) {
+static void emit_byte_(uint8_t byte, const char *comment) {
   Token token = parser.previous;
   ObjString *str;
 
@@ -274,13 +274,13 @@ static void emit_byte_(uint8_t byte, char *comment) {
 
 #define emitBytes(a, b)                                                        \
   emit_bytes_(a, b, "At " __FILE__ ":" STRINGIFY(__LINE__))
-static void emit_bytes_(uint8_t byte1, uint8_t byte2, char *comment) {
+static void emit_bytes_(uint8_t byte1, uint8_t byte2, const char *comment) {
   emit_byte_(byte1, comment);
   emit_byte_(byte2, comment);
 }
 
 #define emitLoop(start) emitLoop_(start, "At " __FILE__ ":" STRINGIFY(__LINE__))
-static void emitLoop_(int loopStart, char *comment) {
+static void emitLoop_(int loopStart, const char *comment) {
   emit_byte_(OP_LOOP, comment);
   int offset = currentChunk()->count - loopStart + 2;
   if (offset > UINT16_MAX) error("Loop body too large.");
@@ -290,37 +290,38 @@ static void emitLoop_(int loopStart, char *comment) {
 
 #define patchByte(byte, offset)                                                \
   patch_byte_(byte, offset, "At " __FILE__ ":" STRINGIFY(__LINE__))
-static void patch_byte_(uint8_t byte, int offset, char *comment) {
+static void patch_byte_(uint8_t byte, int offset, const char *comment) {
   Chunk *chunk = currentChunk();
   chunk->code[offset] = byte;
   if (chunk->comments) chunk->comments[offset] = string(comment);
 }
 
 #define patchBytes(byte1, byte2, offset)                                       \
-  patchBytes_(byte1, byte2, offset, "At " __FILE__ ":" STRINGIFY(__LINE__))
-static void patchBytes_(uint8_t byte1, uint8_t byte2, int offset,
-                        char *comment) {
+  patch_bytes_(byte1, byte2, offset, "At " __FILE__ ":" STRINGIFY(__LINE__))
+static void patch_bytes_(uint8_t byte1, uint8_t byte2, int offset,
+                         const char *comment) {
   patch_byte_(byte1, offset, comment);
   patch_byte_(byte2, offset + 1, comment);
 }
 
 #define emitSwap(a, b) emit_swap_(a, b, "At " __FILE__ ":" STRINGIFY(__LINE__))
-static void emit_swap_(uint8_t a, uint8_t b, char *comment) {
+static void emit_swap_(uint8_t a, uint8_t b, const char *comment) {
   emit_bytes_(OP_SWAP, (a << 4) | (b & 0x0f), comment);
 }
 
 #define emitDebugStack(tag)                                                    \
   emit_debug_stack_(tag, "At " __FILE__ ":" STRINGIFY(__LINE__))
-static void emit_debug_stack_(const char *tag, char *comment) {
+static void emit_debug_stack_(const char *tag, const char *comment) {
   emit_bytes_(OP_DEBUG_STACK, makeConstant(string(tag)), comment);
 }
 
-#define assertStackSize(size)                                                  \
-  assert_stack_size_(size, "At " __FILE__ ":" STRINGIFY(__LINE__))
-static void assert_stack_size_(u8 size, const char *comment) {
-  let cmnt = makeConstant(string(comment));
-  emitBytes(OP_ASSERT_STACK, cmnt);
-  emitByte(size + current->localCount);
+#define assert_stack_size(size, explain)                                       \
+  assert_stack_size_(size, explain, "At " __FILE__ ":" STRINGIFY(__LINE__))
+static void assert_stack_size_(u8 size, const char *explain,
+                               const char *comment) {
+  let explainv = makeConstant(string(explain));
+  emit_bytes_(OP_ASSERT_STACK, explainv, comment);
+  emit_byte_(size + current->localCount, comment);
 }
 
 /**
@@ -329,18 +330,18 @@ static void assert_stack_size_(u8 size, const char *comment) {
  */
 #define emitConstant(value)                                                    \
   emit_constant_(value, "At " __FILE__ ":" STRINGIFY(__LINE__))
-static void emit_constant_(Value value, char *comment) {
+static void emit_constant_(Value value, const char *comment) {
   emit_bytes_(OP_CONSTANT, makeConstant(value), comment);
 }
 
 #define emitDefault(value)                                                     \
   emit_default_(value, "At " __FILE__ ":" STRINGIFY(__LINE__))
-static void emit_default_(Value value, char *comment) {
+static void emit_default_(Value value, const char *comment) {
   emit_bytes_(OP_DEFAULT, makeConstant(value), comment);
 }
 
 #define emit(value) emit_(value, "At " __FILE__ ":" STRINGIFY(__LINE__))
-static void emit_(Value val, char *comment) {
+static void emit_(Value val, const char *comment) {
   if (is_nil(val)) return emit_byte_(OP_NIL, comment);
   if (is_bool(val))
     return emit_byte_(AS_BOOL(val) ? OP_TRUE : OP_FALSE, comment);
@@ -352,7 +353,7 @@ static void emit_(Value val, char *comment) {
  * Returns the offset pointing to the start of the instruction.
  */
 #define emitJump(op) emit_jump_(op, "At " __FILE__ ":" STRINGIFY(__LINE__))
-static int emit_jump_(uint8_t instruction, char *comment) {
+static int emit_jump_(uint8_t instruction, const char *comment) {
   emit_byte_(instruction, comment);
   emit_bytes_(0xff, 0xff, comment);
   return currentChunk()->count - 3;
@@ -367,7 +368,7 @@ static int emit_jump_(uint8_t instruction, char *comment) {
  */
 #define patchJump(offset)                                                      \
   patch_jump_(offset, "At " __FILE__ ":" STRINGIFY(__LINE__))
-static void patch_jump_(int offset, char *comment) {
+static void patch_jump_(int offset, const char *comment) {
   offset++; // +1 to skip the instruction.
   // -2 to account for the jump offset itself.
   int jump = currentChunk()->count - offset - 2;
@@ -380,7 +381,7 @@ static void patch_jump_(int offset, char *comment) {
   // The jump expects a two-byte number representing the number of bytes
   // to jump over in the current chunk. The offset we were given is the offset
   // from the beginning of the chunk.
-  patchBytes_((jump >> 8) & 0xff, jump & 0xff, offset, comment);
+  patch_bytes_((jump >> 8) & 0xff, jump & 0xff, offset, comment);
 }
 
 #define emitReturn() emit_return_("At " __FILE__ ":" STRINGIFY(__LINE__))
@@ -1246,16 +1247,14 @@ static void funDeclaration() {
   defineVariable(global);
 }
 
-static void varDeclaration() {
+static u8 varDeclaration() {
   uint8_t global = parseVariable("Expect variable name.");
 
-  if (match(TOKEN_EQUAL)) {
-    parseAt(PREC_ASSIGNMENT);
-  } else {
-    emitByte(OP_NIL);
-  }
+  if (match(TOKEN_EQUAL)) parseAt(PREC_ASSIGNMENT);
+  else emitByte(OP_NIL);
 
   defineVariable(global);
+  return global;
 }
 
 static void assert(Ctx *ctx) {
@@ -1326,7 +1325,7 @@ static void forStatement() {
 
 static void ifStatement() {
   expression("Expect expression after 'if'"); // [0 cond]
-  assertStackSize(1);
+  assert_stack_size(1, "if condition");
 
   if (!check(TOKEN_INDENT))
     consume(TOKEN_COLON, "Expect ':' or block after condition.");
@@ -1345,8 +1344,8 @@ static void ifStatement() {
 }
 
 static void match_() {
-  assertStackSize(0);
   expression("Expect expression after 'match'."); // [0 match expr]
+  assert_stack_size(1, "match expression");
   consume(TOKEN_INDENT, "Expect block after match expression.");
 
   int start_jump = emitJump(OP_JUMP); // Jump over the exit jump.
@@ -1365,16 +1364,15 @@ static void match_() {
     if (parseAbove(PREC_ARROW)) { // [match expr][match expr][pattern]
       consume(TOKEN_ARROW, "Expect '->' after pattern.");
       emitByte(OP_MATCH); // [match expr][bool]
-      assertStackSize(2);
+      assert_stack_size(2, "match expr, match result");
 
       int skip_jump = emitJump(
           OP_JUMP_IF_FALSE); // Jump to next pattern if this one doesn't match.
                              // TODO: OP_JUMP_IF_VOID and matching sets locals.
 
       emitBytes(OP_POP, OP_POP); // [] pop match success and match expr
-      assertStackSize(0);
-
       expression("Expected expression after '->'."); // [expr]
+      assert_stack_size(1, "after-match expression");
       skipNewlines();
       emitLoop(exit_jump);
 
@@ -1411,7 +1409,7 @@ static void whileStatement() {
   int loop_start = currentChunk()->count;
 
   expression("Expect expression after 'while'."); // [0 condition]
-  assertStackSize(1);
+  assert_stack_size(1, "while condition");
 
   if (!check(TOKEN_INDENT))
     consume(TOKEN_COLON, "Expect ':' or block after condition.");
@@ -1422,8 +1420,8 @@ static void whileStatement() {
   emitLoop(loop_start); // Loop back to the condition.
 
   patchJump(exit_jump); // Exit the loop.
-  emitByte(OP_POP);     // []
-  assertStackSize(0);
+  assert_stack_size(1, "falsy while condition");
+  emitByte(OP_POP); // []
 }
 
 static void synchronize() {
