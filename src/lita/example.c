@@ -12,7 +12,7 @@ ObjExample *as_example(Value x) {
 }
 
 Value example(const char *comment) {
-  return obj(new_example(new_string(comment)));
+  return obj(new_example(newString(comment)));
 }
 
 ObjExample *new_example(ObjString *comment) {

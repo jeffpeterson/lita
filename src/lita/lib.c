@@ -11,13 +11,13 @@
 #include "vm.h"
 
 _ fn(const char *name, int arity, NativeFn fun) {
-  return obj(newNative(new_string(name), arity, fun));
+  return obj(newNative(newString(name), arity, fun));
 }
 _ memory(u8 *bytes, int length) {
-  return obj(copy_string((char *)bytes, length));
+  return obj(copyString((char *)bytes, length));
 }
 _ num(double num) { return NUMBER_VAL(num); }
-_ str(const char *str) { return obj(new_string(str)); }
+_ str(const char *str) { return obj(newString(str)); }
 
 _ class(_ name) {
   if (!is_string(name)) return nil;

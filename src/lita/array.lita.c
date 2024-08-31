@@ -44,7 +44,7 @@ static Chunk chunk__lt__lt__1() {
 static Value fn__lt__lt__1() {
   ObjFun *f = newFunction();  f->arity = 1;
   f->upvalueCount = 0;
-  f->name = new_string("<<");
+  f->name = newString("<<");
   f->chunk = chunk__lt__lt__1();
   return obj(f);
 }
@@ -82,7 +82,7 @@ static Chunk chunk__eq__eq__2() {
 static Value fn__eq__eq__2() {
   ObjFun *f = newFunction();  f->arity = 1;
   f->upvalueCount = 0;
-  f->name = new_string("==");
+  f->name = newString("==");
   f->chunk = chunk__eq__eq__2();
   return obj(f);
 }
@@ -120,7 +120,7 @@ static Chunk chunk_each_3() {
 static Value fn_each_3() {
   ObjFun *f = newFunction();  f->arity = 1;
   f->upvalueCount = 0;
-  f->name = new_string("each");
+  f->name = newString("each");
   f->chunk = chunk_each_3();
   return obj(f);
 }
@@ -158,7 +158,7 @@ static Chunk chunk_map_4() {
 static Value fn_map_4() {
   ObjFun *f = newFunction();  f->arity = 1;
   f->upvalueCount = 0;
-  f->name = new_string("map");
+  f->name = newString("map");
   f->chunk = chunk_map_4();
   return obj(f);
 }
@@ -196,7 +196,7 @@ static Chunk chunk__dot_print_6() {
 static Value fn__dot_print_6() {
   ObjFun *f = newFunction();  f->arity = 1;
   f->upvalueCount = 1;
-  f->name = new_string(".print");
+  f->name = newString(".print");
   f->chunk = chunk__dot_print_6();
   return obj(f);
 }
@@ -234,7 +234,7 @@ static Chunk chunk_print_5() {
 static Value fn_print_5() {
   ObjFun *f = newFunction();  f->arity = 1;
   f->upvalueCount = 0;
-  f->name = new_string("print");
+  f->name = newString("print");
   f->chunk = chunk_print_5();
   return obj(f);
 }
@@ -272,7 +272,7 @@ static Chunk chunk_src_slash_lita_slash_array_dot_lita_0() {
 static Value fn_src_slash_lita_slash_array_dot_lita_0() {
   ObjFun *f = newFunction();  f->arity = 0;
   f->upvalueCount = 0;
-  f->name = new_string("src/lita/array.lita");
+  f->name = newString("src/lita/array.lita");
   f->chunk = chunk_src_slash_lita_slash_array_dot_lita_0();
   return obj(f);
 }

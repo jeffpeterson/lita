@@ -14,7 +14,7 @@ Value string(const char *str);
 
 ObjString *as_string(let x);
 
-ObjString *new_string(const char *chars);
+ObjString *newString(const char *chars);
 
 /**
  * Reuse some existing allocated (null-terminated) chars
@@ -27,7 +27,7 @@ ObjString *take_string(char *chars, int length);
 /**
  * Copy existing chars into a newly allocated Obj.
  */
-ObjString *copy_string(const char *chars, usize length);
+ObjString *copyString(const char *chars, usize length);
 ObjString *concat_strings(ObjString *a, ObjString *b);
 ObjString *buffer_to_string(Buffer *buf);
 
@@ -35,7 +35,7 @@ ObjString *stringf(const char *fmt, ...);
 ObjString *string_to_c_ident(ObjString *str);
 
 ObjString *escape_string(ObjString *str);
-ObjString *unescape_string(ObjString *str);
+ObjString *unescapeString(ObjString *str);
 
 ObjString *vstring_format(const char *fmt, va_list args);
 ObjString *string_format(const char *fmt, ...);

@@ -85,8 +85,8 @@ typedef struct Local {
 
 /** A local variable that has been closed over by a function. */
 typedef struct ClosedUpvalue {
-  uint8_t index; /** The local slot being closed over. */
-  bool isLocal;  /** Local slot or enclosing upvalue? */
+  u8 index;     /** The local slot being closed over. */
+  bool isLocal; /** Local slot or enclosing upvalue? */
 } ClosedUpvalue;
 
 typedef enum FunType {
@@ -150,12 +150,12 @@ static void popClassCompiler() {
 static Chunk *currentChunk() { return &current->fun->chunk; }
 
 static Value identifierValue(Token *name) {
-  return OBJ_VAL(copy_string(name->start, name->length));
+  return OBJ_VAL(copyString(name->start, name->length));
 }
 
-static Value source_since(const char *start) {
-  return OBJ_VAL(copy_string(start, parser.previous.start +
-                                        parser.previous.length - start));
+static Value sourceSince(const char *start) {
+  return OBJ_VAL(copyString(start, parser.previous.start +
+                                       parser.previous.length - start));
 }
 
 static void errorAt(Token *token, const char *message) {
@@ -192,14 +192,14 @@ static void errorAtCurrent(const char *message) {
 }
 
 /** Puts the given value in the constant table and returns its index. */
-static uint8_t makeConstant(Value value) {
+static u8 makeConstant(Value value) {
   int constant = addConstant(currentChunk(), value);
   if (constant > UINT8_MAX) {
     error("Too many constants in one chunk.");
     return 0;
   }
 
-  return (uint8_t)constant;
+  return (u8)constant;
 }
 
 static void advance() {
@@ -219,7 +219,7 @@ static void advance() {
 }
 
 /** Was the current token touching the previous token? */
-static bool is_touching() { return !parser.current.had_gap; }
+static bool isTouching() { return !parser.current.hadGap; }
 
 /** Is this the type of the current token? */
 static bool check(TokenType type) { return parser.current.type == type; }
@@ -260,68 +260,66 @@ static Value consumeIdent(const char *message) {
   return identifierValue(&parser.previous);
 }
 
-#define emitByte(size) emit_byte_(size, "At " __FILE__ ":" STRINGIFY(__LINE__))
-static void emit_byte_(uint8_t byte, const char *comment) {
+#define emitByte(size) emitByte_(size, "At " __FILE__ ":" STRINGIFY(__LINE__))
+static void emitByte_(u8 byte, const char *comment) {
   Token token = parser.previous;
   ObjString *str;
 
   if (config.debug)
     str = stringf("(%.*s) %s", token.length, token.start, comment);
-  else str = new_string(comment);
+  else str = newString(comment);
 
   writeChunk(currentChunk(), byte, token.line, OBJ_VAL(str));
 }
 
-#define emitBytes(a, b)                                                        \
-  emit_bytes_(a, b, "At " __FILE__ ":" STRINGIFY(__LINE__))
-static void emit_bytes_(uint8_t byte1, uint8_t byte2, const char *comment) {
-  emit_byte_(byte1, comment);
-  emit_byte_(byte2, comment);
+#define emitBytes(a, b) emitBytes_(a, b, "At " __FILE__ ":" STRINGIFY(__LINE__))
+static void emitBytes_(u8 byte1, u8 byte2, const char *comment) {
+  emitByte_(byte1, comment);
+  emitByte_(byte2, comment);
 }
 
 #define emitLoop(start) emitLoop_(start, "At " __FILE__ ":" STRINGIFY(__LINE__))
 static void emitLoop_(int loopStart, const char *comment) {
-  emit_byte_(OP_LOOP, comment);
+  emitByte_(OP_LOOP, comment);
   int offset = currentChunk()->count - loopStart + 2;
   if (offset > UINT16_MAX) error("Loop body too large.");
 
-  emit_bytes_((offset >> 8) & 0xff, offset & 0xff, comment);
+  emitBytes_((offset >> 8) & 0xff, offset & 0xff, comment);
 }
 
 #define patchByte(byte, offset)                                                \
-  patch_byte_(byte, offset, "At " __FILE__ ":" STRINGIFY(__LINE__))
-static void patch_byte_(uint8_t byte, int offset, const char *comment) {
+  patchByte_(byte, offset, "At " __FILE__ ":" STRINGIFY(__LINE__))
+static void patchByte_(u8 byte, int offset, const char *comment) {
   Chunk *chunk = currentChunk();
   chunk->code[offset] = byte;
   if (chunk->comments) chunk->comments[offset] = string(comment);
 }
 
 #define patchBytes(byte1, byte2, offset)                                       \
-  patch_bytes_(byte1, byte2, offset, "At " __FILE__ ":" STRINGIFY(__LINE__))
-static void patch_bytes_(uint8_t byte1, uint8_t byte2, int offset,
-                         const char *comment) {
-  patch_byte_(byte1, offset, comment);
-  patch_byte_(byte2, offset + 1, comment);
+  patchBytes_(byte1, byte2, offset, "At " __FILE__ ":" STRINGIFY(__LINE__))
+static void patchBytes_(u8 byte1, u8 byte2, int offset, const char *comment) {
+  patchByte_(byte1, offset, comment);
+  patchByte_(byte2, offset + 1, comment);
 }
 
-#define emitSwap(a, b) emit_swap_(a, b, "At " __FILE__ ":" STRINGIFY(__LINE__))
-static void emit_swap_(uint8_t a, uint8_t b, const char *comment) {
-  emit_bytes_(OP_SWAP, (a << 4) | (b & 0x0f), comment);
+#define emitSwap(a, b) emitSwap_(a, b, "At " __FILE__ ":" STRINGIFY(__LINE__))
+static void emitSwap_(u8 a, u8 b, const char *comment) {
+  emitBytes_(OP_SWAP, (a << 4) | (b & 0x0f), comment);
 }
 
 #define emitDebugStack(tag)                                                    \
-  emit_debug_stack_(tag, "At " __FILE__ ":" STRINGIFY(__LINE__))
-static void emit_debug_stack_(const char *tag, const char *comment) {
-  emit_bytes_(OP_DEBUG_STACK, makeConstant(string(tag)), comment);
+  emitDebugStack_(tag, "At " __FILE__ ":" STRINGIFY(__LINE__))
+static void emitDebugStack_(const char *tag, const char *comment) {
+  emitBytes_(OP_DEBUG_STACK, makeConstant(string(tag)), comment);
 }
 
-#define assert_stack_size(size, explain)                                       \
-  assert_stack_size_(size, explain, "At " __FILE__ ":" STRINGIFY(__LINE__))
-static void assert_stack_size_(u8 size, const char *explain,
-                               const char *comment) {
+#define assertStackSize(size, explain)                                         \
+  assertStackSize_(size, explain, "At " __FILE__ ":" STRINGIFY(__LINE__))
+static void assertStackSize_(u8 size, const char *explain,
+                             const char *comment) {
   let explainv = makeConstant(string(explain));
-  emit_bytes_(OP_ASSERT_STACK, explainv, comment);
-  emit_byte_(size + current->localCount, comment);
+  emitBytes_(OP_ASSERT_STACK, explainv, comment);
+  emitByte_(size + current->localCount, comment);
 }
 
 /**
@@ -329,33 +327,33 @@ static void assert_stack_size_(u8 size, const char *explain,
  * to push it onto the VM stack.
  */
 #define emitConstant(value)                                                    \
-  emit_constant_(value, "At " __FILE__ ":" STRINGIFY(__LINE__))
-static void emit_constant_(Value value, const char *comment) {
-  emit_bytes_(OP_CONSTANT, makeConstant(value), comment);
+  emitConstant_(value, "At " __FILE__ ":" STRINGIFY(__LINE__))
+static void emitConstant_(Value value, const char *comment) {
+  emitBytes_(OP_CONSTANT, makeConstant(value), comment);
 }
 
 #define emitDefault(value)                                                     \
-  emit_default_(value, "At " __FILE__ ":" STRINGIFY(__LINE__))
-static void emit_default_(Value value, const char *comment) {
-  emit_bytes_(OP_DEFAULT, makeConstant(value), comment);
+  emitDefault_(value, "At " __FILE__ ":" STRINGIFY(__LINE__))
+static void emitDefault_(Value value, const char *comment) {
+  emitBytes_(OP_DEFAULT, makeConstant(value), comment);
 }
 
 #define emit(value) emit_(value, "At " __FILE__ ":" STRINGIFY(__LINE__))
 static void emit_(Value val, const char *comment) {
-  if (is_nil(val)) return emit_byte_(OP_NIL, comment);
+  if (is_nil(val)) return emitByte_(OP_NIL, comment);
   if (is_bool(val))
-    return emit_byte_(AS_BOOL(val) ? OP_TRUE : OP_FALSE, comment);
-  return emit_constant_(val, comment);
+    return emitByte_(AS_BOOL(val) ? OP_TRUE : OP_FALSE, comment);
+  return emitConstant_(val, comment);
 }
 
 /**
  * Emits the given JUMP command with a temp `short` operand.
  * Returns the offset pointing to the start of the instruction.
  */
-#define emitJump(op) emit_jump_(op, "At " __FILE__ ":" STRINGIFY(__LINE__))
-static int emit_jump_(uint8_t instruction, const char *comment) {
-  emit_byte_(instruction, comment);
-  emit_bytes_(0xff, 0xff, comment);
+#define emitJump(op) emitJump_(op, "At " __FILE__ ":" STRINGIFY(__LINE__))
+static int emitJump_(u8 instruction, const char *comment) {
+  emitByte_(instruction, comment);
+  emitBytes_(0xff, 0xff, comment);
   return currentChunk()->count - 3;
 }
 
@@ -367,8 +365,8 @@ static int emit_jump_(uint8_t instruction, const char *comment) {
  * emitted after this call to `patchJump`.
  */
 #define patchJump(offset)                                                      \
-  patch_jump_(offset, "At " __FILE__ ":" STRINGIFY(__LINE__))
-static void patch_jump_(int offset, const char *comment) {
+  patchJump_(offset, "At " __FILE__ ":" STRINGIFY(__LINE__))
+static void patchJump_(int offset, const char *comment) {
   offset++; // +1 to skip the instruction.
   // -2 to account for the jump offset itself.
   int jump = currentChunk()->count - offset - 2;
@@ -381,20 +379,20 @@ static void patch_jump_(int offset, const char *comment) {
   // The jump expects a two-byte number representing the number of bytes
   // to jump over in the current chunk. The offset we were given is the offset
   // from the beginning of the chunk.
-  patch_bytes_((jump >> 8) & 0xff, jump & 0xff, offset, comment);
+  patchBytes_((jump >> 8) & 0xff, jump & 0xff, offset, comment);
 }
 
-#define emitReturn() emit_return_("At " __FILE__ ":" STRINGIFY(__LINE__))
-static void emit_return_(char *comment) {
+#define emitReturn() emitReturn_("At " __FILE__ ":" STRINGIFY(__LINE__))
+static void emitReturn_(char *comment) {
   switch (current->type) {
   case TYPE_INIT:
   case TYPE_CLASS:
-    emit_bytes_(OP_GET_LOCAL, 0, comment); // init() methods always return self.
+    emitBytes_(OP_GET_LOCAL, 0, comment); // init() methods always return self.
     break;
-  default: emit_byte_(OP_NIL, comment);
+  default: emitByte_(OP_NIL, comment);
   }
 
-  emit_byte_(OP_RETURN, comment);
+  emitByte_(OP_RETURN, comment);
 }
 
 static void initCompiler(Compiler *compiler, FunType type, ObjString *name) {
@@ -480,7 +478,7 @@ static void endScope() {
 }
 
 /** Adds the token to the constants table. */
-static uint8_t identifierConstant(Token *name) {
+static u8 identifierConstant(Token *name) {
   return makeConstant(identifierValue(name));
 }
 
@@ -516,7 +514,7 @@ static int resolveLocal(Compiler *compiler, Token *name) {
  *
  * @param index Slot index of the local variable we are closing over.
  */
-static int addUpvalue(Compiler *compiler, uint8_t index, bool isLocal) {
+static int addUpvalue(Compiler *compiler, u8 index, bool isLocal) {
   int upvalueCount = compiler->fun->upvalueCount;
 
   // Re-use existing upvalues referring to the same slot index.
@@ -549,12 +547,12 @@ static int resolveUpvalue(Compiler *compiler, Token *name) {
   int local = resolveLocal(compiler->enclosing, name);
   if (local != -1) {
     compiler->enclosing->locals[local].isCaptured = true;
-    return addUpvalue(compiler, (uint8_t)local, true);
+    return addUpvalue(compiler, (u8)local, true);
   }
 
   // Close over an upvalue in the enclosing scope.
   int upvalue = resolveUpvalue(compiler->enclosing, name);
-  if (upvalue != -1) return addUpvalue(compiler, (uint8_t)upvalue, false);
+  if (upvalue != -1) return addUpvalue(compiler, (u8)upvalue, false);
 
   // Not found, must be global.
   return -1;
@@ -610,7 +608,7 @@ static u8 parseVariable(const char *errorMessage) {
  * At runtime, local variables point to that value on the stack, and global
  * variables pop the value and put in the the globals table.
  */
-static void defineVariable(uint8_t global) {
+static void defineVariable(u8 global) {
   if (current->scopeDepth > 0) {
     markDefined();
     return;
@@ -646,7 +644,7 @@ static bool parseAt(Precedence precedence) {
     if (rule->precedence <= precedence)
       break; // We are the LHS to the next token.
 
-    // if (rule->precedence >= PREC_TOUCHING && !is_touching()) break;
+    // if (rule->precedence >= PREC_TOUCHING && !isTouching()) break;
 
     advance();
     ParseFn *infix = rule->infix;
@@ -686,8 +684,8 @@ static void statement();
 static void declaration();
 
 /** Parse arguments being passed to a function. */
-static uint8_t argumentList() {
-  uint8_t argCount = 0;
+static u8 argumentList() {
+  u8 argCount = 0;
   if (!check(TOKEN_RIGHT_PAREN)) {
     do {
       parseAbove(PREC_COMMA);
@@ -703,7 +701,7 @@ static uint8_t argumentList() {
  * `binary` means the setOp and getOp require the current value
  * on the stack to function properly.
  */
-static bool assignment(Ctx *ctx, OpCode getOp, OpCode setOp, uint8_t arg,
+static bool assignment(Ctx *ctx, OpCode getOp, OpCode setOp, u8 arg,
                        bool binary) {
   if (!ctx->canAssign) return false;
 
@@ -813,8 +811,8 @@ static void binary(Ctx *ctx) {
   case TOKEN_STAR: emitByte(OP_MULTIPLY); break;
   case TOKEN_SLASH: emitByte(OP_DIVIDE); break;
   default: {
-    uint8_t name =
-        makeConstant(OBJ_VAL(copy_string(operator.start, operator.length)));
+    u8 name =
+        makeConstant(OBJ_VAL(copyString(operator.start, operator.length)));
     emitBytes(OP_INVOKE, name);
     emitByte(1); // argc
   }
@@ -822,7 +820,7 @@ static void binary(Ctx *ctx) {
 }
 
 static void call(Ctx *ctx) {
-  uint8_t argCount = argumentList();
+  u8 argCount = argumentList();
   emitBytes(OP_CALL, argCount);
 }
 
@@ -834,7 +832,7 @@ static void semi(Ctx *ctx) {
 
 /** Left-associative. */
 static void tuple(Ctx *ctx) {
-  uint8_t length = 1;
+  u8 length = 1;
   do {
     parseAbove(PREC_COMMA);
     length++;
@@ -844,29 +842,29 @@ static void tuple(Ctx *ctx) {
 }
 
 static void dot(Ctx *ctx) {
-  uint8_t name = makeConstant(consumeIdent("Expect property name after '.'"));
+  u8 name = makeConstant(consumeIdent("Expect property name after '.'"));
 
   if (assignment(ctx, OP_GET_PROPERTY, OP_SET_PROPERTY, name, true)) return;
 
   else if (match(TOKEN_LEFT_PAREN)) {
-    uint8_t argCount = argumentList();
+    u8 argCount = argumentList();
     emitBytes(OP_INVOKE, name);
     emitByte(argCount);
   } else emitBytes(OP_GET_PROPERTY, name);
 }
 
-static void dot_sugar(Ctx *ctx) {
+static void dotSugar(Ctx *ctx) {
   Token dot = parser.previous;
-  let method_name = consumeIdent("Expect property name after '.'");
-  let fn_name = source_since(dot.start);
+  let methodName = consumeIdent("Expect property name after '.'");
+  let fnName = sourceSince(dot.start);
 
   Compiler compiler;
 
-  initCompiler(&compiler, TYPE_FUNCTION, AS_STRING(fn_name));
+  initCompiler(&compiler, TYPE_FUNCTION, AS_STRING(fnName));
   beginScope();
 
-  u8 name_constant = makeConstant(method_name);
-  trace("dot_sugar name const", NUMBER_VAL(name_constant));
+  u8 nameConstant = makeConstant(methodName);
+  trace("dotSugar name const", NUMBER_VAL(nameConstant));
 
   current->fun->arity++;
   declareVariable();
@@ -875,10 +873,10 @@ static void dot_sugar(Ctx *ctx) {
   emitBytes(OP_GET_LOCAL, 1);
 
   if (match(TOKEN_LEFT_PAREN)) {
-    uint8_t argc = argumentList();
-    emitBytes(OP_INVOKE, name_constant);
+    u8 argc = argumentList();
+    emitBytes(OP_INVOKE, nameConstant);
     emitByte(argc);
-  } else emitBytes(OP_GET_PROPERTY, name_constant);
+  } else emitBytes(OP_GET_PROPERTY, nameConstant);
 
   emitByte(OP_RETURN);
 
@@ -935,10 +933,10 @@ static void print(Ctx *ctx) {
 
 static void backticks(Ctx *ctx) {
   Token token = parser.previous;
-  ObjString *source = copy_string(token.start + 1, token.length - 2);
+  ObjString *source = copyString(token.start + 1, token.length - 2);
 
 #if ENABLE_REGEX
-  ObjRegex *reg = make_regex(source);
+  ObjRegex *reg = makeRegex(source);
   emitConstant(OBJ_VAL(reg));
 #else
   error("Regex not enabled.");
@@ -947,16 +945,16 @@ static void backticks(Ctx *ctx) {
 
 static void string_(Ctx *ctx) {
   Token token = parser.previous;
-  ObjString *str = copy_string(token.start + 1, token.length - 2);
-  if (token.escaped) str = unescape_string(str);
+  ObjString *str = copyString(token.start + 1, token.length - 2);
+  if (token.escaped) str = unescapeString(str);
   emitConstant(OBJ_VAL(str));
 }
 
 static void symbol(Ctx *ctx) {
   advance();
   Token token = parser.previous;
-  ObjString *str = copy_string(token.start, token.length);
-  if (token.escaped) str = unescape_string(str);
+  ObjString *str = copyString(token.start, token.length);
+  if (token.escaped) str = unescapeString(str);
   emitConstant(OBJ_VAL(str));
 }
 
@@ -967,7 +965,7 @@ static void symbol(Ctx *ctx) {
  * Will also parse any following assignment operators if canAssign is true.
  */
 static void namedVariable(Token name, Ctx *ctx) {
-  uint8_t getOp, setOp;
+  u8 getOp, setOp;
   int arg = resolveLocal(current, &name);
 
   if (arg != -1) {
@@ -1024,7 +1022,7 @@ static void super_(Ctx *ctx) {
   namedVariable(syntheticToken("this"), ctx);
 
   if (match(TOKEN_LEFT_PAREN)) {
-    uint8_t argCount = argumentList();
+    u8 argCount = argumentList();
     namedVariable(syntheticToken("super"), ctx);
     emitBytes(OP_SUPER_INVOKE, name);
     emitByte(argCount);
@@ -1078,9 +1076,9 @@ static void block() {
 
 static void function(FunType type) {
   Compiler compiler;
-  ObjString *name = type == TYPE_CLASS ? new_string("init")
-                                       : copy_string(parser.previous.start,
-                                                     parser.previous.length);
+  ObjString *name = type == TYPE_CLASS ? newString("init")
+                                       : copyString(parser.previous.start,
+                                                    parser.previous.length);
 
   initCompiler(&compiler, type, name);
   beginScope();
@@ -1090,7 +1088,7 @@ static void function(FunType type) {
       do {
         if (match(TOKEN_ELLIPSIS)) {
           compiler.fun->variadic = true;
-          uint8_t constant = 0;
+          u8 constant = 0;
           if (check(TOKEN_IDENTIFIER))
             constant = parseVariable("Expect parameter name after \"...\".");
           else declareVariable();
@@ -1102,7 +1100,7 @@ static void function(FunType type) {
         if (current->fun->arity > 255)
           errorAtCurrent("Can't have more than 255 parameters.");
 
-        uint8_t constant = parseVariable("Expect parameter name.");
+        u8 constant = parseVariable("Expect parameter name.");
         defineVariable(constant);
       } while (match(TOKEN_COMMA));
     }
@@ -1145,19 +1143,19 @@ static void getter() {
   let name = consumeIdent("Expect property name.");
 
   if (match(TOKEN_EQUAL)) {
-    u8 name_constant = makeConstant(name);
+    u8 nameConstant = makeConstant(name);
     Compiler compiler;
 
     initCompiler(&compiler, TYPE_METHOD, as_string(name));
     beginScope();
     expression("Expect expression after `let ... =`.");
-    emitBytes(OP_SET_PROPERTY, name_constant);
+    emitBytes(OP_SET_PROPERTY, nameConstant);
     emitByte(OP_RETURN);
 
     ObjFun *fun = endCompiler();
     emitBytes(OP_CLOSURE, makeConstant(OBJ_VAL(fun)));
 
-    emitBytes(OP_METHOD, name_constant);
+    emitBytes(OP_METHOD, nameConstant);
   }
 
   skipNewlines();
@@ -1166,9 +1164,9 @@ static void getter() {
 static void method() {
   if (match(TOKEN_LET)) return getter();
 
-  bool is_c = match(TOKEN_CFN);
+  bool isC = match(TOKEN_CFN);
 
-  is_c || match(TOKEN_FN); // optional
+  isC || match(TOKEN_FN); // optional
   consumeIdent("Expect method name.");
 
   u8 constant = identifierConstant(&parser.previous);
@@ -1191,7 +1189,7 @@ static void method() {
 static void classDeclaration(Ctx *ctx) {
   Value name = consumeIdent("Expect class name.");
   Token className = parser.previous;
-  uint8_t nameConstant = makeConstant(name);
+  u8 nameConstant = makeConstant(name);
 
   bool isLocal = declareVariable();
   emitBytes(OP_CLASS, nameConstant);
@@ -1205,7 +1203,7 @@ static void classDeclaration(Ctx *ctx) {
   // Parse inline init
   if (check(TOKEN_LEFT_PAREN)) {
     function(TYPE_CLASS);
-    Value init = OBJ_VAL(new_string("init"));
+    Value init = OBJ_VAL(newString("init"));
     emitBytes(OP_METHOD, makeConstant(init));
   }
 
@@ -1242,14 +1240,14 @@ static void classDeclaration(Ctx *ctx) {
 }
 
 static void funDeclaration() {
-  uint8_t global = parseVariable("Expect function name.");
+  u8 global = parseVariable("Expect function name.");
   markDefined();
   function(TYPE_FUNCTION);
   defineVariable(global);
 }
 
 static u8 varDeclaration() {
-  uint8_t global = parseVariable("Expect variable name.");
+  u8 global = parseVariable("Expect variable name.");
 
   if (match(TOKEN_EQUAL)) parseAt(PREC_ASSIGNMENT);
   else emitByte(OP_NIL);
@@ -1268,7 +1266,7 @@ static void assert(Ctx *ctx) {
   else if (!parseAt(ctx->precedence))
     return error("Expect expression after assert.");
 
-  emitBytes(OP_ASSERT, makeConstant(source_since(start)));
+  emitBytes(OP_ASSERT, makeConstant(sourceSince(start)));
 }
 
 // for ;;i++:
@@ -1276,7 +1274,7 @@ static void forStatement() {
   beginScope();
   // Todo: for-in loops
   // for x in 1..5:
-  // uint8_t global = parseVariable("Expect variable after 'for'.");
+  // u8 global = parseVariable("Expect variable after 'for'.");
   // consume(TOKEN_IN, "Expect 'in' after variable in for clause.");
 
   if (match(TOKEN_LET)) varDeclaration();           // [-1 local var][]
@@ -1326,7 +1324,7 @@ static void forStatement() {
 
 static void ifStatement() {
   expression("Expect expression after 'if'"); // [0 cond]
-  assert_stack_size(1, "if condition");
+  assertStackSize(1, "if condition");
 
   if (!check(TOKEN_INDENT))
     consume(TOKEN_COLON, "Expect ':' or block after condition.");
@@ -1346,12 +1344,12 @@ static void ifStatement() {
 
 static void match_() {
   expression("Expect expression after 'match'."); // [0 match expr]
-  assert_stack_size(1, "match expression");
+  assertStackSize(1, "match expression");
   consume(TOKEN_INDENT, "Expect block after match expression.");
 
-  int start_jump = emitJump(OP_JUMP); // Jump over the exit jump.
-  int exit_jump = emitJump(OP_JUMP);  // Below, we use this to exit.
-  patchJump(start_jump);
+  int startJump = emitJump(OP_JUMP); // Jump over the exit jump.
+  int exitJump = emitJump(OP_JUMP);  // Below, we use this to exit.
+  patchJump(startJump);
 
   // For each pattern in the match block:
   while (!check(TOKEN_DEDENT) && !check(TOKEN_EOF) && !check(TOKEN_ELSE)) {
@@ -1365,19 +1363,19 @@ static void match_() {
     if (parseAbove(PREC_ARROW)) { // [match expr][match expr][pattern]
       consume(TOKEN_ARROW, "Expect '->' after pattern.");
       emitByte(OP_MATCH); // [match expr][bool]
-      assert_stack_size(2, "match expr, match result");
+      assertStackSize(2, "match expr, match result");
 
-      int skip_jump = emitJump(
+      int skipJump = emitJump(
           OP_JUMP_IF_FALSE); // Jump to next pattern if this one doesn't match.
                              // TODO: OP_JUMP_IF_VOID and matching sets locals.
 
       emitBytes(OP_POP, OP_POP); // [] pop match success and match expr
       expression("Expected expression after '->'."); // [expr]
-      assert_stack_size(1, "after-match expression");
+      assertStackSize(1, "after-match expression");
       skipNewlines();
-      emitLoop(exit_jump);
+      emitLoop(exitJump);
 
-      patchJump(skip_jump);
+      patchJump(skipJump);
       emitByte(OP_POP); // [match expr] Pop the match failure.
     } else {
       error("Expect pattern and then '->'.");
@@ -1390,7 +1388,7 @@ static void match_() {
     expression("Expected expression after 'else'."); // [expr]
   }
 
-  patchJump(exit_jump);
+  patchJump(exitJump);
   consume(TOKEN_DEDENT, "Expect dedent after match block.");
 }
 
@@ -1407,21 +1405,21 @@ static void return_() {
 }
 
 static void whileStatement() {
-  int loop_start = currentChunk()->count;
+  int loopStart = currentChunk()->count;
 
   expression("Expect expression after 'while'."); // [0 condition]
-  assert_stack_size(1, "while condition");
+  assertStackSize(1, "while condition");
 
   if (!check(TOKEN_INDENT))
     consume(TOKEN_COLON, "Expect ':' or block after condition.");
 
-  int exit_jump = emitJump(OP_JUMP_IF_FALSE);
-  emitByte(OP_POP);     // []
-  statement();          // []
-  emitLoop(loop_start); // Loop back to the condition.
+  int exitJump = emitJump(OP_JUMP_IF_FALSE);
+  emitByte(OP_POP);    // []
+  statement();         // []
+  emitLoop(loopStart); // Loop back to the condition.
 
-  patchJump(exit_jump); // Exit the loop.
-  assert_stack_size(1, "falsy while condition");
+  patchJump(exitJump); // Exit the loop.
+  assertStackSize(1, "falsy while condition");
   emitByte(OP_POP); // []
 }
 
@@ -1511,7 +1509,7 @@ ObjFun *compile(const char *source, ObjString *name) {
   if (match(TOKEN_EOF)) emitByte(OP_NIL);
   while (!match(TOKEN_EOF)) declaration();
 
-  assert_stack_size(1, "script return value");
+  assertStackSize(1, "script return value");
   emitByte(OP_RETURN);
   ObjFun *fun = endCompiler();
   return parser.hadError ? NULL : fun;
@@ -1587,7 +1585,7 @@ ParseRule rules[] = {
     [TOKEN_PLUS_PLUS] = {prefix, postfix, PREC_PREFIX},
     [TOKEN_MINUS_MINUS] = {prefix, postfix, PREC_PREFIX},
 
-    [TOKEN_DOT] = {dot_sugar, dot, PREC_DOT},
+    [TOKEN_DOT] = {dotSugar, dot, PREC_DOT},
 
     [TOKEN_LEFT_PAREN] = {grouping, call, PREC_CALL},
 };

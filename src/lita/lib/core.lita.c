@@ -44,7 +44,7 @@ static Chunk chunk_string_1() {
 static Value fn_string_1() {
   ObjFun *f = newFunction();  f->arity = 0;
   f->upvalueCount = 0;
-  f->name = new_string("string");
+  f->name = newString("string");
   f->chunk = chunk_string_1();
   return obj(f);
 }
@@ -82,7 +82,7 @@ static Chunk chunk_dump_2() {
 static Value fn_dump_2() {
   ObjFun *f = newFunction();  f->arity = 0;
   f->upvalueCount = 0;
-  f->name = new_string("dump");
+  f->name = newString("dump");
   f->chunk = chunk_dump_2();
   return obj(f);
 }
@@ -120,7 +120,7 @@ static Chunk chunk_dump_3() {
 static Value fn_dump_3() {
   ObjFun *f = newFunction();  f->arity = 0;
   f->upvalueCount = 0;
-  f->name = new_string("dump");
+  f->name = newString("dump");
   f->chunk = chunk_dump_3();
   return obj(f);
 }
@@ -158,7 +158,7 @@ static Chunk chunk_dump_global_4() {
 static Value fn_dump_global_4() {
   ObjFun *f = newFunction();  f->arity = 0;
   f->upvalueCount = 0;
-  f->name = new_string("dump_global");
+  f->name = newString("dump_global");
   f->chunk = chunk_dump_global_4();
   return obj(f);
 }
@@ -196,7 +196,7 @@ static Chunk chunk_string_5() {
 static Value fn_string_5() {
   ObjFun *f = newFunction();  f->arity = 0;
   f->upvalueCount = 0;
-  f->name = new_string("string");
+  f->name = newString("string");
   f->chunk = chunk_string_5();
   return obj(f);
 }
@@ -234,7 +234,7 @@ static Chunk chunk_print_6() {
 static Value fn_print_6() {
   ObjFun *f = newFunction();  f->arity = 1;
   f->upvalueCount = 0;
-  f->name = new_string("print");
+  f->name = newString("print");
   f->chunk = chunk_print_6();
   return obj(f);
 }
@@ -272,7 +272,7 @@ static Chunk chunk_dump_7() {
 static Value fn_dump_7() {
   ObjFun *f = newFunction();  f->arity = 0;
   f->upvalueCount = 0;
-  f->name = new_string("dump");
+  f->name = newString("dump");
   f->chunk = chunk_dump_7();
   return obj(f);
 }
@@ -310,7 +310,7 @@ static Chunk chunk_dump_8() {
 static Value fn_dump_8() {
   ObjFun *f = newFunction();  f->arity = 0;
   f->upvalueCount = 0;
-  f->name = new_string("dump");
+  f->name = newString("dump");
   f->chunk = chunk_dump_8();
   return obj(f);
 }
@@ -348,7 +348,7 @@ static Chunk chunk_print_9() {
 static Value fn_print_9() {
   ObjFun *f = newFunction();  f->arity = 1;
   f->upvalueCount = 0;
-  f->name = new_string("print");
+  f->name = newString("print");
   f->chunk = chunk_print_9();
   return obj(f);
 }
@@ -386,7 +386,7 @@ static Chunk chunk_inspect_10() {
 static Value fn_inspect_10() {
   ObjFun *f = newFunction();  f->arity = 0;
   f->upvalueCount = 0;
-  f->name = new_string("inspect");
+  f->name = newString("inspect");
   f->chunk = chunk_inspect_10();
   return obj(f);
 }
@@ -424,7 +424,7 @@ static Chunk chunk_init_11() {
 static Value fn_init_11() {
   ObjFun *f = newFunction();  f->arity = 3;
   f->upvalueCount = 0;
-  f->name = new_string("init");
+  f->name = newString("init");
   f->chunk = chunk_init_11();
   return obj(f);
 }
@@ -462,7 +462,7 @@ static Chunk chunk_src_slash_lita_slash_lib_slash_core_dot_lita_0() {
 static Value fn_src_slash_lita_slash_lib_slash_core_dot_lita_0() {
   ObjFun *f = newFunction();  f->arity = 0;
   f->upvalueCount = 0;
-  f->name = new_string("src/lita/lib/core.lita");
+  f->name = newString("src/lita/lib/core.lita");
   f->chunk = chunk_src_slash_lita_slash_lib_slash_core_dot_lita_0();
   return obj(f);
 }

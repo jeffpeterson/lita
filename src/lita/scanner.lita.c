@@ -39,7 +39,7 @@ static Chunk chunk_reset_scanner_1() {
 static Value fn_reset_scanner_1() {
   ObjFun *f = newFunction();  f->arity = 0;
   f->upvalueCount = 0;
-  f->name = new_string("reset_scanner");
+  f->name = newString("reset_scanner");
   f->chunk = chunk_reset_scanner_1();
   return obj(f);
 }
@@ -77,7 +77,7 @@ static Chunk chunk_init_2() {
 static Value fn_init_2() {
   ObjFun *f = newFunction();  f->arity = 4;
   f->upvalueCount = 0;
-  f->name = new_string("init");
+  f->name = newString("init");
   f->chunk = chunk_init_2();
   return obj(f);
 }
@@ -115,7 +115,7 @@ static Chunk chunk_previous_3() {
 static Value fn_previous_3() {
   ObjFun *f = newFunction();  f->arity = 0;
   f->upvalueCount = 0;
-  f->name = new_string("previous");
+  f->name = newString("previous");
   f->chunk = chunk_previous_3();
   return obj(f);
 }
@@ -153,7 +153,7 @@ static Chunk chunk_current_4() {
 static Value fn_current_4() {
   ObjFun *f = newFunction();  f->arity = 0;
   f->upvalueCount = 0;
-  f->name = new_string("current");
+  f->name = newString("current");
   f->chunk = chunk_current_4();
   return obj(f);
 }
@@ -189,7 +189,7 @@ static Chunk chunk_inside_5() {
 static Value fn_inside_5() {
   ObjFun *f = newFunction();  f->arity = 0;
   f->upvalueCount = 0;
-  f->name = new_string("inside");
+  f->name = newString("inside");
   f->chunk = chunk_inside_5();
   return obj(f);
 }
@@ -227,7 +227,7 @@ static Chunk chunk_position_6() {
 static Value fn_position_6() {
   ObjFun *f = newFunction();  f->arity = 0;
   f->upvalueCount = 0;
-  f->name = new_string("position");
+  f->name = newString("position");
   f->chunk = chunk_position_6();
   return obj(f);
 }
@@ -265,7 +265,7 @@ static Chunk chunk_line_7() {
 static Value fn_line_7() {
   ObjFun *f = newFunction();  f->arity = 0;
   f->upvalueCount = 0;
-  f->name = new_string("line");
+  f->name = newString("line");
   f->chunk = chunk_line_7();
   return obj(f);
 }
@@ -303,7 +303,7 @@ static Chunk chunk_indent_8() {
 static Value fn_indent_8() {
   ObjFun *f = newFunction();  f->arity = 0;
   f->upvalueCount = 0;
-  f->name = new_string("indent");
+  f->name = newString("indent");
   f->chunk = chunk_indent_8();
   return obj(f);
 }
@@ -341,7 +341,7 @@ static Chunk chunk_init_9() {
 static Value fn_init_9() {
   ObjFun *f = newFunction();  f->arity = 1;
   f->upvalueCount = 0;
-  f->name = new_string("init");
+  f->name = newString("init");
   f->chunk = chunk_init_9();
   return obj(f);
 }
@@ -379,7 +379,7 @@ static Chunk chunk_current_10() {
 static Value fn_current_10() {
   ObjFun *f = newFunction();  f->arity = 0;
   f->upvalueCount = 0;
-  f->name = new_string("current");
+  f->name = newString("current");
   f->chunk = chunk_current_10();
   return obj(f);
 }
@@ -417,7 +417,7 @@ static Chunk chunk_is_at_end_11() {
 static Value fn_is_at_end_11() {
   ObjFun *f = newFunction();  f->arity = 0;
   f->upvalueCount = 0;
-  f->name = new_string("is_at_end");
+  f->name = newString("is_at_end");
   f->chunk = chunk_is_at_end_11();
   return obj(f);
 }
@@ -453,7 +453,7 @@ static Chunk chunk_is_alpha_12() {
 static Value fn_is_alpha_12() {
   ObjFun *f = newFunction();  f->arity = 0;
   f->upvalueCount = 0;
-  f->name = new_string("is_alpha");
+  f->name = newString("is_alpha");
   f->chunk = chunk_is_alpha_12();
   return obj(f);
 }
@@ -491,7 +491,7 @@ static Chunk chunk_is_digit_13() {
 static Value fn_is_digit_13() {
   ObjFun *f = newFunction();  f->arity = 1;
   f->upvalueCount = 0;
-  f->name = new_string("is_digit");
+  f->name = newString("is_digit");
   f->chunk = chunk_is_digit_13();
   return obj(f);
 }
@@ -529,7 +529,7 @@ static Chunk chunk_is_subscript_14() {
 static Value fn_is_subscript_14() {
   ObjFun *f = newFunction();  f->arity = 1;
   f->upvalueCount = 0;
-  f->name = new_string("is_subscript");
+  f->name = newString("is_subscript");
   f->chunk = chunk_is_subscript_14();
   return obj(f);
 }
@@ -567,7 +567,7 @@ static Chunk chunk_src_slash_lita_slash_scanner_dot_lita_0() {
 static Value fn_src_slash_lita_slash_scanner_dot_lita_0() {
   ObjFun *f = newFunction();  f->arity = 0;
   f->upvalueCount = 0;
-  f->name = new_string("src/lita/scanner.lita");
+  f->name = newString("src/lita/scanner.lita");
   f->chunk = chunk_src_slash_lita_slash_scanner_dot_lita_0();
   return obj(f);
 }

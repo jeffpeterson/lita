@@ -8,7 +8,7 @@
 #define inspected(s) FG_GREEN #s FG_DEFAULT
 
 void string_test() {
-  assert_equal(OBJ_VAL(concat_strings(new_string("abc"), new_string("def"))),
+  assert_equal(OBJ_VAL(concat_strings(newString("abc"), newString("def"))),
                string("abcdef"));
 
   assert_equal(obj(string_format("abc{{}")), string("abc{}"));

@@ -23,7 +23,7 @@ typedef struct ObjRegex {
 #define new_regex() ((ObjRegex *)new_object(&Regex))
 
 ObjRegex *as_regex(Value x);
-ObjRegex *make_regex(ObjString *source);
+ObjRegex *makeRegex(ObjString *source);
 Value regex(const char *source);
 ObjString *replace_regex(ObjString *subject, ObjRegex *regex,
                          ObjString *replacement);

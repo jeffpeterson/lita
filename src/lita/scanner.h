@@ -97,7 +97,7 @@ typedef enum {
 typedef struct {
   TokenType type;
   bool escaped;
-  bool had_gap;
+  bool hadGap;
   const char *start;
   int length;
   int line;

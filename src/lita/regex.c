@@ -12,9 +12,9 @@ ObjRegex *as_regex(Value x) {
   return AS_REGEX(x);
 }
 
-Value regex(const char *source) { return obj(make_regex(new_string(source))); }
+Value regex(const char *source) { return obj(makeRegex(newString(source))); }
 
-ObjRegex *make_regex(ObjString *source) {
+ObjRegex *makeRegex(ObjString *source) {
   ObjRegex *regex = ALLOCATE_OBJ(ObjRegex, OBJ_CUSTOM);
   regex->obj.def = &Regex;
   regex->source = source;

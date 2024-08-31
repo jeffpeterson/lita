@@ -44,7 +44,7 @@ static Chunk chunk__slash__1() {
 static Value fn__slash__1() {
   ObjFun *f = newFunction();  f->arity = 1;
   f->upvalueCount = 0;
-  f->name = new_string("/");
+  f->name = newString("/");
   f->chunk = chunk__slash__1();
   return obj(f);
 }
@@ -82,7 +82,7 @@ static Chunk chunk_bold_2() {
 static Value fn_bold_2() {
   ObjFun *f = newFunction();  f->arity = 0;
   f->upvalueCount = 0;
-  f->name = new_string("bold");
+  f->name = newString("bold");
   f->chunk = chunk_bold_2();
   return obj(f);
 }
@@ -120,7 +120,7 @@ static Chunk chunk_dim_3() {
 static Value fn_dim_3() {
   ObjFun *f = newFunction();  f->arity = 0;
   f->upvalueCount = 0;
-  f->name = new_string("dim");
+  f->name = newString("dim");
   f->chunk = chunk_dim_3();
   return obj(f);
 }
@@ -158,7 +158,7 @@ static Chunk chunk_italic_4() {
 static Value fn_italic_4() {
   ObjFun *f = newFunction();  f->arity = 0;
   f->upvalueCount = 0;
-  f->name = new_string("italic");
+  f->name = newString("italic");
   f->chunk = chunk_italic_4();
   return obj(f);
 }
@@ -196,7 +196,7 @@ static Chunk chunk_underline_5() {
 static Value fn_underline_5() {
   ObjFun *f = newFunction();  f->arity = 0;
   f->upvalueCount = 0;
-  f->name = new_string("underline");
+  f->name = newString("underline");
   f->chunk = chunk_underline_5();
   return obj(f);
 }
@@ -234,7 +234,7 @@ static Chunk chunk_invert_6() {
 static Value fn_invert_6() {
   ObjFun *f = newFunction();  f->arity = 0;
   f->upvalueCount = 0;
-  f->name = new_string("invert");
+  f->name = newString("invert");
   f->chunk = chunk_invert_6();
   return obj(f);
 }
@@ -272,7 +272,7 @@ static Chunk chunk_hide_7() {
 static Value fn_hide_7() {
   ObjFun *f = newFunction();  f->arity = 0;
   f->upvalueCount = 0;
-  f->name = new_string("hide");
+  f->name = newString("hide");
   f->chunk = chunk_hide_7();
   return obj(f);
 }
@@ -310,7 +310,7 @@ static Chunk chunk_strike_8() {
 static Value fn_strike_8() {
   ObjFun *f = newFunction();  f->arity = 0;
   f->upvalueCount = 0;
-  f->name = new_string("strike");
+  f->name = newString("strike");
   f->chunk = chunk_strike_8();
   return obj(f);
 }
@@ -348,7 +348,7 @@ static Chunk chunk_black_9() {
 static Value fn_black_9() {
   ObjFun *f = newFunction();  f->arity = 0;
   f->upvalueCount = 0;
-  f->name = new_string("black");
+  f->name = newString("black");
   f->chunk = chunk_black_9();
   return obj(f);
 }
@@ -386,7 +386,7 @@ static Chunk chunk_red_10() {
 static Value fn_red_10() {
   ObjFun *f = newFunction();  f->arity = 0;
   f->upvalueCount = 0;
-  f->name = new_string("red");
+  f->name = newString("red");
   f->chunk = chunk_red_10();
   return obj(f);
 }
@@ -424,7 +424,7 @@ static Chunk chunk_green_11() {
 static Value fn_green_11() {
   ObjFun *f = newFunction();  f->arity = 0;
   f->upvalueCount = 0;
-  f->name = new_string("green");
+  f->name = newString("green");
   f->chunk = chunk_green_11();
   return obj(f);
 }
@@ -462,7 +462,7 @@ static Chunk chunk_yellow_12() {
 static Value fn_yellow_12() {
   ObjFun *f = newFunction();  f->arity = 0;
   f->upvalueCount = 0;
-  f->name = new_string("yellow");
+  f->name = newString("yellow");
   f->chunk = chunk_yellow_12();
   return obj(f);
 }
@@ -500,7 +500,7 @@ static Chunk chunk_blue_13() {
 static Value fn_blue_13() {
   ObjFun *f = newFunction();  f->arity = 0;
   f->upvalueCount = 0;
-  f->name = new_string("blue");
+  f->name = newString("blue");
   f->chunk = chunk_blue_13();
   return obj(f);
 }
@@ -538,7 +538,7 @@ static Chunk chunk_magenta_14() {
 static Value fn_magenta_14() {
   ObjFun *f = newFunction();  f->arity = 0;
   f->upvalueCount = 0;
-  f->name = new_string("magenta");
+  f->name = newString("magenta");
   f->chunk = chunk_magenta_14();
   return obj(f);
 }
@@ -576,7 +576,7 @@ static Chunk chunk_cyan_15() {
 static Value fn_cyan_15() {
   ObjFun *f = newFunction();  f->arity = 0;
   f->upvalueCount = 0;
-  f->name = new_string("cyan");
+  f->name = newString("cyan");
   f->chunk = chunk_cyan_15();
   return obj(f);
 }
@@ -614,7 +614,7 @@ static Chunk chunk_white_16() {
 static Value fn_white_16() {
   ObjFun *f = newFunction();  f->arity = 0;
   f->upvalueCount = 0;
-  f->name = new_string("white");
+  f->name = newString("white");
   f->chunk = chunk_white_16();
   return obj(f);
 }
@@ -652,7 +652,7 @@ static Chunk chunk_bg_black_17() {
 static Value fn_bg_black_17() {
   ObjFun *f = newFunction();  f->arity = 0;
   f->upvalueCount = 0;
-  f->name = new_string("bg_black");
+  f->name = newString("bg_black");
   f->chunk = chunk_bg_black_17();
   return obj(f);
 }
@@ -690,7 +690,7 @@ static Chunk chunk_bg_red_18() {
 static Value fn_bg_red_18() {
   ObjFun *f = newFunction();  f->arity = 0;
   f->upvalueCount = 0;
-  f->name = new_string("bg_red");
+  f->name = newString("bg_red");
   f->chunk = chunk_bg_red_18();
   return obj(f);
 }
@@ -728,7 +728,7 @@ static Chunk chunk_bg_green_19() {
 static Value fn_bg_green_19() {
   ObjFun *f = newFunction();  f->arity = 0;
   f->upvalueCount = 0;
-  f->name = new_string("bg_green");
+  f->name = newString("bg_green");
   f->chunk = chunk_bg_green_19();
   return obj(f);
 }
@@ -766,7 +766,7 @@ static Chunk chunk_bg_yellow_20() {
 static Value fn_bg_yellow_20() {
   ObjFun *f = newFunction();  f->arity = 0;
   f->upvalueCount = 0;
-  f->name = new_string("bg_yellow");
+  f->name = newString("bg_yellow");
   f->chunk = chunk_bg_yellow_20();
   return obj(f);
 }
@@ -804,7 +804,7 @@ static Chunk chunk_bg_blue_21() {
 static Value fn_bg_blue_21() {
   ObjFun *f = newFunction();  f->arity = 0;
   f->upvalueCount = 0;
-  f->name = new_string("bg_blue");
+  f->name = newString("bg_blue");
   f->chunk = chunk_bg_blue_21();
   return obj(f);
 }
@@ -842,7 +842,7 @@ static Chunk chunk_bg_magenta_22() {
 static Value fn_bg_magenta_22() {
   ObjFun *f = newFunction();  f->arity = 0;
   f->upvalueCount = 0;
-  f->name = new_string("bg_magenta");
+  f->name = newString("bg_magenta");
   f->chunk = chunk_bg_magenta_22();
   return obj(f);
 }
@@ -880,7 +880,7 @@ static Chunk chunk_bg_cyan_23() {
 static Value fn_bg_cyan_23() {
   ObjFun *f = newFunction();  f->arity = 0;
   f->upvalueCount = 0;
-  f->name = new_string("bg_cyan");
+  f->name = newString("bg_cyan");
   f->chunk = chunk_bg_cyan_23();
   return obj(f);
 }
@@ -918,7 +918,7 @@ static Chunk chunk_bg_white_24() {
 static Value fn_bg_white_24() {
   ObjFun *f = newFunction();  f->arity = 0;
   f->upvalueCount = 0;
-  f->name = new_string("bg_white");
+  f->name = newString("bg_white");
   f->chunk = chunk_bg_white_24();
   return obj(f);
 }
@@ -956,7 +956,7 @@ static Chunk chunk_uppercase_25() {
 static Value fn_uppercase_25() {
   ObjFun *f = newFunction();  f->arity = 0;
   f->upvalueCount = 0;
-  f->name = new_string("uppercase");
+  f->name = newString("uppercase");
   f->chunk = chunk_uppercase_25();
   return obj(f);
 }
@@ -994,7 +994,7 @@ static Chunk chunk_lowercase_26() {
 static Value fn_lowercase_26() {
   ObjFun *f = newFunction();  f->arity = 0;
   f->upvalueCount = 0;
-  f->name = new_string("lowercase");
+  f->name = newString("lowercase");
   f->chunk = chunk_lowercase_26();
   return obj(f);
 }
@@ -1032,7 +1032,7 @@ static Chunk chunk_capitalize_27() {
 static Value fn_capitalize_27() {
   ObjFun *f = newFunction();  f->arity = 0;
   f->upvalueCount = 0;
-  f->name = new_string("capitalize");
+  f->name = newString("capitalize");
   f->chunk = chunk_capitalize_27();
   return obj(f);
 }
@@ -1070,7 +1070,7 @@ static Chunk chunk_decapitalize_28() {
 static Value fn_decapitalize_28() {
   ObjFun *f = newFunction();  f->arity = 0;
   f->upvalueCount = 0;
-  f->name = new_string("decapitalize");
+  f->name = newString("decapitalize");
   f->chunk = chunk_decapitalize_28();
   return obj(f);
 }
@@ -1108,7 +1108,7 @@ static Chunk chunk_camelize_29() {
 static Value fn_camelize_29() {
   ObjFun *f = newFunction();  f->arity = 0;
   f->upvalueCount = 0;
-  f->name = new_string("camelize");
+  f->name = newString("camelize");
   f->chunk = chunk_camelize_29();
   return obj(f);
 }
@@ -1146,7 +1146,7 @@ static Chunk chunk_underscore_30() {
 static Value fn_underscore_30() {
   ObjFun *f = newFunction();  f->arity = 0;
   f->upvalueCount = 0;
-  f->name = new_string("underscore");
+  f->name = newString("underscore");
   f->chunk = chunk_underscore_30();
   return obj(f);
 }
@@ -1184,7 +1184,7 @@ static Chunk chunk_dasherize_31() {
 static Value fn_dasherize_31() {
   ObjFun *f = newFunction();  f->arity = 0;
   f->upvalueCount = 0;
-  f->name = new_string("dasherize");
+  f->name = newString("dasherize");
   f->chunk = chunk_dasherize_31();
   return obj(f);
 }
@@ -1222,7 +1222,7 @@ static Chunk chunk_print_32() {
 static Value fn_print_32() {
   ObjFun *f = newFunction();  f->arity = 1;
   f->upvalueCount = 0;
-  f->name = new_string("print");
+  f->name = newString("print");
   f->chunk = chunk_print_32();
   return obj(f);
 }
@@ -1260,7 +1260,7 @@ static Chunk chunk_src_slash_lita_slash_string_dot_lita_0() {
 static Value fn_src_slash_lita_slash_string_dot_lita_0() {
   ObjFun *f = newFunction();  f->arity = 0;
   f->upvalueCount = 0;
-  f->name = new_string("src/lita/string.lita");
+  f->name = newString("src/lita/string.lita");
   f->chunk = chunk_src_slash_lita_slash_string_dot_lita_0();
   return obj(f);
 }

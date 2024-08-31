@@ -45,7 +45,7 @@ int main(int argc, char *argv[]) {
     case 'r': start_repl = true; break;
     case 't': config.tracing = true; break;
     case 'd': config.debug++; break;
-    case 'e': assertOkResult(interpret(optarg, new_string("eval flag"))); break;
+    case 'e': assertOkResult(interpret(optarg, newString("eval flag"))); break;
     case 'h': usage(argc, argv); exit(0);
     case '?': usage(argc, argv); exit(1);
     }
@@ -58,12 +58,12 @@ int main(int argc, char *argv[]) {
 
   switch (mode) {
   case COMPILE:
-    for (int i = optind; i < argc; i++) compileFile(new_string(argv[i]));
+    for (int i = optind; i < argc; i++) compileFile(newString(argv[i]));
     break;
 
   case INTERPRET: {
     if (optind < argc) {
-      path = new_string(argv[optind]);
+      path = newString(argv[optind]);
 
       for (int i = optind + 1; i < argc; i++) {
         let arg = string(argv[i]);

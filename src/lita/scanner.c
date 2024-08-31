@@ -112,7 +112,7 @@ static Token makeToken(TokenType type) {
   Token token;
   token.type = type;
   token.escaped = false;
-  token.had_gap = scanner.gap;
+  token.hadGap = scanner.gap;
   scanner.gap = false;
   token.start = scanner.start;
   token.length = (int)(scanner.current - scanner.start);

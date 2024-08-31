@@ -130,7 +130,7 @@ void initVM() {
   initTable(&vm.interned);
   initTable(&vm.keep);
 
-  vm.str.init = new_string("init");
+  vm.str.init = newString("init");
 
   // inspect_table(stderr, &vm.globals);
   // pp(global(str("hash")));
@@ -995,9 +995,9 @@ Obj *getInterned(Hash *hash, ObjType type, const char *bytes, int length) {
 }
 
 void repl() {
-  ObjString *name = new_string("REPL");
+  ObjString *name = newString("REPL");
   ObjString *history =
-      concat_strings(new_string(getenv("HOME")), new_string("/.lita_history"));
+      concat_strings(newString(getenv("HOME")), newString("/.lita_history"));
 
   setGlobal(string("REPL"), OBJ_VAL(name));
   setGlobal(string("HISTORY_LOCATION"), OBJ_VAL(history));

@@ -20,7 +20,7 @@ ObjString *as_string(let x) {
   return AS_STRING(x);
 }
 
-Value string(const char *str) { return obj(new_string(str)); }
+Value string(const char *str) { return obj(newString(str)); }
 
 /** Allocate an ObjString for a (null-terminated) char string. */
 static ObjString *allocate_string(char *chars, int length, Hash hash) {
@@ -43,8 +43,8 @@ ObjString *concat_strings(ObjString *a, ObjString *b) {
   return take_string(chars, length);
 }
 
-ObjString *new_string(const char *chars) {
-  return copy_string(chars, strlen(chars));
+ObjString *newString(const char *chars) {
+  return copyString(chars, strlen(chars));
 }
 
 ObjString *take_string(char *chars, int length) {
@@ -59,7 +59,7 @@ ObjString *take_string(char *chars, int length) {
   return allocate_string(chars, length, hash);
 }
 
-ObjString *copy_string(const char *chars, usize length) {
+ObjString *copyString(const char *chars, usize length) {
   Hash hash;
   ObjString *interned =
       (ObjString *)getInterned(&hash, OBJ_CUSTOM, chars, length);
@@ -113,7 +113,7 @@ ObjString *escape_string(ObjString *str) {
   return buffer_to_string(&out);
 }
 
-ObjString *unescape_string(ObjString *str) {
+ObjString *unescapeString(ObjString *str) {
   char *out = ALLOCATE(char, str->length + 1);
   int len = 0;
   bool escape = false;
@@ -198,7 +198,7 @@ ObjString *string_to_c_ident(ObjString *str) {
   }
 
   fclose(io);
-  return copy_string(out, size);
+  return copyString(out, size);
 }
 
 ObjString *stringf(const char *fmt, ...) {
@@ -208,7 +208,7 @@ ObjString *stringf(const char *fmt, ...) {
   int len = vasprintf(&str, fmt, args);
   va_end(args);
 
-  if (len < 0) return copy_string("", 0);
+  if (len < 0) return copyString("", 0);
 
   return take_string(str, len);
 }

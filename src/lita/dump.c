@@ -157,7 +157,7 @@ static int dumpFn(FILE *io, ObjFun *fun) {
           "  ObjFun *f = newFunction();"
           "  f->arity = %d;\n"
           "  f->upvalueCount = %d;\n"
-          "  f->name = new_string(\"%s\");\n"
+          "  f->name = newString(\"%s\");\n"
           "  f->chunk = chunk_%s_%d();\n"
           "  return obj(f);\n"
           "}\n",
@@ -180,7 +180,7 @@ static char *parameterize(char *str) {
 void dumpModule(FILE *io, ObjString *path, ObjFun *fun) {
   initTable(&ids);
 
-  ObjString *name = new_string(parameterize(basename(path->chars)));
+  ObjString *name = newString(parameterize(basename(path->chars)));
 
   fprintf(io,
           "// clang-format off\n"

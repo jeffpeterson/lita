@@ -39,7 +39,7 @@ static Chunk chunk_inspect_1() {
 static Value fn_inspect_1() {
   ObjFun *f = newFunction();  f->arity = 0;
   f->upvalueCount = 0;
-  f->name = new_string("inspect");
+  f->name = newString("inspect");
   f->chunk = chunk_inspect_1();
   return obj(f);
 }
@@ -77,7 +77,7 @@ static Chunk chunk_string_2() {
 static Value fn_string_2() {
   ObjFun *f = newFunction();  f->arity = 0;
   f->upvalueCount = 0;
-  f->name = new_string("string");
+  f->name = newString("string");
   f->chunk = chunk_string_2();
   return obj(f);
 }
@@ -115,7 +115,7 @@ static Chunk chunk_length_3() {
 static Value fn_length_3() {
   ObjFun *f = newFunction();  f->arity = 0;
   f->upvalueCount = 0;
-  f->name = new_string("length");
+  f->name = newString("length");
   f->chunk = chunk_length_3();
   return obj(f);
 }
@@ -153,7 +153,7 @@ static Chunk chunk_map_4() {
 static Value fn_map_4() {
   ObjFun *f = newFunction();  f->arity = 1;
   f->upvalueCount = 0;
-  f->name = new_string("map");
+  f->name = newString("map");
   f->chunk = chunk_map_4();
   return obj(f);
 }
@@ -191,7 +191,7 @@ static Chunk chunk_src_slash_lita_slash_range_dot_lita_0() {
 static Value fn_src_slash_lita_slash_range_dot_lita_0() {
   ObjFun *f = newFunction();  f->arity = 0;
   f->upvalueCount = 0;
-  f->name = new_string("src/lita/range.lita");
+  f->name = newString("src/lita/range.lita");
   f->chunk = chunk_src_slash_lita_slash_range_dot_lita_0();
   return obj(f);
 }

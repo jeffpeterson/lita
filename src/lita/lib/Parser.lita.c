@@ -39,7 +39,7 @@ static Chunk chunk_init_1() {
 static Value fn_init_1() {
   ObjFun *f = newFunction();  f->arity = 1;
   f->upvalueCount = 0;
-  f->name = new_string("init");
+  f->name = newString("init");
   f->chunk = chunk_init_1();
   return obj(f);
 }
@@ -77,7 +77,7 @@ static Chunk chunk_src_slash_lita_slash_lib_slash_Parser_dot_lita_0() {
 static Value fn_src_slash_lita_slash_lib_slash_Parser_dot_lita_0() {
   ObjFun *f = newFunction();  f->arity = 0;
   f->upvalueCount = 0;
-  f->name = new_string("src/lita/lib/Parser.lita");
+  f->name = newString("src/lita/lib/Parser.lita");
   f->chunk = chunk_src_slash_lita_slash_lib_slash_Parser_dot_lita_0();
   return obj(f);
 }
