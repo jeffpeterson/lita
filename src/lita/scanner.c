@@ -318,7 +318,7 @@ static Token backticks() {
   return token;
 }
 
-static Token string() {
+static Token string_() {
   bool escaped = false;
 
   while (!isAtEnd()) {
@@ -421,7 +421,7 @@ Token scanToken() {
                      : match('>') ? TOKEN_GREATER_GREATER
                                   : TOKEN_GREATER);
   case '\'': return symbol();
-  case '"': return string();
+  case '"': return string_();
   case '`': return backticks();
   }
 
