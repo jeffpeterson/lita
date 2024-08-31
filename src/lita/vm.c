@@ -922,6 +922,7 @@ static InterpretResult vm_run() {
       vm_return();
 
       if (!vm.frameCount) {
+        vm.result = pop();
         resetStack(); // Pop <script> function off stack.
         return INTERPRET_OK;
       }
@@ -1009,6 +1010,8 @@ void repl() {
     write_history(history->chars);
     interpret(line, name);
     free(line);
+    inspect_value(stderr, vm.result);
+    fprintf(stderr, "\n");
 
     if (config.debug >= 2) {
       debugStack();

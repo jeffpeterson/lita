@@ -28,6 +28,7 @@ typedef struct VM {
   Value *stackHigh;    /** The highest point the stack has been this cycle. */
   Value *stackSinceGC; /** The highest point the stack has been since GC. */
 
+  Value result;   /** Result of the last script. */
   Table globals;  /** Global variables hashed by name. */
   Table interned; /** Interned object table. */
   Table keep;     /** Exempt objects from GC. */

@@ -423,7 +423,6 @@ static void initCompiler(Compiler *compiler, FunType type, ObjString *name) {
 
 /** Note: implies endScope(); */
 static ObjFun *endCompiler() {
-  emitReturn();
   ObjFun *fun = current->fun;
 
   if (!parser.hadError && (config.debug || DEBUG_PRINT_CODE))
@@ -883,7 +882,8 @@ static void dot_sugar(Ctx *ctx) {
 
   emitByte(OP_RETURN);
 
-  emitBytes(OP_CLOSURE, makeConstant(OBJ_VAL(endCompiler())));
+  ObjFun *fun = endCompiler();
+  emitBytes(OP_CLOSURE, makeConstant(OBJ_VAL(fun)));
 }
 
 static void literal(Ctx *ctx) {
@@ -1130,6 +1130,7 @@ static void function(FunType type) {
     block();
   }
 
+  emitReturn();
   // no endScope(). Compiler will be deallocated.
   ObjFun *fun = endCompiler();
   emitBytes(OP_CLOSURE, makeConstant(OBJ_VAL(fun)));
@@ -1482,7 +1483,8 @@ static void statement() {
     whileStatement();
   } else {
     expression("Expected expression.");
-    emitByte(OP_POP);
+    skipNewlines();
+    if (!check(TOKEN_EOF)) emitByte(OP_POP);
   }
 
   skipNewlines();
@@ -1506,10 +1508,11 @@ ObjFun *compile(const char *source, ObjString *name) {
 
   advance();
 
-  while (!match(TOKEN_EOF)) {
-    declaration();
-  }
+  if (match(TOKEN_EOF)) emitByte(OP_NIL);
+  while (!match(TOKEN_EOF)) declaration();
 
+  assert_stack_size(1, "script return value");
+  emitByte(OP_RETURN);
   ObjFun *fun = endCompiler();
   return parser.hadError ? NULL : fun;
 }
