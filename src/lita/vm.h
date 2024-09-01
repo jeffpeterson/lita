@@ -1,6 +1,7 @@
 #ifndef lita_vm_h
 #define lita_vm_h
 
+#include "ecs.h"
 #include "object.h"
 #include "table.h"
 #include "value.h"
@@ -32,6 +33,8 @@ typedef struct VM {
   Table globals;  /** Global variables hashed by name. */
   Table interned; /** Interned object table. */
   Table keep;     /** Exempt objects from GC. */
+
+  ecs_world_t *world; /** ECS world. */
 
   ObjUpvalue *openUpvalues; /** Unclosed upvalues. */
   Obj *objects;             /** A chain of allocated objects. */

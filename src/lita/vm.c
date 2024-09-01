@@ -131,6 +131,8 @@ void initVM() {
   initTable(&vm.interned);
   initTable(&vm.keep);
 
+  vm.world = ecs_init();
+
   vm.str.init = newString("init");
 
   // inspect_table(stderr, &vm.globals);
