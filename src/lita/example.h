@@ -6,8 +6,8 @@
 #include "value.h"
 
 #define AS_EXAMPLE(val) ((ObjExample *)AS_OBJ(val))
-#define is_example(val) is_obj_def(val, &Example)
-#define allocate_example() ((ObjExample *)new_object(&Example))
+#define isExample(val) is_obj_def(val, &Example)
+#define allocateExample() ((ObjExample *)new_object(&Example))
 
 typedef struct ObjExample {
   Obj obj;
@@ -16,7 +16,8 @@ typedef struct ObjExample {
 
 ObjDef Example;
 
-ObjExample *new_example(ObjString *comment);
-Value example(const char *comment);
+ObjExample *asExample(let val);
+ObjExample *newExample(ObjString *comment);
+let example(const char *comment);
 
 #endif

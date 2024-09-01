@@ -6,32 +6,30 @@
 #include "string.h"
 #include "vm.h"
 
-ObjExample *as_example(Value x) {
-  assert(is_example(x));
-  return AS_EXAMPLE(x);
+ObjExample *asExample(let val) {
+  assert(isExample(val));
+  return AS_EXAMPLE(val);
 }
 
-Value example(const char *comment) {
-  return obj(new_example(newString(comment)));
-}
+let example(const char *comment) { return obj(newExample(newString(comment))); }
 
-ObjExample *new_example(ObjString *comment) {
-  ObjExample *example = allocate_example();
+ObjExample *newExample(ObjString *comment) {
+  ObjExample *example = allocateExample();
   example->comment = comment;
   return example;
 }
 
-static int example_length(Obj *obj) {
+static int exampleLength(Obj *obj) {
   ObjExample *example = (ObjExample *)obj;
   return example->comment->length;
 }
 
-static void mark_example(Obj *obj) {
+static void markExample(Obj *obj) {
   ObjExample *example = (ObjExample *)obj;
   markObject((Obj *)example->comment);
 }
 
-static int inspect_example(Obj *obj, FILE *io) {
+static int inspectExample(Obj *obj, FILE *io) {
   ObjExample *example = (ObjExample *)obj;
   return fstring_format(io, "Example({})", OBJ_VAL(example->comment));
 }
@@ -42,7 +40,7 @@ REGISTER_OBJECT_DEF(Example);
 ObjDef Example = {
     .class_name = "Example",
     .size = sizeof(ObjExample),
-    .mark = mark_example,
-    .inspect = inspect_example,
-    .length = example_length,
+    .mark = markExample,
+    .inspect = inspectExample,
+    .length = exampleLength,
 };

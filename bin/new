@@ -1,4 +1,4 @@
-#!lldb lita
+#!lita
 
 
 if !$1:
