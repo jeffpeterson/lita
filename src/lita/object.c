@@ -11,7 +11,6 @@
 #include "vm.h"
 
 const ObjInfo objInfo[7] = {
-    [OBJ_BOUND] = {"BOUND", "Method"},
     [OBJ_CLASS] = {"CLASS", "Class"},
     [OBJ_CLOSURE] = {"CLOSURE", "Function"},
     [OBJ_CUSTOM] = {"CUSTOM", NULL},
@@ -51,10 +50,6 @@ ObjClosure *as_closure(Value x) {
   assert(is_closure(x));
   return AS_CLOSURE(x);
 }
-ObjBound *as_bound(Value x) {
-  assert(is_bound(x));
-  return AS_BOUND(x);
-}
 ObjNative *as_native(Value x) {
   assert(is_native(x));
   return AS_NATIVE(x);
@@ -67,12 +62,6 @@ Obj *as_obj(Value x) {
   assert(is_obj(x));
   return AS_OBJ(x);
 }
-
-// REGISTER_OBJECT_DEF(Bound);
-// const ObjDef Bound = {.class_name = "Bound",
-//                       .size = sizeof(ObjBound),
-//                       .inspect = inspect_bound,
-//                       .free};
 
 // REGISTER_OBJECT_DEF(Class);
 // const ObjDef Class = {
@@ -92,13 +81,6 @@ Obj *as_obj(Value x) {
 
 // REGISTER_OBJECT_DEF(Upvalue);
 // const ObjDef Upvalue;
-
-ObjBound *newBound(Value receiver, Value method) {
-  ObjBound *bound = ALLOCATE_OBJ(ObjBound, OBJ_BOUND);
-  bound->receiver = receiver;
-  bound->method = method;
-  return bound;
-}
 
 Obj *new_instance(ObjClass *klass) {
   Obj *obj = ALLOCATE_OBJ(Obj, OBJ_CUSTOM);
@@ -185,8 +167,6 @@ int inspect_obj(FILE *io, Obj *obj) {
   if (obj->def && obj->def->inspect) return obj->def->inspect(obj, io);
 
   switch (obj->type) {
-  case OBJ_BOUND: return inspect_obj(io, AS_OBJ(((ObjBound *)obj)->method));
-
   case OBJ_CLASS: {
     ObjClass *klass = (ObjClass *)obj;
     return fprintf(io, FG_MAGENTA "%s" FG_DEFAULT, klass->name->chars) -
@@ -229,7 +209,6 @@ int cmpObjects(Obj *a, Obj *b) {
   if (a == b) return 0;
 
   switch (a->type) {
-  case OBJ_BOUND:
   default:
     // Todo: finish
     return a - b;

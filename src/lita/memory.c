@@ -112,13 +112,6 @@ static void blackenObject(Obj *obj) {
   if (obj->def && obj->def->mark) return obj->def->mark(obj);
 
   switch (obj->type) {
-  case OBJ_BOUND: {
-    ObjBound *bound = (ObjBound *)obj;
-    markValue(bound->receiver);
-    markValue(bound->method);
-    break;
-  }
-
   case OBJ_CLASS: {
     ObjClass *klass = (ObjClass *)obj;
     markObject((Obj *)klass->name);
@@ -173,8 +166,6 @@ static void freeObject(Obj *obj) {
   }
 
   switch (obj->type) {
-  case OBJ_BOUND: FREE(ObjBound, obj); break;
-
   case OBJ_CLASS: {
     ObjClass *klass = (ObjClass *)obj;
     freeTable(&klass->methods);

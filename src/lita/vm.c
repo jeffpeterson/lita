@@ -7,6 +7,7 @@
 #include <string.h>
 
 #include "array.h"
+#include "bound.h"
 #include "common.h"
 #include "compiler.h"
 #include "debug.h"
@@ -323,12 +324,6 @@ bool call_value(Value callee, int argCount) {
 
   if (is_obj(callee)) {
     switch (obj_type(callee)) {
-    case OBJ_BOUND: {
-      ObjBound *bound = AS_BOUND(callee);
-      vm.stackTop[-argCount - 1] = bound->receiver;
-      return call_value(bound->method, argCount);
-    }
-
     case OBJ_CLASS: {
       // Replace the class with a new instance.
       vm.stackTop[-argCount - 1] = OBJ_VAL(new_instance(AS_CLASS(callee)));
@@ -339,6 +334,12 @@ bool call_value(Value callee, int argCount) {
     case OBJ_NATIVE: return !move_into_native(AS_NATIVE(callee), argCount);
 
     default: break; // Non-callable object type.
+    }
+
+    if (isBound(callee)) {
+      ObjBound *bound = AS_BOUND(callee);
+      vm.stackTop[-argCount - 1] = bound->receiver;
+      return call_value(bound->method, argCount);
     }
   }
 

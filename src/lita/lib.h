@@ -21,7 +21,7 @@ int arity(_ fun);
 
 _ classOf(_ self);
 _ superOf(_ klass);
-_ bindFn(_ self, _ fun);
+let bindFn(let self, let fun);
 _ findMethod(_ klass, _ name);
 _ find(_ self, _ name);
 

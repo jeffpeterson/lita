@@ -2,6 +2,7 @@
 #include <string.h>
 
 #include "array.h"
+#include "bound.h"
 #include "lib.h"
 #include "memory.h"
 #include "string.h"
@@ -69,7 +70,7 @@ _ multiply(_ a, _ b) {
 
 /** Returns arity of fun, -1 if not callable. */
 int arity(_ fun) {
-  if (is_bound(fun)) return arity(as_bound(fun)->method);
+  if (isBound(fun)) return arity(asBound(fun)->method);
   if (is_closure(fun)) return as_closure(fun)->fun->arity;
   if (is_native(fun)) return as_native(fun)->arity;
   if (is_class(fun)) return arity(findMethod(fun, str("init")));
@@ -81,8 +82,8 @@ _ classOf(_ self) { return obj(valueClass(self)); }
 
 _ superOf(_ klass) { return obj(as_class(klass)->parent); }
 
-_ bindFn(_ self, _ fun) {
-  if (is_closure(fun) || is_native(fun)) return obj(newBound(self, fun));
+let bindFn(let self, let fun) {
+  if (is_closure(fun) || is_native(fun)) return bound(self, fun);
 
   return fun;
 }
@@ -122,8 +123,6 @@ u32 len(_ x) {
   if (obj->def && obj->def->length) return obj->def->length(obj);
 
   switch (obj->type) {
-  case OBJ_BOUND: return len(as_bound(x)->method);
-
   case OBJ_CLASS:
   case OBJ_CLOSURE:
   case OBJ_FUN:
@@ -139,7 +138,6 @@ _ name(_ self) {
   case OBJ_FUN: return obj(AS_FUN(self)->name);
   case OBJ_NATIVE: return obj(AS_NATIVE(self)->name);
   case OBJ_CLOSURE: return obj(AS_CLOSURE(self)->fun->name);
-  case OBJ_BOUND: return name(AS_BOUND(self)->method);
   default: return nil;
   }
 }

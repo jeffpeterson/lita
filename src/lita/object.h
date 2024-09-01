@@ -14,7 +14,6 @@ typedef struct ObjDef ObjDef;
 // Todo: stuff ObjType into VAL_OBJ pointer.
 #define obj_type(val) (AS_OBJ(val)->type)
 
-#define is_bound(val) is_obj_type(val, OBJ_BOUND)
 #define is_class(val) is_obj_type(val, OBJ_CLASS)
 #define is_closure(val) is_obj_type(val, OBJ_CLOSURE)
 #define is_custom(val) is_obj_type(val, OBJ_CUSTOM)
@@ -22,7 +21,6 @@ typedef struct ObjDef ObjDef;
 #define is_native(val) is_obj_type(val, OBJ_NATIVE)
 #define is_upvalue(val) is_obj_type(val, OBJ_UPVALUE)
 
-#define AS_BOUND(val) ((ObjBound *)AS_OBJ(val))
 #define AS_CLASS(val) ((ObjClass *)AS_OBJ(val))
 #define AS_CLOSURE(val) ((ObjClosure *)AS_OBJ(val))
 #define AS_ERR(val) ((ObjErr *)AS_OBJ(val))
@@ -43,7 +41,6 @@ typedef struct ObjDef ObjDef;
 typedef enum Ownership { UNOWNED, OWNED } Ownership;
 
 enum ObjType {
-  OBJ_BOUND,
   OBJ_CLASS,
   OBJ_CLOSURE,
   OBJ_CUSTOM,
@@ -76,7 +73,6 @@ typedef struct ObjDef {
   ObjNativesFn *natives;
 } ObjDef;
 
-// const ObjDef Bound;
 // const ObjDef Class;
 // const ObjDef Closure;
 // const ObjDef Function;
@@ -150,13 +146,6 @@ typedef struct ObjClass {
   Table methods;
 } ObjClass;
 
-/** A closure bound to a receiver.  */
-typedef struct ObjBound {
-  Obj obj;
-  Value receiver; /** Bound `this` value. */
-  Value method;   /** Method being bound. */
-} ObjBound;
-
 typedef struct ObjNative {
   Obj obj;
   int arity;
@@ -182,14 +171,12 @@ Obj *allocateObject(size_t size, ObjType type);
 bool as_bool(Value x);
 ObjClass *as_class(Value x);
 ObjClosure *as_closure(Value x);
-ObjBound *as_bound(Value x);
 ObjNative *as_native(Value x);
 double as_num(Value x);
 Obj *as_obj(Value x);
 
 Obj *new_object(const ObjDef *def);
 Obj *new_instance(ObjClass *klass);
-ObjBound *newBound(Value receiver, Value method);
 ObjClass *newClass(ObjString *name);
 ObjClosure *newClosure(ObjFun *fun);
 
