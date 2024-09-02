@@ -1002,6 +1002,8 @@ Obj *getInterned(Hash *hash, ObjType type, const char *bytes, int length) {
 }
 
 void repl() {
+  // ecs_singleton_set(vm.world, EcsRest, {0});
+
   ObjString *name = newString("REPL");
   ObjString *history =
       concat_strings(newString(getenv("HOME")), newString("/.lita_history"));
@@ -1024,6 +1026,8 @@ void repl() {
       debugStack();
       fprintf(stderr, "\n");
     }
+
+    // ecs_progress(vm.world, 0);
   }
 
   printf("\n");
