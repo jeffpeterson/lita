@@ -164,6 +164,7 @@ InterpretResult bootVM() {
   setGlobal(str("stderr"), io(stderr, UNOWNED));
 
   ECS_IMPORT(vm.world, Buffers);
+  ECS_IMPORT(vm.world, Tables);
 
   return result;
 }
@@ -203,7 +204,7 @@ inline Value *popn(u8 n) {
 }
 
 // invoke the method on this
-InterpretResult send(Value this, Value method_name, int argc, ...) {
+InterpretResult vm_send(Value this, Value method_name, int argc, ...) {
   push(this);
   va_list args;
 
