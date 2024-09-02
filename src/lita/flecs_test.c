@@ -40,7 +40,7 @@ void ecs_test() {
   ECS_SYSTEM(world, Move, EcsOnUpdate, Position, Velocity);
 
   // Function wrapper macros use snake_case
-  ecs_entity_t e = ecs_new(world, 0);
+  ecs_entity_t e = ecs_new(world);
 
   assert(e);
 
