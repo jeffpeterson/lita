@@ -1256,7 +1256,7 @@ static u8 varDeclaration() {
   return global;
 }
 
-static void assert(Ctx *ctx) {
+static void assert_(Ctx *ctx) {
   const char *start = parser.previous.start;
 
   // TODO: parse above ==, etc. and parse LHS and RHS separately
@@ -1542,7 +1542,7 @@ ParseRule rules[] = {
 
     [TOKEN_BANG] = {prefix, NULL, PREC_NONE},
 
-    [TOKEN_ASSERT] = {assert, NULL, PREC_NONE},
+    [TOKEN_ASSERT] = {assert_, NULL, PREC_NONE},
     [TOKEN_SUPER] = {super_, NULL, PREC_NONE},
     [TOKEN_THIS] = {this_, NULL, PREC_NONE},
 

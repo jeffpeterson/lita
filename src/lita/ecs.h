@@ -3,4 +3,7 @@
 
 #include "flecs.h"
 
+typedef ecs_world_t World;
+typedef ecs_entity_t EntityId;
+
 #endif

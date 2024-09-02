@@ -276,3 +276,10 @@ int fprintTableVerbose(FILE *io, Table *table) {
   }
   return fprintf(io, "}") + out;
 }
+
+ECS_COMPONENT_DECLARE(Table);
+
+void TablesImport(World *world) {
+  ECS_MODULE(world, Tables);
+  ECS_COMPONENT_DEFINE(world, Table);
+}

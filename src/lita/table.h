@@ -2,6 +2,7 @@
 #define lita_table_h
 
 #include "common.h"
+#include "ecs.h"
 #include "object.h"
 #include "value.h"
 
@@ -41,5 +42,9 @@ void tableRemoveWhite(Table *table);
 void markTable(Table *table);
 char *table_bytes(Table *table, int length);
 int inspect_table(FILE *io, Table *table);
+
+extern ECS_COMPONENT_DECLARE(Table);
+
+void TablesImport(World *world);
 
 #endif

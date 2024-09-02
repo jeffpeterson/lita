@@ -83,10 +83,11 @@ typedef struct ObjClass ObjClass;
 
 struct Obj {
   ObjType type;
+  EntityId eid;
   const ObjDef *def;
   bool isMarked;    /** Is marked by GC in the current mark cycle. */
   struct Obj *next; /** Linked list of objects used for GC. */
-  Hash hash;        /** All objects have a static hash value. */
+  Hash hash;        /** All objects have a hash value. */
   ObjClass *klass;
   Table fields; /** Fields assigned to this instance. */
 };

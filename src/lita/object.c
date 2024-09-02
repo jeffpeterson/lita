@@ -23,6 +23,7 @@ Obj *allocateObject(size_t size, ObjType type) {
   Obj *obj = (Obj *)reallocate(NULL, 0, size);
   obj->type = type;
   obj->isMarked = false;
+  obj->eid = ecs_new(vm.world);
   // Todo: Only hash for non-interned objects.
   Value val = OBJ_VAL(obj);
   obj->hash = hash_bytes((char *)&val, sizeof(Value));

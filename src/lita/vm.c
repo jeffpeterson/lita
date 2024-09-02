@@ -163,6 +163,8 @@ InterpretResult bootVM() {
   setGlobal(str("stdout"), io(stdout, UNOWNED));
   setGlobal(str("stderr"), io(stderr, UNOWNED));
 
+  ECS_IMPORT(vm.world, Buffers);
+
   return result;
 }
 
@@ -170,6 +172,7 @@ void freeVM() {
   vm.str.init = NULL;
   freeTable(&vm.interned);
   freeObjects();
+  ecs_fini(vm.world);
 }
 
 Value push(Value value) {

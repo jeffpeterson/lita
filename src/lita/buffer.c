@@ -58,3 +58,11 @@ usize append_char_to_buffer(Buffer *buf, char ch) {
 usize append_str_to_buffer(Buffer *buf, char *str, usize length) {
   return append_buffer(buf, (u8 *)str, length);
 }
+
+ECS_COMPONENT_DECLARE(Buffer);
+
+void BuffersImport(World *world) {
+  ECS_MODULE(world, Buffers);
+
+  ECS_COMPONENT_DEFINE(world, Buffer);
+}
