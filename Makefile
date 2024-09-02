@@ -106,6 +106,10 @@ serve: html
 clean:
 	-rm -f $(DEV) $(TEST) $(shell find _build -name "*.o")
 
+flecs:
+	curl https://raw.githubusercontent.com/SanderMertens/flecs/v4.0.1/flecs.c > src/lita/flecs.c
+	curl https://raw.githubusercontent.com/SanderMertens/flecs/v4.0.1/flecs.h > src/lita/flecs.h
+
 .PHONY: default all clean test db db/test lib
 .PRECIOUS: $(TARGET) %.c %.o
 .SUFFIXES: # disable crazy built-in rules that append .c
