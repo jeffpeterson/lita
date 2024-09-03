@@ -1381,14 +1381,14 @@ static void match_() {
   while (!check(TOKEN_DEDENT) && !check(TOKEN_EOF) && !check(TOKEN_ELSE)) {
     beginScope();
 
-    // Duplicate the match value because OP_MATCH pops the pattern.
+    // Duplicate the match value because OP_EQUAL pops the pattern.
     emitBytes(OP_PEEK, 0); // [match expr][match expr]
 
     // TODO: Handle multiple patterns.
     // do {...} while (parseAbove(PREC_COMMA)));
     if (parseAbove(PREC_ARROW)) { // [match expr][match expr][pattern]
       consume(TOKEN_ARROW, "Expect '->' after pattern.");
-      emitByte(OP_MATCH); // [match expr][bool]
+      emitByte(OP_EQUAL); // [match expr][bool]
       assertStackSize(2, "match expr, match result");
 
       int skipJump = emitJump(

@@ -69,7 +69,7 @@ typedef enum OpCode {
   OP_SET_VAR,      /** (name) [1 self][0 value] -> [0 value] */
                    /**/
   OP_ARRAY,        /** (n) [n ...args][0 arg] -> [0 array] */
-  OP_MATCH,        /** [1 value][0 pattern] -> [0 Bool] */
+  _OP_MATCH,       /** UNUSED */
   OP_DEBUG_STACK,  /** (tag) Logs the stack. */
   OP_ASSERT_STACK, /** (size) Asserts the stack is the expected size. */
 

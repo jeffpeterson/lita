@@ -427,43 +427,45 @@ static Value fn_is_at_end_11() {
   return obj(f);
 }
 
-static ValueArray constants_is_alpha_12() {
+static ValueArray constants_isAlpha_12() {
   ValueArray vals;
   initValueArray(&vals);
-  vals.count = vals.capacity = 0;
-  Value values[] = {};
+  vals.count = vals.capacity = 6;
+  Value values[] = {
+    str("in"), str("a"), str("z"), str("A"), str("Z"), str("_'"),
+  };
   vals.values = cloneMemory(values, sizeof(values));
   return vals;
 }
 
-static Chunk chunk_is_alpha_12() {
+static Chunk chunk_isAlpha_12() {
   Chunk c;
   initChunk(&c);
-  c.count = 2;
-  c.capacity = 2;
+  c.count = 43;
+  c.capacity = 43;
   u8 code[] = {
-    1, 40,
+    14, 1, 0, 1, 0, 2, 4, 41, 0, 1, 31, 0, 3, 30, 0, 12, 7, 14, 1, 16, 0, 0, 3, 0, 4, 4, 33, 1, 31, 0, 3, 30, 0, 6, 7, 14, 1, 0, 5, 21, 40, 1, 40,
   };
   int lines[] = {
-    32, 32,
+    32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 33, 33,
   };
   c.code = cloneMemory(code, sizeof(code));
   c.lines = cloneMemory(lines, sizeof(lines));
-  c.constants = constants_is_alpha_12();
+  c.constants = constants_isAlpha_12();
 
   return c;
 };
 
-             // is_alpha
-static Value fn_is_alpha_12() {
-  ObjFun *f = newFunction();  f->arity = 0;
+             // isAlpha
+static Value fn_isAlpha_12() {
+  ObjFun *f = newFunction();  f->arity = 1;
   f->upvalueCount = 0;
-  f->name = newString("is_alpha");
-  f->chunk = chunk_is_alpha_12();
+  f->name = newString("isAlpha");
+  f->chunk = chunk_isAlpha_12();
   return obj(f);
 }
 
-static ValueArray constants_is_digit_13() {
+static ValueArray constants_isDigit_13() {
   ValueArray vals;
   initValueArray(&vals);
   vals.count = vals.capacity = 3;
@@ -474,7 +476,7 @@ static ValueArray constants_is_digit_13() {
   return vals;
 }
 
-static Chunk chunk_is_digit_13() {
+static Chunk chunk_isDigit_13() {
   Chunk c;
   initChunk(&c);
   c.count = 14;
@@ -487,21 +489,21 @@ static Chunk chunk_is_digit_13() {
   };
   c.code = cloneMemory(code, sizeof(code));
   c.lines = cloneMemory(lines, sizeof(lines));
-  c.constants = constants_is_digit_13();
+  c.constants = constants_isDigit_13();
 
   return c;
 };
 
-             // is_digit
-static Value fn_is_digit_13() {
+             // isDigit
+static Value fn_isDigit_13() {
   ObjFun *f = newFunction();  f->arity = 1;
   f->upvalueCount = 0;
-  f->name = newString("is_digit");
-  f->chunk = chunk_is_digit_13();
+  f->name = newString("isDigit");
+  f->chunk = chunk_isDigit_13();
   return obj(f);
 }
 
-static ValueArray constants_is_subscript_14() {
+static ValueArray constants_isSubscript_14() {
   ValueArray vals;
   initValueArray(&vals);
   vals.count = vals.capacity = 3;
@@ -512,7 +514,7 @@ static ValueArray constants_is_subscript_14() {
   return vals;
 }
 
-static Chunk chunk_is_subscript_14() {
+static Chunk chunk_isSubscript_14() {
   Chunk c;
   initChunk(&c);
   c.count = 14;
@@ -525,26 +527,26 @@ static Chunk chunk_is_subscript_14() {
   };
   c.code = cloneMemory(code, sizeof(code));
   c.lines = cloneMemory(lines, sizeof(lines));
-  c.constants = constants_is_subscript_14();
+  c.constants = constants_isSubscript_14();
 
   return c;
 };
 
-             // is_subscript
-static Value fn_is_subscript_14() {
+             // isSubscript
+static Value fn_isSubscript_14() {
   ObjFun *f = newFunction();  f->arity = 1;
   f->upvalueCount = 0;
-  f->name = newString("is_subscript");
-  f->chunk = chunk_is_subscript_14();
+  f->name = newString("isSubscript");
+  f->chunk = chunk_isSubscript_14();
   return obj(f);
 }
 
 static ValueArray constants_src_slash_lita_slash_scanner_dot_lita_0() {
   ValueArray vals;
   initValueArray(&vals);
-  vals.count = vals.capacity = 39;
+  vals.count = vals.capacity = 32;
   Value values[] = {
-    str("scanner"), str("reset_scanner"), fn_reset_scanner_1(), str("Token"), fn_init_2(), str("init"), str("Object"), str("Indent"), str("previous"), fn_previous_3(), str("current"), fn_current_4(), str("inside"), fn_inside_5(), str("Scanner"), str("position"), fn_position_6(), str("line"), fn_line_7(), str("indent"), fn_indent_8(), fn_init_9(), fn_current_10(), str("is_at_end"), fn_is_at_end_11(), str("is_alpha"), fn_is_alpha_12(), str("c"), str("in"), str("a"), str("z"), str("A"), str("Z"), str("_'"), str("is_digit"), fn_is_digit_13(), str("is_subscript"), fn_is_subscript_14(), str("script return value"),
+    str("scanner"), str("reset_scanner"), fn_reset_scanner_1(), str("Token"), fn_init_2(), str("init"), str("Object"), str("Indent"), str("previous"), fn_previous_3(), str("current"), fn_current_4(), str("inside"), fn_inside_5(), str("Scanner"), str("position"), fn_position_6(), str("line"), fn_line_7(), str("indent"), fn_indent_8(), fn_init_9(), fn_current_10(), str("is_at_end"), fn_is_at_end_11(), str("isAlpha"), fn_isAlpha_12(), str("isDigit"), fn_isDigit_13(), str("isSubscript"), fn_isSubscript_14(), str("script return value"),
   };
   vals.values = cloneMemory(values, sizeof(values));
   return vals;
@@ -553,13 +555,13 @@ static ValueArray constants_src_slash_lita_slash_scanner_dot_lita_0() {
 static Chunk chunk_src_slash_lita_slash_scanner_dot_lita_0() {
   Chunk c;
   initChunk(&c);
-  c.count = 143;
-  c.capacity = 143;
+  c.count = 99;
+  c.capacity = 99;
   u8 code[] = {
-    1, 11, 0, 37, 2, 11, 1, 34, 3, 0, 37, 4, 36, 5, 14, 0, 44, 6, 35, 9, 1, 7, 7, 34, 7, 0, 14, 0, 44, 6, 35, 9, 1, 37, 9, 36, 8, 37, 11, 36, 10, 37, 13, 36, 12, 7, 7, 34, 14, 0, 14, 0, 44, 6, 35, 9, 1, 37, 16, 36, 15, 37, 18, 36, 17, 37, 20, 36, 19, 37, 21, 36, 5, 37, 22, 36, 10, 37, 24, 36, 23, 7, 7, 37, 26, 11, 25, 12, 27, 16, 28, 0, 29, 0, 30, 4, 33, 1, 13, 27, 31, 0, 3, 30, 0, 12, 7, 12, 27, 16, 28, 0, 31, 0, 32, 4, 33, 1, 31, 0, 3, 30, 0, 6, 7, 12, 27, 0, 33, 21, 7, 37, 35, 11, 34, 37, 37, 11, 36, 49, 38, 2, 40,
+    1, 11, 0, 37, 2, 11, 1, 34, 3, 0, 37, 4, 36, 5, 14, 0, 44, 6, 35, 9, 1, 7, 7, 34, 7, 0, 14, 0, 44, 6, 35, 9, 1, 37, 9, 36, 8, 37, 11, 36, 10, 37, 13, 36, 12, 7, 7, 34, 14, 0, 14, 0, 44, 6, 35, 9, 1, 37, 16, 36, 15, 37, 18, 36, 17, 37, 20, 36, 19, 37, 21, 36, 5, 37, 22, 36, 10, 37, 24, 36, 23, 7, 7, 37, 26, 11, 25, 37, 28, 11, 27, 37, 30, 11, 29, 49, 31, 2, 40,
   };
   int lines[] = {
-    1, 1, 1, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 13, 13, 13, 13, 14, 14, 14, 14, 15, 15, 15, 15, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 19, 19, 19, 19, 20, 20, 20, 20, 21, 21, 21, 21, 29, 29, 29, 29, 30, 30, 30, 30, 30, 30, 30, 30, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 33, 34, 34, 34, 34, 54, 54, 54, 54, 54, 54, 54, 54,
+    1, 1, 1, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 13, 13, 13, 13, 14, 14, 14, 14, 15, 15, 15, 15, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 19, 19, 19, 19, 20, 20, 20, 20, 21, 21, 21, 21, 29, 29, 29, 29, 30, 30, 30, 30, 30, 30, 30, 30, 32, 32, 33, 33, 33, 33, 34, 34, 34, 34, 54, 54, 54, 54, 54, 54, 54, 54,
   };
   c.code = cloneMemory(code, sizeof(code));
   c.lines = cloneMemory(lines, sizeof(lines));

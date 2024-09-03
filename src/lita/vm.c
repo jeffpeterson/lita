@@ -782,7 +782,6 @@ static InterpretResult vm_run() {
       break;
     }
 
-    case OP_MATCH: // TODO: More sophisticated matching.
     case OP_EQUAL:
       vm_invoke(string("=="), 1);
       SYNC_FRAME();

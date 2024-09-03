@@ -29,9 +29,9 @@ class Scanner
 	.current	= source[span.end]
 	.is_at_end	= position.start + position.end >= source.length
 
-fn is_alpha c		= c.in 'a..'z or c.in 'A..'Z or c == '_'
-fn is_digit(c)		= c.in '0..'9
-fn is_subscript(c)	= c.in 0x2080..0x2089
+fn isAlpha(c)		= c.in ('a..'z) or c.in 'A..'Z or c == '_'
+fn isDigit(c)		= c.in '0..'9
+fn isSubscript(c)	= c.in 0x2080..0x2089
 
 // fn utf_bytes(str)
 // 	if str 0 < 0x80: return str 0 ? 1 : 0

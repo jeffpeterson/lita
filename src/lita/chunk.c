@@ -70,7 +70,6 @@ OpInfo op_info[] = {
     [OP_FALSE] = {"OP_FALSE", SIMPLE, 0, 1},
 
     [OP_ASSERT] = {"OP_ASSERT", CONSTANT, 1, 1},
-    [OP_MATCH] = {"OP_MATCH", SIMPLE, 2, 1},
     [OP_NOT] = {"OP_NOT", SIMPLE, 1, 1},
     [OP_NEGATE] = {"OP_NEGATE", SIMPLE, 1, 1},
     [OP_PRINT] = {"OP_PRINT", SIMPLE, 1, 1},

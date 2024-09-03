@@ -25,13 +25,13 @@ static ValueArray constants__slash__1() {
 static Chunk chunk__slash__1() {
   Chunk c;
   initChunk(&c);
-  c.count = 11;
-  c.capacity = 11;
+  c.count = 13;
+  c.capacity = 13;
   u8 code[] = {
-    14, 0, 0, 0, 24, 14, 1, 24, 40, 1, 40,
+    14, 0, 0, 0, 33, 1, 14, 1, 33, 1, 40, 1, 40,
   };
   int lines[] = {
-    2, 2, 2, 2, 2, 2, 2, 2, 2, 4, 4,
+    2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 4, 4,
   };
   c.code = cloneMemory(code, sizeof(code));
   c.lines = cloneMemory(lines, sizeof(lines));
@@ -63,13 +63,13 @@ static ValueArray constants_bold_2() {
 static Chunk chunk_bold_2() {
   Chunk c;
   initChunk(&c);
-  c.count = 11;
-  c.capacity = 11;
+  c.count = 13;
+  c.capacity = 13;
   u8 code[] = {
-    0, 0, 14, 0, 24, 0, 1, 24, 40, 1, 40,
+    0, 0, 14, 0, 33, 1, 0, 1, 33, 1, 40, 1, 40,
   };
   int lines[] = {
-    4, 4, 4, 4, 4, 4, 4, 4, 4, 5, 5,
+    4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 5, 5,
   };
   c.code = cloneMemory(code, sizeof(code));
   c.lines = cloneMemory(lines, sizeof(lines));
@@ -101,13 +101,13 @@ static ValueArray constants_dim_3() {
 static Chunk chunk_dim_3() {
   Chunk c;
   initChunk(&c);
-  c.count = 11;
-  c.capacity = 11;
+  c.count = 13;
+  c.capacity = 13;
   u8 code[] = {
-    0, 0, 14, 0, 24, 0, 1, 24, 40, 1, 40,
+    0, 0, 14, 0, 33, 1, 0, 1, 33, 1, 40, 1, 40,
   };
   int lines[] = {
-    5, 5, 5, 5, 5, 5, 5, 5, 5, 6, 6,
+    5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 6, 6,
   };
   c.code = cloneMemory(code, sizeof(code));
   c.lines = cloneMemory(lines, sizeof(lines));
@@ -139,13 +139,13 @@ static ValueArray constants_italic_4() {
 static Chunk chunk_italic_4() {
   Chunk c;
   initChunk(&c);
-  c.count = 11;
-  c.capacity = 11;
+  c.count = 13;
+  c.capacity = 13;
   u8 code[] = {
-    0, 0, 14, 0, 24, 0, 1, 24, 40, 1, 40,
+    0, 0, 14, 0, 33, 1, 0, 1, 33, 1, 40, 1, 40,
   };
   int lines[] = {
-    6, 6, 6, 6, 6, 6, 6, 6, 6, 7, 7,
+    6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 7, 7,
   };
   c.code = cloneMemory(code, sizeof(code));
   c.lines = cloneMemory(lines, sizeof(lines));
@@ -177,13 +177,13 @@ static ValueArray constants_underline_5() {
 static Chunk chunk_underline_5() {
   Chunk c;
   initChunk(&c);
-  c.count = 11;
-  c.capacity = 11;
+  c.count = 13;
+  c.capacity = 13;
   u8 code[] = {
-    0, 0, 14, 0, 24, 0, 1, 24, 40, 1, 40,
+    0, 0, 14, 0, 33, 1, 0, 1, 33, 1, 40, 1, 40,
   };
   int lines[] = {
-    7, 7, 7, 7, 7, 7, 7, 7, 7, 8, 8,
+    7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 8, 8,
   };
   c.code = cloneMemory(code, sizeof(code));
   c.lines = cloneMemory(lines, sizeof(lines));
@@ -215,13 +215,13 @@ static ValueArray constants_invert_6() {
 static Chunk chunk_invert_6() {
   Chunk c;
   initChunk(&c);
-  c.count = 11;
-  c.capacity = 11;
+  c.count = 13;
+  c.capacity = 13;
   u8 code[] = {
-    0, 0, 14, 0, 24, 0, 1, 24, 40, 1, 40,
+    0, 0, 14, 0, 33, 1, 0, 1, 33, 1, 40, 1, 40,
   };
   int lines[] = {
-    8, 8, 8, 8, 8, 8, 8, 8, 8, 9, 9,
+    8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 9, 9,
   };
   c.code = cloneMemory(code, sizeof(code));
   c.lines = cloneMemory(lines, sizeof(lines));
@@ -253,13 +253,13 @@ static ValueArray constants_hide_7() {
 static Chunk chunk_hide_7() {
   Chunk c;
   initChunk(&c);
-  c.count = 11;
-  c.capacity = 11;
+  c.count = 13;
+  c.capacity = 13;
   u8 code[] = {
-    0, 0, 14, 0, 24, 0, 1, 24, 40, 1, 40,
+    0, 0, 14, 0, 33, 1, 0, 1, 33, 1, 40, 1, 40,
   };
   int lines[] = {
-    9, 9, 9, 9, 9, 9, 9, 9, 9, 10, 10,
+    9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 10, 10,
   };
   c.code = cloneMemory(code, sizeof(code));
   c.lines = cloneMemory(lines, sizeof(lines));
@@ -291,13 +291,13 @@ static ValueArray constants_strike_8() {
 static Chunk chunk_strike_8() {
   Chunk c;
   initChunk(&c);
-  c.count = 11;
-  c.capacity = 11;
+  c.count = 13;
+  c.capacity = 13;
   u8 code[] = {
-    0, 0, 14, 0, 24, 0, 1, 24, 40, 1, 40,
+    0, 0, 14, 0, 33, 1, 0, 1, 33, 1, 40, 1, 40,
   };
   int lines[] = {
-    10, 10, 10, 10, 10, 10, 10, 10, 10, 12, 12,
+    10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 12, 12,
   };
   c.code = cloneMemory(code, sizeof(code));
   c.lines = cloneMemory(lines, sizeof(lines));
@@ -329,13 +329,13 @@ static ValueArray constants_black_9() {
 static Chunk chunk_black_9() {
   Chunk c;
   initChunk(&c);
-  c.count = 11;
-  c.capacity = 11;
+  c.count = 13;
+  c.capacity = 13;
   u8 code[] = {
-    0, 0, 14, 0, 24, 0, 1, 24, 40, 1, 40,
+    0, 0, 14, 0, 33, 1, 0, 1, 33, 1, 40, 1, 40,
   };
   int lines[] = {
-    12, 12, 12, 12, 12, 12, 12, 12, 12, 13, 13,
+    12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 13, 13,
   };
   c.code = cloneMemory(code, sizeof(code));
   c.lines = cloneMemory(lines, sizeof(lines));
@@ -367,13 +367,13 @@ static ValueArray constants_red_10() {
 static Chunk chunk_red_10() {
   Chunk c;
   initChunk(&c);
-  c.count = 11;
-  c.capacity = 11;
+  c.count = 13;
+  c.capacity = 13;
   u8 code[] = {
-    0, 0, 14, 0, 24, 0, 1, 24, 40, 1, 40,
+    0, 0, 14, 0, 33, 1, 0, 1, 33, 1, 40, 1, 40,
   };
   int lines[] = {
-    13, 13, 13, 13, 13, 13, 13, 13, 13, 14, 14,
+    13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 14, 14,
   };
   c.code = cloneMemory(code, sizeof(code));
   c.lines = cloneMemory(lines, sizeof(lines));
@@ -405,13 +405,13 @@ static ValueArray constants_green_11() {
 static Chunk chunk_green_11() {
   Chunk c;
   initChunk(&c);
-  c.count = 11;
-  c.capacity = 11;
+  c.count = 13;
+  c.capacity = 13;
   u8 code[] = {
-    0, 0, 14, 0, 24, 0, 1, 24, 40, 1, 40,
+    0, 0, 14, 0, 33, 1, 0, 1, 33, 1, 40, 1, 40,
   };
   int lines[] = {
-    14, 14, 14, 14, 14, 14, 14, 14, 14, 15, 15,
+    14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 15, 15,
   };
   c.code = cloneMemory(code, sizeof(code));
   c.lines = cloneMemory(lines, sizeof(lines));
@@ -443,13 +443,13 @@ static ValueArray constants_yellow_12() {
 static Chunk chunk_yellow_12() {
   Chunk c;
   initChunk(&c);
-  c.count = 11;
-  c.capacity = 11;
+  c.count = 13;
+  c.capacity = 13;
   u8 code[] = {
-    0, 0, 14, 0, 24, 0, 1, 24, 40, 1, 40,
+    0, 0, 14, 0, 33, 1, 0, 1, 33, 1, 40, 1, 40,
   };
   int lines[] = {
-    15, 15, 15, 15, 15, 15, 15, 15, 15, 16, 16,
+    15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 16, 16,
   };
   c.code = cloneMemory(code, sizeof(code));
   c.lines = cloneMemory(lines, sizeof(lines));
@@ -481,13 +481,13 @@ static ValueArray constants_blue_13() {
 static Chunk chunk_blue_13() {
   Chunk c;
   initChunk(&c);
-  c.count = 11;
-  c.capacity = 11;
+  c.count = 13;
+  c.capacity = 13;
   u8 code[] = {
-    0, 0, 14, 0, 24, 0, 1, 24, 40, 1, 40,
+    0, 0, 14, 0, 33, 1, 0, 1, 33, 1, 40, 1, 40,
   };
   int lines[] = {
-    16, 16, 16, 16, 16, 16, 16, 16, 16, 17, 17,
+    16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 17, 17,
   };
   c.code = cloneMemory(code, sizeof(code));
   c.lines = cloneMemory(lines, sizeof(lines));
@@ -519,13 +519,13 @@ static ValueArray constants_magenta_14() {
 static Chunk chunk_magenta_14() {
   Chunk c;
   initChunk(&c);
-  c.count = 11;
-  c.capacity = 11;
+  c.count = 13;
+  c.capacity = 13;
   u8 code[] = {
-    0, 0, 14, 0, 24, 0, 1, 24, 40, 1, 40,
+    0, 0, 14, 0, 33, 1, 0, 1, 33, 1, 40, 1, 40,
   };
   int lines[] = {
-    17, 17, 17, 17, 17, 17, 17, 17, 17, 18, 18,
+    17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 18, 18,
   };
   c.code = cloneMemory(code, sizeof(code));
   c.lines = cloneMemory(lines, sizeof(lines));
@@ -557,13 +557,13 @@ static ValueArray constants_cyan_15() {
 static Chunk chunk_cyan_15() {
   Chunk c;
   initChunk(&c);
-  c.count = 11;
-  c.capacity = 11;
+  c.count = 13;
+  c.capacity = 13;
   u8 code[] = {
-    0, 0, 14, 0, 24, 0, 1, 24, 40, 1, 40,
+    0, 0, 14, 0, 33, 1, 0, 1, 33, 1, 40, 1, 40,
   };
   int lines[] = {
-    18, 18, 18, 18, 18, 18, 18, 18, 18, 19, 19,
+    18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 19, 19,
   };
   c.code = cloneMemory(code, sizeof(code));
   c.lines = cloneMemory(lines, sizeof(lines));
@@ -595,13 +595,13 @@ static ValueArray constants_white_16() {
 static Chunk chunk_white_16() {
   Chunk c;
   initChunk(&c);
-  c.count = 11;
-  c.capacity = 11;
+  c.count = 13;
+  c.capacity = 13;
   u8 code[] = {
-    0, 0, 14, 0, 24, 0, 1, 24, 40, 1, 40,
+    0, 0, 14, 0, 33, 1, 0, 1, 33, 1, 40, 1, 40,
   };
   int lines[] = {
-    19, 19, 19, 19, 19, 19, 19, 19, 19, 21, 21,
+    19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 21, 21,
   };
   c.code = cloneMemory(code, sizeof(code));
   c.lines = cloneMemory(lines, sizeof(lines));
@@ -633,13 +633,13 @@ static ValueArray constants_bg_black_17() {
 static Chunk chunk_bg_black_17() {
   Chunk c;
   initChunk(&c);
-  c.count = 11;
-  c.capacity = 11;
+  c.count = 13;
+  c.capacity = 13;
   u8 code[] = {
-    0, 0, 14, 0, 24, 0, 1, 24, 40, 1, 40,
+    0, 0, 14, 0, 33, 1, 0, 1, 33, 1, 40, 1, 40,
   };
   int lines[] = {
-    21, 21, 21, 21, 21, 21, 21, 21, 21, 22, 22,
+    21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 22, 22,
   };
   c.code = cloneMemory(code, sizeof(code));
   c.lines = cloneMemory(lines, sizeof(lines));
@@ -671,13 +671,13 @@ static ValueArray constants_bg_red_18() {
 static Chunk chunk_bg_red_18() {
   Chunk c;
   initChunk(&c);
-  c.count = 11;
-  c.capacity = 11;
+  c.count = 13;
+  c.capacity = 13;
   u8 code[] = {
-    0, 0, 14, 0, 24, 0, 1, 24, 40, 1, 40,
+    0, 0, 14, 0, 33, 1, 0, 1, 33, 1, 40, 1, 40,
   };
   int lines[] = {
-    22, 22, 22, 22, 22, 22, 22, 22, 22, 23, 23,
+    22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 23, 23,
   };
   c.code = cloneMemory(code, sizeof(code));
   c.lines = cloneMemory(lines, sizeof(lines));
@@ -709,13 +709,13 @@ static ValueArray constants_bg_green_19() {
 static Chunk chunk_bg_green_19() {
   Chunk c;
   initChunk(&c);
-  c.count = 11;
-  c.capacity = 11;
+  c.count = 13;
+  c.capacity = 13;
   u8 code[] = {
-    0, 0, 14, 0, 24, 0, 1, 24, 40, 1, 40,
+    0, 0, 14, 0, 33, 1, 0, 1, 33, 1, 40, 1, 40,
   };
   int lines[] = {
-    23, 23, 23, 23, 23, 23, 23, 23, 23, 24, 24,
+    23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 24, 24,
   };
   c.code = cloneMemory(code, sizeof(code));
   c.lines = cloneMemory(lines, sizeof(lines));
@@ -747,13 +747,13 @@ static ValueArray constants_bg_yellow_20() {
 static Chunk chunk_bg_yellow_20() {
   Chunk c;
   initChunk(&c);
-  c.count = 11;
-  c.capacity = 11;
+  c.count = 13;
+  c.capacity = 13;
   u8 code[] = {
-    0, 0, 14, 0, 24, 0, 1, 24, 40, 1, 40,
+    0, 0, 14, 0, 33, 1, 0, 1, 33, 1, 40, 1, 40,
   };
   int lines[] = {
-    24, 24, 24, 24, 24, 24, 24, 24, 24, 25, 25,
+    24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 25, 25,
   };
   c.code = cloneMemory(code, sizeof(code));
   c.lines = cloneMemory(lines, sizeof(lines));
@@ -785,13 +785,13 @@ static ValueArray constants_bg_blue_21() {
 static Chunk chunk_bg_blue_21() {
   Chunk c;
   initChunk(&c);
-  c.count = 11;
-  c.capacity = 11;
+  c.count = 13;
+  c.capacity = 13;
   u8 code[] = {
-    0, 0, 14, 0, 24, 0, 1, 24, 40, 1, 40,
+    0, 0, 14, 0, 33, 1, 0, 1, 33, 1, 40, 1, 40,
   };
   int lines[] = {
-    25, 25, 25, 25, 25, 25, 25, 25, 25, 26, 26,
+    25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 26, 26,
   };
   c.code = cloneMemory(code, sizeof(code));
   c.lines = cloneMemory(lines, sizeof(lines));
@@ -823,13 +823,13 @@ static ValueArray constants_bg_magenta_22() {
 static Chunk chunk_bg_magenta_22() {
   Chunk c;
   initChunk(&c);
-  c.count = 11;
-  c.capacity = 11;
+  c.count = 13;
+  c.capacity = 13;
   u8 code[] = {
-    0, 0, 14, 0, 24, 0, 1, 24, 40, 1, 40,
+    0, 0, 14, 0, 33, 1, 0, 1, 33, 1, 40, 1, 40,
   };
   int lines[] = {
-    26, 26, 26, 26, 26, 26, 26, 26, 26, 27, 27,
+    26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 27, 27,
   };
   c.code = cloneMemory(code, sizeof(code));
   c.lines = cloneMemory(lines, sizeof(lines));
@@ -861,13 +861,13 @@ static ValueArray constants_bg_cyan_23() {
 static Chunk chunk_bg_cyan_23() {
   Chunk c;
   initChunk(&c);
-  c.count = 11;
-  c.capacity = 11;
+  c.count = 13;
+  c.capacity = 13;
   u8 code[] = {
-    0, 0, 14, 0, 24, 0, 1, 24, 40, 1, 40,
+    0, 0, 14, 0, 33, 1, 0, 1, 33, 1, 40, 1, 40,
   };
   int lines[] = {
-    27, 27, 27, 27, 27, 27, 27, 27, 27, 28, 28,
+    27, 27, 27, 27, 27, 27, 27, 27, 27, 27, 27, 28, 28,
   };
   c.code = cloneMemory(code, sizeof(code));
   c.lines = cloneMemory(lines, sizeof(lines));
@@ -899,13 +899,13 @@ static ValueArray constants_bg_white_24() {
 static Chunk chunk_bg_white_24() {
   Chunk c;
   initChunk(&c);
-  c.count = 11;
-  c.capacity = 11;
+  c.count = 13;
+  c.capacity = 13;
   u8 code[] = {
-    0, 0, 14, 0, 24, 0, 1, 24, 40, 1, 40,
+    0, 0, 14, 0, 33, 1, 0, 1, 33, 1, 40, 1, 40,
   };
   int lines[] = {
-    28, 28, 28, 28, 28, 28, 28, 28, 28, 30, 30,
+    28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 30, 30,
   };
   c.code = cloneMemory(code, sizeof(code));
   c.lines = cloneMemory(lines, sizeof(lines));
