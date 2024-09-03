@@ -1,5 +1,5 @@
 class Range
-	fn inspect = start.inspect + '.. + end.inspect
-	fn string  = start.string + '.. + end.string
-	fn length  = end - start
-	fn map(f) = f(start) .. f(end)
+	.inspect = "" start.inspect '.. end.inspect
+	.string  = "" start.string '.. end.string
+	.length  = end - start
+	.map(f) = f(start) .. f(end)

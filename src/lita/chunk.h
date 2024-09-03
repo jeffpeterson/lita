@@ -111,6 +111,8 @@ Value get_constant(Chunk *chunk, int id);
 
 extern OpInfo op_info[];
 
+u8 instructionSize(OpCode code);
+
 int input_count(Chunk *chunk, u8 *ip);
 int output_count(Chunk *chunk, u8 *ip);
 int input_output_delta(Chunk *chunk, u8 *ip);

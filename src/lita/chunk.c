@@ -132,6 +132,17 @@ OpInfo op_info[] = {
     [OP_ASSERT_STACK] = {"OP_ASSERT_STACK", CONSTANT_BYTE, 0, 0},
 };
 
+u8 instructionSize(OpCode code) {
+  switch (op_info[code].type) {
+  case SIMPLE: return 1;
+  case BYTE:
+  case CONSTANT: return 2;
+  case CONSTANT_BYTE:
+  case INVOKE:
+  case JUMP: return 3;
+  }
+}
+
 int input_count(Chunk *chunk, u8 *ip) {
   OpInfo op = op_info[*ip];
   switch (*ip) {

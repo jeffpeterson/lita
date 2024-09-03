@@ -5,6 +5,11 @@
 #include "lita/lib.h"
 #include "lita/memory.h"
 #include "lita/string.h"
+#include "lita/vm.h"
+
+#if ENABLE_REGEX
+#include "lita/regex.h"
+#endif
 
 static ValueArray constants_init_1() {
   ValueArray vals;
@@ -23,7 +28,12 @@ static Chunk chunk_init_1() {
   c.count = 10;
   c.capacity = 10;
   u8 code[] = {
-    14, 0, 14, 1, 17, 0, 7, 14, 0, 40,
+    OP_GET_LOCAL, 0,
+    OP_GET_LOCAL, 1,
+    OP_SET_PROPERTY, 0,
+    OP_POP,
+    OP_GET_LOCAL, 0,
+    OP_RETURN,
   };
   int lines[] = {
     21, 21, 21, 21, 21, 21, 21, 22, 22, 22,
@@ -47,9 +57,9 @@ static Value fn_init_1() {
 static ValueArray constants_src_slash_lita_slash_lib_slash_Parser_dot_lita_0() {
   ValueArray vals;
   initValueArray(&vals);
-  vals.count = vals.capacity = 4;
+  vals.count = vals.capacity = 5;
   Value values[] = {
-    str("Parser"), str("Object"), str("init"), fn_init_1(),
+    str("Parser"), str("Object"), str("init"), fn_init_1(), str("script return value"),
   };
   vals.values = cloneMemory(values, sizeof(values));
   return vals;
@@ -58,13 +68,24 @@ static ValueArray constants_src_slash_lita_slash_lib_slash_Parser_dot_lita_0() {
 static Chunk chunk_src_slash_lita_slash_lib_slash_Parser_dot_lita_0() {
   Chunk c;
   initChunk(&c);
-  c.count = 18;
-  c.capacity = 18;
+  c.count = 22;
+  c.capacity = 22;
   u8 code[] = {
-    34, 0, 0, 14, 0, 44, 1, 35, 9, 1, 37, 3, 36, 2, 7, 7, 1, 40,
+    OP_CLASS, 0, 0,
+    OP_GET_LOCAL, 0,
+    OP_GET_VAR, 1,
+    OP_INHERIT,
+    OP_SWAP, 1,
+    OP_CLOSURE, 3,
+    OP_METHOD, 2,
+    OP_POP,
+    OP_POP,
+    OP_GET_GLOBAL, 0,
+    OP_ASSERT_STACK, 4, 2,
+    OP_RETURN,
   };
   int lines[] = {
-    19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 22, 22, 22, 22, 22, 22, 22, 22,
+    19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22,
   };
   c.code = cloneMemory(code, sizeof(code));
   c.lines = cloneMemory(lines, sizeof(lines));

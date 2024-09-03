@@ -28,7 +28,14 @@ static Chunk chunk__slash__1() {
   c.count = 13;
   c.capacity = 13;
   u8 code[] = {
-    14, 0, 0, 0, 33, 1, 14, 1, 33, 1, 40, 1, 40,
+    OP_GET_LOCAL, 0,
+    OP_CONSTANT, 0,
+    OP_CALL, 1,
+    OP_GET_LOCAL, 1,
+    OP_CALL, 1,
+    OP_RETURN,
+    OP_NIL,
+    OP_RETURN,
   };
   int lines[] = {
     2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 4, 4,
@@ -66,7 +73,14 @@ static Chunk chunk_bold_2() {
   c.count = 13;
   c.capacity = 13;
   u8 code[] = {
-    0, 0, 14, 0, 33, 1, 0, 1, 33, 1, 40, 1, 40,
+    OP_CONSTANT, 0,
+    OP_GET_LOCAL, 0,
+    OP_CALL, 1,
+    OP_CONSTANT, 1,
+    OP_CALL, 1,
+    OP_RETURN,
+    OP_NIL,
+    OP_RETURN,
   };
   int lines[] = {
     4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 5, 5,
@@ -104,7 +118,14 @@ static Chunk chunk_dim_3() {
   c.count = 13;
   c.capacity = 13;
   u8 code[] = {
-    0, 0, 14, 0, 33, 1, 0, 1, 33, 1, 40, 1, 40,
+    OP_CONSTANT, 0,
+    OP_GET_LOCAL, 0,
+    OP_CALL, 1,
+    OP_CONSTANT, 1,
+    OP_CALL, 1,
+    OP_RETURN,
+    OP_NIL,
+    OP_RETURN,
   };
   int lines[] = {
     5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 6, 6,
@@ -142,7 +163,14 @@ static Chunk chunk_italic_4() {
   c.count = 13;
   c.capacity = 13;
   u8 code[] = {
-    0, 0, 14, 0, 33, 1, 0, 1, 33, 1, 40, 1, 40,
+    OP_CONSTANT, 0,
+    OP_GET_LOCAL, 0,
+    OP_CALL, 1,
+    OP_CONSTANT, 1,
+    OP_CALL, 1,
+    OP_RETURN,
+    OP_NIL,
+    OP_RETURN,
   };
   int lines[] = {
     6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 7, 7,
@@ -180,7 +208,14 @@ static Chunk chunk_underline_5() {
   c.count = 13;
   c.capacity = 13;
   u8 code[] = {
-    0, 0, 14, 0, 33, 1, 0, 1, 33, 1, 40, 1, 40,
+    OP_CONSTANT, 0,
+    OP_GET_LOCAL, 0,
+    OP_CALL, 1,
+    OP_CONSTANT, 1,
+    OP_CALL, 1,
+    OP_RETURN,
+    OP_NIL,
+    OP_RETURN,
   };
   int lines[] = {
     7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 8, 8,
@@ -218,7 +253,14 @@ static Chunk chunk_invert_6() {
   c.count = 13;
   c.capacity = 13;
   u8 code[] = {
-    0, 0, 14, 0, 33, 1, 0, 1, 33, 1, 40, 1, 40,
+    OP_CONSTANT, 0,
+    OP_GET_LOCAL, 0,
+    OP_CALL, 1,
+    OP_CONSTANT, 1,
+    OP_CALL, 1,
+    OP_RETURN,
+    OP_NIL,
+    OP_RETURN,
   };
   int lines[] = {
     8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 9, 9,
@@ -256,7 +298,14 @@ static Chunk chunk_hide_7() {
   c.count = 13;
   c.capacity = 13;
   u8 code[] = {
-    0, 0, 14, 0, 33, 1, 0, 1, 33, 1, 40, 1, 40,
+    OP_CONSTANT, 0,
+    OP_GET_LOCAL, 0,
+    OP_CALL, 1,
+    OP_CONSTANT, 1,
+    OP_CALL, 1,
+    OP_RETURN,
+    OP_NIL,
+    OP_RETURN,
   };
   int lines[] = {
     9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 10, 10,
@@ -294,7 +343,14 @@ static Chunk chunk_strike_8() {
   c.count = 13;
   c.capacity = 13;
   u8 code[] = {
-    0, 0, 14, 0, 33, 1, 0, 1, 33, 1, 40, 1, 40,
+    OP_CONSTANT, 0,
+    OP_GET_LOCAL, 0,
+    OP_CALL, 1,
+    OP_CONSTANT, 1,
+    OP_CALL, 1,
+    OP_RETURN,
+    OP_NIL,
+    OP_RETURN,
   };
   int lines[] = {
     10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 12, 12,
@@ -332,7 +388,14 @@ static Chunk chunk_black_9() {
   c.count = 13;
   c.capacity = 13;
   u8 code[] = {
-    0, 0, 14, 0, 33, 1, 0, 1, 33, 1, 40, 1, 40,
+    OP_CONSTANT, 0,
+    OP_GET_LOCAL, 0,
+    OP_CALL, 1,
+    OP_CONSTANT, 1,
+    OP_CALL, 1,
+    OP_RETURN,
+    OP_NIL,
+    OP_RETURN,
   };
   int lines[] = {
     12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 13, 13,
@@ -370,7 +433,14 @@ static Chunk chunk_red_10() {
   c.count = 13;
   c.capacity = 13;
   u8 code[] = {
-    0, 0, 14, 0, 33, 1, 0, 1, 33, 1, 40, 1, 40,
+    OP_CONSTANT, 0,
+    OP_GET_LOCAL, 0,
+    OP_CALL, 1,
+    OP_CONSTANT, 1,
+    OP_CALL, 1,
+    OP_RETURN,
+    OP_NIL,
+    OP_RETURN,
   };
   int lines[] = {
     13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 14, 14,
@@ -408,7 +478,14 @@ static Chunk chunk_green_11() {
   c.count = 13;
   c.capacity = 13;
   u8 code[] = {
-    0, 0, 14, 0, 33, 1, 0, 1, 33, 1, 40, 1, 40,
+    OP_CONSTANT, 0,
+    OP_GET_LOCAL, 0,
+    OP_CALL, 1,
+    OP_CONSTANT, 1,
+    OP_CALL, 1,
+    OP_RETURN,
+    OP_NIL,
+    OP_RETURN,
   };
   int lines[] = {
     14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 15, 15,
@@ -446,7 +523,14 @@ static Chunk chunk_yellow_12() {
   c.count = 13;
   c.capacity = 13;
   u8 code[] = {
-    0, 0, 14, 0, 33, 1, 0, 1, 33, 1, 40, 1, 40,
+    OP_CONSTANT, 0,
+    OP_GET_LOCAL, 0,
+    OP_CALL, 1,
+    OP_CONSTANT, 1,
+    OP_CALL, 1,
+    OP_RETURN,
+    OP_NIL,
+    OP_RETURN,
   };
   int lines[] = {
     15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 16, 16,
@@ -484,7 +568,14 @@ static Chunk chunk_blue_13() {
   c.count = 13;
   c.capacity = 13;
   u8 code[] = {
-    0, 0, 14, 0, 33, 1, 0, 1, 33, 1, 40, 1, 40,
+    OP_CONSTANT, 0,
+    OP_GET_LOCAL, 0,
+    OP_CALL, 1,
+    OP_CONSTANT, 1,
+    OP_CALL, 1,
+    OP_RETURN,
+    OP_NIL,
+    OP_RETURN,
   };
   int lines[] = {
     16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 17, 17,
@@ -522,7 +613,14 @@ static Chunk chunk_magenta_14() {
   c.count = 13;
   c.capacity = 13;
   u8 code[] = {
-    0, 0, 14, 0, 33, 1, 0, 1, 33, 1, 40, 1, 40,
+    OP_CONSTANT, 0,
+    OP_GET_LOCAL, 0,
+    OP_CALL, 1,
+    OP_CONSTANT, 1,
+    OP_CALL, 1,
+    OP_RETURN,
+    OP_NIL,
+    OP_RETURN,
   };
   int lines[] = {
     17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 18, 18,
@@ -560,7 +658,14 @@ static Chunk chunk_cyan_15() {
   c.count = 13;
   c.capacity = 13;
   u8 code[] = {
-    0, 0, 14, 0, 33, 1, 0, 1, 33, 1, 40, 1, 40,
+    OP_CONSTANT, 0,
+    OP_GET_LOCAL, 0,
+    OP_CALL, 1,
+    OP_CONSTANT, 1,
+    OP_CALL, 1,
+    OP_RETURN,
+    OP_NIL,
+    OP_RETURN,
   };
   int lines[] = {
     18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 19, 19,
@@ -598,7 +703,14 @@ static Chunk chunk_white_16() {
   c.count = 13;
   c.capacity = 13;
   u8 code[] = {
-    0, 0, 14, 0, 33, 1, 0, 1, 33, 1, 40, 1, 40,
+    OP_CONSTANT, 0,
+    OP_GET_LOCAL, 0,
+    OP_CALL, 1,
+    OP_CONSTANT, 1,
+    OP_CALL, 1,
+    OP_RETURN,
+    OP_NIL,
+    OP_RETURN,
   };
   int lines[] = {
     19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 21, 21,
@@ -636,7 +748,14 @@ static Chunk chunk_bg_black_17() {
   c.count = 13;
   c.capacity = 13;
   u8 code[] = {
-    0, 0, 14, 0, 33, 1, 0, 1, 33, 1, 40, 1, 40,
+    OP_CONSTANT, 0,
+    OP_GET_LOCAL, 0,
+    OP_CALL, 1,
+    OP_CONSTANT, 1,
+    OP_CALL, 1,
+    OP_RETURN,
+    OP_NIL,
+    OP_RETURN,
   };
   int lines[] = {
     21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 22, 22,
@@ -674,7 +793,14 @@ static Chunk chunk_bg_red_18() {
   c.count = 13;
   c.capacity = 13;
   u8 code[] = {
-    0, 0, 14, 0, 33, 1, 0, 1, 33, 1, 40, 1, 40,
+    OP_CONSTANT, 0,
+    OP_GET_LOCAL, 0,
+    OP_CALL, 1,
+    OP_CONSTANT, 1,
+    OP_CALL, 1,
+    OP_RETURN,
+    OP_NIL,
+    OP_RETURN,
   };
   int lines[] = {
     22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 23, 23,
@@ -712,7 +838,14 @@ static Chunk chunk_bg_green_19() {
   c.count = 13;
   c.capacity = 13;
   u8 code[] = {
-    0, 0, 14, 0, 33, 1, 0, 1, 33, 1, 40, 1, 40,
+    OP_CONSTANT, 0,
+    OP_GET_LOCAL, 0,
+    OP_CALL, 1,
+    OP_CONSTANT, 1,
+    OP_CALL, 1,
+    OP_RETURN,
+    OP_NIL,
+    OP_RETURN,
   };
   int lines[] = {
     23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 24, 24,
@@ -750,7 +883,14 @@ static Chunk chunk_bg_yellow_20() {
   c.count = 13;
   c.capacity = 13;
   u8 code[] = {
-    0, 0, 14, 0, 33, 1, 0, 1, 33, 1, 40, 1, 40,
+    OP_CONSTANT, 0,
+    OP_GET_LOCAL, 0,
+    OP_CALL, 1,
+    OP_CONSTANT, 1,
+    OP_CALL, 1,
+    OP_RETURN,
+    OP_NIL,
+    OP_RETURN,
   };
   int lines[] = {
     24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 25, 25,
@@ -788,7 +928,14 @@ static Chunk chunk_bg_blue_21() {
   c.count = 13;
   c.capacity = 13;
   u8 code[] = {
-    0, 0, 14, 0, 33, 1, 0, 1, 33, 1, 40, 1, 40,
+    OP_CONSTANT, 0,
+    OP_GET_LOCAL, 0,
+    OP_CALL, 1,
+    OP_CONSTANT, 1,
+    OP_CALL, 1,
+    OP_RETURN,
+    OP_NIL,
+    OP_RETURN,
   };
   int lines[] = {
     25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 26, 26,
@@ -826,7 +973,14 @@ static Chunk chunk_bg_magenta_22() {
   c.count = 13;
   c.capacity = 13;
   u8 code[] = {
-    0, 0, 14, 0, 33, 1, 0, 1, 33, 1, 40, 1, 40,
+    OP_CONSTANT, 0,
+    OP_GET_LOCAL, 0,
+    OP_CALL, 1,
+    OP_CONSTANT, 1,
+    OP_CALL, 1,
+    OP_RETURN,
+    OP_NIL,
+    OP_RETURN,
   };
   int lines[] = {
     26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 27, 27,
@@ -864,7 +1018,14 @@ static Chunk chunk_bg_cyan_23() {
   c.count = 13;
   c.capacity = 13;
   u8 code[] = {
-    0, 0, 14, 0, 33, 1, 0, 1, 33, 1, 40, 1, 40,
+    OP_CONSTANT, 0,
+    OP_GET_LOCAL, 0,
+    OP_CALL, 1,
+    OP_CONSTANT, 1,
+    OP_CALL, 1,
+    OP_RETURN,
+    OP_NIL,
+    OP_RETURN,
   };
   int lines[] = {
     27, 27, 27, 27, 27, 27, 27, 27, 27, 27, 27, 28, 28,
@@ -902,7 +1063,14 @@ static Chunk chunk_bg_white_24() {
   c.count = 13;
   c.capacity = 13;
   u8 code[] = {
-    0, 0, 14, 0, 33, 1, 0, 1, 33, 1, 40, 1, 40,
+    OP_CONSTANT, 0,
+    OP_GET_LOCAL, 0,
+    OP_CALL, 1,
+    OP_CONSTANT, 1,
+    OP_CALL, 1,
+    OP_RETURN,
+    OP_NIL,
+    OP_RETURN,
   };
   int lines[] = {
     28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 30, 30,
@@ -940,7 +1108,14 @@ static Chunk chunk_uppercase_25() {
   c.count = 13;
   c.capacity = 13;
   u8 code[] = {
-    14, 0, 44, 0, 0, 1, 0, 2, 33, 2, 40, 1, 40,
+    OP_GET_LOCAL, 0,
+    OP_GET_VAR, 0,
+    OP_CONSTANT, 1,
+    OP_CONSTANT, 2,
+    OP_CALL, 2,
+    OP_RETURN,
+    OP_NIL,
+    OP_RETURN,
   };
   int lines[] = {
     30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 31, 31,
@@ -978,7 +1153,14 @@ static Chunk chunk_lowercase_26() {
   c.count = 13;
   c.capacity = 13;
   u8 code[] = {
-    14, 0, 44, 0, 0, 1, 0, 2, 33, 2, 40, 1, 40,
+    OP_GET_LOCAL, 0,
+    OP_GET_VAR, 0,
+    OP_CONSTANT, 1,
+    OP_CONSTANT, 2,
+    OP_CALL, 2,
+    OP_RETURN,
+    OP_NIL,
+    OP_RETURN,
   };
   int lines[] = {
     31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 32, 32,
@@ -1016,7 +1198,14 @@ static Chunk chunk_capitalize_27() {
   c.count = 13;
   c.capacity = 13;
   u8 code[] = {
-    14, 0, 44, 0, 0, 1, 0, 2, 33, 2, 40, 1, 40,
+    OP_GET_LOCAL, 0,
+    OP_GET_VAR, 0,
+    OP_CONSTANT, 1,
+    OP_CONSTANT, 2,
+    OP_CALL, 2,
+    OP_RETURN,
+    OP_NIL,
+    OP_RETURN,
   };
   int lines[] = {
     32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 33, 33,
@@ -1054,7 +1243,14 @@ static Chunk chunk_decapitalize_28() {
   c.count = 13;
   c.capacity = 13;
   u8 code[] = {
-    14, 0, 44, 0, 0, 1, 0, 2, 33, 2, 40, 1, 40,
+    OP_GET_LOCAL, 0,
+    OP_GET_VAR, 0,
+    OP_CONSTANT, 1,
+    OP_CONSTANT, 2,
+    OP_CALL, 2,
+    OP_RETURN,
+    OP_NIL,
+    OP_RETURN,
   };
   int lines[] = {
     33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 34, 34,
@@ -1092,7 +1288,14 @@ static Chunk chunk_camelize_29() {
   c.count = 13;
   c.capacity = 13;
   u8 code[] = {
-    14, 0, 44, 0, 0, 1, 0, 2, 33, 2, 40, 1, 40,
+    OP_GET_LOCAL, 0,
+    OP_GET_VAR, 0,
+    OP_CONSTANT, 1,
+    OP_CONSTANT, 2,
+    OP_CALL, 2,
+    OP_RETURN,
+    OP_NIL,
+    OP_RETURN,
   };
   int lines[] = {
     34, 34, 34, 34, 34, 34, 34, 34, 34, 34, 34, 35, 35,
@@ -1130,7 +1333,14 @@ static Chunk chunk_underscore_30() {
   c.count = 14;
   c.capacity = 14;
   u8 code[] = {
-    14, 0, 44, 0, 0, 2, 0, 3, 41, 1, 2, 40, 1, 40,
+    OP_GET_LOCAL, 0,
+    OP_GET_VAR, 0,
+    OP_CONSTANT, 2,
+    OP_CONSTANT, 3,
+    OP_INVOKE, 1, 2,
+    OP_RETURN,
+    OP_NIL,
+    OP_RETURN,
   };
   int lines[] = {
     35, 35, 35, 35, 35, 35, 35, 35, 35, 35, 35, 35, 36, 36,
@@ -1168,7 +1378,14 @@ static Chunk chunk_dasherize_31() {
   c.count = 14;
   c.capacity = 14;
   u8 code[] = {
-    14, 0, 44, 0, 0, 2, 0, 3, 41, 1, 2, 40, 1, 40,
+    OP_GET_LOCAL, 0,
+    OP_GET_VAR, 0,
+    OP_CONSTANT, 2,
+    OP_CONSTANT, 3,
+    OP_INVOKE, 1, 2,
+    OP_RETURN,
+    OP_NIL,
+    OP_RETURN,
   };
   int lines[] = {
     36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 38, 38,
@@ -1206,7 +1423,12 @@ static Chunk chunk_print_32() {
   c.count = 10;
   c.capacity = 10;
   u8 code[] = {
-    14, 1, 14, 0, 41, 0, 1, 40, 1, 40,
+    OP_GET_LOCAL, 1,
+    OP_GET_LOCAL, 0,
+    OP_INVOKE, 0, 1,
+    OP_RETURN,
+    OP_NIL,
+    OP_RETURN,
   };
   int lines[] = {
     38, 38, 38, 38, 38, 38, 38, 38, 38, 38,
@@ -1244,7 +1466,80 @@ static Chunk chunk_src_slash_lita_slash_string_dot_lita_0() {
   c.count = 146;
   c.capacity = 146;
   u8 code[] = {
-    34, 0, 0, 14, 0, 44, 1, 35, 9, 1, 37, 3, 36, 2, 37, 5, 36, 4, 37, 7, 36, 6, 37, 9, 36, 8, 37, 11, 36, 10, 37, 13, 36, 12, 37, 15, 36, 14, 37, 17, 36, 16, 37, 19, 36, 18, 37, 21, 36, 20, 37, 23, 36, 22, 37, 25, 36, 24, 37, 27, 36, 26, 37, 29, 36, 28, 37, 31, 36, 30, 37, 33, 36, 32, 37, 35, 36, 34, 37, 37, 36, 36, 37, 39, 36, 38, 37, 41, 36, 40, 37, 43, 36, 42, 37, 45, 36, 44, 37, 47, 36, 46, 37, 49, 36, 48, 37, 51, 36, 50, 37, 53, 36, 52, 37, 55, 36, 54, 37, 57, 36, 56, 37, 59, 36, 58, 37, 61, 36, 60, 37, 63, 36, 62, 37, 65, 36, 64, 7, 7, 12, 0, 49, 66, 2, 40,
+    OP_CLASS, 0, 0,
+    OP_GET_LOCAL, 0,
+    OP_GET_VAR, 1,
+    OP_INHERIT,
+    OP_SWAP, 1,
+    OP_CLOSURE, 3,
+    OP_METHOD, 2,
+    OP_CLOSURE, 5,
+    OP_METHOD, 4,
+    OP_CLOSURE, 7,
+    OP_METHOD, 6,
+    OP_CLOSURE, 9,
+    OP_METHOD, 8,
+    OP_CLOSURE, 11,
+    OP_METHOD, 10,
+    OP_CLOSURE, 13,
+    OP_METHOD, 12,
+    OP_CLOSURE, 15,
+    OP_METHOD, 14,
+    OP_CLOSURE, 17,
+    OP_METHOD, 16,
+    OP_CLOSURE, 19,
+    OP_METHOD, 18,
+    OP_CLOSURE, 21,
+    OP_METHOD, 20,
+    OP_CLOSURE, 23,
+    OP_METHOD, 22,
+    OP_CLOSURE, 25,
+    OP_METHOD, 24,
+    OP_CLOSURE, 27,
+    OP_METHOD, 26,
+    OP_CLOSURE, 29,
+    OP_METHOD, 28,
+    OP_CLOSURE, 31,
+    OP_METHOD, 30,
+    OP_CLOSURE, 33,
+    OP_METHOD, 32,
+    OP_CLOSURE, 35,
+    OP_METHOD, 34,
+    OP_CLOSURE, 37,
+    OP_METHOD, 36,
+    OP_CLOSURE, 39,
+    OP_METHOD, 38,
+    OP_CLOSURE, 41,
+    OP_METHOD, 40,
+    OP_CLOSURE, 43,
+    OP_METHOD, 42,
+    OP_CLOSURE, 45,
+    OP_METHOD, 44,
+    OP_CLOSURE, 47,
+    OP_METHOD, 46,
+    OP_CLOSURE, 49,
+    OP_METHOD, 48,
+    OP_CLOSURE, 51,
+    OP_METHOD, 50,
+    OP_CLOSURE, 53,
+    OP_METHOD, 52,
+    OP_CLOSURE, 55,
+    OP_METHOD, 54,
+    OP_CLOSURE, 57,
+    OP_METHOD, 56,
+    OP_CLOSURE, 59,
+    OP_METHOD, 58,
+    OP_CLOSURE, 61,
+    OP_METHOD, 60,
+    OP_CLOSURE, 63,
+    OP_METHOD, 62,
+    OP_CLOSURE, 65,
+    OP_METHOD, 64,
+    OP_POP,
+    OP_POP,
+    OP_GET_GLOBAL, 0,
+    OP_ASSERT_STACK, 66, 2,
+    OP_RETURN,
   };
   int lines[] = {
     1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 4, 4, 4, 4, 5, 5, 5, 5, 6, 6, 6, 6, 7, 7, 7, 7, 8, 8, 8, 8, 9, 9, 9, 9, 10, 10, 10, 10, 12, 12, 12, 12, 13, 13, 13, 13, 14, 14, 14, 14, 15, 15, 15, 15, 16, 16, 16, 16, 17, 17, 17, 17, 18, 18, 18, 18, 19, 19, 19, 19, 21, 21, 21, 21, 22, 22, 22, 22, 23, 23, 23, 23, 24, 24, 24, 24, 25, 25, 25, 25, 26, 26, 26, 26, 27, 27, 27, 27, 28, 28, 28, 28, 30, 30, 30, 30, 31, 31, 31, 31, 32, 32, 32, 32, 33, 33, 33, 33, 34, 34, 34, 34, 35, 35, 35, 35, 36, 36, 36, 36, 38, 38, 38, 38, 38, 38, 38, 38, 39, 39, 39, 39, 39, 39, 39, 39,

@@ -123,15 +123,20 @@ static int dumpFn(FILE *io, ObjFun *fun) {
           "  c.count = %d;\n"
           "  c.capacity = %d;\n"
           "  u8 code[] = {\n"
-          "   ",
+          "",
           name->chars, id, chunk.count, chunk.count);
 
-  for (int i = 0; i < chunk.count; i++) {
-    fprintf(io, " %d,", chunk.code[i]);
+  u8 *ip = chunk.code;
+  while (ip < chunk.code + chunk.count) {
+    fprintf(io, "    %s,", op_info[*ip].name);
+    u8 size = instructionSize(*ip++);
+    for (int i = 1; i < size; i++) {
+      fprintf(io, " %d,", *ip++);
+    }
+    fprintf(io, "\n");
   }
 
-  fprintf(io, "\n"
-              "  };\n"
+  fprintf(io, "  };\n"
               "  int lines[] = {\n"
               "   ");
 

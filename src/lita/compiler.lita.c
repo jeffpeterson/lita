@@ -5,6 +5,11 @@
 #include "lita/lib.h"
 #include "lita/memory.h"
 #include "lita/string.h"
+#include "lita/vm.h"
+
+#if ENABLE_REGEX
+#include "lita/regex.h"
+#endif
 
 static ValueArray constants_compile_1() {
   ValueArray vals;
@@ -21,7 +26,8 @@ static Chunk chunk_compile_1() {
   c.count = 2;
   c.capacity = 2;
   u8 code[] = {
-    1, 40,
+    OP_NIL,
+    OP_RETURN,
   };
   int lines[] = {
     1, 1,
@@ -57,7 +63,8 @@ static Chunk chunk_markCompilerRoots_2() {
   c.count = 2;
   c.capacity = 2;
   u8 code[] = {
-    1, 40,
+    OP_NIL,
+    OP_RETURN,
   };
   int lines[] = {
     3, 3,
@@ -81,9 +88,9 @@ static Value fn_markCompilerRoots_2() {
 static ValueArray constants_src_slash_lita_slash_compiler_dot_lita_0() {
   ValueArray vals;
   initValueArray(&vals);
-  vals.count = vals.capacity = 13;
+  vals.count = vals.capacity = 14;
   Value values[] = {
-    str("compile"), fn_compile_1(), str("markCompilerRoots"), fn_markCompilerRoots_2(), str("Parser"), str("Object"), str("current"), str("previous"), str("indebt"), str("hadError"), str("panicMode"), str("Context"), str("Compiler"),
+    str("compile"), fn_compile_1(), str("markCompilerRoots"), fn_markCompilerRoots_2(), str("Parser"), str("Object"), str("current"), str("previous"), str("indebt"), str("hadError"), str("panicMode"), str("Context"), str("Compiler"), str("script return value"),
   };
   vals.values = cloneMemory(values, sizeof(values));
   return vals;
@@ -92,13 +99,50 @@ static ValueArray constants_src_slash_lita_slash_compiler_dot_lita_0() {
 static Chunk chunk_src_slash_lita_slash_compiler_dot_lita_0() {
   Chunk c;
   initChunk(&c);
-  c.count = 61;
-  c.capacity = 61;
+  c.count = 65;
+  c.capacity = 65;
   u8 code[] = {
-    37, 1, 11, 0, 37, 3, 11, 2, 34, 4, 0, 14, 0, 44, 5, 35, 9, 1, 7, 7, 1, 11, 6, 1, 11, 7, 1, 11, 8, 1, 11, 9, 1, 11, 10, 34, 11, 0, 14, 0, 44, 5, 35, 9, 1, 7, 7, 34, 12, 0, 14, 0, 44, 5, 35, 9, 1, 7, 7, 1, 40,
+    OP_CLOSURE, 1,
+    OP_DEFINE_GLOBAL, 0,
+    OP_CLOSURE, 3,
+    OP_DEFINE_GLOBAL, 2,
+    OP_CLASS, 4, 0,
+    OP_GET_LOCAL, 0,
+    OP_GET_VAR, 5,
+    OP_INHERIT,
+    OP_SWAP, 1,
+    OP_POP,
+    OP_POP,
+    OP_NIL,
+    OP_DEFINE_GLOBAL, 6,
+    OP_NIL,
+    OP_DEFINE_GLOBAL, 7,
+    OP_NIL,
+    OP_DEFINE_GLOBAL, 8,
+    OP_NIL,
+    OP_DEFINE_GLOBAL, 9,
+    OP_NIL,
+    OP_DEFINE_GLOBAL, 10,
+    OP_CLASS, 11, 0,
+    OP_GET_LOCAL, 0,
+    OP_GET_VAR, 5,
+    OP_INHERIT,
+    OP_SWAP, 1,
+    OP_POP,
+    OP_POP,
+    OP_CLASS, 12, 0,
+    OP_GET_LOCAL, 0,
+    OP_GET_VAR, 5,
+    OP_INHERIT,
+    OP_SWAP, 1,
+    OP_POP,
+    OP_POP,
+    OP_GET_GLOBAL, 12,
+    OP_ASSERT_STACK, 13, 2,
+    OP_RETURN,
   };
   int lines[] = {
-    1, 1, 1, 1, 3, 3, 3, 3, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 7, 7, 7, 7, 7, 8, 8, 8, 9, 9, 9, 10, 10, 10, 11, 11, 11, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 59, 59, 59, 59, 59, 59, 59, 59, 59, 59, 59, 59, 72, 72, 72, 72,
+    1, 1, 1, 1, 3, 3, 3, 3, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 7, 7, 7, 7, 7, 8, 8, 8, 9, 9, 9, 10, 10, 10, 11, 11, 11, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 59, 59, 59, 59, 59, 59, 59, 59, 59, 59, 59, 59, 72, 72, 72, 72, 72, 72, 72, 72,
   };
   c.code = cloneMemory(code, sizeof(code));
   c.lines = cloneMemory(lines, sizeof(lines));

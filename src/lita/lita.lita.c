@@ -28,7 +28,13 @@ static Chunk chunk_class_1() {
   c.count = 11;
   c.capacity = 11;
   u8 code[] = {
-    14, 0, 44, 0, 14, 0, 33, 1, 40, 1, 40,
+    OP_GET_LOCAL, 0,
+    OP_GET_VAR, 0,
+    OP_GET_LOCAL, 0,
+    OP_CALL, 1,
+    OP_RETURN,
+    OP_NIL,
+    OP_RETURN,
   };
   int lines[] = {
     2, 2, 2, 2, 2, 2, 2, 2, 2, 3, 3,
@@ -66,7 +72,13 @@ static Chunk chunk_hash_2() {
   c.count = 11;
   c.capacity = 11;
   u8 code[] = {
-    14, 0, 44, 0, 14, 0, 33, 1, 40, 1, 40,
+    OP_GET_LOCAL, 0,
+    OP_GET_VAR, 0,
+    OP_GET_LOCAL, 0,
+    OP_CALL, 1,
+    OP_RETURN,
+    OP_NIL,
+    OP_RETURN,
   };
   int lines[] = {
     3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
@@ -104,7 +116,27 @@ static Chunk chunk_src_slash_lita_slash_lita_dot_lita_0() {
   c.count = 38;
   c.capacity = 38;
   u8 code[] = {
-    34, 0, 0, 14, 0, 44, 1, 35, 9, 1, 37, 3, 36, 2, 37, 5, 36, 4, 7, 7, 34, 1, 0, 14, 0, 44, 0, 35, 9, 1, 7, 7, 12, 1, 49, 6, 2, 40,
+    OP_CLASS, 0, 0,
+    OP_GET_LOCAL, 0,
+    OP_GET_VAR, 1,
+    OP_INHERIT,
+    OP_SWAP, 1,
+    OP_CLOSURE, 3,
+    OP_METHOD, 2,
+    OP_CLOSURE, 5,
+    OP_METHOD, 4,
+    OP_POP,
+    OP_POP,
+    OP_CLASS, 1, 0,
+    OP_GET_LOCAL, 0,
+    OP_GET_VAR, 0,
+    OP_INHERIT,
+    OP_SWAP, 1,
+    OP_POP,
+    OP_POP,
+    OP_GET_GLOBAL, 1,
+    OP_ASSERT_STACK, 6, 2,
+    OP_RETURN,
   };
   int lines[] = {
     1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 3, 3, 3, 3, 3, 3, 3, 3, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 6, 6, 6, 6, 6, 6, 6, 6,
