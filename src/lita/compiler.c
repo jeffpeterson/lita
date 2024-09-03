@@ -238,13 +238,14 @@ static bool match(TokenType type) {
 }
 
 /** The current token must be this type, otherwise error. */
-static void consume(TokenType type, const char *message) {
+static bool consume(TokenType type, const char *message) {
   if (parser.current.type == type) {
     advance();
-    return;
+    return true;
   }
 
   errorAtCurrent(message);
+  return false;
 }
 
 static void skipNewlines() {
@@ -689,6 +690,13 @@ static bool expression(const char *message) {
   bool success = parseAbove(PREC_NONE);
   if (message && !success) error(message);
   return success;
+}
+
+static bool indentedExpression() {
+  if (!match(TOKEN_INDENT)) return false;
+  expression("Expect expression after indent.");
+  consume(TOKEN_DEDENT, "Expect dedent after indent.");
+  return true;
 }
 
 static void statement();
@@ -1175,7 +1183,9 @@ static void getter() {
 static void method() {
   if (match(TOKEN_LET)) return getter();
 
-  match(TOKEN_CFN) || match(TOKEN_FN); // optional
+  match(TOKEN_CFN) || match(TOKEN_FN) ||
+      consume(TOKEN_DOT,
+              "Expect properties or methods starting with '.'"); // optional
 
   Token name;
   if (check(TOKEN_LEFT_PAREN)) {

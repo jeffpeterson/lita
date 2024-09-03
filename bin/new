@@ -2,7 +2,7 @@
 
 
 if !$1
-	print "Usage: " + $0 + " <name>\n"
+	print "Usage: " $0 " <name>\n"
 	return 1
 
 fn replace(string)
@@ -15,7 +15,7 @@ let cContents = read("src/lita/example.c")
 let hContents = read("src/lita/example.h")
 let fileName = $1.underscore
 
-write("src/lita" / fileName + ".c", replace(cContents))
-write("src/lita" / fileName + ".h", replace(hContents))
+write("src/lita" / fileName ".c", replace(cContents))
+write("src/lita" / fileName ".h", replace(hContents))
 
-print "Created " + fileName + ".c and " + fileName + ".h\n"
+print "Created " fileName ".c and " fileName ".h\n"
