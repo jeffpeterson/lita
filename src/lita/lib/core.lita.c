@@ -335,7 +335,7 @@ static Chunk chunk_print_9() {
     14, 1, 14, 0, 44, 1, 41, 0, 1, 40, 1, 40,
   };
   int lines[] = {
-    36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36,
+    36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 37, 37,
   };
   c.code = cloneMemory(code, sizeof(code));
   c.lines = cloneMemory(lines, sizeof(lines));
@@ -353,7 +353,43 @@ static Value fn_print_9() {
   return obj(f);
 }
 
-static ValueArray constants_inspect_10() {
+static ValueArray constants_fn_10() {
+  ValueArray vals;
+  initValueArray(&vals);
+  vals.count = vals.capacity = 0;
+  Value values[] = {};
+  vals.values = cloneMemory(values, sizeof(values));
+  return vals;
+}
+
+static Chunk chunk_fn_10() {
+  Chunk c;
+  initChunk(&c);
+  c.count = 8;
+  c.capacity = 8;
+  u8 code[] = {
+    14, 0, 14, 1, 26, 40, 1, 40,
+  };
+  int lines[] = {
+    37, 37, 37, 37, 37, 37, 37, 37,
+  };
+  c.code = cloneMemory(code, sizeof(code));
+  c.lines = cloneMemory(lines, sizeof(lines));
+  c.constants = constants_fn_10();
+
+  return c;
+};
+
+             // fn
+static Value fn_fn_10() {
+  ObjFun *f = newFunction();  f->arity = 1;
+  f->upvalueCount = 0;
+  f->name = newString("fn");
+  f->chunk = chunk_fn_10();
+  return obj(f);
+}
+
+static ValueArray constants_inspect_11() {
   ValueArray vals;
   initValueArray(&vals);
   vals.count = vals.capacity = 2;
@@ -364,7 +400,7 @@ static ValueArray constants_inspect_10() {
   return vals;
 }
 
-static Chunk chunk_inspect_10() {
+static Chunk chunk_inspect_11() {
   Chunk c;
   initChunk(&c);
   c.count = 8;
@@ -373,25 +409,25 @@ static Chunk chunk_inspect_10() {
     0, 0, 0, 1, 24, 40, 1, 40,
   };
   int lines[] = {
-    39, 39, 39, 39, 39, 39, 39, 39,
+    40, 40, 40, 40, 40, 40, 40, 40,
   };
   c.code = cloneMemory(code, sizeof(code));
   c.lines = cloneMemory(lines, sizeof(lines));
-  c.constants = constants_inspect_10();
+  c.constants = constants_inspect_11();
 
   return c;
 };
 
              // inspect
-static Value fn_inspect_10() {
+static Value fn_inspect_11() {
   ObjFun *f = newFunction();  f->arity = 0;
   f->upvalueCount = 0;
   f->name = newString("inspect");
-  f->chunk = chunk_inspect_10();
+  f->chunk = chunk_inspect_11();
   return obj(f);
 }
 
-static ValueArray constants_init_11() {
+static ValueArray constants_init_12() {
   ValueArray vals;
   initValueArray(&vals);
   vals.count = vals.capacity = 3;
@@ -402,7 +438,7 @@ static ValueArray constants_init_11() {
   return vals;
 }
 
-static Chunk chunk_init_11() {
+static Chunk chunk_init_12() {
   Chunk c;
   initChunk(&c);
   c.count = 24;
@@ -411,30 +447,30 @@ static Chunk chunk_init_11() {
     14, 0, 14, 1, 17, 0, 7, 14, 0, 14, 2, 17, 1, 7, 14, 0, 14, 3, 17, 2, 7, 14, 0, 40,
   };
   int lines[] = {
-    41, 41, 41, 41, 41, 41, 41, 41, 41, 41, 41, 41, 41, 41, 41, 41, 41, 41, 41, 41, 41, 41, 41, 41,
+    42, 42, 42, 42, 42, 42, 42, 42, 42, 42, 42, 42, 42, 42, 42, 42, 42, 42, 42, 42, 42, 42, 42, 42,
   };
   c.code = cloneMemory(code, sizeof(code));
   c.lines = cloneMemory(lines, sizeof(lines));
-  c.constants = constants_init_11();
+  c.constants = constants_init_12();
 
   return c;
 };
 
              // init
-static Value fn_init_11() {
+static Value fn_init_12() {
   ObjFun *f = newFunction();  f->arity = 3;
   f->upvalueCount = 0;
   f->name = newString("init");
-  f->chunk = chunk_init_11();
+  f->chunk = chunk_init_12();
   return obj(f);
 }
 
 static ValueArray constants_src_slash_lita_slash_lib_slash_core_dot_lita_0() {
   ValueArray vals;
   initValueArray(&vals);
-  vals.count = vals.capacity = 31;
+  vals.count = vals.capacity = 33;
   Value values[] = {
-    str("Nil"), str("Any"), str("string"), fn_string_1(), str("dump"), fn_dump_2(), str("Object"), str("fn_id"), NUMBER_VAL(0.000000), str("Function"), fn_dump_3(), str("dump_global"), fn_dump_global_4(), str("Method"), str("NativeFunction"), str("Class"), str("Bool"), fn_string_5(), str("print"), fn_print_6(), fn_dump_7(), str("Number"), fn_dump_8(), fn_print_9(), str("Table"), str("inspect"), fn_inspect_10(), str("Atom"), fn_init_11(), str("init"), str("script return value"),
+    str("Nil"), str("Any"), str("string"), fn_string_1(), str("dump"), fn_dump_2(), str("Object"), str("fn_id"), NUMBER_VAL(0.000000), str("Function"), fn_dump_3(), str("dump_global"), fn_dump_global_4(), str("Method"), str("NativeFunction"), str("Class"), str("Bool"), fn_string_5(), str("print"), fn_print_6(), fn_dump_7(), str("Number"), fn_dump_8(), fn_print_9(), str(""), fn_fn_10(), str("Table"), str("inspect"), fn_inspect_11(), str("Atom"), fn_init_12(), str("init"), str("script return value"),
   };
   vals.values = cloneMemory(values, sizeof(values));
   return vals;
@@ -443,13 +479,13 @@ static ValueArray constants_src_slash_lita_slash_lib_slash_core_dot_lita_0() {
 static Chunk chunk_src_slash_lita_slash_lib_slash_core_dot_lita_0() {
   Chunk c;
   initChunk(&c);
-  c.count = 174;
-  c.capacity = 174;
+  c.count = 178;
+  c.capacity = 178;
   u8 code[] = {
-    34, 0, 0, 14, 0, 44, 1, 35, 9, 1, 37, 3, 36, 2, 37, 5, 36, 4, 7, 7, 34, 6, 0, 14, 0, 44, 1, 35, 9, 1, 7, 7, 0, 8, 11, 7, 34, 9, 0, 14, 0, 44, 6, 35, 9, 1, 37, 10, 36, 4, 37, 12, 36, 11, 7, 7, 34, 13, 0, 14, 0, 44, 9, 35, 9, 1, 7, 7, 34, 14, 0, 14, 0, 44, 9, 35, 9, 1, 7, 7, 34, 15, 0, 14, 0, 44, 9, 35, 9, 1, 7, 7, 34, 16, 0, 14, 0, 44, 6, 35, 9, 1, 37, 17, 36, 2, 37, 19, 36, 18, 37, 20, 36, 4, 7, 7, 34, 21, 0, 14, 0, 44, 6, 35, 9, 1, 37, 22, 36, 4, 37, 23, 36, 18, 7, 7, 34, 24, 0, 14, 0, 44, 6, 35, 9, 1, 37, 26, 36, 25, 7, 7, 34, 27, 0, 37, 28, 36, 29, 14, 0, 44, 6, 35, 9, 1, 7, 7, 12, 27, 49, 30, 2, 40,
+    34, 0, 0, 14, 0, 44, 1, 35, 9, 1, 37, 3, 36, 2, 37, 5, 36, 4, 7, 7, 34, 6, 0, 14, 0, 44, 1, 35, 9, 1, 7, 7, 0, 8, 11, 7, 34, 9, 0, 14, 0, 44, 6, 35, 9, 1, 37, 10, 36, 4, 37, 12, 36, 11, 7, 7, 34, 13, 0, 14, 0, 44, 9, 35, 9, 1, 7, 7, 34, 14, 0, 14, 0, 44, 9, 35, 9, 1, 7, 7, 34, 15, 0, 14, 0, 44, 9, 35, 9, 1, 7, 7, 34, 16, 0, 14, 0, 44, 6, 35, 9, 1, 37, 17, 36, 2, 37, 19, 36, 18, 37, 20, 36, 4, 7, 7, 34, 21, 0, 14, 0, 44, 6, 35, 9, 1, 37, 22, 36, 4, 37, 23, 36, 18, 37, 25, 36, 24, 7, 7, 34, 26, 0, 14, 0, 44, 6, 35, 9, 1, 37, 28, 36, 27, 7, 7, 34, 29, 0, 37, 30, 36, 31, 14, 0, 44, 6, 35, 9, 1, 7, 7, 12, 29, 49, 32, 2, 40,
   };
   int lines[] = {
-    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 3, 3, 3, 3, 3, 3, 3, 3, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 12, 12, 12, 12, 12, 12, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 16, 16, 16, 16, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 27, 27, 27, 27, 27, 27, 27, 27, 27, 27, 27, 27, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 31, 31, 31, 31, 32, 32, 32, 32, 32, 32, 32, 32, 34, 34, 34, 34, 34, 34, 34, 34, 34, 34, 34, 34, 36, 36, 36, 36, 36, 36, 36, 36, 38, 38, 38, 38, 38, 38, 38, 38, 38, 38, 38, 38, 39, 39, 39, 39, 41, 41, 41, 41, 41, 41, 41, 41, 41, 41, 41, 41, 41, 41, 41, 41, 42, 42, 42, 42, 42, 42, 42, 42,
+    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 3, 3, 3, 3, 3, 3, 3, 3, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 12, 12, 12, 12, 12, 12, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 16, 16, 16, 16, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 27, 27, 27, 27, 27, 27, 27, 27, 27, 27, 27, 27, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 31, 31, 31, 31, 32, 32, 32, 32, 32, 32, 32, 32, 34, 34, 34, 34, 34, 34, 34, 34, 34, 34, 34, 34, 36, 36, 36, 36, 37, 37, 37, 37, 37, 37, 37, 37, 39, 39, 39, 39, 39, 39, 39, 39, 39, 39, 39, 39, 40, 40, 40, 40, 42, 42, 42, 42, 42, 42, 42, 42, 42, 42, 42, 42, 42, 42, 42, 42, 43, 43, 43, 43, 43, 43, 43, 43,
   };
   c.code = cloneMemory(code, sizeof(code));
   c.lines = cloneMemory(lines, sizeof(lines));

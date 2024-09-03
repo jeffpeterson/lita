@@ -27,13 +27,14 @@ class NativeFunction < Function
 class Class < Function
 
 class Bool
-	fn string = this ? 'true : 'false
+	fn string    = this ? 'true : 'false
 	fn print(io) = io.write(string)
-	fn dump = this ? "TRUE_VAL" : "FALSE_VAL"
+	fn dump      = this ? "TRUE_VAL" : "FALSE_VAL"
 
 class Number
-	fn dump = "NUMBER_VAL(" string ")"
+	fn dump      = "NUMBER_VAL(" string ")"
 	fn print(io) = io.write(string)
+	fn (b)       = this * b
 
 class Table
 	fn inspect = "{" + "}"
