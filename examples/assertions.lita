@@ -53,10 +53,11 @@ assert 2(3) == 6
 
 /// Strings
 assert "Strings"
-assert ('0 + '5) == '05
-assert ("hi " + "there") == "hi there"
-// assert ("hi " x' "there") == "hi 1 there"
-assert 'foo / 'bar == "foo/bar"
+assert '0 + '5 == '05
+assert "hi " + "there" == "hi there"
+assert "hi " "there" " again" == "hi there again"
+assert "hi " x' " there" == "hi 1 there"
+assert 'foo / 'bar / 'baz == "foo/bar/baz"
 assert '/ == "/"
 assert '"hi there" == "\"hi there\""
 assert '( == "("

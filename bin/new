@@ -1,7 +1,7 @@
 #!lita
 
 
-if !$1:
+if !$1
 	print "Usage: " + $0 + " <name>\n"
 	return 1
 
@@ -11,10 +11,11 @@ fn replace(string)
 		.replace("Example", $1.camelize.capitalize) \
 		.replace("EXAMPLE", $1.uppercase)
 
-let c_contents = read("src/lita/example.c")
-let h_contents = read("src/lita/example.h")
+let cContents = read("src/lita/example.c")
+let hContents = read("src/lita/example.h")
+let fileName = $1.underscore
 
-write("src/lita/" + $1.underscore + ".c", replace(c_contents))
-write("src/lita/" + $1.underscore + ".h", replace(h_contents))
+write("src/lita" / fileName + ".c", replace(cContents))
+write("src/lita" / fileName + ".h", replace(hContents))
 
-print "Created " + $1.underscore + ".c and " + $1.underscore + ".h\n"
+print "Created " + fileName + ".c and " + fileName + ".h\n"

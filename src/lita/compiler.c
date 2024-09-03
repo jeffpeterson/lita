@@ -17,6 +17,10 @@
 typedef struct Parser {
   Token current;
   Token previous;
+
+  Token stack[255];
+  u8 stackSize;
+
   int indebt;
   bool hadError;
   bool panicMode;
@@ -211,7 +215,8 @@ static void advance() {
   }
 
   for (;;) {
-    parser.current = scanToken();
+    parser.current =
+        parser.stackSize ? parser.stack[--parser.stackSize] : scanToken();
     if (parser.current.type != TOKEN_ERROR) break;
 
     errorAtCurrent(parser.current.start);
@@ -661,7 +666,7 @@ static bool parseAt(Precedence precedence) {
   }
 
   if (ctx.precedence <= PREC_ADJOINING && parser.previous.type != TOKEN_DEDENT)
-    if (parseAbove(PREC_ADJOINING)) emitBytes(OP_CALL, 1);
+    while (parseAbove(PREC_ADJOINING)) emitBytes(OP_CALL, 1);
 
   return true;
 }
