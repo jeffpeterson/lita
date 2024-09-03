@@ -349,7 +349,7 @@ bool call_value(Value callee, int argCount) {
     }
   }
 
-  if (argCount == 1) return !vm_multiply();
+  if (argCount == 1) return !vm_multiply(); // vm_invoke(string(""), 1);
   return false;
 }
 

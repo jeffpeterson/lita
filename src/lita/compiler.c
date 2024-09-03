@@ -265,6 +265,12 @@ static Value consumeIdent(const char *message) {
   return identifierValue(&parser.previous);
 }
 
+/**
+ * Whether the stack should have the last expression removed.
+ * The last expression of a script is left for the repl.
+ */
+static bool shouldCleanStack() { return !check(TOKEN_EOF); }
+
 #define emitByte(size) emitByte_(size, "At " __FILE__ ":" STRINGIFY(__LINE__))
 static void emitByte_(u8 byte, const char *comment) {
   Token token = parser.previous;
@@ -1169,15 +1175,20 @@ static void getter() {
 static void method() {
   if (match(TOKEN_LET)) return getter();
 
-  bool isC = match(TOKEN_CFN);
+  match(TOKEN_CFN) || match(TOKEN_FN); // optional
 
-  isC || match(TOKEN_FN); // optional
-  consumeIdent("Expect method name.");
+  Token name;
+  if (check(TOKEN_LEFT_PAREN)) {
+    name = syntheticToken("");
+  } else {
+    consumeIdent("Expect method name.");
+    name = parser.previous;
+  }
 
-  u8 constant = identifierConstant(&parser.previous);
+  u8 constant = identifierConstant(&name);
+
   FunType type = TYPE_METHOD;
-  if (parser.previous.length == 4 &&
-      memcmp(parser.previous.start, "init", 4) == 0) {
+  if (name.length == 4 && memcmp(name.start, "init", 4) == 0) {
     type = TYPE_INIT;
   }
 
@@ -1242,6 +1253,8 @@ static void classDeclaration(Ctx *ctx) {
   emitByte(OP_POP); // Pop the class
   endScope();       // Pops local vars, including "super"
   popClassCompiler();
+  // TODO: figure out a way to just use the popped class:
+  if (!shouldCleanStack()) namedVariable(className, ctx);
 }
 
 static void funDeclaration() {
@@ -1487,7 +1500,7 @@ static void statement() {
   } else {
     expression("Expected expression.");
     skipNewlines();
-    if (!check(TOKEN_EOF)) emitByte(OP_POP);
+    if (shouldCleanStack()) emitByte(OP_POP);
   }
 
   skipNewlines();

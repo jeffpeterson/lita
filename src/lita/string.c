@@ -288,6 +288,7 @@ NATIVE_METHOD(String, concat, 1) {
   return obj(concat_strings(as_string(this), as_string(args[0])));
 }
 ALIAS_OPERATOR(String, concat, plus, "+", 1);
+ALIAS_OPERATOR(String, concat, invoke, "", 1);
 ALIAS_OPERATOR(String, concat, star, "*", 1);
 NATIVE_METHOD(String, escape, 0) {
   return OBJ_VAL(escape_string(AS_STRING(this)));
