@@ -5,6 +5,11 @@
 #include "lita/lib.h"
 #include "lita/memory.h"
 #include "lita/string.h"
+#include "lita/vm.h"
+
+#if ENABLE_REGEX
+#include "lita/regex.h"
+#endif
 
 static ValueArray constants_reset_scanner_1() {
   ValueArray vals;
@@ -96,13 +101,13 @@ static ValueArray constants_previous_3() {
 static Chunk chunk_previous_3() {
   Chunk c;
   initChunk(&c);
-  c.count = 7;
-  c.capacity = 7;
+  c.count = 5;
+  c.capacity = 5;
   u8 code[] = {
-    0, 0, 17, 8, 40, 1, 40,
+    0, 0, 17, 8, 40,
   };
   int lines[] = {
-    13, 13, 13, 13, 13, 13, 13,
+    13, 13, 13, 13, 13,
   };
   c.code = cloneMemory(code, sizeof(code));
   c.lines = cloneMemory(lines, sizeof(lines));
@@ -134,13 +139,13 @@ static ValueArray constants_current_4() {
 static Chunk chunk_current_4() {
   Chunk c;
   initChunk(&c);
-  c.count = 7;
-  c.capacity = 7;
+  c.count = 5;
+  c.capacity = 5;
   u8 code[] = {
-    0, 0, 17, 10, 40, 1, 40,
+    0, 0, 17, 10, 40,
   };
   int lines[] = {
-    14, 14, 14, 14, 14, 14, 14,
+    14, 14, 14, 14, 14,
   };
   c.code = cloneMemory(code, sizeof(code));
   c.lines = cloneMemory(lines, sizeof(lines));
@@ -170,13 +175,13 @@ static ValueArray constants_inside_5() {
 static Chunk chunk_inside_5() {
   Chunk c;
   initChunk(&c);
-  c.count = 6;
-  c.capacity = 6;
+  c.count = 4;
+  c.capacity = 4;
   u8 code[] = {
-    2, 17, 12, 40, 1, 40,
+    2, 17, 12, 40,
   };
   int lines[] = {
-    15, 15, 15, 15, 15, 15,
+    15, 15, 15, 15,
   };
   c.code = cloneMemory(code, sizeof(code));
   c.lines = cloneMemory(lines, sizeof(lines));
@@ -208,13 +213,13 @@ static ValueArray constants_position_6() {
 static Chunk chunk_position_6() {
   Chunk c;
   initChunk(&c);
-  c.count = 10;
-  c.capacity = 10;
+  c.count = 8;
+  c.capacity = 8;
   u8 code[] = {
-    0, 0, 0, 0, 4, 17, 15, 40, 1, 40,
+    0, 0, 0, 0, 4, 17, 15, 40,
   };
   int lines[] = {
-    19, 19, 19, 19, 19, 19, 19, 19, 19, 19,
+    19, 19, 19, 19, 19, 19, 19, 19,
   };
   c.code = cloneMemory(code, sizeof(code));
   c.lines = cloneMemory(lines, sizeof(lines));
@@ -246,13 +251,13 @@ static ValueArray constants_line_7() {
 static Chunk chunk_line_7() {
   Chunk c;
   initChunk(&c);
-  c.count = 7;
-  c.capacity = 7;
+  c.count = 5;
+  c.capacity = 5;
   u8 code[] = {
-    0, 0, 17, 17, 40, 1, 40,
+    0, 0, 17, 17, 40,
   };
   int lines[] = {
-    20, 20, 20, 20, 20, 20, 20,
+    20, 20, 20, 20, 20,
   };
   c.code = cloneMemory(code, sizeof(code));
   c.lines = cloneMemory(lines, sizeof(lines));
@@ -284,13 +289,13 @@ static ValueArray constants_indent_8() {
 static Chunk chunk_indent_8() {
   Chunk c;
   initChunk(&c);
-  c.count = 11;
-  c.capacity = 11;
+  c.count = 9;
+  c.capacity = 9;
   u8 code[] = {
-    14, 0, 44, 0, 33, 0, 17, 19, 40, 1, 40,
+    14, 0, 44, 0, 33, 0, 17, 19, 40,
   };
   int lines[] = {
-    21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21,
+    21, 21, 21, 21, 21, 21, 21, 21, 21,
   };
   c.code = cloneMemory(code, sizeof(code));
   c.lines = cloneMemory(lines, sizeof(lines));
@@ -328,7 +333,7 @@ static Chunk chunk_init_9() {
     14, 0, 14, 1, 45, 0, 7, 14, 0, 44, 1, 7, 14, 0, 44, 2, 7, 14, 0, 40,
   };
   int lines[] = {
-    25, 25, 25, 25, 25, 25, 25, 26, 26, 26, 26, 26, 27, 27, 27, 27, 27, 29, 29, 29,
+    25, 25, 25, 25, 25, 25, 26, 26, 26, 26, 26, 27, 27, 27, 27, 27, 27, 29, 29, 29,
   };
   c.code = cloneMemory(code, sizeof(code));
   c.lines = cloneMemory(lines, sizeof(lines));
@@ -537,9 +542,9 @@ static Value fn_is_subscript_14() {
 static ValueArray constants_src_slash_lita_slash_scanner_dot_lita_0() {
   ValueArray vals;
   initValueArray(&vals);
-  vals.count = vals.capacity = 38;
+  vals.count = vals.capacity = 39;
   Value values[] = {
-    str("scanner"), str("reset_scanner"), fn_reset_scanner_1(), str("Token"), fn_init_2(), str("init"), str("Object"), str("Indent"), str("previous"), fn_previous_3(), str("current"), fn_current_4(), str("inside"), fn_inside_5(), str("Scanner"), str("position"), fn_position_6(), str("line"), fn_line_7(), str("indent"), fn_indent_8(), fn_init_9(), fn_current_10(), str("is_at_end"), fn_is_at_end_11(), str("is_alpha"), fn_is_alpha_12(), str("c"), str("in"), str("a"), str("z"), str("A"), str("Z"), str("_'"), str("is_digit"), fn_is_digit_13(), str("is_subscript"), fn_is_subscript_14(),
+    str("scanner"), str("reset_scanner"), fn_reset_scanner_1(), str("Token"), fn_init_2(), str("init"), str("Object"), str("Indent"), str("previous"), fn_previous_3(), str("current"), fn_current_4(), str("inside"), fn_inside_5(), str("Scanner"), str("position"), fn_position_6(), str("line"), fn_line_7(), str("indent"), fn_indent_8(), fn_init_9(), fn_current_10(), str("is_at_end"), fn_is_at_end_11(), str("is_alpha"), fn_is_alpha_12(), str("c"), str("in"), str("a"), str("z"), str("A"), str("Z"), str("_'"), str("is_digit"), fn_is_digit_13(), str("is_subscript"), fn_is_subscript_14(), str("script return value"),
   };
   vals.values = cloneMemory(values, sizeof(values));
   return vals;
@@ -548,13 +553,13 @@ static ValueArray constants_src_slash_lita_slash_scanner_dot_lita_0() {
 static Chunk chunk_src_slash_lita_slash_scanner_dot_lita_0() {
   Chunk c;
   initChunk(&c);
-  c.count = 139;
-  c.capacity = 139;
+  c.count = 143;
+  c.capacity = 143;
   u8 code[] = {
-    1, 11, 0, 37, 2, 11, 1, 34, 3, 0, 37, 4, 36, 5, 14, 0, 44, 6, 35, 9, 1, 7, 7, 34, 7, 0, 14, 0, 44, 6, 35, 9, 1, 37, 9, 36, 8, 37, 11, 36, 10, 37, 13, 36, 12, 7, 7, 34, 14, 0, 14, 0, 44, 6, 35, 9, 1, 37, 16, 36, 15, 37, 18, 36, 17, 37, 20, 36, 19, 37, 21, 36, 5, 37, 22, 36, 10, 37, 24, 36, 23, 7, 7, 37, 26, 11, 25, 12, 27, 16, 28, 0, 29, 0, 30, 4, 31, 0, 3, 30, 0, 5, 7, 12, 27, 16, 28, 0, 31, 0, 32, 4, 31, 0, 3, 30, 0, 6, 7, 12, 27, 0, 33, 21, 33, 2, 13, 27, 7, 37, 35, 11, 34, 37, 37, 11, 36, 1, 40,
+    1, 11, 0, 37, 2, 11, 1, 34, 3, 0, 37, 4, 36, 5, 14, 0, 44, 6, 35, 9, 1, 7, 7, 34, 7, 0, 14, 0, 44, 6, 35, 9, 1, 37, 9, 36, 8, 37, 11, 36, 10, 37, 13, 36, 12, 7, 7, 34, 14, 0, 14, 0, 44, 6, 35, 9, 1, 37, 16, 36, 15, 37, 18, 36, 17, 37, 20, 36, 19, 37, 21, 36, 5, 37, 22, 36, 10, 37, 24, 36, 23, 7, 7, 37, 26, 11, 25, 12, 27, 16, 28, 0, 29, 0, 30, 4, 33, 1, 13, 27, 31, 0, 3, 30, 0, 12, 7, 12, 27, 16, 28, 0, 31, 0, 32, 4, 33, 1, 31, 0, 3, 30, 0, 6, 7, 12, 27, 0, 33, 21, 7, 37, 35, 11, 34, 37, 37, 11, 36, 49, 38, 2, 40,
   };
   int lines[] = {
-    1, 1, 1, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 13, 13, 13, 13, 14, 14, 14, 14, 15, 15, 15, 15, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 19, 19, 19, 19, 20, 20, 20, 20, 21, 21, 21, 21, 29, 29, 29, 29, 30, 30, 30, 30, 30, 30, 30, 30, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 34, 34, 34, 34, 54, 54, 54, 54, 54, 54,
+    1, 1, 1, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 13, 13, 13, 13, 14, 14, 14, 14, 15, 15, 15, 15, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 19, 19, 19, 19, 20, 20, 20, 20, 21, 21, 21, 21, 29, 29, 29, 29, 30, 30, 30, 30, 30, 30, 30, 30, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 33, 34, 34, 34, 34, 54, 54, 54, 54, 54, 54, 54, 54,
   };
   c.code = cloneMemory(code, sizeof(code));
   c.lines = cloneMemory(lines, sizeof(lines));

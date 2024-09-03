@@ -92,7 +92,7 @@ static ValueArray constants_each_3() {
   initValueArray(&vals);
   vals.count = vals.capacity = 6;
   Value values[] = {
-    NUMBER_VAL(0.000000), str("length"), str("At src/lita/compiler.c:1391"), str("get"), NUMBER_VAL(1.000000), str("At src/lita/compiler.c:1403"),
+    NUMBER_VAL(0.000000), str("length"), str("while condition"), str("get"), NUMBER_VAL(1.000000), str("falsy while condition"),
   };
   vals.values = cloneMemory(values, sizeof(values));
   return vals;
@@ -104,7 +104,7 @@ static Chunk chunk_each_3() {
   c.count = 48;
   c.capacity = 48;
   u8 code[] = {
-    0, 0, 14, 2, 14, 0, 44, 1, 23, 49, 2, 4, 31, 0, 27, 7, 14, 1, 14, 0, 44, 3, 14, 2, 10, 0, 6, 0, 0, 4, 24, 15, 2, 7, 33, 1, 33, 1, 7, 32, 0, 40, 7, 49, 5, 3, 1, 40,
+    0, 0, 14, 2, 14, 0, 44, 1, 23, 49, 2, 4, 31, 0, 27, 7, 14, 1, 14, 0, 44, 3, 14, 2, 10, 0, 6, 0, 0, 4, 24, 15, 2, 7, 33, 1, 33, 1, 7, 32, 0, 40, 49, 5, 4, 7, 1, 40,
   };
   int lines[] = {
     5, 5, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 9, 9, 9, 9, 9, 9, 9, 9, 9,
@@ -139,13 +139,13 @@ static ValueArray constants__dot_print_5() {
 static Chunk chunk__dot_print_5() {
   Chunk c;
   initChunk(&c);
-  c.count = 10;
-  c.capacity = 10;
+  c.count = 8;
+  c.capacity = 8;
   u8 code[] = {
-    14, 1, 18, 0, 41, 0, 1, 40, 1, 40,
+    14, 1, 18, 0, 41, 0, 1, 40,
   };
   int lines[] = {
-    10, 10, 10, 10, 10, 10, 10, 10, 10, 10,
+    9, 9, 9, 9, 9, 9, 9, 9,
   };
   c.code = cloneMemory(code, sizeof(code));
   c.lines = cloneMemory(lines, sizeof(lines));
@@ -180,10 +180,10 @@ static Chunk chunk_print_4() {
   c.count = 11;
   c.capacity = 11;
   u8 code[] = {
-    14, 0, 44, 0, 37, 1, 33, 1, 7, 1, 40,
+    14, 0, 44, 0, 37, 1, 33, 1, 40, 1, 40,
   };
   int lines[] = {
-    10, 10, 10, 10, 10, 10, 10, 10, 10, 11, 11,
+    9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9,
   };
   c.code = cloneMemory(code, sizeof(code));
   c.lines = cloneMemory(lines, sizeof(lines));
@@ -204,9 +204,9 @@ static Value fn_print_4() {
 static ValueArray constants_src_slash_lita_slash_tuple_dot_lita_0() {
   ValueArray vals;
   initValueArray(&vals);
-  vals.count = vals.capacity = 10;
+  vals.count = vals.capacity = 11;
   Value values[] = {
-    str("Tuple"), str("Object"), str("*"), fn__star__1(), str("head"), fn_head_2(), str("each"), fn_each_3(), str("print"), fn_print_4(),
+    str("Tuple"), str("Object"), str("*"), fn__star__1(), str("head"), fn_head_2(), str("each"), fn_each_3(), str("print"), fn_print_4(), str("script return value"),
   };
   vals.values = cloneMemory(values, sizeof(values));
   return vals;
@@ -215,13 +215,13 @@ static ValueArray constants_src_slash_lita_slash_tuple_dot_lita_0() {
 static Chunk chunk_src_slash_lita_slash_tuple_dot_lita_0() {
   Chunk c;
   initChunk(&c);
-  c.count = 30;
-  c.capacity = 30;
+  c.count = 34;
+  c.capacity = 34;
   u8 code[] = {
-    34, 0, 0, 14, 0, 44, 1, 35, 9, 1, 37, 3, 36, 2, 37, 5, 36, 4, 37, 7, 36, 6, 37, 9, 36, 8, 7, 7, 1, 40,
+    34, 0, 0, 14, 0, 44, 1, 35, 9, 1, 37, 3, 36, 2, 37, 5, 36, 4, 37, 7, 36, 6, 37, 9, 36, 8, 7, 7, 12, 0, 49, 10, 2, 40,
   };
   int lines[] = {
-    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 3, 3, 3, 3, 4, 4, 4, 4, 9, 9, 9, 9, 11, 11, 11, 11, 11, 11, 11, 11,
+    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 3, 3, 3, 3, 4, 4, 4, 4, 9, 9, 9, 9, 9, 9, 9, 9, 10, 10, 10, 10, 10, 10, 10, 10,
   };
   c.code = cloneMemory(code, sizeof(code));
   c.lines = cloneMemory(lines, sizeof(lines));

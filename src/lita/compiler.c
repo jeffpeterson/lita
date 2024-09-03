@@ -1183,9 +1183,7 @@ static void getter() {
 static void method() {
   if (match(TOKEN_LET)) return getter();
 
-  match(TOKEN_CFN) || match(TOKEN_FN) ||
-      consume(TOKEN_DOT,
-              "Expect properties or methods starting with '.'"); // optional
+  match(TOKEN_CFN) || match(TOKEN_FN) || match(TOKEN_DOT); // optional
 
   Token name;
   if (check(TOKEN_LEFT_PAREN)) {

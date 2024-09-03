@@ -1,5 +1,5 @@
 class Any
-	class() => classOf(this);
-	hash() => hash(this);
+	.class = classOf(this)
+	.hash = hash(this)
 
 class Object < Any

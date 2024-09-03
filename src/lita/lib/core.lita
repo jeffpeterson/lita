@@ -1,6 +1,6 @@
 class Nil < Any
-	fn string = ""
-	fn dump = "nil"
+	.string = ""
+	.dump = 'nil
 
 class Object < Any
 
@@ -12,31 +12,31 @@ class Object < Any
 let fn_id = 0
 class Function
 	// let id = fn_id++
-	fn dump = "/*" name "*/fn" id "()"
-	fn dump_global
-		"\n"
-		"// " name "\n"
-		"static ValueArray constants" id "() {\n"
-		"  ValueArray vals;\n"
-		"  initValueArray(&vals);\n"
-		"  vals.count = vals.capacity = "  ";\n"
-		"  Value values[] = {"
+	.dump = "/*" name "*/fn" id "()"
+	.dump_global = \
+		"\n" \
+		"// " name "\n" \
+		"static ValueArray constants" id "() {\n" \
+		"  ValueArray vals;\n" \
+		"  initValueArray(&vals);\n" \
+		"  vals.count = vals.capacity = "  ";\n" \
+		"  Value values[] = {" \
 
 class Method < Function
 class NativeFunction < Function
 class Class < Function
 
 class Bool
-	fn string    = this ? 'true : 'false
-	fn print(io) = io.write(string)
-	fn dump      = this ? "TRUE_VAL" : "FALSE_VAL"
+	.string    = this ? 'true : 'false
+	.print(io) = io.write(string)
+	.dump      = this ? 'TRUE_VAL : 'FALSE_VAL
 
 class Number
-	fn dump      = "NUMBER_VAL(" string ")"
-	fn print(io) = io.write(string)
-	fn (b)       = this * b
+	.dump      = "NUMBER_VAL(" string ')
+	.print(io) = io.write(string)
+	.(b)       = this * b
 
 class Table
-	fn inspect = "{" + "}"
+	.inspect = "{}"
 
 class Atom(type, value, targets) // ...targets)

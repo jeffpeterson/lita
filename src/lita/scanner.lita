@@ -21,13 +21,13 @@ class Scanner
 	let indent = Indent()	// Indent status.
 	let data				// __DATA__ buffer.
 
-	fn init(input)
+	.init(input)
 		source = input
 		skip_shebang
 		skip_whitespace
 
-	fn current		= source[span.end]
-	fn is_at_end	= position.start + position.end >= source.length
+	.current	= source[span.end]
+	.is_at_end	= position.start + position.end >= source.length
 
 fn is_alpha c		= c.in 'a..'z or c.in 'A..'Z or c == '_'
 fn is_digit(c)		= c.in '0..'9
