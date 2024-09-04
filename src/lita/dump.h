@@ -12,7 +12,8 @@
 Table ids;
 
 void dumpModule(FILE *io, ObjString *name, ObjFunction *fun);
-void dumpValue(FILE *io, Value v);
+int dumpValue(FILE *io, Value v);
+int dumpObject(FILE *io, Obj *obj);
 bool id_for(let v, int *id);
 
 #endif

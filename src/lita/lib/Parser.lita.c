@@ -11,22 +11,16 @@
 #include "lita/regex.h"
 #endif
 
-static ValueArray constants_init_1() {
-  ValueArray vals;
-  initValueArray(&vals);
-  vals.count = vals.capacity = 1;
-  Value values[] = {
-    string("source"),
-  };
-  vals.values = cloneMemory(values, sizeof(values));
-  return vals;
-}
+             // init
+static Value fn_init_1() {
+  ObjFunction *f = newFunction();
+  f->arity = 1;
+  f->upvalueCount = 0;
+  f->name = newString("init");
 
-static Chunk chunk_init_1() {
-  Chunk c;
-  initChunk(&c);
-  c.count = 10;
-  c.capacity = 10;
+  Chunk *c = &f->chunk;
+  initChunk(c);
+  c->count = c->capacity = 10;
   u8 code[] = {
     OP_GET_LOCAL, 0,
     OP_GET_LOCAL, 1,
@@ -35,41 +29,28 @@ static Chunk chunk_init_1() {
     OP_GET_LOCAL, 0,
     OP_RETURN,
   };
-  int lines[] = {
-    21, 21, 21, 21, 21, 21, 21, 22, 22, 22,
+  int lines[] = { 21, 21, 21, 21, 21, 21, 21, 22, 22, 22,};
+  c->code = cloneMemory(code, sizeof(code));
+  c->lines = cloneMemory(lines, sizeof(lines));
+
+  c->constants.count = c->constants.capacity = 1;
+  Value values[] = {
+    string("source"),
   };
-  c.code = cloneMemory(code, sizeof(code));
-  c.lines = cloneMemory(lines, sizeof(lines));
-  c.constants = constants_init_1();
-
-  return c;
-};
-
-             // init
-static Value fn_init_1() {
-  ObjFunction *f = newFunction();  f->arity = 1;
-  f->upvalueCount = 0;
-  f->name = newString("init");
-  f->chunk = chunk_init_1();
+  c->constants.values = cloneMemory(values, sizeof(values));
   return obj(f);
 }
 
-static ValueArray constants_src_slash_lita_slash_lib_slash_Parser_dot_lita_0() {
-  ValueArray vals;
-  initValueArray(&vals);
-  vals.count = vals.capacity = 5;
-  Value values[] = {
-    string("Parser"), string("Object"), string("init"), fn_init_1(), string("script return value"),
-  };
-  vals.values = cloneMemory(values, sizeof(values));
-  return vals;
-}
+             // src/lita/lib/Parser.lita
+static Value fn_src_slash_lita_slash_lib_slash_Parser_dot_lita_0() {
+  ObjFunction *f = newFunction();
+  f->arity = 0;
+  f->upvalueCount = 0;
+  f->name = newString("src/lita/lib/Parser.lita");
 
-static Chunk chunk_src_slash_lita_slash_lib_slash_Parser_dot_lita_0() {
-  Chunk c;
-  initChunk(&c);
-  c.count = 22;
-  c.capacity = 22;
+  Chunk *c = &f->chunk;
+  initChunk(c);
+  c->count = c->capacity = 22;
   u8 code[] = {
     OP_CLASS, 0, 0,
     OP_GET_LOCAL, 0,
@@ -84,22 +65,19 @@ static Chunk chunk_src_slash_lita_slash_lib_slash_Parser_dot_lita_0() {
     OP_ASSERT_STACK, 4, 2,
     OP_RETURN,
   };
-  int lines[] = {
-    19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22,
+  int lines[] = { 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22,};
+  c->code = cloneMemory(code, sizeof(code));
+  c->lines = cloneMemory(lines, sizeof(lines));
+
+  c->constants.count = c->constants.capacity = 5;
+  Value values[] = {
+    string("Parser"),
+    string("Object"),
+    string("init"),
+    fn_init_1(),
+    string("script return value"),
   };
-  c.code = cloneMemory(code, sizeof(code));
-  c.lines = cloneMemory(lines, sizeof(lines));
-  c.constants = constants_src_slash_lita_slash_lib_slash_Parser_dot_lita_0();
-
-  return c;
-};
-
-             // src/lita/lib/Parser.lita
-static Value fn_src_slash_lita_slash_lib_slash_Parser_dot_lita_0() {
-  ObjFunction *f = newFunction();  f->arity = 0;
-  f->upvalueCount = 0;
-  f->name = newString("src/lita/lib/Parser.lita");
-  f->chunk = chunk_src_slash_lita_slash_lib_slash_Parser_dot_lita_0();
+  c->constants.values = cloneMemory(values, sizeof(values));
   return obj(f);
 }
 

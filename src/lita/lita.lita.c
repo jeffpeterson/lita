@@ -11,110 +11,78 @@
 #include "lita/regex.h"
 #endif
 
-static ValueArray constants_class_1() {
-  ValueArray vals;
-  initValueArray(&vals);
-  vals.count = vals.capacity = 1;
+             // class
+static Value fn_class_1() {
+  ObjFunction *f = newFunction();
+  f->arity = 0;
+  f->upvalueCount = 0;
+  f->name = newString("class");
+
+  Chunk *c = &f->chunk;
+  initChunk(c);
+  c->count = c->capacity = 11;
+  u8 code[] = {
+    OP_GET_LOCAL, 0,
+    OP_GET_VAR, 0,
+    OP_GET_LOCAL, 0,
+    OP_CALL, 1,
+    OP_RETURN,
+    OP_NIL,
+    OP_RETURN,
+  };
+  int lines[] = { 2, 2, 2, 2, 2, 2, 2, 2, 2, 3, 3,};
+  c->code = cloneMemory(code, sizeof(code));
+  c->lines = cloneMemory(lines, sizeof(lines));
+
+  c->constants.count = c->constants.capacity = 1;
   Value values[] = {
     string("classOf"),
   };
-  vals.values = cloneMemory(values, sizeof(values));
-  return vals;
-}
-
-static Chunk chunk_class_1() {
-  Chunk c;
-  initChunk(&c);
-  c.count = 11;
-  c.capacity = 11;
-  u8 code[] = {
-    OP_GET_LOCAL, 0,
-    OP_GET_VAR, 0,
-    OP_GET_LOCAL, 0,
-    OP_CALL, 1,
-    OP_RETURN,
-    OP_NIL,
-    OP_RETURN,
-  };
-  int lines[] = {
-    2, 2, 2, 2, 2, 2, 2, 2, 2, 3, 3,
-  };
-  c.code = cloneMemory(code, sizeof(code));
-  c.lines = cloneMemory(lines, sizeof(lines));
-  c.constants = constants_class_1();
-
-  return c;
-};
-
-             // class
-static Value fn_class_1() {
-  ObjFunction *f = newFunction();  f->arity = 0;
-  f->upvalueCount = 0;
-  f->name = newString("class");
-  f->chunk = chunk_class_1();
+  c->constants.values = cloneMemory(values, sizeof(values));
   return obj(f);
 }
-
-static ValueArray constants_hash_2() {
-  ValueArray vals;
-  initValueArray(&vals);
-  vals.count = vals.capacity = 1;
-  Value values[] = {
-    string("hash"),
-  };
-  vals.values = cloneMemory(values, sizeof(values));
-  return vals;
-}
-
-static Chunk chunk_hash_2() {
-  Chunk c;
-  initChunk(&c);
-  c.count = 11;
-  c.capacity = 11;
-  u8 code[] = {
-    OP_GET_LOCAL, 0,
-    OP_GET_VAR, 0,
-    OP_GET_LOCAL, 0,
-    OP_CALL, 1,
-    OP_RETURN,
-    OP_NIL,
-    OP_RETURN,
-  };
-  int lines[] = {
-    3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
-  };
-  c.code = cloneMemory(code, sizeof(code));
-  c.lines = cloneMemory(lines, sizeof(lines));
-  c.constants = constants_hash_2();
-
-  return c;
-};
 
              // hash
 static Value fn_hash_2() {
-  ObjFunction *f = newFunction();  f->arity = 0;
+  ObjFunction *f = newFunction();
+  f->arity = 0;
   f->upvalueCount = 0;
   f->name = newString("hash");
-  f->chunk = chunk_hash_2();
+
+  Chunk *c = &f->chunk;
+  initChunk(c);
+  c->count = c->capacity = 11;
+  u8 code[] = {
+    OP_GET_LOCAL, 0,
+    OP_GET_VAR, 0,
+    OP_GET_LOCAL, 0,
+    OP_CALL, 1,
+    OP_RETURN,
+    OP_NIL,
+    OP_RETURN,
+  };
+  int lines[] = { 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3,};
+  c->code = cloneMemory(code, sizeof(code));
+  c->lines = cloneMemory(lines, sizeof(lines));
+
+  c->constants.count = c->constants.capacity = 1;
+  Value values[] = {
+    string("hash"),
+  };
+  c->constants.values = cloneMemory(values, sizeof(values));
   return obj(f);
 }
 
-static ValueArray constants_src_slash_lita_slash_lita_dot_lita_0() {
-  ValueArray vals;
-  initValueArray(&vals);
-  vals.count = vals.capacity = 7;
-  Value values[] = {
-    string("Any"), string("Object"), string("class"), fn_class_1(), string("hash"), fn_hash_2(), string("script return value"),
-  };
-  vals.values = cloneMemory(values, sizeof(values));
-  return vals;
-}
+             // src/lita/lita.lita
+static Value fn_src_slash_lita_slash_lita_dot_lita_0() {
+  ObjFunction *f = newFunction();
+  f->arity = 0;
+  f->upvalueCount = 0;
+  f->name = newString("src/lita/lita.lita");
 
-static Chunk chunk_src_slash_lita_slash_lita_dot_lita_0() {
-  Chunk c;
-  initChunk(&c);
-  c.count = 38;
-  c.capacity = 38;
+  Chunk *c = &f->chunk;
+  initChunk(c);
+  c->count = c->capacity = 38;
   u8 code[] = {
     OP_CLASS, 0, 0,
     OP_GET_LOCAL, 0,
@@ -138,22 +106,21 @@ static Chunk chunk_src_slash_lita_slash_lita_dot_lita_0() {
     OP_ASSERT_STACK, 6, 2,
     OP_RETURN,
   };
-  int lines[] = {
-    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 3, 3, 3, 3, 3, 3, 3, 3, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 6, 6, 6, 6, 6, 6, 6, 6,
+  int lines[] = { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 3, 3, 3, 3, 3, 3, 3, 3, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 6, 6, 6, 6, 6, 6, 6, 6,};
+  c->code = cloneMemory(code, sizeof(code));
+  c->lines = cloneMemory(lines, sizeof(lines));
+
+  c->constants.count = c->constants.capacity = 7;
+  Value values[] = {
+    string("Any"),
+    string("Object"),
+    string("class"),
+    fn_class_1(),
+    string("hash"),
+    fn_hash_2(),
+    string("script return value"),
   };
-  c.code = cloneMemory(code, sizeof(code));
-  c.lines = cloneMemory(lines, sizeof(lines));
-  c.constants = constants_src_slash_lita_slash_lita_dot_lita_0();
-
-  return c;
-};
-
-             // src/lita/lita.lita
-static Value fn_src_slash_lita_slash_lita_dot_lita_0() {
-  ObjFunction *f = newFunction();  f->arity = 0;
-  f->upvalueCount = 0;
-  f->name = newString("src/lita/lita.lita");
-  f->chunk = chunk_src_slash_lita_slash_lita_dot_lita_0();
+  c->constants.values = cloneMemory(values, sizeof(values));
   return obj(f);
 }
 

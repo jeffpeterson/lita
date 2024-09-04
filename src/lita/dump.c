@@ -9,35 +9,19 @@
 int currentId = 0;
 Table ids;
 
-void dumpValue(FILE *io, Value v) {
-  if (is_nil(v)) {
-    fputs("nil", io);
-    return;
-  }
+int dumpValue(FILE *io, Value v) {
+  if (is_nil(v)) return fputs("nil", io);
+  if (is_bool(v)) return fputs(AS_BOOL(v) ? "TRUE_VAL" : "FALSE_VAL", io);
+  if (is_num(v)) return fprintf(io, "NUMBER_VAL(%g)", AS_NUMBER(v));
+  if (is_obj(v)) return dumpObject(io, AS_OBJ(v));
 
-  if (is_bool(v)) {
-    fputs(AS_BOOL(v) ? "TRUE_VAL" : "FALSE_VAL", io);
-    return;
-  }
+  return fprintf(io, "crash(\"Value without dump: %s\")", inspectc(v));
+}
 
-  if (is_num(v)) {
-    fprintf(io, "NUMBER_VAL(%f)", AS_NUMBER(v));
-    return;
-  }
-
-  // if (!is_obj(v)) {
-  //   fprintf(io, "%#llx", AS_NUMBER(v));
-  //   return;
-  // }
-
-  Obj *obj = AS_OBJ(v);
-
-  if (obj->def->dump) {
-    obj->def->dump(obj, io);
-    return;
-  }
-
-  fprintf(io, "crash(\"object without dump: %s\")", obj->def->class_name);
+int dumpObject(FILE *io, Obj *obj) {
+  if (obj->def->dump) return obj->def->dump(obj, io);
+  return fprintf(io, "crash(\"object without dump: %s\")",
+                 inspectc(OBJ_VAL(obj)));
 }
 
 bool id_for(let v, int *id) {
@@ -72,82 +56,55 @@ static int dumpFn(FILE *io, ObjFunction *fun) {
 
   fprintf(io,
           "\n"
-          "static ValueArray constants_%s_%d() {\n"
-          "  ValueArray vals;\n"
-          "  initValueArray(&vals);\n"
-          "  vals.count = vals.capacity = %d;\n"
-          "  Value values[] = {",
-          name->chars, id, values.count);
-
-  if (values.count > 0) {
-    fputs("\n   ", io);
-
-    for (int i = 0; i < values.count; i++) {
-      fputs(" ", io);
-      dumpValue(io, values.values[i]);
-      fputs(",", io);
-    }
-    fputs("\n  ", io);
-  }
-
-  fprintf(io, "};\n"
-              "  vals.values = cloneMemory(values, sizeof(values));\n"
-              "  return vals;\n"
-              "}\n");
+          "             // %s\n"
+          "static Value fn_%s_%d() {\n"
+          "  ObjFunction *f = newFunction();\n"
+          "  f->arity = %d;\n"
+          "  f->upvalueCount = %d;\n"
+          "  f->name = newString(\"%s\");\n",
+          fun->name->chars, name->chars, id, fun->arity, fun->upvalueCount,
+          fun->name->chars);
 
   fprintf(io,
           "\n"
-          "static Chunk chunk_%s_%d() {\n"
-          "  Chunk c;\n"
-          "  initChunk(&c);\n"
-          "  c.count = %d;\n"
-          "  c.capacity = %d;\n"
-          "  u8 code[] = {\n"
-          "",
-          name->chars, id, chunk.count, chunk.count);
+          "  Chunk *c = &f->chunk;\n"
+          "  initChunk(c);\n"
+          "  c->count = c->capacity = %d;\n"
+          "  u8 code[] = {\n",
+          chunk.count);
 
   u8 *ip = chunk.code;
   while (ip < chunk.code + chunk.count) {
     fprintf(io, "    %s,", op_info[*ip].name);
     u8 size = instructionSize(*ip++);
-    for (int i = 1; i < size; i++) {
-      fprintf(io, " %d,", *ip++);
-    }
+    for (int i = 1; i < size; i++) fprintf(io, " %d,", *ip++);
     fprintf(io, "\n");
   }
 
   fprintf(io, "  };\n"
-              "  int lines[] = {\n"
-              "   ");
+              "  int lines[] = {");
+  for (int i = 0; i < chunk.count; i++) fprintf(io, " %d,", chunk.lines[i]);
+  fprintf(io, "};\n"
+              "  c->code = cloneMemory(code, sizeof(code));\n"
+              "  c->lines = cloneMemory(lines, sizeof(lines));\n");
 
-  for (int i = 0; i < chunk.count; i++) {
-    fprintf(io, " %d,", chunk.lines[i]);
+  fprintf(io,
+          "\n"
+          "  c->constants.count = c->constants.capacity = %d;\n"
+          "  Value values[] = {\n",
+          values.count);
+
+  for (int i = 0; i < values.count; i++) {
+    fputs("    ", io);
+    dumpValue(io, values.values[i]);
+    fputs(",\n", io);
   }
 
-  fprintf(io,
-          "\n"
-          "  };\n"
-          "  c.code = cloneMemory(code, sizeof(code));\n"
-          "  c.lines = cloneMemory(lines, sizeof(lines));\n"
-          "  c.constants = constants_%s_%d();\n"
-          "\n"
-          "  return c;\n"
-          "};\n",
-          name->chars, id);
+  fprintf(io, "  };\n"
+              "  c->constants.values = cloneMemory(values, sizeof(values));\n");
 
-  fprintf(io,
-          "\n"
-          "             // %s\n"
-          "static Value fn_%s_%d() {\n"
-          "  ObjFunction *f = newFunction();"
-          "  f->arity = %d;\n"
-          "  f->upvalueCount = %d;\n"
-          "  f->name = newString(\"%s\");\n"
-          "  f->chunk = chunk_%s_%d();\n"
-          "  return obj(f);\n"
-          "}\n",
-          fun->name->chars, name->chars, id, fun->arity, fun->upvalueCount,
-          fun->name->chars, name->chars, id);
+  fprintf(io, "  return obj(f);\n"
+              "}\n");
 
   return id;
 }

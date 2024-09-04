@@ -11,96 +11,66 @@
 #include "lita/regex.h"
 #endif
 
-static ValueArray constants_compile_1() {
-  ValueArray vals;
-  initValueArray(&vals);
-  vals.count = vals.capacity = 0;
-  Value values[] = {};
-  vals.values = cloneMemory(values, sizeof(values));
-  return vals;
-}
-
-static Chunk chunk_compile_1() {
-  Chunk c;
-  initChunk(&c);
-  c.count = 2;
-  c.capacity = 2;
-  u8 code[] = {
-    OP_NIL,
-    OP_RETURN,
-  };
-  int lines[] = {
-    1, 1,
-  };
-  c.code = cloneMemory(code, sizeof(code));
-  c.lines = cloneMemory(lines, sizeof(lines));
-  c.constants = constants_compile_1();
-
-  return c;
-};
-
              // compile
 static Value fn_compile_1() {
-  ObjFunction *f = newFunction();  f->arity = 2;
+  ObjFunction *f = newFunction();
+  f->arity = 2;
   f->upvalueCount = 0;
   f->name = newString("compile");
-  f->chunk = chunk_compile_1();
-  return obj(f);
-}
 
-static ValueArray constants_markCompilerRoots_2() {
-  ValueArray vals;
-  initValueArray(&vals);
-  vals.count = vals.capacity = 0;
-  Value values[] = {};
-  vals.values = cloneMemory(values, sizeof(values));
-  return vals;
-}
-
-static Chunk chunk_markCompilerRoots_2() {
-  Chunk c;
-  initChunk(&c);
-  c.count = 2;
-  c.capacity = 2;
+  Chunk *c = &f->chunk;
+  initChunk(c);
+  c->count = c->capacity = 2;
   u8 code[] = {
     OP_NIL,
     OP_RETURN,
   };
-  int lines[] = {
-    3, 3,
-  };
-  c.code = cloneMemory(code, sizeof(code));
-  c.lines = cloneMemory(lines, sizeof(lines));
-  c.constants = constants_markCompilerRoots_2();
+  int lines[] = { 1, 1,};
+  c->code = cloneMemory(code, sizeof(code));
+  c->lines = cloneMemory(lines, sizeof(lines));
 
-  return c;
-};
+  c->constants.count = c->constants.capacity = 0;
+  Value values[] = {
+  };
+  c->constants.values = cloneMemory(values, sizeof(values));
+  return obj(f);
+}
 
              // markCompilerRoots
 static Value fn_markCompilerRoots_2() {
-  ObjFunction *f = newFunction();  f->arity = 0;
+  ObjFunction *f = newFunction();
+  f->arity = 0;
   f->upvalueCount = 0;
   f->name = newString("markCompilerRoots");
-  f->chunk = chunk_markCompilerRoots_2();
+
+  Chunk *c = &f->chunk;
+  initChunk(c);
+  c->count = c->capacity = 2;
+  u8 code[] = {
+    OP_NIL,
+    OP_RETURN,
+  };
+  int lines[] = { 3, 3,};
+  c->code = cloneMemory(code, sizeof(code));
+  c->lines = cloneMemory(lines, sizeof(lines));
+
+  c->constants.count = c->constants.capacity = 0;
+  Value values[] = {
+  };
+  c->constants.values = cloneMemory(values, sizeof(values));
   return obj(f);
 }
 
-static ValueArray constants_src_slash_lita_slash_compiler_dot_lita_0() {
-  ValueArray vals;
-  initValueArray(&vals);
-  vals.count = vals.capacity = 14;
-  Value values[] = {
-    string("compile"), fn_compile_1(), string("markCompilerRoots"), fn_markCompilerRoots_2(), string("Parser"), string("Object"), string("current"), string("previous"), string("indebt"), string("hadError"), string("panicMode"), string("Context"), string("Compiler"), string("script return value"),
-  };
-  vals.values = cloneMemory(values, sizeof(values));
-  return vals;
-}
+             // src/lita/compiler.lita
+static Value fn_src_slash_lita_slash_compiler_dot_lita_0() {
+  ObjFunction *f = newFunction();
+  f->arity = 0;
+  f->upvalueCount = 0;
+  f->name = newString("src/lita/compiler.lita");
 
-static Chunk chunk_src_slash_lita_slash_compiler_dot_lita_0() {
-  Chunk c;
-  initChunk(&c);
-  c.count = 65;
-  c.capacity = 65;
+  Chunk *c = &f->chunk;
+  initChunk(c);
+  c->count = c->capacity = 65;
   u8 code[] = {
     OP_CLOSURE, 1,
     OP_DEFINE_GLOBAL, 0,
@@ -141,22 +111,28 @@ static Chunk chunk_src_slash_lita_slash_compiler_dot_lita_0() {
     OP_ASSERT_STACK, 13, 2,
     OP_RETURN,
   };
-  int lines[] = {
-    1, 1, 1, 1, 3, 3, 3, 3, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 7, 7, 7, 7, 7, 8, 8, 8, 9, 9, 9, 10, 10, 10, 11, 11, 11, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 59, 59, 59, 59, 59, 59, 59, 59, 59, 59, 59, 59, 72, 72, 72, 72, 72, 72, 72, 72,
+  int lines[] = { 1, 1, 1, 1, 3, 3, 3, 3, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 7, 7, 7, 7, 7, 8, 8, 8, 9, 9, 9, 10, 10, 10, 11, 11, 11, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 59, 59, 59, 59, 59, 59, 59, 59, 59, 59, 59, 59, 72, 72, 72, 72, 72, 72, 72, 72,};
+  c->code = cloneMemory(code, sizeof(code));
+  c->lines = cloneMemory(lines, sizeof(lines));
+
+  c->constants.count = c->constants.capacity = 14;
+  Value values[] = {
+    string("compile"),
+    fn_compile_1(),
+    string("markCompilerRoots"),
+    fn_markCompilerRoots_2(),
+    string("Parser"),
+    string("Object"),
+    string("current"),
+    string("previous"),
+    string("indebt"),
+    string("hadError"),
+    string("panicMode"),
+    string("Context"),
+    string("Compiler"),
+    string("script return value"),
   };
-  c.code = cloneMemory(code, sizeof(code));
-  c.lines = cloneMemory(lines, sizeof(lines));
-  c.constants = constants_src_slash_lita_slash_compiler_dot_lita_0();
-
-  return c;
-};
-
-             // src/lita/compiler.lita
-static Value fn_src_slash_lita_slash_compiler_dot_lita_0() {
-  ObjFunction *f = newFunction();  f->arity = 0;
-  f->upvalueCount = 0;
-  f->name = newString("src/lita/compiler.lita");
-  f->chunk = chunk_src_slash_lita_slash_compiler_dot_lita_0();
+  c->constants.values = cloneMemory(values, sizeof(values));
   return obj(f);
 }
 

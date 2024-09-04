@@ -11,104 +11,72 @@
 #include "lita/regex.h"
 #endif
 
-static ValueArray constants_string_1() {
-  ValueArray vals;
-  initValueArray(&vals);
-  vals.count = vals.capacity = 1;
+             // string
+static Value fn_string_1() {
+  ObjFunction *f = newFunction();
+  f->arity = 0;
+  f->upvalueCount = 0;
+  f->name = newString("string");
+
+  Chunk *c = &f->chunk;
+  initChunk(c);
+  c->count = c->capacity = 5;
+  u8 code[] = {
+    OP_CONSTANT, 0,
+    OP_RETURN,
+    OP_NIL,
+    OP_RETURN,
+  };
+  int lines[] = { 2, 2, 2, 3, 3,};
+  c->code = cloneMemory(code, sizeof(code));
+  c->lines = cloneMemory(lines, sizeof(lines));
+
+  c->constants.count = c->constants.capacity = 1;
   Value values[] = {
     string(""),
   };
-  vals.values = cloneMemory(values, sizeof(values));
-  return vals;
-}
-
-static Chunk chunk_string_1() {
-  Chunk c;
-  initChunk(&c);
-  c.count = 5;
-  c.capacity = 5;
-  u8 code[] = {
-    OP_CONSTANT, 0,
-    OP_RETURN,
-    OP_NIL,
-    OP_RETURN,
-  };
-  int lines[] = {
-    2, 2, 2, 3, 3,
-  };
-  c.code = cloneMemory(code, sizeof(code));
-  c.lines = cloneMemory(lines, sizeof(lines));
-  c.constants = constants_string_1();
-
-  return c;
-};
-
-             // string
-static Value fn_string_1() {
-  ObjFunction *f = newFunction();  f->arity = 0;
-  f->upvalueCount = 0;
-  f->name = newString("string");
-  f->chunk = chunk_string_1();
+  c->constants.values = cloneMemory(values, sizeof(values));
   return obj(f);
 }
-
-static ValueArray constants_dump_2() {
-  ValueArray vals;
-  initValueArray(&vals);
-  vals.count = vals.capacity = 1;
-  Value values[] = {
-    string("nil"),
-  };
-  vals.values = cloneMemory(values, sizeof(values));
-  return vals;
-}
-
-static Chunk chunk_dump_2() {
-  Chunk c;
-  initChunk(&c);
-  c.count = 5;
-  c.capacity = 5;
-  u8 code[] = {
-    OP_CONSTANT, 0,
-    OP_RETURN,
-    OP_NIL,
-    OP_RETURN,
-  };
-  int lines[] = {
-    3, 3, 3, 3, 3,
-  };
-  c.code = cloneMemory(code, sizeof(code));
-  c.lines = cloneMemory(lines, sizeof(lines));
-  c.constants = constants_dump_2();
-
-  return c;
-};
 
              // dump
 static Value fn_dump_2() {
-  ObjFunction *f = newFunction();  f->arity = 0;
+  ObjFunction *f = newFunction();
+  f->arity = 0;
   f->upvalueCount = 0;
   f->name = newString("dump");
-  f->chunk = chunk_dump_2();
+
+  Chunk *c = &f->chunk;
+  initChunk(c);
+  c->count = c->capacity = 5;
+  u8 code[] = {
+    OP_CONSTANT, 0,
+    OP_RETURN,
+    OP_NIL,
+    OP_RETURN,
+  };
+  int lines[] = { 3, 3, 3, 3, 3,};
+  c->code = cloneMemory(code, sizeof(code));
+  c->lines = cloneMemory(lines, sizeof(lines));
+
+  c->constants.count = c->constants.capacity = 1;
+  Value values[] = {
+    string("nil"),
+  };
+  c->constants.values = cloneMemory(values, sizeof(values));
   return obj(f);
 }
 
-static ValueArray constants_dump_3() {
-  ValueArray vals;
-  initValueArray(&vals);
-  vals.count = vals.capacity = 5;
-  Value values[] = {
-    string("/*"), string("name"), string("*/fn"), string("id"), string("()"),
-  };
-  vals.values = cloneMemory(values, sizeof(values));
-  return vals;
-}
+             // dump
+static Value fn_dump_3() {
+  ObjFunction *f = newFunction();
+  f->arity = 0;
+  f->upvalueCount = 0;
+  f->name = newString("dump");
 
-static Chunk chunk_dump_3() {
-  Chunk c;
-  initChunk(&c);
-  c.count = 25;
-  c.capacity = 25;
+  Chunk *c = &f->chunk;
+  initChunk(c);
+  c->count = c->capacity = 25;
   u8 code[] = {
     OP_CONSTANT, 0,
     OP_GET_LOCAL, 0,
@@ -125,41 +93,32 @@ static Chunk chunk_dump_3() {
     OP_NIL,
     OP_RETURN,
   };
-  int lines[] = {
-    15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 16, 16,
+  int lines[] = { 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 16, 16,};
+  c->code = cloneMemory(code, sizeof(code));
+  c->lines = cloneMemory(lines, sizeof(lines));
+
+  c->constants.count = c->constants.capacity = 5;
+  Value values[] = {
+    string("/*"),
+    string("name"),
+    string("*/fn"),
+    string("id"),
+    string("()"),
   };
-  c.code = cloneMemory(code, sizeof(code));
-  c.lines = cloneMemory(lines, sizeof(lines));
-  c.constants = constants_dump_3();
-
-  return c;
-};
-
-             // dump
-static Value fn_dump_3() {
-  ObjFunction *f = newFunction();  f->arity = 0;
-  f->upvalueCount = 0;
-  f->name = newString("dump");
-  f->chunk = chunk_dump_3();
+  c->constants.values = cloneMemory(values, sizeof(values));
   return obj(f);
 }
 
-static ValueArray constants_dump_global_4() {
-  ValueArray vals;
-  initValueArray(&vals);
-  vals.count = vals.capacity = 11;
-  Value values[] = {
-    string("\n"), string("// "), string("name"), string("static ValueArray constants"), string("id"), string("() {\n"), string("  ValueArray vals;\n"), string("  initValueArray(&vals);\n"), string("  vals.count = vals.capacity = "), string(";\n"), string("  Value values[] = {"),
-  };
-  vals.values = cloneMemory(values, sizeof(values));
-  return vals;
-}
+             // dump_global
+static Value fn_dump_global_4() {
+  ObjFunction *f = newFunction();
+  f->arity = 0;
+  f->upvalueCount = 0;
+  f->name = newString("dump_global");
 
-static Chunk chunk_dump_global_4() {
-  Chunk c;
-  initChunk(&c);
-  c.count = 53;
-  c.capacity = 53;
+  Chunk *c = &f->chunk;
+  initChunk(c);
+  c->count = c->capacity = 53;
   u8 code[] = {
     OP_CONSTANT, 0,
     OP_CONSTANT, 1,
@@ -190,41 +149,38 @@ static Chunk chunk_dump_global_4() {
     OP_NIL,
     OP_RETURN,
   };
-  int lines[] = {
-    17, 17, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 20, 20, 20, 20, 21, 21, 21, 21, 22, 22, 22, 22, 22, 22, 22, 22, 23, 23, 23, 23, 23, 23, 23,
+  int lines[] = { 17, 17, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 20, 20, 20, 20, 21, 21, 21, 21, 22, 22, 22, 22, 22, 22, 22, 22, 23, 23, 23, 23, 23, 23, 23,};
+  c->code = cloneMemory(code, sizeof(code));
+  c->lines = cloneMemory(lines, sizeof(lines));
+
+  c->constants.count = c->constants.capacity = 11;
+  Value values[] = {
+    string("\n"),
+    string("// "),
+    string("name"),
+    string("static ValueArray constants"),
+    string("id"),
+    string("() {\n"),
+    string("  ValueArray vals;\n"),
+    string("  initValueArray(&vals);\n"),
+    string("  vals.count = vals.capacity = "),
+    string(";\n"),
+    string("  Value values[] = {"),
   };
-  c.code = cloneMemory(code, sizeof(code));
-  c.lines = cloneMemory(lines, sizeof(lines));
-  c.constants = constants_dump_global_4();
-
-  return c;
-};
-
-             // dump_global
-static Value fn_dump_global_4() {
-  ObjFunction *f = newFunction();  f->arity = 0;
-  f->upvalueCount = 0;
-  f->name = newString("dump_global");
-  f->chunk = chunk_dump_global_4();
+  c->constants.values = cloneMemory(values, sizeof(values));
   return obj(f);
 }
 
-static ValueArray constants_string_5() {
-  ValueArray vals;
-  initValueArray(&vals);
-  vals.count = vals.capacity = 2;
-  Value values[] = {
-    string("true"), string("false"),
-  };
-  vals.values = cloneMemory(values, sizeof(values));
-  return vals;
-}
+             // string
+static Value fn_string_5() {
+  ObjFunction *f = newFunction();
+  f->arity = 0;
+  f->upvalueCount = 0;
+  f->name = newString("string");
 
-static Chunk chunk_string_5() {
-  Chunk c;
-  initChunk(&c);
-  c.count = 17;
-  c.capacity = 17;
+  Chunk *c = &f->chunk;
+  initChunk(c);
+  c->count = c->capacity = 17;
   u8 code[] = {
     OP_GET_LOCAL, 0,
     OP_JUMP_IF_FALSE, 0, 6,
@@ -237,41 +193,29 @@ static Chunk chunk_string_5() {
     OP_NIL,
     OP_RETURN,
   };
-  int lines[] = {
-    30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 31, 31,
+  int lines[] = { 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 31, 31,};
+  c->code = cloneMemory(code, sizeof(code));
+  c->lines = cloneMemory(lines, sizeof(lines));
+
+  c->constants.count = c->constants.capacity = 2;
+  Value values[] = {
+    string("true"),
+    string("false"),
   };
-  c.code = cloneMemory(code, sizeof(code));
-  c.lines = cloneMemory(lines, sizeof(lines));
-  c.constants = constants_string_5();
-
-  return c;
-};
-
-             // string
-static Value fn_string_5() {
-  ObjFunction *f = newFunction();  f->arity = 0;
-  f->upvalueCount = 0;
-  f->name = newString("string");
-  f->chunk = chunk_string_5();
+  c->constants.values = cloneMemory(values, sizeof(values));
   return obj(f);
 }
 
-static ValueArray constants_print_6() {
-  ValueArray vals;
-  initValueArray(&vals);
-  vals.count = vals.capacity = 2;
-  Value values[] = {
-    string("write"), string("string"),
-  };
-  vals.values = cloneMemory(values, sizeof(values));
-  return vals;
-}
+             // print
+static Value fn_print_6() {
+  ObjFunction *f = newFunction();
+  f->arity = 1;
+  f->upvalueCount = 0;
+  f->name = newString("print");
 
-static Chunk chunk_print_6() {
-  Chunk c;
-  initChunk(&c);
-  c.count = 12;
-  c.capacity = 12;
+  Chunk *c = &f->chunk;
+  initChunk(c);
+  c->count = c->capacity = 12;
   u8 code[] = {
     OP_GET_LOCAL, 1,
     OP_GET_LOCAL, 0,
@@ -281,41 +225,29 @@ static Chunk chunk_print_6() {
     OP_NIL,
     OP_RETURN,
   };
-  int lines[] = {
-    31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 32, 32,
+  int lines[] = { 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 32, 32,};
+  c->code = cloneMemory(code, sizeof(code));
+  c->lines = cloneMemory(lines, sizeof(lines));
+
+  c->constants.count = c->constants.capacity = 2;
+  Value values[] = {
+    string("write"),
+    string("string"),
   };
-  c.code = cloneMemory(code, sizeof(code));
-  c.lines = cloneMemory(lines, sizeof(lines));
-  c.constants = constants_print_6();
-
-  return c;
-};
-
-             // print
-static Value fn_print_6() {
-  ObjFunction *f = newFunction();  f->arity = 1;
-  f->upvalueCount = 0;
-  f->name = newString("print");
-  f->chunk = chunk_print_6();
+  c->constants.values = cloneMemory(values, sizeof(values));
   return obj(f);
 }
 
-static ValueArray constants_dump_7() {
-  ValueArray vals;
-  initValueArray(&vals);
-  vals.count = vals.capacity = 2;
-  Value values[] = {
-    string("TRUE_VAL"), string("FALSE_VAL"),
-  };
-  vals.values = cloneMemory(values, sizeof(values));
-  return vals;
-}
+             // dump
+static Value fn_dump_7() {
+  ObjFunction *f = newFunction();
+  f->arity = 0;
+  f->upvalueCount = 0;
+  f->name = newString("dump");
 
-static Chunk chunk_dump_7() {
-  Chunk c;
-  initChunk(&c);
-  c.count = 17;
-  c.capacity = 17;
+  Chunk *c = &f->chunk;
+  initChunk(c);
+  c->count = c->capacity = 17;
   u8 code[] = {
     OP_GET_LOCAL, 0,
     OP_JUMP_IF_FALSE, 0, 6,
@@ -328,41 +260,29 @@ static Chunk chunk_dump_7() {
     OP_NIL,
     OP_RETURN,
   };
-  int lines[] = {
-    32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32,
+  int lines[] = { 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32,};
+  c->code = cloneMemory(code, sizeof(code));
+  c->lines = cloneMemory(lines, sizeof(lines));
+
+  c->constants.count = c->constants.capacity = 2;
+  Value values[] = {
+    string("TRUE_VAL"),
+    string("FALSE_VAL"),
   };
-  c.code = cloneMemory(code, sizeof(code));
-  c.lines = cloneMemory(lines, sizeof(lines));
-  c.constants = constants_dump_7();
-
-  return c;
-};
-
-             // dump
-static Value fn_dump_7() {
-  ObjFunction *f = newFunction();  f->arity = 0;
-  f->upvalueCount = 0;
-  f->name = newString("dump");
-  f->chunk = chunk_dump_7();
+  c->constants.values = cloneMemory(values, sizeof(values));
   return obj(f);
 }
 
-static ValueArray constants_dump_8() {
-  ValueArray vals;
-  initValueArray(&vals);
-  vals.count = vals.capacity = 3;
-  Value values[] = {
-    string("NUMBER_VAL("), string("string"), string(")"),
-  };
-  vals.values = cloneMemory(values, sizeof(values));
-  return vals;
-}
+             // dump
+static Value fn_dump_8() {
+  ObjFunction *f = newFunction();
+  f->arity = 0;
+  f->upvalueCount = 0;
+  f->name = newString("dump");
 
-static Chunk chunk_dump_8() {
-  Chunk c;
-  initChunk(&c);
-  c.count = 15;
-  c.capacity = 15;
+  Chunk *c = &f->chunk;
+  initChunk(c);
+  c->count = c->capacity = 15;
   u8 code[] = {
     OP_CONSTANT, 0,
     OP_GET_LOCAL, 0,
@@ -374,41 +294,30 @@ static Chunk chunk_dump_8() {
     OP_NIL,
     OP_RETURN,
   };
-  int lines[] = {
-    35, 35, 35, 35, 35, 35, 35, 35, 35, 35, 35, 35, 35, 36, 36,
+  int lines[] = { 35, 35, 35, 35, 35, 35, 35, 35, 35, 35, 35, 35, 35, 36, 36,};
+  c->code = cloneMemory(code, sizeof(code));
+  c->lines = cloneMemory(lines, sizeof(lines));
+
+  c->constants.count = c->constants.capacity = 3;
+  Value values[] = {
+    string("NUMBER_VAL("),
+    string("string"),
+    string(")"),
   };
-  c.code = cloneMemory(code, sizeof(code));
-  c.lines = cloneMemory(lines, sizeof(lines));
-  c.constants = constants_dump_8();
-
-  return c;
-};
-
-             // dump
-static Value fn_dump_8() {
-  ObjFunction *f = newFunction();  f->arity = 0;
-  f->upvalueCount = 0;
-  f->name = newString("dump");
-  f->chunk = chunk_dump_8();
+  c->constants.values = cloneMemory(values, sizeof(values));
   return obj(f);
 }
 
-static ValueArray constants_print_9() {
-  ValueArray vals;
-  initValueArray(&vals);
-  vals.count = vals.capacity = 2;
-  Value values[] = {
-    string("write"), string("string"),
-  };
-  vals.values = cloneMemory(values, sizeof(values));
-  return vals;
-}
+             // print
+static Value fn_print_9() {
+  ObjFunction *f = newFunction();
+  f->arity = 1;
+  f->upvalueCount = 0;
+  f->name = newString("print");
 
-static Chunk chunk_print_9() {
-  Chunk c;
-  initChunk(&c);
-  c.count = 12;
-  c.capacity = 12;
+  Chunk *c = &f->chunk;
+  initChunk(c);
+  c->count = c->capacity = 12;
   u8 code[] = {
     OP_GET_LOCAL, 1,
     OP_GET_LOCAL, 0,
@@ -418,39 +327,29 @@ static Chunk chunk_print_9() {
     OP_NIL,
     OP_RETURN,
   };
-  int lines[] = {
-    36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 37, 37,
+  int lines[] = { 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 37, 37,};
+  c->code = cloneMemory(code, sizeof(code));
+  c->lines = cloneMemory(lines, sizeof(lines));
+
+  c->constants.count = c->constants.capacity = 2;
+  Value values[] = {
+    string("write"),
+    string("string"),
   };
-  c.code = cloneMemory(code, sizeof(code));
-  c.lines = cloneMemory(lines, sizeof(lines));
-  c.constants = constants_print_9();
-
-  return c;
-};
-
-             // print
-static Value fn_print_9() {
-  ObjFunction *f = newFunction();  f->arity = 1;
-  f->upvalueCount = 0;
-  f->name = newString("print");
-  f->chunk = chunk_print_9();
+  c->constants.values = cloneMemory(values, sizeof(values));
   return obj(f);
 }
 
-static ValueArray constants__dot__10() {
-  ValueArray vals;
-  initValueArray(&vals);
-  vals.count = vals.capacity = 0;
-  Value values[] = {};
-  vals.values = cloneMemory(values, sizeof(values));
-  return vals;
-}
+             // .
+static Value fn__dot__10() {
+  ObjFunction *f = newFunction();
+  f->arity = 1;
+  f->upvalueCount = 0;
+  f->name = newString(".");
 
-static Chunk chunk__dot__10() {
-  Chunk c;
-  initChunk(&c);
-  c.count = 8;
-  c.capacity = 8;
+  Chunk *c = &f->chunk;
+  initChunk(c);
+  c->count = c->capacity = 8;
   u8 code[] = {
     OP_GET_LOCAL, 0,
     OP_GET_LOCAL, 1,
@@ -459,82 +358,55 @@ static Chunk chunk__dot__10() {
     OP_NIL,
     OP_RETURN,
   };
-  int lines[] = {
-    37, 37, 37, 37, 37, 37, 37, 37,
+  int lines[] = { 37, 37, 37, 37, 37, 37, 37, 37,};
+  c->code = cloneMemory(code, sizeof(code));
+  c->lines = cloneMemory(lines, sizeof(lines));
+
+  c->constants.count = c->constants.capacity = 0;
+  Value values[] = {
   };
-  c.code = cloneMemory(code, sizeof(code));
-  c.lines = cloneMemory(lines, sizeof(lines));
-  c.constants = constants__dot__10();
-
-  return c;
-};
-
-             // .
-static Value fn__dot__10() {
-  ObjFunction *f = newFunction();  f->arity = 1;
-  f->upvalueCount = 0;
-  f->name = newString(".");
-  f->chunk = chunk__dot__10();
+  c->constants.values = cloneMemory(values, sizeof(values));
   return obj(f);
 }
 
-static ValueArray constants_inspect_11() {
-  ValueArray vals;
-  initValueArray(&vals);
-  vals.count = vals.capacity = 1;
-  Value values[] = {
-    string("{}"),
-  };
-  vals.values = cloneMemory(values, sizeof(values));
-  return vals;
-}
+             // inspect
+static Value fn_inspect_11() {
+  ObjFunction *f = newFunction();
+  f->arity = 0;
+  f->upvalueCount = 0;
+  f->name = newString("inspect");
 
-static Chunk chunk_inspect_11() {
-  Chunk c;
-  initChunk(&c);
-  c.count = 5;
-  c.capacity = 5;
+  Chunk *c = &f->chunk;
+  initChunk(c);
+  c->count = c->capacity = 5;
   u8 code[] = {
     OP_CONSTANT, 0,
     OP_RETURN,
     OP_NIL,
     OP_RETURN,
   };
-  int lines[] = {
-    40, 40, 40, 40, 40,
+  int lines[] = { 40, 40, 40, 40, 40,};
+  c->code = cloneMemory(code, sizeof(code));
+  c->lines = cloneMemory(lines, sizeof(lines));
+
+  c->constants.count = c->constants.capacity = 1;
+  Value values[] = {
+    string("{}"),
   };
-  c.code = cloneMemory(code, sizeof(code));
-  c.lines = cloneMemory(lines, sizeof(lines));
-  c.constants = constants_inspect_11();
-
-  return c;
-};
-
-             // inspect
-static Value fn_inspect_11() {
-  ObjFunction *f = newFunction();  f->arity = 0;
-  f->upvalueCount = 0;
-  f->name = newString("inspect");
-  f->chunk = chunk_inspect_11();
+  c->constants.values = cloneMemory(values, sizeof(values));
   return obj(f);
 }
 
-static ValueArray constants_init_12() {
-  ValueArray vals;
-  initValueArray(&vals);
-  vals.count = vals.capacity = 3;
-  Value values[] = {
-    string("type"), string("value"), string("targets"),
-  };
-  vals.values = cloneMemory(values, sizeof(values));
-  return vals;
-}
+             // init
+static Value fn_init_12() {
+  ObjFunction *f = newFunction();
+  f->arity = 3;
+  f->upvalueCount = 0;
+  f->name = newString("init");
 
-static Chunk chunk_init_12() {
-  Chunk c;
-  initChunk(&c);
-  c.count = 24;
-  c.capacity = 24;
+  Chunk *c = &f->chunk;
+  initChunk(c);
+  c->count = c->capacity = 24;
   u8 code[] = {
     OP_GET_LOCAL, 0,
     OP_GET_LOCAL, 1,
@@ -551,41 +423,30 @@ static Chunk chunk_init_12() {
     OP_GET_LOCAL, 0,
     OP_RETURN,
   };
-  int lines[] = {
-    42, 42, 42, 42, 42, 42, 42, 42, 42, 42, 42, 42, 42, 42, 42, 42, 42, 42, 42, 42, 42, 42, 42, 42,
+  int lines[] = { 42, 42, 42, 42, 42, 42, 42, 42, 42, 42, 42, 42, 42, 42, 42, 42, 42, 42, 42, 42, 42, 42, 42, 42,};
+  c->code = cloneMemory(code, sizeof(code));
+  c->lines = cloneMemory(lines, sizeof(lines));
+
+  c->constants.count = c->constants.capacity = 3;
+  Value values[] = {
+    string("type"),
+    string("value"),
+    string("targets"),
   };
-  c.code = cloneMemory(code, sizeof(code));
-  c.lines = cloneMemory(lines, sizeof(lines));
-  c.constants = constants_init_12();
-
-  return c;
-};
-
-             // init
-static Value fn_init_12() {
-  ObjFunction *f = newFunction();  f->arity = 3;
-  f->upvalueCount = 0;
-  f->name = newString("init");
-  f->chunk = chunk_init_12();
+  c->constants.values = cloneMemory(values, sizeof(values));
   return obj(f);
 }
 
-static ValueArray constants_src_slash_lita_slash_lib_slash_core_dot_lita_0() {
-  ValueArray vals;
-  initValueArray(&vals);
-  vals.count = vals.capacity = 33;
-  Value values[] = {
-    string("Nil"), string("Any"), string("string"), fn_string_1(), string("dump"), fn_dump_2(), string("Object"), string("fn_id"), NUMBER_VAL(0.000000), string("Function"), fn_dump_3(), string("dump_global"), fn_dump_global_4(), string("Method"), string("NativeFunction"), string("Class"), string("Bool"), fn_string_5(), string("print"), fn_print_6(), fn_dump_7(), string("Number"), fn_dump_8(), fn_print_9(), string(""), fn__dot__10(), string("Table"), string("inspect"), fn_inspect_11(), string("Atom"), fn_init_12(), string("init"), string("script return value"),
-  };
-  vals.values = cloneMemory(values, sizeof(values));
-  return vals;
-}
+             // src/lita/lib/core.lita
+static Value fn_src_slash_lita_slash_lib_slash_core_dot_lita_0() {
+  ObjFunction *f = newFunction();
+  f->arity = 0;
+  f->upvalueCount = 0;
+  f->name = newString("src/lita/lib/core.lita");
 
-static Chunk chunk_src_slash_lita_slash_lib_slash_core_dot_lita_0() {
-  Chunk c;
-  initChunk(&c);
-  c.count = 178;
-  c.capacity = 178;
+  Chunk *c = &f->chunk;
+  initChunk(c);
+  c->count = c->capacity = 178;
   u8 code[] = {
     OP_CLASS, 0, 0,
     OP_GET_LOCAL, 0,
@@ -687,22 +548,47 @@ static Chunk chunk_src_slash_lita_slash_lib_slash_core_dot_lita_0() {
     OP_ASSERT_STACK, 32, 2,
     OP_RETURN,
   };
-  int lines[] = {
-    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 3, 3, 3, 3, 3, 3, 3, 3, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 12, 12, 12, 12, 12, 12, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 16, 16, 16, 16, 23, 23, 23, 23, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 27, 27, 27, 27, 27, 27, 27, 27, 27, 27, 27, 27, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 31, 31, 31, 31, 32, 32, 32, 32, 32, 32, 32, 32, 34, 34, 34, 34, 34, 34, 34, 34, 34, 34, 34, 34, 36, 36, 36, 36, 37, 37, 37, 37, 37, 37, 37, 37, 39, 39, 39, 39, 39, 39, 39, 39, 39, 39, 39, 39, 40, 40, 40, 40, 42, 42, 42, 42, 42, 42, 42, 42, 42, 42, 42, 42, 42, 42, 42, 42, 43, 43, 43, 43, 43, 43, 43, 43,
+  int lines[] = { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 3, 3, 3, 3, 3, 3, 3, 3, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 12, 12, 12, 12, 12, 12, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 16, 16, 16, 16, 23, 23, 23, 23, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 27, 27, 27, 27, 27, 27, 27, 27, 27, 27, 27, 27, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 31, 31, 31, 31, 32, 32, 32, 32, 32, 32, 32, 32, 34, 34, 34, 34, 34, 34, 34, 34, 34, 34, 34, 34, 36, 36, 36, 36, 37, 37, 37, 37, 37, 37, 37, 37, 39, 39, 39, 39, 39, 39, 39, 39, 39, 39, 39, 39, 40, 40, 40, 40, 42, 42, 42, 42, 42, 42, 42, 42, 42, 42, 42, 42, 42, 42, 42, 42, 43, 43, 43, 43, 43, 43, 43, 43,};
+  c->code = cloneMemory(code, sizeof(code));
+  c->lines = cloneMemory(lines, sizeof(lines));
+
+  c->constants.count = c->constants.capacity = 33;
+  Value values[] = {
+    string("Nil"),
+    string("Any"),
+    string("string"),
+    fn_string_1(),
+    string("dump"),
+    fn_dump_2(),
+    string("Object"),
+    string("fn_id"),
+    NUMBER_VAL(0),
+    string("Function"),
+    fn_dump_3(),
+    string("dump_global"),
+    fn_dump_global_4(),
+    string("Method"),
+    string("NativeFunction"),
+    string("Class"),
+    string("Bool"),
+    fn_string_5(),
+    string("print"),
+    fn_print_6(),
+    fn_dump_7(),
+    string("Number"),
+    fn_dump_8(),
+    fn_print_9(),
+    string(""),
+    fn__dot__10(),
+    string("Table"),
+    string("inspect"),
+    fn_inspect_11(),
+    string("Atom"),
+    fn_init_12(),
+    string("init"),
+    string("script return value"),
   };
-  c.code = cloneMemory(code, sizeof(code));
-  c.lines = cloneMemory(lines, sizeof(lines));
-  c.constants = constants_src_slash_lita_slash_lib_slash_core_dot_lita_0();
-
-  return c;
-};
-
-             // src/lita/lib/core.lita
-static Value fn_src_slash_lita_slash_lib_slash_core_dot_lita_0() {
-  ObjFunction *f = newFunction();  f->arity = 0;
-  f->upvalueCount = 0;
-  f->name = newString("src/lita/lib/core.lita");
-  f->chunk = chunk_src_slash_lita_slash_lib_slash_core_dot_lita_0();
+  c->constants.values = cloneMemory(values, sizeof(values));
   return obj(f);
 }
 

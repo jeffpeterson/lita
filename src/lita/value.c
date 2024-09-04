@@ -58,7 +58,7 @@ int inspect_value(FILE *io, Value val) {
   return 0;
 }
 
-const char *inspectc(let val) { return as_string(inspect(val))->chars; }
+const char *inspectc(let val) { return asChars(inspect(val)); }
 
 let inspect(let val) {
   char *str = NULL;
