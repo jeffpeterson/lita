@@ -64,4 +64,5 @@ ObjDef Function = {
     .free = freeFunction,
     .inspect = inspectFunction,
     .length = functionLength,
+    .dump = dumpFunction,
 };
