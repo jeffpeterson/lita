@@ -95,19 +95,16 @@ NATIVE_METHOD(Tuple, map, 1) {
   if (i < tuple->length) {
     push(fun);
     push(tuple->values[i]);
-    vm_call(1);
+    if (arity(fun) == 2) {
+      push(number(i));
+      vm_call(2);
+    } else vm_call(1);
     return VOID;
   } else {
     vm_tuple(tuple->length);
     return pop();
   }
 }
-
-// NATIVE_METHOD_NAMED(Tuple, star, "*", 1) {
-//   if (is_tuple(args[0]))
-//     return obj(zip_tuples(asTuple(this), asTuple(args[0]), multiply));
-//   else return Tuple_map(this, argc, args);
-// }
 
 static void markTuple(Obj *obj) {
   ObjTuple *tuple = (ObjTuple *)obj;

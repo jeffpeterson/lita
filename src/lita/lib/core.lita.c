@@ -16,7 +16,7 @@ static ValueArray constants_string_1() {
   initValueArray(&vals);
   vals.count = vals.capacity = 1;
   Value values[] = {
-    str(""),
+    string(""),
   };
   vals.values = cloneMemory(values, sizeof(values));
   return vals;
@@ -57,7 +57,7 @@ static ValueArray constants_dump_2() {
   initValueArray(&vals);
   vals.count = vals.capacity = 1;
   Value values[] = {
-    str("nil"),
+    string("nil"),
   };
   vals.values = cloneMemory(values, sizeof(values));
   return vals;
@@ -98,7 +98,7 @@ static ValueArray constants_dump_3() {
   initValueArray(&vals);
   vals.count = vals.capacity = 5;
   Value values[] = {
-    str("/*"), str("name"), str("*/fn"), str("id"), str("()"),
+    string("/*"), string("name"), string("*/fn"), string("id"), string("()"),
   };
   vals.values = cloneMemory(values, sizeof(values));
   return vals;
@@ -149,7 +149,7 @@ static ValueArray constants_dump_global_4() {
   initValueArray(&vals);
   vals.count = vals.capacity = 11;
   Value values[] = {
-    str("\n"), str("// "), str("name"), str("static ValueArray constants"), str("id"), str("() {\n"), str("  ValueArray vals;\n"), str("  initValueArray(&vals);\n"), str("  vals.count = vals.capacity = "), str(";\n"), str("  Value values[] = {"),
+    string("\n"), string("// "), string("name"), string("static ValueArray constants"), string("id"), string("() {\n"), string("  ValueArray vals;\n"), string("  initValueArray(&vals);\n"), string("  vals.count = vals.capacity = "), string(";\n"), string("  Value values[] = {"),
   };
   vals.values = cloneMemory(values, sizeof(values));
   return vals;
@@ -214,7 +214,7 @@ static ValueArray constants_string_5() {
   initValueArray(&vals);
   vals.count = vals.capacity = 2;
   Value values[] = {
-    str("true"), str("false"),
+    string("true"), string("false"),
   };
   vals.values = cloneMemory(values, sizeof(values));
   return vals;
@@ -261,7 +261,7 @@ static ValueArray constants_print_6() {
   initValueArray(&vals);
   vals.count = vals.capacity = 2;
   Value values[] = {
-    str("write"), str("string"),
+    string("write"), string("string"),
   };
   vals.values = cloneMemory(values, sizeof(values));
   return vals;
@@ -305,7 +305,7 @@ static ValueArray constants_dump_7() {
   initValueArray(&vals);
   vals.count = vals.capacity = 2;
   Value values[] = {
-    str("TRUE_VAL"), str("FALSE_VAL"),
+    string("TRUE_VAL"), string("FALSE_VAL"),
   };
   vals.values = cloneMemory(values, sizeof(values));
   return vals;
@@ -352,7 +352,7 @@ static ValueArray constants_dump_8() {
   initValueArray(&vals);
   vals.count = vals.capacity = 3;
   Value values[] = {
-    str("NUMBER_VAL("), str("string"), str(")"),
+    string("NUMBER_VAL("), string("string"), string(")"),
   };
   vals.values = cloneMemory(values, sizeof(values));
   return vals;
@@ -398,7 +398,7 @@ static ValueArray constants_print_9() {
   initValueArray(&vals);
   vals.count = vals.capacity = 2;
   Value values[] = {
-    str("write"), str("string"),
+    string("write"), string("string"),
   };
   vals.values = cloneMemory(values, sizeof(values));
   return vals;
@@ -483,7 +483,7 @@ static ValueArray constants_inspect_11() {
   initValueArray(&vals);
   vals.count = vals.capacity = 1;
   Value values[] = {
-    str("{}"),
+    string("{}"),
   };
   vals.values = cloneMemory(values, sizeof(values));
   return vals;
@@ -524,7 +524,7 @@ static ValueArray constants_init_12() {
   initValueArray(&vals);
   vals.count = vals.capacity = 3;
   Value values[] = {
-    str("type"), str("value"), str("targets"),
+    string("type"), string("value"), string("targets"),
   };
   vals.values = cloneMemory(values, sizeof(values));
   return vals;
@@ -575,7 +575,7 @@ static ValueArray constants_src_slash_lita_slash_lib_slash_core_dot_lita_0() {
   initValueArray(&vals);
   vals.count = vals.capacity = 33;
   Value values[] = {
-    str("Nil"), str("Any"), str("string"), fn_string_1(), str("dump"), fn_dump_2(), str("Object"), str("fn_id"), NUMBER_VAL(0.000000), str("Function"), fn_dump_3(), str("dump_global"), fn_dump_global_4(), str("Method"), str("NativeFunction"), str("Class"), str("Bool"), fn_string_5(), str("print"), fn_print_6(), fn_dump_7(), str("Number"), fn_dump_8(), fn_print_9(), str(""), fn__dot__10(), str("Table"), str("inspect"), fn_inspect_11(), str("Atom"), fn_init_12(), str("init"), str("script return value"),
+    string("Nil"), string("Any"), string("string"), fn_string_1(), string("dump"), fn_dump_2(), string("Object"), string("fn_id"), NUMBER_VAL(0.000000), string("Function"), fn_dump_3(), string("dump_global"), fn_dump_global_4(), string("Method"), string("NativeFunction"), string("Class"), string("Bool"), fn_string_5(), string("print"), fn_print_6(), fn_dump_7(), string("Number"), fn_dump_8(), fn_print_9(), string(""), fn__dot__10(), string("Table"), string("inspect"), fn_inspect_11(), string("Atom"), fn_init_12(), string("init"), string("script return value"),
   };
   vals.values = cloneMemory(values, sizeof(values));
   return vals;

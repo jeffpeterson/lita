@@ -16,7 +16,7 @@ static ValueArray constants_reset_scanner_1() {
   initValueArray(&vals);
   vals.count = vals.capacity = 3;
   Value values[] = {
-    str("scanner"), str("Scanner"), str("source"),
+    string("scanner"), string("Scanner"), string("source"),
   };
   vals.values = cloneMemory(values, sizeof(values));
   return vals;
@@ -61,7 +61,7 @@ static ValueArray constants_init_2() {
   initValueArray(&vals);
   vals.count = vals.capacity = 4;
   Value values[] = {
-    str("type"), str("escaped"), str("source"), str("line"),
+    string("type"), string("escaped"), string("source"), string("line"),
   };
   vals.values = cloneMemory(values, sizeof(values));
   return vals;
@@ -316,7 +316,7 @@ static ValueArray constants_indent_8() {
   initValueArray(&vals);
   vals.count = vals.capacity = 1;
   Value values[] = {
-    str("Indent"),
+    string("Indent"),
   };
   vals.values = cloneMemory(values, sizeof(values));
   return vals;
@@ -358,7 +358,7 @@ static ValueArray constants_init_9() {
   initValueArray(&vals);
   vals.count = vals.capacity = 3;
   Value values[] = {
-    str("source"), str("skip_shebang"), str("skip_whitespace"),
+    string("source"), string("skip_shebang"), string("skip_whitespace"),
   };
   vals.values = cloneMemory(values, sizeof(values));
   return vals;
@@ -407,7 +407,7 @@ static ValueArray constants_current_10() {
   initValueArray(&vals);
   vals.count = vals.capacity = 4;
   Value values[] = {
-    str("source"), str("span"), str("end"), NUMBER_VAL(1.000000),
+    string("source"), string("span"), string("end"), NUMBER_VAL(1.000000),
   };
   vals.values = cloneMemory(values, sizeof(values));
   return vals;
@@ -454,7 +454,7 @@ static ValueArray constants_is_at_end_11() {
   initValueArray(&vals);
   vals.count = vals.capacity = 5;
   Value values[] = {
-    str("position"), str("start"), str("end"), str("source"), str("length"),
+    string("position"), string("start"), string("end"), string("source"), string("length"),
   };
   vals.values = cloneMemory(values, sizeof(values));
   return vals;
@@ -506,7 +506,7 @@ static ValueArray constants_isAlpha_12() {
   initValueArray(&vals);
   vals.count = vals.capacity = 6;
   Value values[] = {
-    str("in"), str("a"), str("z"), str("A"), str("Z"), str("_'"),
+    string("in"), string("a"), string("z"), string("A"), string("Z"), string("_'"),
   };
   vals.values = cloneMemory(values, sizeof(values));
   return vals;
@@ -566,7 +566,7 @@ static ValueArray constants_isDigit_13() {
   initValueArray(&vals);
   vals.count = vals.capacity = 3;
   Value values[] = {
-    str("in"), str("0"), str("9"),
+    string("in"), string("0"), string("9"),
   };
   vals.values = cloneMemory(values, sizeof(values));
   return vals;
@@ -612,7 +612,7 @@ static ValueArray constants_isSubscript_14() {
   initValueArray(&vals);
   vals.count = vals.capacity = 3;
   Value values[] = {
-    str("in"), NUMBER_VAL(8320.000000), NUMBER_VAL(8329.000000),
+    string("in"), NUMBER_VAL(8320.000000), NUMBER_VAL(8329.000000),
   };
   vals.values = cloneMemory(values, sizeof(values));
   return vals;
@@ -658,7 +658,7 @@ static ValueArray constants_src_slash_lita_slash_scanner_dot_lita_0() {
   initValueArray(&vals);
   vals.count = vals.capacity = 32;
   Value values[] = {
-    str("scanner"), str("reset_scanner"), fn_reset_scanner_1(), str("Token"), fn_init_2(), str("init"), str("Object"), str("Indent"), str("previous"), fn_previous_3(), str("current"), fn_current_4(), str("inside"), fn_inside_5(), str("Scanner"), str("position"), fn_position_6(), str("line"), fn_line_7(), str("indent"), fn_indent_8(), fn_init_9(), fn_current_10(), str("is_at_end"), fn_is_at_end_11(), str("isAlpha"), fn_isAlpha_12(), str("isDigit"), fn_isDigit_13(), str("isSubscript"), fn_isSubscript_14(), str("script return value"),
+    string("scanner"), string("reset_scanner"), fn_reset_scanner_1(), string("Token"), fn_init_2(), string("init"), string("Object"), string("Indent"), string("previous"), fn_previous_3(), string("current"), fn_current_4(), string("inside"), fn_inside_5(), string("Scanner"), string("position"), fn_position_6(), string("line"), fn_line_7(), string("indent"), fn_indent_8(), fn_init_9(), fn_current_10(), string("is_at_end"), fn_is_at_end_11(), string("isAlpha"), fn_isAlpha_12(), string("isDigit"), fn_isDigit_13(), string("isSubscript"), fn_isSubscript_14(), string("script return value"),
   };
   vals.values = cloneMemory(values, sizeof(values));
   return vals;

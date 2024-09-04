@@ -16,7 +16,7 @@ static ValueArray constants__slash__1() {
   initValueArray(&vals);
   vals.count = vals.capacity = 1;
   Value values[] = {
-    str("/"),
+    string("/"),
   };
   vals.values = cloneMemory(values, sizeof(values));
   return vals;
@@ -61,7 +61,7 @@ static ValueArray constants_bold_2() {
   initValueArray(&vals);
   vals.count = vals.capacity = 2;
   Value values[] = {
-    str("\e[1m"), str("\e[21m"),
+    string("\e[1m"), string("\e[21m"),
   };
   vals.values = cloneMemory(values, sizeof(values));
   return vals;
@@ -106,7 +106,7 @@ static ValueArray constants_dim_3() {
   initValueArray(&vals);
   vals.count = vals.capacity = 2;
   Value values[] = {
-    str("\e[2m"), str("\e[22m"),
+    string("\e[2m"), string("\e[22m"),
   };
   vals.values = cloneMemory(values, sizeof(values));
   return vals;
@@ -151,7 +151,7 @@ static ValueArray constants_italic_4() {
   initValueArray(&vals);
   vals.count = vals.capacity = 2;
   Value values[] = {
-    str("\e[3m"), str("\e[23m"),
+    string("\e[3m"), string("\e[23m"),
   };
   vals.values = cloneMemory(values, sizeof(values));
   return vals;
@@ -196,7 +196,7 @@ static ValueArray constants_underline_5() {
   initValueArray(&vals);
   vals.count = vals.capacity = 2;
   Value values[] = {
-    str("\e[4m"), str("\e[24m"),
+    string("\e[4m"), string("\e[24m"),
   };
   vals.values = cloneMemory(values, sizeof(values));
   return vals;
@@ -241,7 +241,7 @@ static ValueArray constants_invert_6() {
   initValueArray(&vals);
   vals.count = vals.capacity = 2;
   Value values[] = {
-    str("\e[7m"), str("\e[27m"),
+    string("\e[7m"), string("\e[27m"),
   };
   vals.values = cloneMemory(values, sizeof(values));
   return vals;
@@ -286,7 +286,7 @@ static ValueArray constants_hide_7() {
   initValueArray(&vals);
   vals.count = vals.capacity = 2;
   Value values[] = {
-    str("\e[8m"), str("\e[28m"),
+    string("\e[8m"), string("\e[28m"),
   };
   vals.values = cloneMemory(values, sizeof(values));
   return vals;
@@ -331,7 +331,7 @@ static ValueArray constants_strike_8() {
   initValueArray(&vals);
   vals.count = vals.capacity = 2;
   Value values[] = {
-    str("\e[9m"), str("\e[29m"),
+    string("\e[9m"), string("\e[29m"),
   };
   vals.values = cloneMemory(values, sizeof(values));
   return vals;
@@ -376,7 +376,7 @@ static ValueArray constants_black_9() {
   initValueArray(&vals);
   vals.count = vals.capacity = 2;
   Value values[] = {
-    str("\e[30m"), str("\e[39m"),
+    string("\e[30m"), string("\e[39m"),
   };
   vals.values = cloneMemory(values, sizeof(values));
   return vals;
@@ -421,7 +421,7 @@ static ValueArray constants_red_10() {
   initValueArray(&vals);
   vals.count = vals.capacity = 2;
   Value values[] = {
-    str("\e[31m"), str("\e[39m"),
+    string("\e[31m"), string("\e[39m"),
   };
   vals.values = cloneMemory(values, sizeof(values));
   return vals;
@@ -466,7 +466,7 @@ static ValueArray constants_green_11() {
   initValueArray(&vals);
   vals.count = vals.capacity = 2;
   Value values[] = {
-    str("\e[32m"), str("\e[39m"),
+    string("\e[32m"), string("\e[39m"),
   };
   vals.values = cloneMemory(values, sizeof(values));
   return vals;
@@ -511,7 +511,7 @@ static ValueArray constants_yellow_12() {
   initValueArray(&vals);
   vals.count = vals.capacity = 2;
   Value values[] = {
-    str("\e[33m"), str("\e[39m"),
+    string("\e[33m"), string("\e[39m"),
   };
   vals.values = cloneMemory(values, sizeof(values));
   return vals;
@@ -556,7 +556,7 @@ static ValueArray constants_blue_13() {
   initValueArray(&vals);
   vals.count = vals.capacity = 2;
   Value values[] = {
-    str("\e[34m"), str("\e[39m"),
+    string("\e[34m"), string("\e[39m"),
   };
   vals.values = cloneMemory(values, sizeof(values));
   return vals;
@@ -601,7 +601,7 @@ static ValueArray constants_magenta_14() {
   initValueArray(&vals);
   vals.count = vals.capacity = 2;
   Value values[] = {
-    str("\e[35m"), str("\e[39m"),
+    string("\e[35m"), string("\e[39m"),
   };
   vals.values = cloneMemory(values, sizeof(values));
   return vals;
@@ -646,7 +646,7 @@ static ValueArray constants_cyan_15() {
   initValueArray(&vals);
   vals.count = vals.capacity = 2;
   Value values[] = {
-    str("\e[36m"), str("\e[39m"),
+    string("\e[36m"), string("\e[39m"),
   };
   vals.values = cloneMemory(values, sizeof(values));
   return vals;
@@ -691,7 +691,7 @@ static ValueArray constants_white_16() {
   initValueArray(&vals);
   vals.count = vals.capacity = 2;
   Value values[] = {
-    str("\e[37m"), str("\e[39m"),
+    string("\e[37m"), string("\e[39m"),
   };
   vals.values = cloneMemory(values, sizeof(values));
   return vals;
@@ -736,7 +736,7 @@ static ValueArray constants_bg_black_17() {
   initValueArray(&vals);
   vals.count = vals.capacity = 2;
   Value values[] = {
-    str("\e[40m"), str("\e[39m"),
+    string("\e[40m"), string("\e[39m"),
   };
   vals.values = cloneMemory(values, sizeof(values));
   return vals;
@@ -781,7 +781,7 @@ static ValueArray constants_bg_red_18() {
   initValueArray(&vals);
   vals.count = vals.capacity = 2;
   Value values[] = {
-    str("\e[41m"), str("\e[39m"),
+    string("\e[41m"), string("\e[39m"),
   };
   vals.values = cloneMemory(values, sizeof(values));
   return vals;
@@ -826,7 +826,7 @@ static ValueArray constants_bg_green_19() {
   initValueArray(&vals);
   vals.count = vals.capacity = 2;
   Value values[] = {
-    str("\e[42m"), str("\e[39m"),
+    string("\e[42m"), string("\e[39m"),
   };
   vals.values = cloneMemory(values, sizeof(values));
   return vals;
@@ -871,7 +871,7 @@ static ValueArray constants_bg_yellow_20() {
   initValueArray(&vals);
   vals.count = vals.capacity = 2;
   Value values[] = {
-    str("\e[43m"), str("\e[39m"),
+    string("\e[43m"), string("\e[39m"),
   };
   vals.values = cloneMemory(values, sizeof(values));
   return vals;
@@ -916,7 +916,7 @@ static ValueArray constants_bg_blue_21() {
   initValueArray(&vals);
   vals.count = vals.capacity = 2;
   Value values[] = {
-    str("\e[44m"), str("\e[39m"),
+    string("\e[44m"), string("\e[39m"),
   };
   vals.values = cloneMemory(values, sizeof(values));
   return vals;
@@ -961,7 +961,7 @@ static ValueArray constants_bg_magenta_22() {
   initValueArray(&vals);
   vals.count = vals.capacity = 2;
   Value values[] = {
-    str("\e[45m"), str("\e[39m"),
+    string("\e[45m"), string("\e[39m"),
   };
   vals.values = cloneMemory(values, sizeof(values));
   return vals;
@@ -1006,7 +1006,7 @@ static ValueArray constants_bg_cyan_23() {
   initValueArray(&vals);
   vals.count = vals.capacity = 2;
   Value values[] = {
-    str("\e[46m"), str("\e[39m"),
+    string("\e[46m"), string("\e[39m"),
   };
   vals.values = cloneMemory(values, sizeof(values));
   return vals;
@@ -1051,7 +1051,7 @@ static ValueArray constants_bg_white_24() {
   initValueArray(&vals);
   vals.count = vals.capacity = 2;
   Value values[] = {
-    str("\e[47m"), str("\e[39m"),
+    string("\e[47m"), string("\e[39m"),
   };
   vals.values = cloneMemory(values, sizeof(values));
   return vals;
@@ -1096,7 +1096,7 @@ static ValueArray constants_uppercase_25() {
   initValueArray(&vals);
   vals.count = vals.capacity = 3;
   Value values[] = {
-    str("replace"), regex("[a-z]+"), str("\\U$0"),
+    string("replace"), regex("\\w+"), string("\\U$0"),
   };
   vals.values = cloneMemory(values, sizeof(values));
   return vals;
@@ -1141,7 +1141,7 @@ static ValueArray constants_lowercase_26() {
   initValueArray(&vals);
   vals.count = vals.capacity = 3;
   Value values[] = {
-    str("replace"), regex("[A-Z]+"), str("\\L$0"),
+    string("replace"), regex("\\w+"), string("\\L$0"),
   };
   vals.values = cloneMemory(values, sizeof(values));
   return vals;
@@ -1186,7 +1186,7 @@ static ValueArray constants_capitalize_27() {
   initValueArray(&vals);
   vals.count = vals.capacity = 3;
   Value values[] = {
-    str("replace"), regex("^(\\W*?)([a-z])"), str("$1\\u$2"),
+    string("replace"), regex("^(\\W*?)([a-z])"), string("$1\\u$2"),
   };
   vals.values = cloneMemory(values, sizeof(values));
   return vals;
@@ -1231,7 +1231,7 @@ static ValueArray constants_decapitalize_28() {
   initValueArray(&vals);
   vals.count = vals.capacity = 3;
   Value values[] = {
-    str("replace"), regex("^(\\W*?)([A-Z])"), str("$1\\l$2"),
+    string("replace"), regex("^(\\W*?)([A-Z])"), string("$1\\l$2"),
   };
   vals.values = cloneMemory(values, sizeof(values));
   return vals;
@@ -1276,7 +1276,7 @@ static ValueArray constants_camelize_29() {
   initValueArray(&vals);
   vals.count = vals.capacity = 3;
   Value values[] = {
-    str("replace"), regex("_(\\w)"), str("\\u$1"),
+    string("replace"), regex("_(\\w)"), string("\\u$1"),
   };
   vals.values = cloneMemory(values, sizeof(values));
   return vals;
@@ -1319,9 +1319,9 @@ static Value fn_camelize_29() {
 static ValueArray constants_underscore_30() {
   ValueArray vals;
   initValueArray(&vals);
-  vals.count = vals.capacity = 4;
+  vals.count = vals.capacity = 6;
   Value values[] = {
-    str("decapitalize"), str("replace"), regex("([a-z])([A-Z])"), str("$1_\\l$2"),
+    string("replace"), regex("([a-zA-Z])([A-Z][a-z])"), string("$1_\\l$2"), regex("-"), string("_"), string("lowercase"),
   };
   vals.values = cloneMemory(values, sizeof(values));
   return vals;
@@ -1330,20 +1330,24 @@ static ValueArray constants_underscore_30() {
 static Chunk chunk_underscore_30() {
   Chunk c;
   initChunk(&c);
-  c.count = 14;
-  c.capacity = 14;
+  c.count = 22;
+  c.capacity = 22;
   u8 code[] = {
     OP_GET_LOCAL, 0,
     OP_GET_VAR, 0,
+    OP_CONSTANT, 1,
     OP_CONSTANT, 2,
+    OP_CALL, 2,
     OP_CONSTANT, 3,
-    OP_INVOKE, 1, 2,
+    OP_CONSTANT, 4,
+    OP_INVOKE, 0, 2,
+    OP_GET_PROPERTY, 5,
     OP_RETURN,
     OP_NIL,
     OP_RETURN,
   };
   int lines[] = {
-    35, 35, 35, 35, 35, 35, 35, 35, 35, 35, 35, 35, 36, 36,
+    35, 35, 35, 35, 35, 35, 35, 35, 35, 35, 35, 35, 35, 35, 35, 35, 35, 35, 35, 35, 36, 36,
   };
   c.code = cloneMemory(code, sizeof(code));
   c.lines = cloneMemory(lines, sizeof(lines));
@@ -1366,7 +1370,7 @@ static ValueArray constants_dasherize_31() {
   initValueArray(&vals);
   vals.count = vals.capacity = 4;
   Value values[] = {
-    str("underscore"), str("replace"), regex("_"), str("-"),
+    string("underscore"), string("replace"), regex("_"), string("-"),
   };
   vals.values = cloneMemory(values, sizeof(values));
   return vals;
@@ -1411,7 +1415,7 @@ static ValueArray constants_print_32() {
   initValueArray(&vals);
   vals.count = vals.capacity = 1;
   Value values[] = {
-    str("write"),
+    string("write"),
   };
   vals.values = cloneMemory(values, sizeof(values));
   return vals;
@@ -1454,7 +1458,7 @@ static ValueArray constants_src_slash_lita_slash_string_dot_lita_0() {
   initValueArray(&vals);
   vals.count = vals.capacity = 67;
   Value values[] = {
-    str("String"), str("Object"), str("/"), fn__slash__1(), str("bold"), fn_bold_2(), str("dim"), fn_dim_3(), str("italic"), fn_italic_4(), str("underline"), fn_underline_5(), str("invert"), fn_invert_6(), str("hide"), fn_hide_7(), str("strike"), fn_strike_8(), str("black"), fn_black_9(), str("red"), fn_red_10(), str("green"), fn_green_11(), str("yellow"), fn_yellow_12(), str("blue"), fn_blue_13(), str("magenta"), fn_magenta_14(), str("cyan"), fn_cyan_15(), str("white"), fn_white_16(), str("bg_black"), fn_bg_black_17(), str("bg_red"), fn_bg_red_18(), str("bg_green"), fn_bg_green_19(), str("bg_yellow"), fn_bg_yellow_20(), str("bg_blue"), fn_bg_blue_21(), str("bg_magenta"), fn_bg_magenta_22(), str("bg_cyan"), fn_bg_cyan_23(), str("bg_white"), fn_bg_white_24(), str("uppercase"), fn_uppercase_25(), str("lowercase"), fn_lowercase_26(), str("capitalize"), fn_capitalize_27(), str("decapitalize"), fn_decapitalize_28(), str("camelize"), fn_camelize_29(), str("underscore"), fn_underscore_30(), str("dasherize"), fn_dasherize_31(), str("print"), fn_print_32(), str("script return value"),
+    string("String"), string("Object"), string("/"), fn__slash__1(), string("bold"), fn_bold_2(), string("dim"), fn_dim_3(), string("italic"), fn_italic_4(), string("underline"), fn_underline_5(), string("invert"), fn_invert_6(), string("hide"), fn_hide_7(), string("strike"), fn_strike_8(), string("black"), fn_black_9(), string("red"), fn_red_10(), string("green"), fn_green_11(), string("yellow"), fn_yellow_12(), string("blue"), fn_blue_13(), string("magenta"), fn_magenta_14(), string("cyan"), fn_cyan_15(), string("white"), fn_white_16(), string("bg_black"), fn_bg_black_17(), string("bg_red"), fn_bg_red_18(), string("bg_green"), fn_bg_green_19(), string("bg_yellow"), fn_bg_yellow_20(), string("bg_blue"), fn_bg_blue_21(), string("bg_magenta"), fn_bg_magenta_22(), string("bg_cyan"), fn_bg_cyan_23(), string("bg_white"), fn_bg_white_24(), string("uppercase"), fn_uppercase_25(), string("lowercase"), fn_lowercase_26(), string("capitalize"), fn_capitalize_27(), string("decapitalize"), fn_decapitalize_28(), string("camelize"), fn_camelize_29(), string("underscore"), fn_underscore_30(), string("dasherize"), fn_dasherize_31(), string("print"), fn_print_32(), string("script return value"),
   };
   vals.values = cloneMemory(values, sizeof(values));
   return vals;

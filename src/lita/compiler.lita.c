@@ -90,7 +90,7 @@ static ValueArray constants_src_slash_lita_slash_compiler_dot_lita_0() {
   initValueArray(&vals);
   vals.count = vals.capacity = 14;
   Value values[] = {
-    str("compile"), fn_compile_1(), str("markCompilerRoots"), fn_markCompilerRoots_2(), str("Parser"), str("Object"), str("current"), str("previous"), str("indebt"), str("hadError"), str("panicMode"), str("Context"), str("Compiler"), str("script return value"),
+    string("compile"), fn_compile_1(), string("markCompilerRoots"), fn_markCompilerRoots_2(), string("Parser"), string("Object"), string("current"), string("previous"), string("indebt"), string("hadError"), string("panicMode"), string("Context"), string("Compiler"), string("script return value"),
   };
   vals.values = cloneMemory(values, sizeof(values));
   return vals;

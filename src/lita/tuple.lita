@@ -6,4 +6,8 @@ class Tuple
 		while i < length
 			f(get(i++))
 
+	.zip(b, f)
+		fn zipEach(v, i) = f(v, b.get(i))
+		return map(zipEach)
+
 	.print(io) = each(.print(io))

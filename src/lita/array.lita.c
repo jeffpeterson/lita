@@ -16,7 +16,7 @@ static ValueArray constants__lt__lt__1() {
   initValueArray(&vals);
   vals.count = vals.capacity = 1;
   Value values[] = {
-    str("push"),
+    string("push"),
   };
   vals.values = cloneMemory(values, sizeof(values));
   return vals;
@@ -59,7 +59,7 @@ static ValueArray constants__eq__eq__2() {
   initValueArray(&vals);
   vals.count = vals.capacity = 8;
   Value values[] = {
-    str("length"), str("if condition"), str("object_id"), NUMBER_VAL(0.000000), str("while condition"), str("get"), NUMBER_VAL(1.000000), str("falsy while condition"),
+    string("length"), string("if condition"), string("object_id"), NUMBER_VAL(0.000000), string("while condition"), string("get"), NUMBER_VAL(1.000000), string("falsy while condition"),
   };
   vals.values = cloneMemory(values, sizeof(values));
   return vals;
@@ -162,7 +162,7 @@ static ValueArray constants_each_3() {
   initValueArray(&vals);
   vals.count = vals.capacity = 6;
   Value values[] = {
-    NUMBER_VAL(0.000000), str("length"), str("while condition"), str("get"), NUMBER_VAL(1.000000), str("falsy while condition"),
+    NUMBER_VAL(0.000000), string("length"), string("while condition"), string("get"), NUMBER_VAL(1.000000), string("falsy while condition"),
   };
   vals.values = cloneMemory(values, sizeof(values));
   return vals;
@@ -225,7 +225,7 @@ static ValueArray constants_map_4() {
   initValueArray(&vals);
   vals.count = vals.capacity = 7;
   Value values[] = {
-    NUMBER_VAL(0.000000), str("length"), str("while condition"), str("get"), NUMBER_VAL(1.000000), str("<<"), str("falsy while condition"),
+    NUMBER_VAL(0.000000), string("length"), string("while condition"), string("get"), NUMBER_VAL(1.000000), string("<<"), string("falsy while condition"),
   };
   vals.values = cloneMemory(values, sizeof(values));
   return vals;
@@ -294,7 +294,7 @@ static ValueArray constants__dot_print_6() {
   initValueArray(&vals);
   vals.count = vals.capacity = 1;
   Value values[] = {
-    str("print"),
+    string("print"),
   };
   vals.values = cloneMemory(values, sizeof(values));
   return vals;
@@ -335,7 +335,7 @@ static ValueArray constants_print_5() {
   initValueArray(&vals);
   vals.count = vals.capacity = 2;
   Value values[] = {
-    str("each"), fn__dot_print_6(),
+    string("each"), fn__dot_print_6(),
   };
   vals.values = cloneMemory(values, sizeof(values));
   return vals;
@@ -379,7 +379,7 @@ static ValueArray constants_src_slash_lita_slash_array_dot_lita_0() {
   initValueArray(&vals);
   vals.count = vals.capacity = 13;
   Value values[] = {
-    str("Array"), str("Object"), str("<<"), fn__lt__lt__1(), str("=="), fn__eq__eq__2(), str("each"), fn_each_3(), str("map"), fn_map_4(), str("print"), fn_print_5(), str("script return value"),
+    string("Array"), string("Object"), string("<<"), fn__lt__lt__1(), string("=="), fn__eq__eq__2(), string("each"), fn_each_3(), string("map"), fn_map_4(), string("print"), fn_print_5(), string("script return value"),
   };
   vals.values = cloneMemory(values, sizeof(values));
   return vals;

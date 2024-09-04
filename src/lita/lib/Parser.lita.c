@@ -16,7 +16,7 @@ static ValueArray constants_init_1() {
   initValueArray(&vals);
   vals.count = vals.capacity = 1;
   Value values[] = {
-    str("source"),
+    string("source"),
   };
   vals.values = cloneMemory(values, sizeof(values));
   return vals;
@@ -59,7 +59,7 @@ static ValueArray constants_src_slash_lita_slash_lib_slash_Parser_dot_lita_0() {
   initValueArray(&vals);
   vals.count = vals.capacity = 5;
   Value values[] = {
-    str("Parser"), str("Object"), str("init"), fn_init_1(), str("script return value"),
+    string("Parser"), string("Object"), string("init"), fn_init_1(), string("script return value"),
   };
   vals.values = cloneMemory(values, sizeof(values));
   return vals;

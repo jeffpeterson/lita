@@ -16,7 +16,7 @@ static ValueArray constants_inspect_1() {
   initValueArray(&vals);
   vals.count = vals.capacity = 5;
   Value values[] = {
-    str(""), str("start"), str("inspect"), str(".."), str("end"),
+    string(""), string("start"), string("inspect"), string(".."), string("end"),
   };
   vals.values = cloneMemory(values, sizeof(values));
   return vals;
@@ -67,7 +67,7 @@ static ValueArray constants_string_2() {
   initValueArray(&vals);
   vals.count = vals.capacity = 5;
   Value values[] = {
-    str(""), str("start"), str("string"), str(".."), str("end"),
+    string(""), string("start"), string("string"), string(".."), string("end"),
   };
   vals.values = cloneMemory(values, sizeof(values));
   return vals;
@@ -118,7 +118,7 @@ static ValueArray constants_length_3() {
   initValueArray(&vals);
   vals.count = vals.capacity = 2;
   Value values[] = {
-    str("end"), str("start"),
+    string("end"), string("start"),
   };
   vals.values = cloneMemory(values, sizeof(values));
   return vals;
@@ -163,7 +163,7 @@ static ValueArray constants_map_4() {
   initValueArray(&vals);
   vals.count = vals.capacity = 2;
   Value values[] = {
-    str("start"), str("end"),
+    string("start"), string("end"),
   };
   vals.values = cloneMemory(values, sizeof(values));
   return vals;
@@ -212,7 +212,7 @@ static ValueArray constants_src_slash_lita_slash_range_dot_lita_0() {
   initValueArray(&vals);
   vals.count = vals.capacity = 11;
   Value values[] = {
-    str("Range"), str("Object"), str("inspect"), fn_inspect_1(), str("string"), fn_string_2(), str("length"), fn_length_3(), str("map"), fn_map_4(), str("script return value"),
+    string("Range"), string("Object"), string("inspect"), fn_inspect_1(), string("string"), fn_string_2(), string("length"), fn_length_3(), string("map"), fn_map_4(), string("script return value"),
   };
   vals.values = cloneMemory(values, sizeof(values));
   return vals;

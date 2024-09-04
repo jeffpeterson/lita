@@ -16,7 +16,7 @@ static ValueArray constants_class_1() {
   initValueArray(&vals);
   vals.count = vals.capacity = 1;
   Value values[] = {
-    str("classOf"),
+    string("classOf"),
   };
   vals.values = cloneMemory(values, sizeof(values));
   return vals;
@@ -60,7 +60,7 @@ static ValueArray constants_hash_2() {
   initValueArray(&vals);
   vals.count = vals.capacity = 1;
   Value values[] = {
-    str("hash"),
+    string("hash"),
   };
   vals.values = cloneMemory(values, sizeof(values));
   return vals;
@@ -104,7 +104,7 @@ static ValueArray constants_src_slash_lita_slash_lita_dot_lita_0() {
   initValueArray(&vals);
   vals.count = vals.capacity = 7;
   Value values[] = {
-    str("Any"), str("Object"), str("class"), fn_class_1(), str("hash"), fn_hash_2(), str("script return value"),
+    string("Any"), string("Object"), string("class"), fn_class_1(), string("hash"), fn_hash_2(), string("script return value"),
   };
   vals.values = cloneMemory(values, sizeof(values));
   return vals;

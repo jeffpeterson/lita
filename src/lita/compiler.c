@@ -707,7 +707,7 @@ static u8 argumentList() {
   u8 argCount = 0;
   if (!check(TOKEN_RIGHT_PAREN)) {
     do {
-      parseAbove(PREC_COMMA);
+      if (!parseAbove(PREC_COMMA)) emit(nil);
       if (argCount == 255) error("Can't have more than 255 arguments.");
       argCount++;
     } while (match(TOKEN_COMMA));
@@ -853,7 +853,7 @@ static void semi(Ctx *ctx) {
 static void tuple(Ctx *ctx) {
   u8 length = 1;
   do {
-    parseAbove(PREC_COMMA);
+    if (!parseAbove(PREC_COMMA)) emit(nil);
     length++;
   } while (match(TOKEN_COMMA));
 
@@ -1272,6 +1272,11 @@ static void funDeclaration() {
   defineVariable(global);
 }
 
+static void function_(Ctx *ctx) {
+  match(TOKEN_IDENTIFIER);
+  function(TYPE_FUNCTION);
+}
+
 static u8 varDeclaration() {
   u8 global = parseVariable("Expect variable name.");
 
@@ -1575,6 +1580,7 @@ ParseRule rules[] = {
     [TOKEN_MATCH] = {match_, NULL, PREC_KEYWORD},
     [TOKEN_PRINT] = {print, NULL, PREC_KEYWORD},
     [TOKEN_RETURN] = {return_, NULL, PREC_KEYWORD},
+    [TOKEN_FN] = {function_, NULL, PREC_KEYWORD},
 
     [TOKEN_SEMICOLON] = {NULL, semi, PREC_SEMI},
     [TOKEN_QUESTION] = {NULL, question, PREC_SEMI},
