@@ -48,7 +48,7 @@ static Chunk chunk_class_1() {
 
              // class
 static Value fn_class_1() {
-  ObjFun *f = newFunction();  f->arity = 0;
+  ObjFunction *f = newFunction();  f->arity = 0;
   f->upvalueCount = 0;
   f->name = newString("class");
   f->chunk = chunk_class_1();
@@ -92,7 +92,7 @@ static Chunk chunk_hash_2() {
 
              // hash
 static Value fn_hash_2() {
-  ObjFun *f = newFunction();  f->arity = 0;
+  ObjFunction *f = newFunction();  f->arity = 0;
   f->upvalueCount = 0;
   f->name = newString("hash");
   f->chunk = chunk_hash_2();
@@ -150,13 +150,13 @@ static Chunk chunk_src_slash_lita_slash_lita_dot_lita_0() {
 
              // src/lita/lita.lita
 static Value fn_src_slash_lita_slash_lita_dot_lita_0() {
-  ObjFun *f = newFunction();  f->arity = 0;
+  ObjFunction *f = newFunction();  f->arity = 0;
   f->upvalueCount = 0;
   f->name = newString("src/lita/lita.lita");
   f->chunk = chunk_src_slash_lita_slash_lita_dot_lita_0();
   return obj(f);
 }
 
-ObjFun *lita_lita() {
-  return AS_FUN(fn_src_slash_lita_slash_lita_dot_lita_0());
+ObjFunction *lita_lita() {
+  return asFunction(fn_src_slash_lita_slash_lita_dot_lita_0());
 }

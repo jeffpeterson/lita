@@ -47,7 +47,7 @@ static Chunk chunk_init_1() {
 
              // init
 static Value fn_init_1() {
-  ObjFun *f = newFunction();  f->arity = 1;
+  ObjFunction *f = newFunction();  f->arity = 1;
   f->upvalueCount = 0;
   f->name = newString("init");
   f->chunk = chunk_init_1();
@@ -96,13 +96,13 @@ static Chunk chunk_src_slash_lita_slash_lib_slash_Parser_dot_lita_0() {
 
              // src/lita/lib/Parser.lita
 static Value fn_src_slash_lita_slash_lib_slash_Parser_dot_lita_0() {
-  ObjFun *f = newFunction();  f->arity = 0;
+  ObjFunction *f = newFunction();  f->arity = 0;
   f->upvalueCount = 0;
   f->name = newString("src/lita/lib/Parser.lita");
   f->chunk = chunk_src_slash_lita_slash_lib_slash_Parser_dot_lita_0();
   return obj(f);
 }
 
-ObjFun *Parser_lita() {
-  return AS_FUN(fn_src_slash_lita_slash_lib_slash_Parser_dot_lita_0());
+ObjFunction *Parser_lita() {
+  return asFunction(fn_src_slash_lita_slash_lib_slash_Parser_dot_lita_0());
 }

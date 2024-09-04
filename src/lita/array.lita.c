@@ -47,7 +47,7 @@ static Chunk chunk__lt__lt__1() {
 
              // <<
 static Value fn__lt__lt__1() {
-  ObjFun *f = newFunction();  f->arity = 1;
+  ObjFunction *f = newFunction();  f->arity = 1;
   f->upvalueCount = 0;
   f->name = newString("<<");
   f->chunk = chunk__lt__lt__1();
@@ -150,7 +150,7 @@ static Chunk chunk__eq__eq__2() {
 
              // ==
 static Value fn__eq__eq__2() {
-  ObjFun *f = newFunction();  f->arity = 1;
+  ObjFunction *f = newFunction();  f->arity = 1;
   f->upvalueCount = 0;
   f->name = newString("==");
   f->chunk = chunk__eq__eq__2();
@@ -213,7 +213,7 @@ static Chunk chunk_each_3() {
 
              // each
 static Value fn_each_3() {
-  ObjFun *f = newFunction();  f->arity = 1;
+  ObjFunction *f = newFunction();  f->arity = 1;
   f->upvalueCount = 0;
   f->name = newString("each");
   f->chunk = chunk_each_3();
@@ -282,7 +282,7 @@ static Chunk chunk_map_4() {
 
              // map
 static Value fn_map_4() {
-  ObjFun *f = newFunction();  f->arity = 1;
+  ObjFunction *f = newFunction();  f->arity = 1;
   f->upvalueCount = 0;
   f->name = newString("map");
   f->chunk = chunk_map_4();
@@ -323,7 +323,7 @@ static Chunk chunk__dot_print_6() {
 
              // .print
 static Value fn__dot_print_6() {
-  ObjFun *f = newFunction();  f->arity = 1;
+  ObjFunction *f = newFunction();  f->arity = 1;
   f->upvalueCount = 1;
   f->name = newString(".print");
   f->chunk = chunk__dot_print_6();
@@ -367,7 +367,7 @@ static Chunk chunk_print_5() {
 
              // print
 static Value fn_print_5() {
-  ObjFun *f = newFunction();  f->arity = 1;
+  ObjFunction *f = newFunction();  f->arity = 1;
   f->upvalueCount = 0;
   f->name = newString("print");
   f->chunk = chunk_print_5();
@@ -424,13 +424,13 @@ static Chunk chunk_src_slash_lita_slash_array_dot_lita_0() {
 
              // src/lita/array.lita
 static Value fn_src_slash_lita_slash_array_dot_lita_0() {
-  ObjFun *f = newFunction();  f->arity = 0;
+  ObjFunction *f = newFunction();  f->arity = 0;
   f->upvalueCount = 0;
   f->name = newString("src/lita/array.lita");
   f->chunk = chunk_src_slash_lita_slash_array_dot_lita_0();
   return obj(f);
 }
 
-ObjFun *array_lita() {
-  return AS_FUN(fn_src_slash_lita_slash_array_dot_lita_0());
+ObjFunction *array_lita() {
+  return asFunction(fn_src_slash_lita_slash_array_dot_lita_0());
 }

@@ -41,7 +41,7 @@ static Chunk chunk_compile_1() {
 
              // compile
 static Value fn_compile_1() {
-  ObjFun *f = newFunction();  f->arity = 2;
+  ObjFunction *f = newFunction();  f->arity = 2;
   f->upvalueCount = 0;
   f->name = newString("compile");
   f->chunk = chunk_compile_1();
@@ -78,7 +78,7 @@ static Chunk chunk_markCompilerRoots_2() {
 
              // markCompilerRoots
 static Value fn_markCompilerRoots_2() {
-  ObjFun *f = newFunction();  f->arity = 0;
+  ObjFunction *f = newFunction();  f->arity = 0;
   f->upvalueCount = 0;
   f->name = newString("markCompilerRoots");
   f->chunk = chunk_markCompilerRoots_2();
@@ -153,13 +153,13 @@ static Chunk chunk_src_slash_lita_slash_compiler_dot_lita_0() {
 
              // src/lita/compiler.lita
 static Value fn_src_slash_lita_slash_compiler_dot_lita_0() {
-  ObjFun *f = newFunction();  f->arity = 0;
+  ObjFunction *f = newFunction();  f->arity = 0;
   f->upvalueCount = 0;
   f->name = newString("src/lita/compiler.lita");
   f->chunk = chunk_src_slash_lita_slash_compiler_dot_lita_0();
   return obj(f);
 }
 
-ObjFun *compiler_lita() {
-  return AS_FUN(fn_src_slash_lita_slash_compiler_dot_lita_0());
+ObjFunction *compiler_lita() {
+  return asFunction(fn_src_slash_lita_slash_compiler_dot_lita_0());
 }

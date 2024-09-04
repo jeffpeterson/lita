@@ -48,7 +48,7 @@ static Chunk chunk__star__1() {
 
              // *
 static Value fn__star__1() {
-  ObjFun *f = newFunction();  f->arity = 1;
+  ObjFunction *f = newFunction();  f->arity = 1;
   f->upvalueCount = 0;
   f->name = newString("*");
   f->chunk = chunk__star__1();
@@ -92,7 +92,7 @@ static Chunk chunk_head_2() {
 
              // head
 static Value fn_head_2() {
-  ObjFun *f = newFunction();  f->arity = 0;
+  ObjFunction *f = newFunction();  f->arity = 0;
   f->upvalueCount = 0;
   f->name = newString("head");
   f->chunk = chunk_head_2();
@@ -155,7 +155,7 @@ static Chunk chunk_each_3() {
 
              // each
 static Value fn_each_3() {
-  ObjFun *f = newFunction();  f->arity = 1;
+  ObjFunction *f = newFunction();  f->arity = 1;
   f->upvalueCount = 0;
   f->name = newString("each");
   f->chunk = chunk_each_3();
@@ -196,7 +196,7 @@ static Chunk chunk__dot_print_5() {
 
              // .print
 static Value fn__dot_print_5() {
-  ObjFun *f = newFunction();  f->arity = 1;
+  ObjFunction *f = newFunction();  f->arity = 1;
   f->upvalueCount = 1;
   f->name = newString(".print");
   f->chunk = chunk__dot_print_5();
@@ -240,7 +240,7 @@ static Chunk chunk_print_4() {
 
              // print
 static Value fn_print_4() {
-  ObjFun *f = newFunction();  f->arity = 1;
+  ObjFunction *f = newFunction();  f->arity = 1;
   f->upvalueCount = 0;
   f->name = newString("print");
   f->chunk = chunk_print_4();
@@ -295,13 +295,13 @@ static Chunk chunk_src_slash_lita_slash_tuple_dot_lita_0() {
 
              // src/lita/tuple.lita
 static Value fn_src_slash_lita_slash_tuple_dot_lita_0() {
-  ObjFun *f = newFunction();  f->arity = 0;
+  ObjFunction *f = newFunction();  f->arity = 0;
   f->upvalueCount = 0;
   f->name = newString("src/lita/tuple.lita");
   f->chunk = chunk_src_slash_lita_slash_tuple_dot_lita_0();
   return obj(f);
 }
 
-ObjFun *tuple_lita() {
-  return AS_FUN(fn_src_slash_lita_slash_tuple_dot_lita_0());
+ObjFunction *tuple_lita() {
+  return asFunction(fn_src_slash_lita_slash_tuple_dot_lita_0());
 }
