@@ -32,7 +32,7 @@ void dumpValue(FILE *io, Value v) {
 
   Obj *obj = AS_OBJ(v);
 
-  if (obj->def && obj->def->dump) {
+  if (obj->def->dump) {
     obj->def->dump(obj, io);
     return;
   }
@@ -65,7 +65,7 @@ static int dumpFn(FILE *io, ObjFunction *fun) {
 
     if (is_obj(v)) {
       Obj *obj = AS_OBJ(v);
-      if (obj->def && obj->def->dump_global) obj->def->dump_global(obj, io);
+      if (obj->def->dump_global) obj->def->dump_global(obj, io);
       else if (isFunction(v)) dumpFn(io, asFunction(v));
     }
   }

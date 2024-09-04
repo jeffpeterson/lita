@@ -12,11 +12,10 @@
 #include "vm.h"
 
 Obj *allocateObject(const ObjDef *def) {
-  usize size = def && def->size ? def->size : sizeof(Obj);
+  usize size = def->size;
   Obj *obj = (Obj *)reallocate(NULL, 0, size);
   obj->def = def;
-  obj->klass =
-      asClass(global_class(def->class_name ? def->class_name : "Object"));
+  obj->klass = NULL;
   obj->isMarked = false;
   obj->eid = ecs_new(vm.world);
   // Todo: Only hash for non-interned objects.
@@ -46,20 +45,20 @@ Obj *as_obj(Value x) {
 }
 
 Obj *new_instance(ObjClass *klass) {
-  Obj *obj = allocateObject(NULL);
+  Obj *obj = allocateObject(&Object);
   obj->klass = klass;
   return obj;
 }
 
 const char *objectBytes(Obj *obj, int length) {
-  if (obj->def && obj->def->bytes) return obj->def->bytes(obj, length);
+  if (obj->def->bytes) return obj->def->bytes(obj, length);
 
   if (length != obj->def->size) return NULL;
   return (char *)&obj->hash;
 }
 
 int inspect_obj(FILE *io, Obj *obj) {
-  if (obj->def && obj->def->inspect) return obj->def->inspect(obj, io);
+  if (obj->def->inspect) return obj->def->inspect(obj, io);
   return fprintf(io, "%s(", obj->klass->name->chars) +
          inspect_table(io, &obj->fields) + fprintf(io, ")");
 }
@@ -86,3 +85,8 @@ int cmpObjects(Obj *a, Obj *b) {
 
 //   return call(init, obj, argc, args);
 // }
+
+ObjDef Object = {
+    .class_name = "Object",
+    .size = sizeof(Obj),
+};

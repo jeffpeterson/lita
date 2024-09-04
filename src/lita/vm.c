@@ -319,16 +319,18 @@ static InterpretResult move_into_native(ObjNative *native, int argc) {
 }
 
 ObjClass *valueClass(Value v) {
-  if (is_obj(v)) return AS_OBJ(v)->klass;
+  if (is_obj(v)) {
+    Obj *obj = AS_OBJ(v);
+    if (!obj->klass) obj->klass = asClass(global_class(obj->def->class_name));
+    return obj->klass;
+  }
 
   const char *name = is_nil(v)    ? "Nil"
                      : is_num(v)  ? "Number"
                      : is_bool(v) ? "Bool"
                                   : "Any";
 
-  Value klass = global(string(name));
-  if (isClass(klass)) return asClass(klass);
-  return NULL;
+  return asClass(global_class(name));
 }
 
 /**

@@ -38,6 +38,8 @@ typedef struct ObjDef {
   ObjBytesFn *bytes;
 } ObjDef;
 
+ObjDef Object;
+
 typedef struct ObjClass ObjClass;
 
 struct Obj {
@@ -74,7 +76,7 @@ static inline bool is_obj_def(Value value, const ObjDef *def) {
 static inline bool is_interned(Value val) {
   if (!is_obj(val)) return true;
   Obj *obj = AS_OBJ(val);
-  return obj->def && obj->def->interned;
+  return obj->def->interned;
 }
 
 #endif

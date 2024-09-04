@@ -109,7 +109,7 @@ static void blackenObject(Obj *obj) {
   markObject((Obj *)obj->klass);
   markTable(&obj->fields);
 
-  if (obj->def && obj->def->mark) return obj->def->mark(obj);
+  if (obj->def->mark) return obj->def->mark(obj);
 }
 
 static void freeObject(Obj *obj) {

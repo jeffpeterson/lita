@@ -116,7 +116,7 @@ u32 len(let x) {
 
   Obj *obj = AS_OBJ(x);
 
-  if (obj->def && obj->def->length) return obj->def->length(obj);
+  if (obj->def->length) return obj->def->length(obj);
   return 1;
 }
 
