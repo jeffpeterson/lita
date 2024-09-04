@@ -115,6 +115,8 @@ assert [1, 2, 3].length == 3
 // assert Array(1, 2, 3).length == 3
 assert [1, 2] + [3] == [1, 2, 3]
 assert [1, 2] << 3 == [1, 2, 3]
+assert [1, 2].map(inc) == [2, 3]
+assert [1, 2].map(.string) == ['1, '2]
 // print "" + [1, 2]
 
 /// Instances
