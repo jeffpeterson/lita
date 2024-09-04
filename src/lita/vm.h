@@ -34,7 +34,7 @@ typedef struct VM {
   Table interned; /** Interned object table. */
   Table keep;     /** Exempt objects from GC. */
 
-  ecs_world_t *world; /** ECS world. */
+  World *world; /** ECS world. */
 
   ObjUpvalue *openUpvalues; /** Unclosed upvalues. */
   Obj *objects;             /** A chain of allocated objects. */
@@ -68,7 +68,7 @@ typedef enum InterpretResult {
 
 extern VM vm;
 
-void initVM();
+void initVM(World *world);
 void freeVM();
 InterpretResult bootVM();
 InterpretResult run_function(ObjFun *fun);
@@ -131,5 +131,8 @@ void vm_array(u32 length);
 void vm_tuple(u8 length);
 
 void repl();
+
+extern ECS_COMPONENT_DECLARE(VM);
+void LitaImport(World *world);
 
 #endif

@@ -115,9 +115,10 @@ Value global_class(const char *name) {
   return setGlobal(vname, class(vname));
 }
 
-void initVM() {
+void initVM(World *world) {
   resetStack();
 
+  vm.world = world;
   vm.objects = NULL;
   vm.bytesAllocated = 0;
   /** Start collecting after 100MB is allocated. */
@@ -130,8 +131,6 @@ void initVM() {
   initTable(&vm.globals);
   initTable(&vm.interned);
   initTable(&vm.keep);
-
-  vm.world = ecs_init();
 
   vm.str.init = newString("init");
 
@@ -163,8 +162,7 @@ InterpretResult bootVM() {
   setGlobal(str("stdout"), io(stdout, UNOWNED));
   setGlobal(str("stderr"), io(stderr, UNOWNED));
 
-  ECS_IMPORT(vm.world, Buffers);
-  ECS_IMPORT(vm.world, Tables);
+  ECS_IMPORT(vm.world, Lita);
 
   return result;
 }
@@ -173,7 +171,6 @@ void freeVM() {
   vm.str.init = NULL;
   freeTable(&vm.interned);
   freeObjects();
-  ecs_fini(vm.world);
 }
 
 Value push(Value value) {
@@ -1030,4 +1027,14 @@ void repl() {
   }
 
   printf("\n");
+}
+
+ECS_COMPONENT_DECLARE(VM);
+
+void LitaImport(World *world) {
+  ECS_MODULE(world, Lita);
+  ECS_IMPORT(world, Buffers);
+  ECS_IMPORT(world, Tables);
+
+  ECS_COMPONENT_DEFINE(world, VM);
 }

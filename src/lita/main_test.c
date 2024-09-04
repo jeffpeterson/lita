@@ -19,8 +19,10 @@ void table_test();
 void tree_test();
 void scanner_test();
 
-int main(int argc, const char *argv[]) {
-  initVM();
+int main(int argc, char *argv[]) {
+  World *world = ecs_init_w_args(argc, argv);
+
+  initVM(world);
   bootVM();
   printf("\n");
   run(pcre2_test);
@@ -34,5 +36,6 @@ int main(int argc, const char *argv[]) {
   run(scanner_test);
   printf(FG_GREEN "\nTests passed.\n\n" FG_DEFAULT);
   freeVM();
+  ecs_fini(world);
   return 0;
 }

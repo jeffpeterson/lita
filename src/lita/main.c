@@ -32,7 +32,18 @@ static void usage(int argc, char *argv[]) {
 }
 
 int main(int argc, char *argv[]) {
-  initVM();
+  World *world = ecs_init_w_args(argc, argv);
+
+  initVM(world);
+  assertOkResult(bootVM());
+
+  // ECS_IMPORT(world, FlecsRest);
+  // ecs_set(world, EcsWorld, EcsRest, {.ipaddr = "127.0.0.1"});
+
+  // return ecs_app_run(world, &(ecs_app_desc_t){
+  //                               .enable_stats = true,
+  //                               .target_fps = 240,
+  //                           });
 
   int opt;
   bool start_repl = false;
@@ -45,13 +56,11 @@ int main(int argc, char *argv[]) {
     case 'r': start_repl = true; break;
     case 't': config.tracing = true; break;
     case 'd': config.debug++; break;
-    case 'e': assertOkResult(interpret(optarg, newString("eval flag"))); break;
+    case 'e': assertOkResult(interpret(optarg, newString("-e"))); break;
     case 'h': usage(argc, argv); exit(0);
     case '?': usage(argc, argv); exit(1);
     }
   }
-
-  assertOkResult(bootVM());
 
   ObjArray *args = new_array();
   ObjString *path = NULL;
