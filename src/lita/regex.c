@@ -7,12 +7,14 @@
 #include "vm.h"
 
 Value regex(const char *source) { return obj(makeRegex(newString(source))); }
+static u32 defaultOptions = PCRE2_UTF | PCRE2_UCP;
 
 ObjRegex *makeRegex(ObjString *source) {
   ObjRegex *regex = allocateRegex();
+  u32 options = defaultOptions;
   regex->obj.def = &Regex;
   regex->source = source;
-  regex->re = pcre2_compile((PCRE2_SPTR)source->chars, source->length, 0,
+  regex->re = pcre2_compile((PCRE2_SPTR)source->chars, source->length, options,
                             &regex->error_code, &regex->error_offset,
                             NULL); // TODO: pcre2_compile() options
 
@@ -47,8 +49,8 @@ static int dumpRegex(Obj *obj, FILE *io) {
 
 ObjString *replaceRegex(ObjString *subject, ObjRegex *regex,
                         ObjString *replacement) {
-  uint32_t options = PCRE2_SUBSTITUTE_GLOBAL | PCRE2_SUBSTITUTE_EXTENDED |
-                     PCRE2_SUBSTITUTE_OVERFLOW_LENGTH;
+  u32 options = PCRE2_SUBSTITUTE_GLOBAL | PCRE2_SUBSTITUTE_EXTENDED |
+                PCRE2_SUBSTITUTE_OVERFLOW_LENGTH;
   Buffer output = new_buffer(subject->length * 2);
   output.count = output.capacity;
 

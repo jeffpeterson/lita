@@ -70,16 +70,20 @@ assert "hi there".replace("hi", "hello") == "hello there"
 assert "hi there".replace(`\w+`, "x") == "x x"
 assert "hi there".replace(`\b(\w)(\w+)`, "\\u$1$2") == "Hi There"
 
-assert "howdy".capitalize == "Howdy"
-assert " howdy".capitalize == " Howdy"
-assert "Howdy".capitalize == "Howdy"
+assert "howdy".capitalize	== "Howdy"
+assert " howdy".capitalize	== " Howdy"
+assert "Howdy".capitalize	== "Howdy"
 
-assert "camel_case".camelize == "camelCase"
-assert "CamelCase".underscore == "camel_case"
-assert "CamelCase".dasherize == "camel-case"
+assert "HeLLO".lowercase	== "hello"
+assert "hEllo".uppercase	== "HELLO"
+assert "áäåêø".uppercase	== "ÁÄÅÊØ"
+assert "ÁÄÅÊØ".lowercase	== "áäåêø"
 
-assert "HeLLO".lowercase == "hello"
-assert "hEllo".uppercase == "HELLO"
+assert "camel_case".camelize	== "camelCase"
+assert "CamelCase".underscore	== "camel_case"
+assert "HTTP".underscore		== "http"
+assert "HTTPMethod".underscore	== "http_method"
+assert "CamelCase".dasherize	== "camel-case"
 
 // Regular Expressions
 assert `[a-z]`

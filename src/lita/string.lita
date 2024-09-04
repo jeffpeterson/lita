@@ -27,12 +27,12 @@ class String
 	.bg_cyan	= "\e[46m" this "\e[39m"
 	.bg_white	= "\e[47m" this "\e[39m"
 
-	.uppercase		= replace(`[a-z]+`, "\\U$0")
-	.lowercase		= replace(`[A-Z]+`, "\\L$0")
+	.uppercase		= replace(`\w+`, "\\U$0")
+	.lowercase		= replace(`\w+`, "\\L$0")
 	.capitalize		= replace(`^(\W*?)([a-z])`, "$1\\u$2")
 	.decapitalize	= replace(`^(\W*?)([A-Z])`, "$1\\l$2")
 	.camelize		= replace(`_(\w)`, "\\u$1")
-	.underscore		= decapitalize.replace(`([a-z])([A-Z])`, "$1_\\l$2")
+	.underscore		= replace(`([a-zA-Z])([A-Z][a-z])`, "$1_\\l$2").replace(`-`, "_").lowercase
 	.dasherize		= underscore.replace(`_`, "-")
 
 	.print(io) = io.write(this)
