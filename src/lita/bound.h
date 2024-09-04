@@ -5,9 +5,9 @@
 #include "object.h"
 #include "value.h"
 
-#define AS_BOUND(val) ((ObjBound *)AS_OBJ(val))
 #define isBound(val) is_obj_def(val, &Bound)
-#define allocateBound() ((ObjBound *)new_object(&Bound))
+#define asBound(val) as(Bound, val)
+#define allocateBound() ALLOCATE_OBJ(Bound)
 
 /** A closure bound to a receiver.  */
 typedef struct ObjBound {
@@ -18,7 +18,6 @@ typedef struct ObjBound {
 
 ObjDef Bound;
 
-ObjBound *asBound(let val);
 ObjBound *newBound(let receiver, let method);
 let bound(let receiver, let method);
 

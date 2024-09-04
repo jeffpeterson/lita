@@ -5,9 +5,9 @@
 #include "object.h"
 #include "table.h"
 
-#define AS_ENTITY(val) ((ObjEntity *)AS_OBJ(val))
-#define is_entity(val) is_obj_def(val, &Entity)
-#define new_entity() ((ObjEntity *)new_object(&Entity))
+#define isEntity(val) is_obj_def(val, &Entity)
+#define asEntity(val) as(Entity, val)
+#define allocateEntity() ALLOCATE_OBJ(Entity)
 
 typedef struct ObjEntity {
   Obj obj;
@@ -16,7 +16,6 @@ typedef struct ObjEntity {
 
 const ObjDef Entity;
 
-ObjEntity *as_entity(Value val);
 ObjEntity *copy_entity(Value *values, uint8_t length);
 ObjEntity *take_entity(Value *values, uint8_t length);
 

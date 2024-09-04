@@ -6,16 +6,10 @@
 #include "regex.h"
 #include "vm.h"
 
-/** Safely convert val to regex pointer. */
-ObjRegex *as_regex(Value x) {
-  assert(is_regex(x));
-  return AS_REGEX(x);
-}
-
 Value regex(const char *source) { return obj(makeRegex(newString(source))); }
 
 ObjRegex *makeRegex(ObjString *source) {
-  ObjRegex *regex = ALLOCATE_OBJ(ObjRegex, OBJ_CUSTOM);
+  ObjRegex *regex = allocateRegex();
   regex->obj.def = &Regex;
   regex->source = source;
   regex->re = pcre2_compile((PCRE2_SPTR)source->chars, source->length, 0,
@@ -30,29 +24,29 @@ ObjRegex *makeRegex(ObjString *source) {
   return regex;
 }
 
-static int regex_length(Obj *obj) {
+static int regexLength(Obj *obj) {
   ObjRegex *regex = (ObjRegex *)obj;
   return regex->source->length;
 }
 
-static void mark_regex(Obj *obj) {
+static void markRegex(Obj *obj) {
   ObjRegex *regex = (ObjRegex *)obj;
   markObject((Obj *)regex->source);
 }
 
-static int inspect_regex(Obj *obj, FILE *io) {
+static int inspectRegex(Obj *obj, FILE *io) {
   ObjRegex *regex = (ObjRegex *)obj;
   return fprintf(io, "`") + fputs(regex->source->chars, io) + fprintf(io, "`");
 }
 
-static int dump_regex(Obj *obj, FILE *io) {
+static int dumpRegex(Obj *obj, FILE *io) {
   ObjRegex *regex = (ObjRegex *)obj;
   ObjString *source = escape_string(regex->source);
   return fprintf(io, "regex(%.*s)", source->length, source->chars);
 }
 
-ObjString *replace_regex(ObjString *subject, ObjRegex *regex,
-                         ObjString *replacement) {
+ObjString *replaceRegex(ObjString *subject, ObjRegex *regex,
+                        ObjString *replacement) {
   uint32_t options = PCRE2_SUBSTITUTE_GLOBAL | PCRE2_SUBSTITUTE_EXTENDED |
                      PCRE2_SUBSTITUTE_OVERFLOW_LENGTH;
   Buffer output = new_buffer(subject->length * 2);
@@ -84,8 +78,8 @@ REGISTER_OBJECT_DEF(Regex);
 const ObjDef Regex = {
     .class_name = "Regex",
     .size = sizeof(ObjRegex),
-    .mark = mark_regex,
-    .inspect = inspect_regex,
-    .dump = dump_regex,
-    .length = regex_length,
+    .mark = markRegex,
+    .inspect = inspectRegex,
+    .dump = dumpRegex,
+    .length = regexLength,
 };

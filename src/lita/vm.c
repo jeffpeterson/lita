@@ -1,6 +1,9 @@
-#include <assert.h>
+#define Function ReadlineFunction
 #include <readline/history.h>
 #include <readline/readline.h>
+#undef Function
+
+#include <assert.h>
 #include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -8,6 +11,7 @@
 
 #include "array.h"
 #include "bound.h"
+#include "class.h"
 #include "common.h"
 #include "compiler.h"
 #include "debug.h"
@@ -15,7 +19,6 @@
 #include "iterator.h"
 #include "lib.h"
 #include "memory.h"
-#include "native.h"
 #include "object.h"
 #include "range.h"
 #include "string.h"
@@ -43,7 +46,7 @@ static InterpretResult vruntimeError(const char *format, va_list args) {
     CallFrame *frame = &vm.frames[i];
 
     if (frame->closure) {
-      ObjFun *fun = frame->closure->fun;
+      ObjFunction *fun = frame->closure->function;
       size_t instruction = frame->ip - fun->chunk.code - 1;
       int line = fun->chunk.lines[instruction];
 
@@ -51,7 +54,7 @@ static InterpretResult vruntimeError(const char *format, va_list args) {
         disassembleChunk(&fun->chunk, fun->name->chars, instruction + 1);
 
       fprintf(stderr, "[line %d] in ", line);
-      inspect_function(stderr, "ObjFun", fun);
+      inspect_obj(stderr, (Obj *)fun);
       fprintf(stderr, "\n");
     } else if (frame->native) {
       inspect_obj(stderr, (Obj *)frame->native);
@@ -111,8 +114,8 @@ Value global(Value name) {
 Value global_class(const char *name) {
   let vname = string(name);
   let klass = global(vname);
-  if (is_class(klass)) return klass;
-  return setGlobal(vname, class(vname));
+  if (isClass(klass)) return klass;
+  return setGlobal(vname, class(name));
 }
 
 void initVM(World *world) {
@@ -146,11 +149,37 @@ void initVM(World *world) {
 
 static void register_def(ObjDef *def) {
   if (!def->class_name) crash("def must have a class_name");
+  if (!def->size) crash("def must have a size");
 
   let klass = global_class(def->class_name);
-  AS_CLASS(klass)->instance_def = def;
+  asClass(klass)->instance_def = def;
+}
 
-  if (def->natives) def->natives(klass);
+ObjFunction *core_lita();
+
+static InterpretResult defineNatives() {
+  foreach_native(native) {
+    let fun = fn(native->name, native->arity, native->fun);
+    trace(native->class_name, fun);
+
+    if (native->class_name) {
+      let klass = global_class(native->class_name);
+      if (native->is_static) static_method(klass, fun);
+      else method(klass, fun);
+
+    } else setGlobal(string(native->name), fun);
+  }
+
+  run_function(core_lita());
+
+  foreach_boot_function(boot) {
+    ObjFunction *fun = boot->fun();
+    trace("Booting", OBJ_VAL(fun));
+    InterpretResult result = run_function(fun);
+    if (result) return result;
+  }
+
+  return INTERPRET_OK;
 }
 
 InterpretResult bootVM() {
@@ -195,10 +224,7 @@ Value pope(Value val) {
   return val;
 }
 
-inline Value *popn(u8 n) {
-  vm.stackTop -= n;
-  return vm.stackTop;
-}
+Value *popn(u8 n) { return vm.stackTop -= n; }
 
 // invoke the method on this
 InterpretResult vm_send(Value this, Value method_name, int argc, ...) {
@@ -237,7 +263,7 @@ static CallFrame *new_frame(usize slots) {
  * Returns whether or not the call was successful.
  */
 static InterpretResult move_into_closure(ObjClosure *closure, int argCount) {
-  ObjFun *fun = closure->fun;
+  ObjFunction *fun = closure->function;
 
   if (argCount < fun->arity)
     return runtimeError("Expected %d arguments but got %d.", fun->arity,
@@ -293,27 +319,15 @@ static InterpretResult move_into_native(ObjNative *native, int argc) {
 }
 
 ObjClass *valueClass(Value v) {
-  const char *name = NULL;
+  if (is_obj(v)) return AS_OBJ(v)->klass;
 
-  if (is_obj(v)) {
-    Obj *obj = AS_OBJ(v);
+  const char *name = is_nil(v)    ? "Nil"
+                     : is_num(v)  ? "Number"
+                     : is_bool(v) ? "Bool"
+                                  : "Any";
 
-    if (obj->klass) return obj->klass;
-    if (obj->def && obj->def->class_name) name = obj->def->class_name;
-    else name = objInfo[obj->type].className;
-  } else {
-    name = is_nil(v)    ? "Nil"
-           : is_num(v)  ? "Number"
-           : is_bool(v) ? "Bool"
-                        : "Any";
-  }
-
-  if (name) {
-    Value klass = global(string(name));
-
-    if (is_class(klass)) return AS_CLASS(klass);
-  }
-
+  Value klass = global(string(name));
+  if (isClass(klass)) return asClass(klass);
   return NULL;
 }
 
@@ -326,21 +340,16 @@ bool call_value(Value callee, int argCount) {
   trace("call_value", callee);
 
   if (is_obj(callee)) {
-    switch (obj_type(callee)) {
-    case OBJ_CLASS: {
+    if (isClosure(callee))
+      return !move_into_closure(asClosure(callee), argCount);
+    else if (isNative(callee))
+      return !move_into_native(AS_NATIVE(callee), argCount);
+    else if (isClass(callee)) {
       // Replace the class with a new instance.
-      vm.stackTop[-argCount - 1] = OBJ_VAL(new_instance(AS_CLASS(callee)));
+      vm.stackTop[-argCount - 1] = OBJ_VAL(new_instance(asClass(callee)));
       return !vm_invoke(OBJ_VAL(vm.str.init), argCount);
-    }
-
-    case OBJ_CLOSURE: return !move_into_closure(AS_CLOSURE(callee), argCount);
-    case OBJ_NATIVE: return !move_into_native(AS_NATIVE(callee), argCount);
-
-    default: break; // Non-callable object type.
-    }
-
-    if (isBound(callee)) {
-      ObjBound *bound = AS_BOUND(callee);
+    } else if (isBound(callee)) {
+      ObjBound *bound = asBound(callee);
       vm.stackTop[-argCount - 1] = bound->receiver;
       return call_value(bound->method, argCount);
     }
@@ -451,7 +460,7 @@ static void closeUpvalues(Value *last) {
 
 static void defineMethod(ObjString *name) {
   Value method = peek(0);
-  ObjClass *klass = AS_CLASS(peek(1));
+  ObjClass *klass = asClass(peek(1));
   tableSet(&klass->methods, OBJ_VAL(name), method);
   pop();
 }
@@ -541,7 +550,7 @@ InterpretResult vm_get_global(Value name) {
 
   if (!tableGet(&vm.globals, name, &value)) {
     if (is_nil(value = get_env(name)))
-      if (!is_string(name) || *as_string(name)->chars != '$')
+      if (!isString(name) || *as_string(name)->chars != '$')
         return runtimeError("Cannot get undefined variable '%s'.",
                             as_string(name)->chars);
   }
@@ -555,7 +564,7 @@ InterpretResult vm_set_global(Value name) {
     // This is a new key and hasn't been defined.
     tableDelete(&vm.globals, name);
     return runtimeError("Cannot set undefined variable '%s'.",
-                        AS_STRING(name)->chars);
+                        asString(name)->chars);
   }
   return INTERPRET_OK;
 }
@@ -637,8 +646,8 @@ static InterpretResult vm_run() {
 #define READ_SHORT()                                                           \
   (frame->ip += 2, (uint16_t)((frame->ip[-2] << 8) | frame->ip[-1]))
 #define READ_CONSTANT()                                                        \
-  (frame->closure->fun->chunk.constants.values[READ_BYTE()])
-#define READ_STRING() AS_STRING(READ_CONSTANT())
+  (frame->closure->function->chunk.constants.values[READ_BYTE()])
+#define READ_STRING() asString(READ_CONSTANT())
 #define BINARY_OP(valueType, op)                                               \
   do {                                                                         \
     if (!is_num(peek(0)) || !is_num(peek(1))) {                                \
@@ -681,7 +690,7 @@ static InterpretResult vm_run() {
     if (frame->prev_ip) {
       int actual = vm.stackTop - frame->prev_stack;
       int expected =
-          input_output_delta(&frame->closure->fun->chunk, frame->prev_ip);
+          input_output_delta(&frame->closure->function->chunk, frame->prev_ip);
 
       if (actual != expected) {
         OpInfo op = op_info[*frame->prev_ip];
@@ -837,7 +846,7 @@ static InterpretResult vm_run() {
 
       // Re-open existing global classes
       if (isLocal || !tableGet(&vm.globals, name, &klass)) {
-        klass = class(name);
+        klass = OBJ_VAL(newClass(as_string(name)));
         if (!isLocal) tableSet(&vm.globals, name, klass);
       }
 
@@ -846,12 +855,12 @@ static InterpretResult vm_run() {
     }
 
     case OP_INHERIT: { // [1 class][0 super]
-      if (!is_class(peek(0))) {
+      if (!isClass(peek(0))) {
         return runtimeError("Superclass must be a class.");
       }
 
-      ObjClass *superclass = AS_CLASS(peek(0));
-      ObjClass *subclass = AS_CLASS(peek(1));
+      ObjClass *superclass = asClass(peek(0));
+      ObjClass *subclass = asClass(peek(1));
       subclass->parent = superclass;
       subclass->instance_def = superclass->instance_def;
       // tableMerge(&superclass->methods, &subclass->methods);
@@ -860,7 +869,7 @@ static InterpretResult vm_run() {
 
     case OP_GET_SUPER: {
       ObjString *name = READ_STRING();
-      ObjClass *superclass = AS_CLASS(pop());
+      ObjClass *superclass = asClass(pop());
 
       if (!bindMethod(superclass, name)) return INTERPRET_RUNTIME_ERROR;
       break;
@@ -879,7 +888,7 @@ static InterpretResult vm_run() {
     }
 
     case OP_SUPER_INVOKE: {
-      ObjClass *superclass = AS_CLASS(pop());
+      ObjClass *superclass = asClass(pop());
 
       if (!invokeFromClass(superclass, READ_STRING(), READ_BYTE()))
         return INTERPRET_RUNTIME_ERROR;
@@ -889,7 +898,7 @@ static InterpretResult vm_run() {
     }
 
     case OP_CLOSURE: {
-      ObjFun *fun = AS_FUN(READ_CONSTANT());
+      ObjFunction *fun = asFunction(READ_CONSTANT());
       ObjClosure *closure = newClosure(fun);
       push(OBJ_VAL(closure));
 
@@ -968,7 +977,7 @@ static InterpretResult vm_run() {
 #undef SYNC_FRAME
 }
 
-InterpretResult run_function(ObjFun *fun) {
+InterpretResult run_function(ObjFunction *fun) {
   if (fun == NULL) return INTERPRET_COMPILE_ERROR;
 
   push(OBJ_VAL(fun));
@@ -992,9 +1001,9 @@ Value intern(Value val) {
   return pop();
 }
 
-Obj *getInterned(Hash *hash, ObjType type, const char *bytes, int length) {
+Obj *getInterned(Hash *hash, const char *bytes, int length) {
   *hash = hash_bytes(bytes, length);
-  return tableFindObj(&vm.interned, type, bytes, length, *hash);
+  return tableFindObj(&vm.interned, bytes, length, *hash);
 }
 
 void repl() {
@@ -1013,6 +1022,7 @@ void repl() {
   while ((line = readline("lita> "))) {
     add_history(line);
     write_history(history->chars);
+    // TODO: Enqueue this as a request
     interpret(line, name);
     free(line);
     inspect_value(stderr, vm.result);

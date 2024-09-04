@@ -5,10 +5,13 @@
 
 #include "chunk.h"
 #include "common.h"
+#include "function.h"
 #include "object.h"
 #include "value.h"
 
-void dumpModule(FILE *io, ObjString *name, ObjFun *fun);
+Table ids;
+
+void dumpModule(FILE *io, ObjString *name, ObjFunction *fun);
 void dumpValue(FILE *io, Value v);
 bool id_for(let v, int *id);
 

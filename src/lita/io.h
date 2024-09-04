@@ -11,10 +11,11 @@ typedef struct ObjIO {
   Ownership ownership;
 } ObjIO;
 
-#define AS_IO(val) ((ObjIO *)AS_OBJ(val))
-#define is_io(val) is_obj_def(val, &IO)
+#define isIO(val) is_obj_def(val, &IO)
+#define asIO(val) as(IO, val)
+#define allocateIO() ALLOCATE_OBJ(IO)
 
-ObjIO *make_io(FILE *fp, Ownership ownership);
+ObjIO *makeIO(FILE *fp, Ownership ownership);
 Value io(FILE *fp, Ownership ownership);
 
 const ObjDef IO;

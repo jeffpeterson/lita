@@ -6,38 +6,34 @@
 #include "range.h"
 #include "vm.h"
 
-/** Safely convert val to range pointer. */
-ObjRange *as_range(Value x) {
-  assert(is_range(x));
-  return AS_RANGE(x);
-}
+Value range(Value start, Value end) { return obj(newRange(start, end)); }
 
-ObjRange *make_range(Value start, Value end) {
-  ObjRange *range = (ObjRange *)new_object(&Range);
+ObjRange *newRange(Value start, Value end) {
+  ObjRange *range = allocateRange();
   range->start = start;
   range->end = end;
   range->obj.hash = hash_bytes((char *)&range->start, sizeof(Value) * 2);
   return range;
 }
 
-static int range_length(Obj *obj) {
+static int rangeLength(Obj *obj) {
   ObjRange *range = (ObjRange *)obj;
   return as_int(subtract(range->end, range->start));
 }
 
-static void mark_range(Obj *obj) {
+static void markRange(Obj *obj) {
   ObjRange *range = (ObjRange *)obj;
   markValue(range->start);
   markValue(range->end);
 }
 
-const char *range_bytes(Obj *obj, int length) {
-  if (length != sizeof(Value) * 2) return NULL;
+const char *rangeBytes(Obj *obj, int length) {
   ObjRange *range = (ObjRange *)obj;
+  if (length != sizeof(Value) * 2) return NULL;
   return (char *)&range->start;
 }
 
-static int inspect_range(Obj *obj, FILE *io) {
+static int inspectRange(Obj *obj, FILE *io) {
   ObjRange *range = (ObjRange *)obj;
   return inspect_value(io, range->start) + fprintf(io, "..") +
          inspect_value(io, range->end);
@@ -47,7 +43,7 @@ COMPILED_SOURCE(range);
 NATIVE_GETTER(Range, start, );
 NATIVE_GETTER(Range, end, );
 NATIVE_METHOD(Range, init, 2) {
-  ObjRange *range = as_range(this);
+  ObjRange *range = asRange(this);
   range->start = args[0];
   range->end = args[1];
   return this;
@@ -58,10 +54,8 @@ const ObjDef Range = {
     .class_name = "Range",
     .size = sizeof(ObjRange),
     .interned = true,
-    .bytes = range_bytes,
-    .mark = mark_range,
-    .inspect = inspect_range,
-    .length = range_length,
+    .bytes = rangeBytes,
+    .mark = markRange,
+    .inspect = inspectRange,
+    .length = rangeLength,
 };
-
-Value range(Value start, Value end) { return obj(make_range(start, end)); }

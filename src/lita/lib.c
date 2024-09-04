@@ -3,6 +3,7 @@
 
 #include "array.h"
 #include "bound.h"
+#include "class.h"
 #include "lib.h"
 #include "memory.h"
 #include "string.h"
@@ -11,22 +12,17 @@
 #include "tuple.h"
 #include "vm.h"
 
-_ fn(const char *name, int arity, NativeFn fun) {
+let fn(const char *name, int arity, NativeFn fun) {
   return obj(newNative(newString(name), arity, fun));
 }
-_ memory(u8 *bytes, int length) {
+let memory(u8 *bytes, int length) {
   return obj(copyString((char *)bytes, length));
 }
-_ num(double num) { return NUMBER_VAL(num); }
-_ str(const char *str) { return obj(newString(str)); }
+let num(double num) { return NUMBER_VAL(num); }
+let str(const char *str) { return obj(newString(str)); }
 
-_ class(_ name) {
-  if (!is_string(name)) return nil;
-
-  return pope(OBJ_VAL(newClass(AS_STRING(push(name)))));
-}
-_ method(_ klass, _ fun) {
-  assert(is_class(klass));
+let method(let klass, let fun) {
+  assert(isClass(klass));
 
   let key = name(fun);
 
@@ -34,13 +30,13 @@ _ method(_ klass, _ fun) {
     return crash("Method must be callable.");
   }
 
-  tableSet(&AS_CLASS(klass)->methods, key, fun);
+  tableSet(&asClass(klass)->methods, key, fun);
 
   return fun;
 }
 
 let static_method(let klass, let fun) {
-  assert(is_class(klass));
+  assert(isClass(klass));
   let key = name(fun);
   set(klass, key, fun);
   return klass;
@@ -53,15 +49,15 @@ let add(let a, let b) {
   return pop();
 }
 
-_ subtract(_ a, _ b) {
+let subtract(let a, let b) {
   if (is_num(a) && is_num(b)) return num(as_num(a) - as_num(b));
 
-  // if (is_string(a) && is_string(b))
+  // if (isString(a) && isString(b))
   //   remove b from end of a
   return nil;
 }
 
-_ multiply(_ a, _ b) {
+let multiply(let a, let b) {
   push(a);
   push(b);
   vm_multiply();
@@ -69,38 +65,38 @@ _ multiply(_ a, _ b) {
 }
 
 /** Returns arity of fun, -1 if not callable. */
-int arity(_ fun) {
+int arity(Value fun) {
   if (isBound(fun)) return arity(asBound(fun)->method);
-  if (is_closure(fun)) return as_closure(fun)->fun->arity;
-  if (is_native(fun)) return as_native(fun)->arity;
-  if (is_class(fun)) return arity(findMethod(fun, str("init")));
+  if (isClosure(fun)) return asClosure(fun)->function->arity;
+  if (isNative(fun)) return asNative(fun)->arity;
+  if (isClass(fun)) return arity(findMethod(fun, str("init")));
 
   return -1;
 }
 
-_ classOf(_ self) { return obj(valueClass(self)); }
+let classOf(let self) { return obj(valueClass(self)); }
 
-_ superOf(_ klass) { return obj(as_class(klass)->parent); }
+let superOf(let klass) { return obj(asClass(klass)->parent); }
 
 let bindFn(let self, let fun) {
-  if (is_closure(fun) || is_native(fun)) return bound(self, fun);
+  if (isClosure(fun) || isNative(fun)) return bound(self, fun);
 
   return fun;
 }
 
-_ findMethod(_ klass, _ name) {
+let findMethod(let klass, let name) {
   Value fun = nil;
-  while (is_class(klass) && !tableGet(&as_class(klass)->methods, name, &fun))
+  while (isClass(klass) && !tableGet(&asClass(klass)->methods, name, &fun))
     klass = superOf(klass);
 
   return fun;
 }
 
-_ find(_ self, _ key) {
-  _ val;
+let find(let self, let key) {
+  let val;
   if (is_obj(self)) {
     if (tableGet(&AS_OBJ(self)->fields, key, &val)) return val;
-    if (is_class(self)) {
+    if (isClass(self)) {
       val = find(superOf(self), key);
       if (not_nil(val)) return val;
     }
@@ -109,40 +105,31 @@ _ find(_ self, _ key) {
   return findMethod(classOf(self), key);
 }
 
-bool has(_ self, _ key) { return !is_nil(find(self, key)); }
-_ get(_ self, _ key) { return bindFn(self, find(self, key)); }
-_ set(_ self, _ key, _ value) { return crash("Not implemented."); }
+bool has(let self, let key) { return !is_nil(find(self, key)); }
+let get(let self, let key) { return bindFn(self, find(self, key)); }
+let set(let self, let key, let value) { return crash("Not implemented."); }
 
-_ hash(_ val) { return NUMBER_VAL(hash_value(val)); }
+let hash(let val) { return NUMBER_VAL(hash_value(val)); }
 
-u32 len(_ x) {
+u32 len(let x) {
   if (!is_obj(x)) return 1;
 
   Obj *obj = AS_OBJ(x);
 
   if (obj->def && obj->def->length) return obj->def->length(obj);
-
-  switch (obj->type) {
-  case OBJ_CLASS:
-  case OBJ_CLOSURE:
-  case OBJ_FUN:
-  case OBJ_NATIVE: return arity(x);
-
-  default: return 1;
-  }
+  return 1;
 }
 
-_ name(_ self) {
-  switch (as_obj(self)->type) {
-  case OBJ_CLASS: return obj(AS_CLASS(self)->name);
-  case OBJ_FUN: return obj(AS_FUN(self)->name);
-  case OBJ_NATIVE: return obj(AS_NATIVE(self)->name);
-  case OBJ_CLOSURE: return obj(AS_CLOSURE(self)->fun->name);
-  default: return nil;
-  }
+let name(let fn) {
+  return isClass(fn)      ? obj(asClass(fn)->name)
+         : isFunction(fn) ? obj(asFunction(fn)->name)
+         : isNative(fn)   ? obj(asNative(fn)->name)
+         : isClosure(fn)  ? obj(asClosure(fn)->function->name)
+         : isBound(fn)    ? name(asBound(fn)->method)
+                          : nil;
 }
 
-_ read(_ path) { return obj(readFile(as_string(path))); }
+let read(let path) { return obj(readFile(as_string(path))); }
 
 let write(let path, let content) {
   if (!writeFile(as_string(path), as_string(content)))
@@ -151,7 +138,7 @@ let write(let path, let content) {
   return content;
 }
 
-_ append(_ path, _ content) {
+let append(let path, let content) {
   if (!appendFile(as_string(path), as_string(content)))
     return crash("Could not append to file.");
 

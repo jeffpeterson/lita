@@ -4,42 +4,42 @@
 #include <stdio.h>
 
 #include "common.h"
+#include "native.h"
 #include "object.h"
 #include "string.h"
 #include "value.h"
 
 #define fmt(f, ...) obj(string_format(f, ...))
 
-typedef Value _;
+typedef Value let;
 
-_ fn(const char *name, int arity, NativeFn fun);
-_ memory(u8 *bytes, int length);
-_ num(double num);
-_ str(const char *str);
+let fn(const char *name, int arity, NativeFn fun);
+let memory(u8 *bytes, int length);
+let num(double num);
+let str(const char *str);
 
-int arity(_ fun);
+int arity(let fun);
 
-_ classOf(_ self);
-_ superOf(_ klass);
+let classOf(let self);
+let superOf(let klass);
 let bindFn(let self, let fun);
-_ findMethod(_ klass, _ name);
-_ find(_ self, _ name);
+let findMethod(let klass, let name);
+let find(let self, let name);
 
-bool has(_ self, _ key);
-_ get(_ self, _ key);
-_ set(_ self, _ key, _ value);
+bool has(let self, let key);
+let get(let self, let key);
+let set(let self, let key, let value);
 
-_ add(_ a, _ b);
-_ subtract(_ a, _ b);
-_ multiply(_ a, _ b);
+let add(let a, let b);
+let subtract(let a, let b);
+let multiply(let a, let b);
 
-_ hash(_ val);
-u32 len(_ val);
-_ name(_ val);
+let hash(let val);
+u32 len(let val);
+let name(let fn);
 
-_ class(_ name);
-_ method(_ klass, _ fun);
-let static_method(_ klass, _ fun);
+let method(let klass, let fun);
+let static_method(let klass, let fun);
 
 // # Files
 let read(let path);

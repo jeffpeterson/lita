@@ -1,9 +1,13 @@
 #ifndef lita_vm_h
 #define lita_vm_h
 
+#include "closure.h"
 #include "ecs.h"
+#include "function.h"
+#include "native.h"
 #include "object.h"
 #include "table.h"
+#include "upvalue.h"
 #include "value.h"
 
 #define FRAMES_MAX 64
@@ -71,21 +75,18 @@ extern VM vm;
 void initVM(World *world);
 void freeVM();
 InterpretResult bootVM();
-InterpretResult run_function(ObjFun *fun);
+InterpretResult run_function(ObjFunction *fun);
 InterpretResult run_closure(ObjClosure *closure);
 InterpretResult interpret(const char *source, ObjString *name);
 
 /** Push a value onto the stack and return it. */
 Value push(Value value);
-
 /** Pop a value off the stack and return it. */
 Value pop();
-
 /** pop() but returns the given value. */
 Value pope(Value val);
-
 /** pop() n values off the stack. */
-Value *popn(uint8_t n);
+Value *popn(u8 n);
 
 InterpretResult vm_send(Value this, Value method_name, int argc, ...);
 
@@ -95,9 +96,8 @@ Value setGlobal(Value name, Value val);
 Value global_class(const char *name);
 
 Value intern(Value val);
-Obj *getInterned(Hash *hash, ObjType type, const char *bytes, int length);
+Obj *getInterned(Hash *hash, const char *bytes, int length);
 
-Value getThis();
 ObjClass *valueClass(Value v);
 
 InterpretResult runtimeError(const char *format, ...);

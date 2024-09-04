@@ -7,6 +7,11 @@
 #include "value.h"
 #include "xxhash.h"
 
+double as_num(Value x) {
+  assert(is_num(x));
+  return AS_NUMBER(x);
+}
+
 void initValueArray(ValueArray *array) {
   array->values = NULL;
   array->capacity = 0;
@@ -34,14 +39,6 @@ void copy_values(Value *source, Value *dest, usize count) {
   memcpy(dest, source, count * sizeof(Value));
 }
 
-int print_value(FILE *io, Value val) {
-  if (is_nil(val)) return 0;
-  if (is_bool(val)) return fputs(AS_BOOL(val) ? "true" : "false", io);
-  if (is_num(val)) return fprintf(io, "%g", AS_NUMBER(val));
-  if (is_obj(val)) return print_object(io, AS_OBJ(val));
-  return 0;
-}
-
 int inspect_value(FILE *io, Value val) {
   switch (val) {
   case True:
@@ -59,15 +56,6 @@ int inspect_value(FILE *io, Value val) {
 
   if (is_obj(val)) return inspect_obj(io, AS_OBJ(val));
   return 0;
-}
-
-let show(let val) {
-  char *str = NULL;
-  size_t len = 0;
-  FILE *io = open_memstream(&str, &len);
-  print_value(io, val);
-  fclose(io);
-  return OBJ_VAL(take_string(str, len));
 }
 
 const char *inspectc(let val) { return as_string(inspect(val))->chars; }

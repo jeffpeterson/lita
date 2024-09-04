@@ -2,9 +2,30 @@
 #define lita_native_h
 
 #include "common.h"
+#include "function.h"
 #include "object.h"
+#include "string.h"
 #include "value.h"
-#include "vm.h"
+
+#define allocateNative() ALLOCATE_OBJ(Native)
+#define isNative(val) is_obj_def(val, &Native)
+#define asNative(val) as(Native, val)
+
+#define AS_NATIVE(val) ((ObjNative *)AS_OBJ(val))
+#define AS_NATIVE_FN(val) (AS_NATIVE(val)->fun)
+
+typedef Value NativeFn(Value self, int argCount, Value *args);
+
+typedef struct ObjNative {
+  Obj obj;
+  int arity;
+  ObjString *name;
+  NativeFn *fun;
+} ObjNative;
+
+ObjNative *newNative(ObjString *name, int arity, NativeFn fun);
+
+ObjDef Native;
 
 typedef struct NativeMethod {
   const char *class_name;
@@ -16,7 +37,7 @@ typedef struct NativeMethod {
 
 typedef struct BootFunction {
   const char *name;
-  ObjFun *(*fun)();
+  ObjFunction *(*fun)();
 } BootFunction;
 
 #define foreach_native(var) section_foreach_entry(natives, NativeMethod, var)
@@ -71,10 +92,8 @@ typedef struct BootFunction {
   STATIC_METHOD_NAMED(klass, attr, #attr, arity)
 
 #define COMPILED_SOURCE(name)                                                  \
-  extern ObjFun *name##_lita();                                                \
+  extern ObjFunction *name##_lita();                                           \
   static BootFunction SECTION(boot_functions)                                  \
       name##_lita_boot = {#name, name##_lita};
-
-InterpretResult defineNatives();
 
 #endif

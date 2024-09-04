@@ -56,13 +56,14 @@ int main(int argc, char *argv[]) {
     case 'r': start_repl = true; break;
     case 't': config.tracing = true; break;
     case 'd': config.debug++; break;
+    // TODO: enqueue this as a request to interpret
     case 'e': assertOkResult(interpret(optarg, newString("-e"))); break;
     case 'h': usage(argc, argv); exit(0);
     case '?': usage(argc, argv); exit(1);
     }
   }
 
-  ObjArray *args = new_array();
+  ObjArray *args = allocateArray();
   ObjString *path = NULL;
 
   switch (mode) {
@@ -72,6 +73,7 @@ int main(int argc, char *argv[]) {
 
   case INTERPRET: {
     if (optind < argc) {
+      // TODO: Enqueue this as a request to interpret
       path = newString(argv[optind]);
 
       for (int i = optind + 1; i < argc; i++) {

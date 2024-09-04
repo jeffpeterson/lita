@@ -108,7 +108,7 @@ typedef enum FunType {
  */
 typedef struct Compiler {
   struct Compiler *enclosing; /** Compiler of the scope enclosing this one. */
-  ObjFun *fun;                /** The function being compiled. */
+  ObjFunction *fun;           /** The function being compiled. */
   FunType type; /** Regular function or a script (root-level anon function). */
 
   /**
@@ -432,8 +432,8 @@ static void initCompiler(Compiler *compiler, FunType type, ObjString *name) {
 }
 
 /** Note: implies endScope(); */
-static ObjFun *endCompiler() {
-  ObjFun *fun = current->fun;
+static ObjFunction *endCompiler() {
+  ObjFunction *fun = current->fun;
 
   if (!parser.hadError && (config.debug || DEBUG_PRINT_CODE))
     disassembleChunk(currentChunk(), fun->name->chars, -1);
@@ -879,7 +879,7 @@ static void dotSugar(Ctx *ctx) {
 
   Compiler compiler;
 
-  initCompiler(&compiler, TYPE_FUNCTION, AS_STRING(fnName));
+  initCompiler(&compiler, TYPE_FUNCTION, asString(fnName));
   beginScope();
 
   u8 nameConstant = makeConstant(methodName);
@@ -899,7 +899,7 @@ static void dotSugar(Ctx *ctx) {
 
   emitByte(OP_RETURN);
 
-  ObjFun *fun = endCompiler();
+  ObjFunction *fun = endCompiler();
   emitBytes(OP_CLOSURE, makeConstant(OBJ_VAL(fun)));
 }
 
@@ -1149,7 +1149,7 @@ static void function(FunType type) {
 
   emitReturn();
   // no endScope(). Compiler will be deallocated.
-  ObjFun *fun = endCompiler();
+  ObjFunction *fun = endCompiler();
   emitBytes(OP_CLOSURE, makeConstant(OBJ_VAL(fun)));
 
   for (int i = 0; i < fun->upvalueCount; i++) {
@@ -1171,7 +1171,7 @@ static void getter() {
     emitBytes(OP_SET_PROPERTY, nameConstant);
     emitByte(OP_RETURN);
 
-    ObjFun *fun = endCompiler();
+    ObjFunction *fun = endCompiler();
     emitBytes(OP_CLOSURE, makeConstant(OBJ_VAL(fun)));
 
     emitBytes(OP_METHOD, nameConstant);
@@ -1518,7 +1518,7 @@ static void statement() {
   // Todo: continue statement
 }
 
-ObjFun *compile(const char *source, ObjString *name) {
+ObjFunction *compile(const char *source, ObjString *name) {
   initScanner(source);
 
   if (DEBUG_TOKENS || config.debug >= 4) debugTokens();
@@ -1537,7 +1537,7 @@ ObjFun *compile(const char *source, ObjString *name) {
 
   assertStackSize(1, "script return value");
   emitByte(OP_RETURN);
-  ObjFun *fun = endCompiler();
+  ObjFunction *fun = endCompiler();
   return parser.hadError ? NULL : fun;
 }
 

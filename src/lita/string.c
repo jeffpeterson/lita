@@ -16,16 +16,15 @@
 #endif
 
 ObjString *as_string(let x) {
-  assert(is_string(x));
-  return AS_STRING(x);
+  assert(isString(x));
+  return asString(x);
 }
 
 Value string(const char *str) { return obj(newString(str)); }
 
 /** Allocate an ObjString for a (null-terminated) char string. */
-static ObjString *allocate_string(char *chars, int length, Hash hash) {
-  ObjString *string = ALLOCATE_OBJ(ObjString, OBJ_CUSTOM);
-  string->obj.def = &String;
+static ObjString *makeString(char *chars, int length, Hash hash) {
+  ObjString *string = allocateString();
   string->length = length;
   string->chars = chars;
   string->obj.hash = hash;
@@ -49,27 +48,25 @@ ObjString *newString(const char *chars) {
 
 ObjString *take_string(char *chars, int length) {
   Hash hash;
-  ObjString *interned =
-      (ObjString *)getInterned(&hash, OBJ_CUSTOM, chars, length);
+  ObjString *interned = (ObjString *)getInterned(&hash, chars, length);
 
   if (interned != NULL) {
     FREE_ARRAY(char, chars, length + 1);
     return interned;
   }
-  return allocate_string(chars, length, hash);
+  return makeString(chars, length, hash);
 }
 
 ObjString *copyString(const char *chars, usize length) {
   Hash hash;
-  ObjString *interned =
-      (ObjString *)getInterned(&hash, OBJ_CUSTOM, chars, length);
+  ObjString *interned = (ObjString *)getInterned(&hash, chars, length);
 
   if (interned != NULL) return interned;
 
   char *heapChars = ALLOCATE(char, length + 1);
   memcpy(heapChars, chars, length);
   heapChars[length] = '\0';
-  return allocate_string(heapChars, length, hash);
+  return makeString(heapChars, length, hash);
 }
 
 ObjString *buffer_to_string(Buffer *buf) {
@@ -280,7 +277,7 @@ static const char *string_bytes(Obj *obj, int length) {
 COMPILED_SOURCE(string);
 NATIVE_METHOD(String, string, 0) { return this; }
 NATIVE_METHOD(String, concat, 1) {
-  if (!is_string(args[0])) {
+  if (!isString(args[0])) {
     vm_invoke(string("string"), 0);
     return VOID;
   }
@@ -291,7 +288,7 @@ ALIAS_OPERATOR(String, concat, plus, "+", 1);
 ALIAS_OPERATOR(String, concat, invoke, "", 1);
 ALIAS_OPERATOR(String, concat, star, "*", 1);
 NATIVE_METHOD(String, escape, 0) {
-  return OBJ_VAL(escape_string(AS_STRING(this)));
+  return OBJ_VAL(escape_string(asString(this)));
 }
 
 NATIVE_METHOD(String, replace, 2) {
@@ -299,8 +296,7 @@ NATIVE_METHOD(String, replace, 2) {
   ObjString *to = as_string(args[1]);
 
 #if ENABLE_REGEX
-  if (is_regex(args[0]))
-    return OBJ_VAL(replace_regex(str, as_regex(args[0]), to));
+  if (isRegex(args[0])) return OBJ_VAL(replaceRegex(str, asRegex(args[0]), to));
 
 #endif
 

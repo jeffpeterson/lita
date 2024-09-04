@@ -7,11 +7,6 @@
 #include "string.h"
 #include "vm.h"
 
-ObjBound *asBound(let val) {
-  assert(isBound(val));
-  return AS_BOUND(val);
-}
-
 let bound(let receiver, let method) { return obj(newBound(receiver, method)); }
 
 ObjBound *newBound(let receiver, let method) {
@@ -34,7 +29,6 @@ static void markBound(Obj *obj) {
 
 static int inspectBound(Obj *obj, FILE *io) {
   ObjBound *bound = (ObjBound *)obj;
-
   return fstring_format(io, "Bound({}, {})", bound->receiver, bound->method);
 }
 

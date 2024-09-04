@@ -28,7 +28,7 @@ void growChunk(Chunk *chunk, int capacity) {
 }
 
 void markChunk(Chunk *chunk) {
-  markArray(&chunk->constants);
+  markValueArray(&chunk->constants);
   if (chunk->comments)
     for (int i = 0; i < chunk->capacity; i++) markValue(chunk->comments[i]);
 }

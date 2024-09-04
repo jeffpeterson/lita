@@ -12,11 +12,10 @@ typedef struct ObjArray {
   Value *values;
 } ObjArray;
 
-#define AS_ARRAY(val) ((ObjArray *)AS_OBJ(val))
-#define is_array(val) is_obj_def(val, &Array)
-#define new_array() ((ObjArray *)new_object(&Array))
+#define isArray(val) is_obj_def(val, &Array)
+#define asArray(val) as(Array, val)
+#define allocateArray() ALLOCATE_OBJ(Array)
 
-ObjArray *as_array(let x);
 ObjArray *copy_array(Value *values, u32 length);
 void resize_array(ObjArray *arr, u32 capacity);
 void grow_array(ObjArray *arr, u32 minCapacity);

@@ -7,6 +7,7 @@
 
 #include "common.h"
 #include "object.h"
+#include "string.h"
 #include "value.h"
 
 typedef struct ObjRegex {
@@ -18,15 +19,14 @@ typedef struct ObjRegex {
   PCRE2_UCHAR8 error_message[256];
 } ObjRegex;
 
-#define AS_REGEX(val) ((ObjRegex *)AS_OBJ(val))
-#define is_regex(val) is_obj_def(val, &Regex)
-#define new_regex() ((ObjRegex *)new_object(&Regex))
+#define allocateRegex() ALLOCATE_OBJ(Regex)
+#define isRegex(val) is_obj_def(val, &Regex)
+#define asRegex(val) as(Regex, val)
 
-ObjRegex *as_regex(Value x);
 ObjRegex *makeRegex(ObjString *source);
 Value regex(const char *source);
-ObjString *replace_regex(ObjString *subject, ObjRegex *regex,
-                         ObjString *replacement);
+ObjString *replaceRegex(ObjString *subject, ObjRegex *regex,
+                        ObjString *replacement);
 
 const ObjDef Regex;
 

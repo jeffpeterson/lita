@@ -5,15 +5,22 @@
 #include "common.h"
 #include "object.h"
 
-#define is_string(val) is_obj_def(val, &String)
-#define AS_STRING(val) ((ObjString *)AS_OBJ(val))
+#define allocateString() ALLOCATE_OBJ(String)
+#define isString(val) is_obj_def(val, &String)
+#define asString(val) as(String, val)
+#define AS_CSTRING(val) (asString(val)->chars)
+
+struct ObjString {
+  Obj obj;
+  int length;
+  char *chars;
+};
 
 const ObjDef String;
 
 Value string(const char *str);
 
 ObjString *as_string(let x);
-
 ObjString *newString(const char *chars);
 
 /**

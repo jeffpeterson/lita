@@ -36,28 +36,8 @@ void dumpValue(FILE *io, Value v) {
     obj->def->dump(obj, io);
     return;
   }
-  switch (obj->type) {
-  case OBJ_FUN: {
-    Value id;
-    ObjFun *fun = AS_FUN(v);
 
-    if (tableGet(&ids, v, &id)) {
-      fprintf(io, "fn_%s_%g()", string_to_c_ident(fun->name)->chars,
-              as_num(id));
-    } else {
-      fprintf(io, "crash(\"Could not find fn %s\")", fun->name->chars);
-    }
-    return;
-  }
-
-  case OBJ_CUSTOM:
-    fprintf(io, "crash(\"custom obj without dump: %s\")", obj->def->class_name);
-    break;
-
-  default:
-    fprintf(io, "crash(\"unknown obj type: %s\")", objInfo[obj->type].inspect);
-    break;
-  }
+  fprintf(io, "crash(\"object without dump: %s\")", obj->def->class_name);
 }
 
 bool id_for(let v, int *id) {
@@ -72,7 +52,7 @@ bool id_for(let v, int *id) {
   return false;
 }
 
-static int dumpFn(FILE *io, ObjFun *fun) {
+static int dumpFn(FILE *io, ObjFunction *fun) {
   int id;
   if (id_for(obj(fun), &id)) return id;
 
@@ -86,7 +66,7 @@ static int dumpFn(FILE *io, ObjFun *fun) {
     if (is_obj(v)) {
       Obj *obj = AS_OBJ(v);
       if (obj->def && obj->def->dump_global) obj->def->dump_global(obj, io);
-      else if (is_fun(v)) dumpFn(io, AS_FUN(v));
+      else if (isFunction(v)) dumpFn(io, asFunction(v));
     }
   }
 
@@ -159,7 +139,7 @@ static int dumpFn(FILE *io, ObjFun *fun) {
           "\n"
           "             // %s\n"
           "static Value fn_%s_%d() {\n"
-          "  ObjFun *f = newFunction();"
+          "  ObjFunction *f = newFunction();"
           "  f->arity = %d;\n"
           "  f->upvalueCount = %d;\n"
           "  f->name = newString(\"%s\");\n"
@@ -182,7 +162,7 @@ static char *parameterize(char *str) {
   return str;
 }
 
-void dumpModule(FILE *io, ObjString *path, ObjFun *fun) {
+void dumpModule(FILE *io, ObjString *path, ObjFunction *fun) {
   initTable(&ids);
 
   ObjString *name = newString(parameterize(basename(path->chars)));
@@ -207,8 +187,8 @@ void dumpModule(FILE *io, ObjString *path, ObjFun *fun) {
 
   fprintf(io,
           "\n"
-          "ObjFun *%s() {\n"
-          "  return AS_FUN(fn_%s_%d());\n"
+          "ObjFunction *%s() {\n"
+          "  return asFunction(fn_%s_%d());\n"
           "}\n",
           name->chars, string_to_c_ident(fun->name)->chars, id);
 

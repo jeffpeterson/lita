@@ -33,8 +33,7 @@ bool tableDelete(Table *table, Value key);
 void tableMerge(Table *from, Table *to);
 double tableInc(Table *table, Value key, double amt);
 
-Obj *tableFindObj(Table *table, ObjType type, const char *bytes, int length,
-                  Hash hash);
+Obj *tableFindObj(Table *table, const char *bytes, int length, Hash hash);
 
 ObjIterator *iterate_table(Table *table);
 

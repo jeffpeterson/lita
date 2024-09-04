@@ -1,5 +1,3 @@
-#include <readline/history.h>
-#include <readline/readline.h>
 #include <stdlib.h>
 #include <sys/stat.h>
 #include <time.h>
@@ -7,7 +5,9 @@
 #include "array.h"
 #include "debug.h"
 #include "lib.h"
+#include "memory.h"
 #include "native.h"
+#include "term.h"
 #include "tuple.h"
 #include "vm.h"
 
@@ -54,16 +54,16 @@ NATIVE_METHOD(Any, string, 0) { return inspect(this); }
 // # Function
 NATIVE_METHOD(Function, arity, 0) { return NUMBER_VAL(arity(this)); }
 NATIVE_METHOD(Function, name, 0) {
-  return OBJ_VAL(as_closure(this)->fun->name);
+  return OBJ_VAL(asClosure(this)->function->name);
 }
 NATIVE_METHOD(Function, bytes, 0) {
-  if (!is_closure(this)) return crash("Only Functions have bytes.");
-  ObjFun *fn = AS_FUN(this);
+  if (!isClosure(this)) return crash("Only Functions have bytes.");
+  ObjFunction *fn = asFunction(this);
   return memory(fn->chunk.code, fn->chunk.count);
 }
 NATIVE_METHOD(Function, byte_count, 0) {
-  if (!is_closure(this)) return crash("Only Functions have bytes.");
-  ObjFun *fn = AS_FUN(this);
+  if (!isClosure(this)) return crash("Only Functions have bytes.");
+  ObjFunction *fn = asFunction(this);
   return num(fn->chunk.count);
 }
 
@@ -87,29 +87,38 @@ NATIVE_METHOD(Number, string, 0) {
   return OBJ_VAL(stringf("%g", as_num(this)));
 }
 
-ObjFun *core_lita();
-
-InterpretResult defineNatives() {
-  foreach_native(native) {
-    let fun = fn(native->name, native->arity, native->fun);
-    trace(native->class_name, fun);
-
-    if (native->class_name) {
-      let klass = global_class(native->class_name);
-      if (native->is_static) static_method(klass, fun);
-      else method(klass, fun);
-
-    } else setGlobal(string(native->name), fun);
-  }
-
-  run_function(core_lita());
-
-  foreach_boot_function(boot) {
-    ObjFun *fun = boot->fun();
-    trace("Booting", OBJ_VAL(fun));
-    InterpretResult result = run_function(fun);
-    if (result) return result;
-  }
-
-  return INTERPRET_OK;
+ObjNative *newNative(ObjString *name, int arity, NativeFn fun) {
+  ObjNative *native = allocateNative();
+  native->arity = arity;
+  native->fun = fun;
+  native->name = name;
+  return native;
 }
+
+void markNative(Obj *obj) {
+  ObjNative *native = (ObjNative *)obj;
+  markObject((Obj *)native->name);
+}
+
+int inspectNative(Obj *obj, FILE *io) {
+  ObjNative *native = (ObjNative *)obj;
+  return fprintf(io,
+                 FG_MAGENTA "<native %s" FG_DEFAULT "/" FG_MAGENTA
+                            "%d>" FG_DEFAULT,
+                 native->name->chars, native->arity) -
+         FG_SIZE * 4;
+}
+
+int nativeLength(Obj *obj) {
+  ObjNative *native = (ObjNative *)obj;
+  return native->arity;
+}
+
+REGISTER_OBJECT_DEF(Native);
+ObjDef Native = {
+    .class_name = "Native",
+    .size = sizeof(ObjNative),
+    .mark = markNative,
+    .inspect = inspectNative,
+    .length = nativeLength,
+};

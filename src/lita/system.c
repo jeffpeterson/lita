@@ -68,7 +68,7 @@ void runFile(ObjString *path) {
 
 void compileFile(ObjString *path) {
   ObjString *source = readFile(path);
-  ObjFun *fun = compile(source->chars, path);
+  ObjFunction *fun = compile(source->chars, path);
 
   if (fun == NULL) exit(65);
 

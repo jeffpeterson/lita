@@ -146,7 +146,7 @@ static void iterate_table_entries_next(ObjIterator *iter) {
 
 /** Iterates over all entries of this table. */
 static ObjIterator *iterate_table_entries(Table *table) {
-  ObjIterator *iter = new_iterator();
+  ObjIterator *iter = allocateIterator();
 
   iter->size = 2;
   iter->total = table->capacity;
@@ -159,9 +159,9 @@ static ObjIterator *iterate_table_entries(Table *table) {
 
 static void iterate_table_next(ObjIterator *iter) {
   Entry *entry = (Entry *)iter->current;
-  ObjIterator *entries = as_iterator(iter->state);
+  ObjIterator *entries = asIterator(iter->state);
 
-  while (iterate_next(entries))
+  while (iterateNext(entries))
     if (is_void(entry->key)) continue;
     else {
       iter->current = (Value *)entry;
@@ -174,7 +174,7 @@ static void iterate_table_next(ObjIterator *iter) {
 /** Iterates over the key-value pairs of this table. */
 ObjIterator *iterate_table(Table *table) {
   ObjIterator *entries = iterate_table_entries(table);
-  ObjIterator *iter = new_iterator();
+  ObjIterator *iter = allocateIterator();
 
   iter->state = OBJ_VAL(entries);
   iter->size = 2;
@@ -187,8 +187,7 @@ ObjIterator *iterate_table(Table *table) {
 }
 
 // TODO: Obj *table_find_object_key(Table *table, ObjDef *def, Hash hash)
-Obj *tableFindObj(Table *table, ObjType type, const char *bytes, int length,
-                  Hash hash) {
+Obj *tableFindObj(Table *table, const char *bytes, int length, Hash hash) {
   if (table->total == 0) return NULL;
 
   uint32_t index =
@@ -248,10 +247,10 @@ int inspect_table(FILE *io, Table *table) {
 
     if (is_void(entry->key)) continue;
 
-    if (is_string(entry->key)) {
+    if (isString(entry->key)) {
       out += (idx > 0 ? fputs(", ", io) : 0) +
              fprintf(io, FG_GREEN "%s" FG_DEFAULT ": ",
-                     AS_STRING(entry->key)->chars) +
+                     asString(entry->key)->chars) +
              inspect_value(io, entry->value);
     } else {
       out += fprintf(io, " ") + inspect_value(io, entry->key) +

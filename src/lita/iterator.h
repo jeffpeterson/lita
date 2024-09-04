@@ -4,9 +4,9 @@
 #include "common.h"
 #include "object.h"
 
-#define AS_ITERATOR(val) ((ObjIterator *)AS_OBJ(val))
-#define is_iterator(val) is_obj_def(val, &Iterator)
-#define new_iterator() ((ObjIterator *)new_object(&Iterator))
+#define allocateIterator() ALLOCATE_OBJ(Iterator)
+#define isIterator(val) is_obj_def(val, &Iterator)
+#define asIterator(val) as(Iterator, val)
 
 typedef struct ObjIterator {
   Obj obj;
@@ -23,8 +23,6 @@ typedef struct ObjIterator {
 
 const ObjDef Iterator;
 
-ObjIterator *as_iterator(Value val);
-
-bool iterate_next(ObjIterator *iter);
+bool iterateNext(ObjIterator *iter);
 
 #endif

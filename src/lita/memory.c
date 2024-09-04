@@ -93,7 +93,7 @@ void markValue(Value value) {
   if (is_obj(value)) markObject(AS_OBJ(value));
 }
 
-void markArray(ValueArray *array) {
+void markValueArray(ValueArray *array) {
   for (int i = 0; i < array->count; i++) {
     markValue(array->values[i]);
   }
@@ -110,48 +110,12 @@ static void blackenObject(Obj *obj) {
   markTable(&obj->fields);
 
   if (obj->def && obj->def->mark) return obj->def->mark(obj);
-
-  switch (obj->type) {
-  case OBJ_CLASS: {
-    ObjClass *klass = (ObjClass *)obj;
-    markObject((Obj *)klass->name);
-    markObject((Obj *)klass->parent);
-    markTable(&klass->methods);
-    break;
-  }
-
-  case OBJ_CLOSURE: {
-    ObjClosure *closure = (ObjClosure *)obj;
-    markObject((Obj *)closure->fun);
-    for (int i = 0; i < closure->upvalueCount; i++) {
-      markObject((Obj *)closure->upvalues[i]);
-    }
-    break;
-  }
-
-  case OBJ_FUN: {
-    ObjFun *fun = (ObjFun *)obj;
-    markObject((Obj *)fun->name);
-    markChunk(&fun->chunk);
-    break;
-  }
-
-  case OBJ_NATIVE: {
-    ObjNative *native = (ObjNative *)obj;
-    markObject((Obj *)native->name);
-    break;
-  }
-
-  case OBJ_UPVALUE: markValue(((ObjUpvalue *)obj)->closed); break;
-
-  default: break;
-  }
 }
 
 static void freeObject(Obj *obj) {
 #if DEBUG_LOG_MEM
   fprintf(stderr, "%p free ", (void *)obj);
-  inspect_obj_type(stderr, obj->type);
+  // inspect_obj_type(stderr, obj->type);
   fprintf(stderr, " ");
   inspect_obj(stderr, obj);
   fprintf(stderr, "\n");
@@ -159,38 +123,11 @@ static void freeObject(Obj *obj) {
 
   freeTable(&obj->fields);
 
-  if (obj->def && obj->def->size) {
+  if (obj->def) {
     if (obj->def->free) obj->def->free(obj);
     reallocate(obj, obj->def->size, 0);
-    return;
-  }
-
-  switch (obj->type) {
-  case OBJ_CLASS: {
-    ObjClass *klass = (ObjClass *)obj;
-    freeTable(&klass->methods);
-    FREE(ObjClass, obj);
-    break;
-  }
-
-  case OBJ_CLOSURE: {
-    ObjClosure *closure = (ObjClosure *)obj;
-    FREE_ARRAY(ObjUpvalue *, closure->upvalues, closure->upvalueCount);
-    FREE(ObjClosure, obj);
-    break;
-  }
-
-  case OBJ_FUN: {
-    ObjFun *fun = (ObjFun *)obj;
-    freeChunk(&fun->chunk);
-    FREE(ObjFun, obj);
-    break;
-  }
-
-  case OBJ_NATIVE: FREE(ObjNative, obj); break;
-
-  case OBJ_UPVALUE: FREE(ObjUpvalue, obj); break;
-  default: break;
+  } else {
+    reallocate(obj, sizeof(Obj), 0);
   }
 }
 
@@ -250,7 +187,7 @@ static void sweep() {
 
 #if DEBUG_LOG_GC
     fprintf(stderr, "%p free ", (void *)unreached);
-    inspect_obj_type(stderr, unreached->type);
+    // inspect_obj_type(stderr, unreached->type);
     fprintf(stderr, " ");
     inspect_obj(stderr, unreached);
     fprintf(stderr, "\n");

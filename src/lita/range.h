@@ -11,10 +11,11 @@ typedef struct ObjRange {
   Value end;
 } ObjRange;
 
-#define AS_RANGE(val) ((ObjRange *)AS_OBJ(val))
-#define is_range(val) is_obj_def(val, &Range)
+#define allocateRange() ALLOCATE_OBJ(Range)
+#define isRange(val) is_obj_def(val, &Range)
+#define asRange(val) as(Range, val)
 
-ObjRange *make_range(Value start, Value end);
+ObjRange *newRange(Value start, Value end);
 Value range(Value start, Value end);
 
 const ObjDef Range;

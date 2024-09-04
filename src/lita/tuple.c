@@ -7,57 +7,26 @@
 #include "tuple.h"
 #include "vm.h"
 
-static void free_tuple(Obj *obj) {
-  ObjTuple *tuple = (ObjTuple *)obj;
-  FREE_ARRAY(Value, tuple->values, tuple->length);
+let t(int len, let *vals) { return obj(copy_tuple(vals, len)); }
+
+let t2(let a, let b) { return t(2, (let[]){a, b}); }
+let t3(let a, let b, let c) { return t(3, (let[]){a, b, c}); }
+let t4(let a, let b, let c, let d) { return t(4, (let[]){a, b, c, d}); }
+let t5(let a, let b, let c, let d, let e) {
+  return t(5, (let[]){a, b, c, d, e});
 }
-
-static void mark_tuple(Obj *obj) {
-  ObjTuple *tuple = (ObjTuple *)obj;
-  for (int i = 0; i < tuple->length; i++) markValue(tuple->values[i]);
+let t6(let a, let b, let c, let d, let e, let f) {
+  return t(6, (let[]){a, b, c, d, e, f});
 }
-
-static const char *tuple_bytes(Obj *obj, int length) {
-  ObjTuple *tuple = (ObjTuple *)obj;
-  if (length != tuple->length * sizeof(Value)) return NULL;
-  return (char *)tuple->values;
-}
-
-static int tuple_length(Obj *obj) { return ((ObjTuple *)obj)->length; }
-
-static int inspect_tuple(Obj *obj, FILE *io) {
-  ObjTuple *tuple = (ObjTuple *)obj;
-  int tot = fprintf(io, "(");
-  for (int i = 0; i < tuple->length; i++) {
-    if (i > 0) tot += fprintf(io, ", ");
-    tot += inspect_value(io, tuple->values[i]);
-  }
-  return fprintf(io, ")") + tot;
-}
-
-static int dump_tuple(Obj *obj, FILE *io) {
-  ObjTuple *tup = (ObjTuple *)obj;
-  int tot = fprintf(io, "t(%d", tup->length);
-
-  for (int i = 0; i < tup->length; i++) {
-    tot += fprintf(io, ", ");
-    dumpValue(io, tup->values[i]);
-  }
-
-  tot += fputs(")", io);
-  return tot;
-}
-
-ObjTuple *as_tuple(Value x) {
-  assert(is_tuple(x));
-  return AS_TUPLE(x);
+let t7(let a, let b, let c, let d, let e, let f, let g) {
+  return t(7, (let[]){a, b, c, d, e, f, g});
 }
 
 /**
  * Allocate an ObjTuple for a series of values.
  */
-static ObjTuple *allocate_tuple(Value *vals, int length, Hash hash) {
-  ObjTuple *tuple = (ObjTuple *)new_object(&Tuple);
+static ObjTuple *newTuple(Value *vals, int length, Hash hash) {
+  ObjTuple *tuple = allocateTuple();
   tuple->length = length;
   tuple->values = vals;
   tuple->obj.hash = hash;
@@ -68,28 +37,26 @@ static ObjTuple *allocate_tuple(Value *vals, int length, Hash hash) {
 ObjTuple *copy_tuple(Value *values, uint8_t length) {
   int size = length * sizeof(Value);
   Hash hash;
-  ObjTuple *interned =
-      (ObjTuple *)getInterned(&hash, OBJ_CUSTOM, (char *)values, size);
+  ObjTuple *interned = (ObjTuple *)getInterned(&hash, (char *)values, size);
 
   if (interned != NULL) return interned;
 
   Value *heapVals = ALLOCATE(Value, length);
   memcpy(heapVals, values, size);
 
-  return allocate_tuple(heapVals, length, hash);
+  return newTuple(heapVals, length, hash);
 }
 
 ObjTuple *take_tuple(Value *values, uint8_t length) {
   Hash hash;
-  Obj *interned =
-      getInterned(&hash, OBJ_CUSTOM, (char *)values, length * sizeof(Value));
+  Obj *interned = getInterned(&hash, (char *)values, length * sizeof(Value));
 
   if (interned != NULL) {
     FREE_ARRAY(Value, values, length);
     return (ObjTuple *)interned;
   }
 
-  return allocate_tuple(values, length, hash);
+  return newTuple(values, length, hash);
 }
 
 ObjTuple *zip_tuples(ObjTuple *a, ObjTuple *b, Value (*fn)(Value, Value)) {
@@ -108,21 +75,19 @@ ObjTuple *zip_tuples(ObjTuple *a, ObjTuple *b, Value (*fn)(Value, Value)) {
   return take_tuple(values, length);
 }
 
-// # Natives
-
 NATIVE_METHOD_NAMED(Tuple, add, "+", 1) {
-  return obj(zip_tuples(as_tuple(this), as_tuple(args[0]), add));
+  return obj(zip_tuples(asTuple(this), asTuple(args[0]), add));
 }
 
 NATIVE_METHOD(Tuple, get, 1) {
-  ObjTuple *tuple = AS_TUPLE(this);
+  ObjTuple *tuple = asTuple(this);
   u32 idx = as_num(args[0]);
   if (idx >= tuple->length) return nil;
   return tuple->values[idx];
 }
 
 // NATIVE_METHOD(Tuple, map, 1) {
-//   ObjTuple *tuple = AS_TUPLE(this);
+//   ObjTuple *tuple = asTuple(this);
 //   let fun = args[0];
 
 //   for (u8 i = 0; i < tuple->length; i++) {
@@ -136,9 +101,50 @@ NATIVE_METHOD(Tuple, get, 1) {
 
 // NATIVE_METHOD_NAMED(Tuple, star, "*", 1) {
 //   if (is_tuple(args[0]))
-//     return obj(zip_tuples(as_tuple(this), as_tuple(args[0]), multiply));
+//     return obj(zip_tuples(asTuple(this), asTuple(args[0]), multiply));
 //   else return Tuple_map(this, argc, args);
 // }
+
+static void markTuple(Obj *obj) {
+  ObjTuple *tuple = (ObjTuple *)obj;
+  for (int i = 0; i < tuple->length; i++) markValue(tuple->values[i]);
+}
+
+static void freeTuple(Obj *obj) {
+  ObjTuple *tuple = (ObjTuple *)obj;
+  FREE_ARRAY(Value, tuple->values, tuple->length);
+}
+
+static const char *tupleBytes(Obj *obj, int length) {
+  ObjTuple *tuple = (ObjTuple *)obj;
+  if (length != tuple->length * sizeof(Value)) return NULL;
+  return (char *)tuple->values;
+}
+
+static int tupleLength(Obj *obj) { return ((ObjTuple *)obj)->length; }
+
+static int inspectTuple(Obj *obj, FILE *io) {
+  ObjTuple *tuple = (ObjTuple *)obj;
+  int tot = fprintf(io, "(");
+  for (int i = 0; i < tuple->length; i++) {
+    if (i > 0) tot += fprintf(io, ", ");
+    tot += inspect_value(io, tuple->values[i]);
+  }
+  return fprintf(io, ")") + tot;
+}
+
+static int dumpTuple(Obj *obj, FILE *io) {
+  ObjTuple *tuple = (ObjTuple *)obj;
+  int tot = fprintf(io, "t(%d", tuple->length);
+
+  for (int i = 0; i < tuple->length; i++) {
+    tot += fprintf(io, ", ");
+    dumpValue(io, tuple->values[i]);
+  }
+
+  tot += fputs(")", io);
+  return tot;
+}
 
 COMPILED_SOURCE(tuple);
 
@@ -147,25 +153,10 @@ const ObjDef Tuple = {
     .class_name = "Tuple",
     .size = sizeof(ObjTuple),
     .interned = true,
-    .free = free_tuple,
-    .mark = mark_tuple,
-    .bytes = tuple_bytes,
-    .inspect = inspect_tuple,
-    .dump = dump_tuple,
-    .length = tuple_length,
+    .free = freeTuple,
+    .mark = markTuple,
+    .bytes = tupleBytes,
+    .inspect = inspectTuple,
+    .dump = dumpTuple,
+    .length = tupleLength,
 };
-
-let t(int len, let *vals) { return obj(copy_tuple(vals, len)); }
-
-let t2(let a, let b) { return t(2, (let[]){a, b}); }
-let t3(let a, let b, let c) { return t(3, (let[]){a, b, c}); }
-let t4(let a, let b, let c, let d) { return t(4, (let[]){a, b, c, d}); }
-let t5(let a, let b, let c, let d, let e) {
-  return t(5, (let[]){a, b, c, d, e});
-}
-let t6(let a, let b, let c, let d, let e, let f) {
-  return t(6, (let[]){a, b, c, d, e, f});
-}
-let t7(let a, let b, let c, let d, let e, let f, let g) {
-  return t(7, (let[]){a, b, c, d, e, f, g});
-}

@@ -117,7 +117,7 @@ int disassembleInstruction(Chunk *chunk, int offset) {
   switch (instruction) {
   case OP_CLOSURE: {
     uint8_t constant = code[offset - 1];
-    ObjFun *fun = AS_FUN(chunk->constants.values[constant]);
+    ObjFunction *fun = asFunction(chunk->constants.values[constant]);
 
     for (int j = 0; j < fun->upvalueCount; j++) {
       int isLocal = code[offset++];
@@ -245,7 +245,8 @@ void debugExecution() {
     fprintf(stderr, "\n");
     for (int i = 0; i < vm.frameCount; i++)
       if (vm.frames[i].closure)
-        fprintf(stderr, "[ Frame %s ]", vm.frames[i].closure->fun->name->chars);
+        fprintf(stderr, "[ Frame %s ]",
+                vm.frames[i].closure->function->name->chars);
       else if (vm.frames[i].native)
         fprintf(stderr, "[ Native %s ]", vm.frames[i].native->name->chars);
       else fprintf(stderr, "[ Unknown frame ]");
@@ -253,8 +254,9 @@ void debugExecution() {
 
   fprintf(stderr, DIM "\n");
   if (frame->ip)
-    disassembleInstruction(&frame->closure->fun->chunk,
-                           (int)(frame->ip - frame->closure->fun->chunk.code));
+    disassembleInstruction(
+        &frame->closure->function->chunk,
+        (int)(frame->ip - frame->closure->function->chunk.code));
   fprintf(stderr, NO_DIM);
   prev_frame = frame;
 }

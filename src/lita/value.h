@@ -135,10 +135,8 @@ void writeValueArray(ValueArray *array, Value value);
 void freeValueArray(ValueArray *array);
 
 int inspect_value(FILE *io, Value value);
-int print_value(FILE *io, Value value);
 int trace(const char *label, Value value);
 
-let show(let val);
 let inspect(let val);
 const char *inspectc(let val);
 let pp(let val);
@@ -149,8 +147,8 @@ Hash hash_bytes(const char *key, usize length);
 Hash hash_value(Value val);
 Hash hash_values(Value *vals, usize length);
 
+double as_num(Value x);
 static inline int as_int(Value x) { return AS_NUMBER(x); }
-
 static inline bool is_int(Value x) {
   return is_num(x) && as_int(x) == AS_NUMBER(x);
 }

@@ -4,8 +4,9 @@
 #include "common.h"
 #include "object.h"
 
-#define AS_TUPLE(val) ((ObjTuple *)AS_OBJ(val))
-#define is_tuple(val) is_obj_def(val, &Tuple)
+#define allocateTuple() ALLOCATE_OBJ(Tuple)
+#define isTuple(val) is_obj_def(val, &Tuple)
+#define asTuple(val) as(Tuple, val)
 
 typedef struct ObjTuple {
   Obj obj;
@@ -15,7 +16,6 @@ typedef struct ObjTuple {
 
 const ObjDef Tuple;
 
-ObjTuple *as_tuple(Value val);
 ObjTuple *copy_tuple(Value *values, uint8_t length);
 ObjTuple *take_tuple(Value *values, uint8_t length);
 ObjTuple *zip_tuples(ObjTuple *a, ObjTuple *b, Value (*fn)(Value, Value));

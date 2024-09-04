@@ -6,12 +6,9 @@
 #include "string.h"
 #include "vm.h"
 
-ObjExample *asExample(let val) {
-  assert(isExample(val));
-  return AS_EXAMPLE(val);
+Value example(const char *comment) {
+  return obj(newExample(newString(comment)));
 }
-
-let example(const char *comment) { return obj(newExample(newString(comment))); }
 
 ObjExample *newExample(ObjString *comment) {
   ObjExample *example = allocateExample();
@@ -31,7 +28,7 @@ static void markExample(Obj *obj) {
 
 static int inspectExample(Obj *obj, FILE *io) {
   ObjExample *example = (ObjExample *)obj;
-  return fstring_format(io, "Example({})", OBJ_VAL(example->comment));
+  return fstring_format(io, "Example({})", obj(example->comment));
 }
 
 NATIVE_GETTER(Example, comment, OBJ_VAL);
