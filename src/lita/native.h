@@ -23,6 +23,7 @@ typedef struct ObjNative {
   NativeFn *fun;
 } ObjNative;
 
+Value fn(const char *name, int arity, NativeFn fun);
 ObjNative *newNative(ObjString *name, int arity, NativeFn fun);
 
 ObjDef Native;
@@ -71,6 +72,13 @@ typedef struct BootFunction {
   NATIVE_METHOD(klass, attr, 0) {                                              \
     Obj##klass *obj = (Obj##klass *)AS_OBJ(this);                              \
     return mapper(obj->attr);                                                  \
+  }
+
+#define NATIVE_DELEGATE_TO(klass, attr, to)                                    \
+  NATIVE_METHOD(klass, attr, 0) {                                              \
+    if (CURRENT_FRAME->reentries) return pop();                                \
+    vm_invoke(string(#to), 0);                                                 \
+    return VOID;                                                               \
   }
 
 #define ALIAS_OPERATOR(klass, from, to, op, arity)                             \

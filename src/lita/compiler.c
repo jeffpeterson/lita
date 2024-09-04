@@ -922,7 +922,7 @@ static void grouping(Ctx *ctx) {
 //   // emitByte(OP_POP);
 // }
 
-static void number(Ctx *ctx) {
+static void number_(Ctx *ctx) {
   double value = strtod(parser.previous.start, NULL);
   emitConstant(NUMBER_VAL(value));
 }
@@ -1561,7 +1561,7 @@ ParseRule rules[] = {
     [TOKEN_NIL] = {literal, NULL, PREC_NONE},
     [TOKEN_TRUE] = {literal, NULL, PREC_NONE},
 
-    [TOKEN_NUMBER] = {number, NULL, PREC_NONE},
+    [TOKEN_NUMBER] = {number_, NULL, PREC_NONE},
     [TOKEN_HEX] = {hex, NULL, PREC_NONE},
 
     [TOKEN_LEFT_BRACKET] = {array, NULL, PREC_NONE},

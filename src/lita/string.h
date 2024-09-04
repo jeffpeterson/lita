@@ -5,10 +5,12 @@
 #include "common.h"
 #include "object.h"
 
+#define str string
+
 #define allocateString() ALLOCATE_OBJ(String)
 #define isString(val) is_obj_def(val, &String)
 #define asString(val) as(String, val)
-#define AS_CSTRING(val) (asString(val)->chars)
+#define asChars(val) (asString(val)->chars)
 
 struct ObjString {
   Obj obj;

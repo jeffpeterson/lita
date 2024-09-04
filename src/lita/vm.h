@@ -12,15 +12,17 @@
 
 #define FRAMES_MAX 64
 #define STACK_MAX (FRAMES_MAX * UINT8_COUNT)
-#define CURRENT_FRAME &vm.frames[vm.frameCount - 1]
+#define CURRENT_FRAME (&vm.frames[vm.frameCount - 1])
 
 typedef struct CallFrame {
-  ObjNative *native;   /** Native function being executed. */
+  ObjNative *native; /** Native function being executed. */
+  usize reentries;   /** Number of times this native has been entered. */
+
   ObjClosure *closure; /** Fn containing the code. */
   u8 *ip;              /** Current instruction pointer. */
+  u8 *prev_ip;         /** Pointer to last instruction. */
   Value *slots;        /** Points into the VM's value stack. */
 
-  u8 *prev_ip;       /** Pointer to last instruction. */
   Value *prev_stack; /** Slots prior to last instruction. */
 } CallFrame;
 

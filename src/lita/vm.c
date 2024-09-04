@@ -138,10 +138,10 @@ void initVM(World *world) {
   vm.str.init = newString("init");
 
   // inspect_table(stderr, &vm.globals);
-  // pp(global(str("hash")));
-  // pp(global(str("Any")));
-  // pp(global(str("Object")));
-  // pp(global(str("Number")));
+  // pp(global(string("hash")));
+  // pp(global(string("Any")));
+  // pp(global(string("Object")));
+  // pp(global(string("Number")));
 
   /** Start collecting after 1MB is allocated. */
   vm.nextGC = 1024 * 1024;
@@ -187,9 +187,9 @@ InterpretResult bootVM() {
 
   foreach_obj_def(def) register_def(*def);
 
-  setGlobal(str("stdin"), io(stdin, UNOWNED));
-  setGlobal(str("stdout"), io(stdout, UNOWNED));
-  setGlobal(str("stderr"), io(stderr, UNOWNED));
+  setGlobal(string("stdin"), io(stdin, UNOWNED));
+  setGlobal(string("stdout"), io(stdout, UNOWNED));
+  setGlobal(string("stderr"), io(stderr, UNOWNED));
 
   ECS_IMPORT(vm.world, Lita);
 
@@ -244,11 +244,12 @@ void vm_swap(u8 a, u8 b) {
   vm.stackTop[-1 - b] = aa;
 }
 
-static CallFrame *new_frame(usize slots) {
+static CallFrame *newFrame(usize slots) {
   CallFrame *frame = &vm.frames[vm.frameCount++];
 
-  frame->closure = NULL;
   frame->native = NULL;
+  frame->reentries = 0;
+  frame->closure = NULL;
   frame->ip = NULL;
   frame->slots = vm.stackTop - slots;
   frame->prev_stack = vm.stackTop;
@@ -293,7 +294,7 @@ static InterpretResult move_into_closure(ObjClosure *closure, int argCount) {
    * stack: [..., this, arg1, arg2]
    *     receiver-^               ^-stackTop
    */
-  CallFrame *frame = new_frame(argCount + 1);
+  CallFrame *frame = newFrame(argCount + 1);
   frame->closure = closure;
   frame->ip = fun->chunk.code;
 
@@ -312,7 +313,7 @@ static InterpretResult move_into_native(ObjNative *native, int argc) {
    * stack: [..., this, arg1, arg2]
    *     receiver-^               ^-stackTop
    */
-  CallFrame *frame = new_frame(argc + 1);
+  CallFrame *frame = newFrame(argc + 1);
   frame->native = native;
 
   return INTERPRET_OK;
@@ -674,6 +675,7 @@ static InterpretResult vm_run() {
         fprintf(stderr, "[TRACE] Calling native %s with %d args\n",
                 frame->native->name->chars, argc);
       let result = frame->native->fun(peek(argc), argc, frame->slots + 1);
+      frame->reentries++;
 
       if (not_void(result)) {
         push(result);

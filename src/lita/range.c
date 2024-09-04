@@ -18,7 +18,7 @@ ObjRange *newRange(Value start, Value end) {
 
 static int rangeLength(Obj *obj) {
   ObjRange *range = (ObjRange *)obj;
-  return as_int(subtract(range->end, range->start));
+  return as_int(range->end) - as_int(range->start);
 }
 
 static void markRange(Obj *obj) {

@@ -99,8 +99,8 @@ assert (2, 3) != (1, 2)
 // assert (1, 2).map("n:") == ("n:1", "n:2")
 // assert (1, 2) * 4 == (4, 8)
 // assert (1, 2) * (3, 4) == (3, 8)
-// assert [1, 2].map(inc) == [2, 3]
-// assert [1, 2].map(.string) == ['1, '2]
+assert (1, 2).map(inc) == (2, 3)
+assert (1, 2).map(.string) == ('1, '2)
 
 /// Arrays
 assert [1, 2, 3]

@@ -80,7 +80,7 @@ int cmpObjects(Obj *a, Obj *b) {
 //   ObjClass *class = AS_CLASS(klass);
 //   Value obj = OBJ_VAL(newObject(class));
 
-//   Value init = findMethod(klass, str("init"));
+//   Value init = findMethod(klass, string("init"));
 //   if (is_nil(init)) return obj;
 
 //   return call(init, obj, argc, args);

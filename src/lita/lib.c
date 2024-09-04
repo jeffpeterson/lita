@@ -12,14 +12,10 @@
 #include "tuple.h"
 #include "vm.h"
 
-let fn(const char *name, int arity, NativeFn fun) {
-  return obj(newNative(newString(name), arity, fun));
-}
 let memory(u8 *bytes, int length) {
   return obj(copyString((char *)bytes, length));
 }
 let num(double num) { return NUMBER_VAL(num); }
-let str(const char *str) { return obj(newString(str)); }
 
 let method(let klass, let fun) {
   assert(isClass(klass));
@@ -42,34 +38,12 @@ let static_method(let klass, let fun) {
   return klass;
 }
 
-let add(let a, let b) {
-  push(a);
-  push(b);
-  vm_add();
-  return pop();
-}
-
-let subtract(let a, let b) {
-  if (is_num(a) && is_num(b)) return num(as_num(a) - as_num(b));
-
-  // if (isString(a) && isString(b))
-  //   remove b from end of a
-  return nil;
-}
-
-let multiply(let a, let b) {
-  push(a);
-  push(b);
-  vm_multiply();
-  return pop();
-}
-
 /** Returns arity of fun, -1 if not callable. */
 int arity(Value fun) {
   if (isBound(fun)) return arity(asBound(fun)->method);
   if (isClosure(fun)) return asClosure(fun)->function->arity;
   if (isNative(fun)) return asNative(fun)->arity;
-  if (isClass(fun)) return arity(findMethod(fun, str("init")));
+  if (isClass(fun)) return arity(findMethod(fun, string("init")));
 
   return -1;
 }
@@ -108,8 +82,6 @@ let find(let self, let key) {
 bool has(let self, let key) { return !is_nil(find(self, key)); }
 let get(let self, let key) { return bindFn(self, find(self, key)); }
 let set(let self, let key, let value) { return crash("Not implemented."); }
-
-let hash(let val) { return NUMBER_VAL(hash_value(val)); }
 
 u32 len(let x) {
   if (!is_obj(x)) return 1;

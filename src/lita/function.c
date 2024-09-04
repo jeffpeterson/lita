@@ -2,6 +2,7 @@
 
 #include "dump.h"
 #include "function.h"
+#include "lib.h"
 #include "memory.h"
 #include "native.h"
 #include "term.h"
@@ -55,6 +56,14 @@ static int dumpFunction(Obj *obj, FILE *io) {
 NATIVE_GETTER(Function, arity, NUMBER_VAL);
 NATIVE_GETTER(Function, variadic, BOOL_VAL);
 NATIVE_GETTER(Function, name, OBJ_VAL);
+NATIVE_METHOD(Function, bytes, 0) {
+  ObjFunction *fun = asFunction(this);
+  return memory(fun->chunk.code, fun->chunk.count);
+}
+NATIVE_METHOD(Closure, byteCount, 0) {
+  ObjFunction *fn = asFunction(this);
+  return number(fn->chunk.count);
+}
 
 REGISTER_OBJECT_DEF(Function);
 ObjDef Function = {

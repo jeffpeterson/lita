@@ -43,6 +43,7 @@ ObjString *concat_strings(ObjString *a, ObjString *b) {
 }
 
 ObjString *newString(const char *chars) {
+  if (chars == NULL) return NULL;
   return copyString(chars, strlen(chars));
 }
 
@@ -331,7 +332,7 @@ int inspect_string(Obj *obj, FILE *io) {
 
 int dump_string(Obj *obj, FILE *io) {
   ObjString *str = escape_string((ObjString *)obj);
-  return fprintf(io, "str(%.*s)", str->length, str->chars);
+  return fprintf(io, "string(%.*s)", str->length, str->chars);
 }
 
 REGISTER_OBJECT_DEF(String);

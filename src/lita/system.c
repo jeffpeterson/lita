@@ -79,10 +79,7 @@ void compileFile(ObjString *path) {
 }
 
 Value get_env(Value name) {
-  ObjString *str = as_string(name);
-  char *chars = str->chars;
+  char *chars = asChars(name);
   if (chars[0] == '$') chars++;
-  const char *val;
-  if ((val = getenv(chars))) return string(val);
-  return nil;
+  return string(getenv(chars));
 }

@@ -46,7 +46,7 @@ typedef uint64_t Value;
 #define is_nil(val) ((val) == NIL_VAL)
 #define is_void(val) ((val) == VOID_VAL)
 #define is_num(val) (((val) & QNAN) != QNAN)
-#define is_obj(val) valueIsObj(val)
+#define is_obj(val) valueIsObject(val)
 
 #define AS_BOOL(val) ((val) == TRUE_VAL)
 #define AS_NUMBER(val) valueToNum(val)
@@ -58,9 +58,10 @@ typedef uint64_t Value;
 #define NIL_VAL OBJ_VAL(NULL)
 /** Used internally. Not accessible from language. */
 #define VOID_VAL ((Value)(uint64_t)(QNAN | TAG_VOID))
-#define NUMBER_VAL(num) numToValue(num)
+#define NUMBER_VAL(num) doubleToValue(num)
 #define OBJ_VAL(obj) (Value)(TAG_OBJ | QNAN | (uint64_t)(uintptr_t)(obj))
 #define obj(o) OBJ_VAL(o)
+#define number(n) NUMBER_VAL(n)
 
 static inline double valueToNum(Value value) {
   double num;
@@ -68,13 +69,13 @@ static inline double valueToNum(Value value) {
   return num;
 }
 
-static inline Value numToValue(double num) {
+static inline Value doubleToValue(double num) {
   Value value;
   memcpy(&value, &num, sizeof(double));
   return value;
 }
 
-static inline bool valueIsObj(Value val) {
+static inline bool valueIsObject(Value val) {
   return !is_nil(val) && (val & (QNAN | TAG_OBJ)) == (QNAN | TAG_OBJ);
 }
 

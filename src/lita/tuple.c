@@ -76,7 +76,8 @@ ObjTuple *zip_tuples(ObjTuple *a, ObjTuple *b, Value (*fn)(Value, Value)) {
 }
 
 NATIVE_METHOD_NAMED(Tuple, add, "+", 1) {
-  return obj(zip_tuples(asTuple(this), asTuple(args[0]), add));
+  // return obj(zip_tuples(asTuple(this), asTuple(args[0]), add));
+  return nil;
 }
 
 NATIVE_METHOD(Tuple, get, 1) {
@@ -86,18 +87,21 @@ NATIVE_METHOD(Tuple, get, 1) {
   return tuple->values[idx];
 }
 
-// NATIVE_METHOD(Tuple, map, 1) {
-//   ObjTuple *tuple = asTuple(this);
-//   let fun = args[0];
+NATIVE_METHOD(Tuple, map, 1) {
+  ObjTuple *tuple = asTuple(this);
+  let fun = args[0];
+  usize i = CURRENT_FRAME->reentries;
 
-//   for (u8 i = 0; i < tuple->length; i++) {
-//     push(fun);
-//     push(tuple->values[i]);
-//     vm_call(1);
-//   }
-//   vm_tuple(tuple->length);
-//   return pop();
-// }
+  if (i < tuple->length) {
+    push(fun);
+    push(tuple->values[i]);
+    vm_call(1);
+    return VOID;
+  } else {
+    vm_tuple(tuple->length);
+    return pop();
+  }
+}
 
 // NATIVE_METHOD_NAMED(Tuple, star, "*", 1) {
 //   if (is_tuple(args[0]))

@@ -13,10 +13,8 @@
 
 typedef Value let;
 
-let fn(const char *name, int arity, NativeFn fun);
 let memory(u8 *bytes, int length);
 let num(double num);
-let str(const char *str);
 
 int arity(let fun);
 
@@ -30,11 +28,6 @@ bool has(let self, let key);
 let get(let self, let key);
 let set(let self, let key, let value);
 
-let add(let a, let b);
-let subtract(let a, let b);
-let multiply(let a, let b);
-
-let hash(let val);
 u32 len(let val);
 let name(let fn);
 
