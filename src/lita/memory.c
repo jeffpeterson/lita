@@ -122,6 +122,7 @@ static void freeObject(Obj *obj) {
 #endif
 
   freeTable(&obj->fields);
+  if (obj->eid) ecs_delete(vm.world, obj->eid);
 
   if (obj->def) {
     if (obj->def->free) obj->def->free(obj);
