@@ -18,7 +18,7 @@ ObjBound *newBound(let receiver, let method) {
 
 static int boundLength(Obj *obj) {
   ObjBound *bound = (ObjBound *)obj;
-  return len(bound->method);
+  return arity(bound->method);
 }
 
 static void markBound(Obj *obj) {

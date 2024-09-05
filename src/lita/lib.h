@@ -28,7 +28,6 @@ bool has(let self, let key);
 let get(let self, let key);
 let set(let self, let key, let value);
 
-u32 len(let val);
 let name(let fn);
 
 let method(let klass, let fun);

@@ -60,7 +60,7 @@ NATIVE_METHOD(Function, bytes, 0) {
   ObjFunction *fun = asFunction(this);
   return memory(fun->chunk.code, fun->chunk.count);
 }
-NATIVE_METHOD(Closure, byteCount, 0) {
+NATIVE_METHOD(Function, byteCount, 0) {
   ObjFunction *fn = asFunction(this);
   return number(fn->chunk.count);
 }

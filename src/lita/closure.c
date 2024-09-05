@@ -46,10 +46,10 @@ static int inspectClosure(Obj *obj, FILE *io) {
 }
 
 NATIVE_GETTER(Closure, function, OBJ_VAL);
-NATIVE_DELEGATE_TO(Closure, name, function);
-NATIVE_DELEGATE_TO(Closure, arity, function);
-NATIVE_DELEGATE_TO(Closure, bytes, function);
-NATIVE_DELEGATE_TO(Closure, byteCount, function);
+NATIVE_DELEGATE(Closure, name, function);
+NATIVE_DELEGATE(Closure, arity, function);
+NATIVE_DELEGATE(Closure, bytes, function);
+NATIVE_DELEGATE(Closure, byteCount, function);
 
 REGISTER_OBJECT_DEF(Closure);
 ObjDef Closure = {

@@ -74,11 +74,13 @@ typedef struct BootFunction {
     return mapper(obj->attr);                                                  \
   }
 
-#define NATIVE_DELEGATE_TO(klass, attr, to)                                    \
+#define NATIVE_DELEGATE(klass, attr, to)                                       \
   NATIVE_METHOD(klass, attr, 0) {                                              \
-    if (CURRENT_FRAME->reentries) return pop();                                \
-    vm_invoke(string(#to), 0);                                                 \
-    return VOID;                                                               \
+    switch (CURRENT_FRAME->reentries) {                                        \
+    case 0: return vm_invoke(string(#to), 0), VOID;                            \
+    case 1: return vm_invoke(string(#attr), argc), VOID;                       \
+    default: return pop();                                                     \
+    }                                                                          \
   }
 
 #define ALIAS_OPERATOR(klass, from, to, op, arity)                             \

@@ -83,15 +83,6 @@ bool has(let self, let key) { return !is_nil(find(self, key)); }
 let get(let self, let key) { return bindFn(self, find(self, key)); }
 let set(let self, let key, let value) { return crash("Not implemented."); }
 
-u32 len(let x) {
-  if (!is_obj(x)) return 1;
-
-  Obj *obj = AS_OBJ(x);
-
-  if (obj->def->length) return obj->def->length(obj);
-  return 1;
-}
-
 let name(let fn) {
   return isClass(fn)      ? obj(asClass(fn)->name)
          : isFunction(fn) ? obj(asFunction(fn)->name)
