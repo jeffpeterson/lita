@@ -562,7 +562,7 @@ static Value fn_src_slash_lita_slash_lib_slash_core_dot_lita_0() {
     fn_dump_2(),
     string("Object"),
     string("fn_id"),
-    NUMBER_VAL(0),
+    NUMBER_VAL(0.000000),
     string("Function"),
     fn_dump_3(),
     string("dump_global"),

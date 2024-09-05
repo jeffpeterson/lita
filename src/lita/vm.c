@@ -175,8 +175,10 @@ static InterpretResult defineNatives() {
   foreach_boot_function(boot) {
     ObjFunction *fun = boot->fun();
     trace("Booting", OBJ_VAL(fun));
-    InterpretResult result = run_function(fun);
-    if (result) return result;
+    if (fun) {
+      InterpretResult result = run_function(fun);
+      if (result) return result;
+    }
   }
 
   return INTERPRET_OK;

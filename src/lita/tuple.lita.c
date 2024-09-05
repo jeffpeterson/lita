@@ -68,7 +68,7 @@ static Value fn_head_2() {
   c->constants.count = c->constants.capacity = 2;
   Value values[] = {
     string("get"),
-    NUMBER_VAL(0),
+    NUMBER_VAL(0.000000),
   };
   c->constants.values = cloneMemory(values, sizeof(values));
   return obj(f);
@@ -118,11 +118,11 @@ static Value fn_each_3() {
 
   c->constants.count = c->constants.capacity = 6;
   Value values[] = {
-    NUMBER_VAL(0),
+    NUMBER_VAL(0.000000),
     string("length"),
     string("while condition"),
     string("get"),
-    NUMBER_VAL(1),
+    NUMBER_VAL(1.000000),
     string("falsy while condition"),
   };
   c->constants.values = cloneMemory(values, sizeof(values));

@@ -128,10 +128,10 @@ static Value fn__eq__eq__2() {
     string("length"),
     string("if condition"),
     string("object_id"),
-    NUMBER_VAL(0),
+    NUMBER_VAL(0.000000),
     string("while condition"),
     string("get"),
-    NUMBER_VAL(1),
+    NUMBER_VAL(1.000000),
     string("falsy while condition"),
   };
   c->constants.values = cloneMemory(values, sizeof(values));
@@ -182,11 +182,11 @@ static Value fn_each_3() {
 
   c->constants.count = c->constants.capacity = 6;
   Value values[] = {
-    NUMBER_VAL(0),
+    NUMBER_VAL(0.000000),
     string("length"),
     string("while condition"),
     string("get"),
-    NUMBER_VAL(1),
+    NUMBER_VAL(1.000000),
     string("falsy while condition"),
   };
   c->constants.values = cloneMemory(values, sizeof(values));
@@ -243,11 +243,11 @@ static Value fn_map_4() {
 
   c->constants.count = c->constants.capacity = 7;
   Value values[] = {
-    NUMBER_VAL(0),
+    NUMBER_VAL(0.000000),
     string("length"),
     string("while condition"),
     string("get"),
-    NUMBER_VAL(1),
+    NUMBER_VAL(1.000000),
     string("<<"),
     string("falsy while condition"),
   };

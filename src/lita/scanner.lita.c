@@ -111,7 +111,7 @@ static Value fn_previous_3() {
 
   c->constants.count = c->constants.capacity = 1;
   Value values[] = {
-    NUMBER_VAL(0),
+    NUMBER_VAL(0.000000),
   };
   c->constants.values = cloneMemory(values, sizeof(values));
   return obj(f);
@@ -138,7 +138,7 @@ static Value fn_current_4() {
 
   c->constants.count = c->constants.capacity = 1;
   Value values[] = {
-    NUMBER_VAL(0),
+    NUMBER_VAL(0.000000),
   };
   c->constants.values = cloneMemory(values, sizeof(values));
   return obj(f);
@@ -193,7 +193,7 @@ static Value fn_position_6() {
 
   c->constants.count = c->constants.capacity = 1;
   Value values[] = {
-    NUMBER_VAL(0),
+    NUMBER_VAL(0.000000),
   };
   c->constants.values = cloneMemory(values, sizeof(values));
   return obj(f);
@@ -220,7 +220,7 @@ static Value fn_line_7() {
 
   c->constants.count = c->constants.capacity = 1;
   Value values[] = {
-    NUMBER_VAL(1),
+    NUMBER_VAL(1.000000),
   };
   c->constants.values = cloneMemory(values, sizeof(values));
   return obj(f);
@@ -324,7 +324,7 @@ static Value fn_current_10() {
     string("source"),
     string("span"),
     string("end"),
-    NUMBER_VAL(1),
+    NUMBER_VAL(1.000000),
   };
   c->constants.values = cloneMemory(values, sizeof(values));
   return obj(f);
@@ -488,8 +488,8 @@ static Value fn_isSubscript_14() {
   c->constants.count = c->constants.capacity = 3;
   Value values[] = {
     string("in"),
-    NUMBER_VAL(8320),
-    NUMBER_VAL(8329),
+    NUMBER_VAL(8320.000000),
+    NUMBER_VAL(8329.000000),
   };
   c->constants.values = cloneMemory(values, sizeof(values));
   return obj(f);

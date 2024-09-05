@@ -23,7 +23,26 @@ ObjNative *newNative(ObjString *name, int arity, NativeFn fun) {
   return native;
 }
 
+static double timespecDiff(struct timespec *start, struct timespec *end) {
+  return (end->tv_sec - start->tv_sec) + (end->tv_nsec - start->tv_nsec) / 1e9;
+}
+
+static struct timespec startTime;
+
+static double elapsed() {
+  struct timespec now;
+  clock_gettime(CLOCK_MONOTONIC, &now);
+  return timespecDiff(&startTime, &now);
+}
+
+AT_VM_BOOT(setStartTime) {
+  clock_gettime(CLOCK_MONOTONIC, &startTime);
+  return NULL;
+}
+
 NATIVE_FUNCTION(clock, 0) { return num((double)clock() / CLOCKS_PER_SEC); }
+NATIVE_FUNCTION(time, 0) { return num((double)time(NULL)); }
+NATIVE_FUNCTION(elapsed, 0) { return num(elapsed()); }
 NATIVE_FUNCTION(hash, 1) {
   return OBJ_VAL(stringf("%#x", hash_value(args[0])));
 }

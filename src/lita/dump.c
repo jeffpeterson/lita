@@ -12,7 +12,7 @@ Table ids;
 int dumpValue(FILE *io, Value v) {
   if (is_nil(v)) return fputs("nil", io);
   if (is_bool(v)) return fputs(AS_BOOL(v) ? "TRUE_VAL" : "FALSE_VAL", io);
-  if (is_num(v)) return fprintf(io, "NUMBER_VAL(%g)", AS_NUMBER(v));
+  if (is_num(v)) return fprintf(io, "NUMBER_VAL(%f)", AS_NUMBER(v));
   if (is_obj(v)) return dumpObject(io, AS_OBJ(v));
 
   return fprintf(io, "crash(\"Value without dump: %s\")", inspectc(v));

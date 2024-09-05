@@ -106,4 +106,9 @@ typedef struct BootFunction {
   static BootFunction SECTION(boot_functions)                                  \
       name##_lita_boot = {#name, name##_lita};
 
+#define AT_VM_BOOT(name)                                                       \
+  ObjFunction *name();                                                         \
+  static BootFunction SECTION(boot_functions) name##_boot = {#name, name};     \
+  ObjFunction *name()
+
 #endif
