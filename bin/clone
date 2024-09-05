@@ -1,0 +1,20 @@
+#!/usr/bin/env lita
+
+if !$1 or !$2
+	print "Usage: " $0 " <from> <to>\n"
+	return 1
+
+fn replace(string)
+	return string \
+		.replace($1.underscore, $2.underscore) \
+		.replace($1.camelize.capitalize, $2.camelize.capitalize) \
+		.replace($1.uppercase, $2.uppercase)
+
+let files = ["src/lita/"$1".c", "src/lita/"$1".h"]
+
+fn cloneFile(path)
+	let dest = replace(path)
+	write(dest, replace(read(path)))
+	print "Copied "path" to "dest"\n"
+
+files.each(cloneFile)

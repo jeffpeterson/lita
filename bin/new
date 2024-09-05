@@ -1,21 +1,8 @@
-#!lita
+#!/usr/bin/env lita
 
 
 if !$1
 	print "Usage: " $0 " <name>\n"
 	return 1
 
-fn replace(string)
-	return string \
-		.replace("example", $1.underscore) \
-		.replace("Example", $1.camelize.capitalize) \
-		.replace("EXAMPLE", $1.uppercase)
-
-let cContents = read("src/lita/example.c")
-let hContents = read("src/lita/example.h")
-let fileName = $1.underscore
-
-write("src/lita" / fileName ".c", replace(cContents))
-write("src/lita" / fileName ".h", replace(hContents))
-
-print "Created " fileName ".c and " fileName ".h\n"
+shell("bin/clone", "example", $1)

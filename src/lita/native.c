@@ -40,9 +40,21 @@ AT_VM_BOOT(setStartTime) {
   return NULL;
 }
 
-NATIVE_FUNCTION(clock, 0) { return num((double)clock() / CLOCKS_PER_SEC); }
-NATIVE_FUNCTION(time, 0) { return num((double)time(NULL)); }
-NATIVE_FUNCTION(elapsed, 0) { return num(elapsed()); }
+NATIVE_FUNCTION(shell, 1) {
+  char *str = NULL;
+  usize len = 0;
+  FILE *io = open_memstream(&str, &len);
+
+  fprintf(io, "%s", asChars(args[0]));
+  for (int i = 1; i < argc; i++)
+    fprintf(io, " %s", escape_string(as_string(args[i]))->chars);
+
+  fclose(io);
+  return number(system(take_string(str, len)->chars));
+}
+NATIVE_FUNCTION(clock, 0) { return number((double)clock() / CLOCKS_PER_SEC); }
+NATIVE_FUNCTION(time, 0) { return number((double)time(NULL)); }
+NATIVE_FUNCTION(elapsed, 0) { return number(elapsed()); }
 NATIVE_FUNCTION(hash, 1) {
   return OBJ_VAL(stringf("%#x", hash_value(args[0])));
 }
