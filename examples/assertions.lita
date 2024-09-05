@@ -25,6 +25,7 @@ assert (1, 2).class == Tuple
 /// Functions
 fn add(a, b) = a + b
 assert add(1, 2) == 3
+assert add(1, 2, 3) == 3
 assert add.arity == 2
 assert add.byteCount == 8
 
@@ -38,11 +39,14 @@ fn sum(...xs)
 
 assert sum(1, 2, 3) == 6
 
+// fn sum'(...) = sum(...)
+// assert sum'(1, 2, 3) == 6
+
 /// Natives
 assert clock()
 assert (3; 4) == 3
-assert hash(1) == "0x65497e01"
-assert hash(nil) == "0x85dfeebb"
+assert hash(1) == '0x65497e01
+assert hash(nil) == '0x85dfeebb
 
 /// Math
 let a = 2

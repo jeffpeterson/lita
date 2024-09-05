@@ -57,7 +57,7 @@ typedef enum Precedence {
   PREC_TERM,       // + -
   PREC_ADJOINING,  // (x y z)
   PREC_FACTOR,     // * /
-  PREC_RANGE,      // ..
+  PREC_RANGE,      // .. ...
   PREC_PREFIX,     // - ++ -- !
   PREC_DOT,        // .
   PREC_TOUCHING,   // 3x
@@ -1613,6 +1613,7 @@ ParseRule rules[] = {
     [TOKEN_STAR] = {NULL, binary, PREC_FACTOR},
 
     [TOKEN_DOT_DOT] = {NULL, binary, PREC_RANGE},
+    // [TOKEN_ELLIPSIS] = {ellipsis, NULL, PREC_RANGE},
 
     [TOKEN_PLUS_PLUS] = {prefix, postfix, PREC_PREFIX},
     [TOKEN_MINUS_MINUS] = {prefix, postfix, PREC_PREFIX},
