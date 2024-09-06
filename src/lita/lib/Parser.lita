@@ -1,3 +1,20 @@
+// enum Precedence
+// 	None
+// 	Semi       // ; NEWLINE
+// 	Comma      // ,
+// 	Assignment // = += -= /= *=
+// 	Or         // or
+// 	And        // and
+// 	Equality   // == !=
+// 	Comparison // < > <= >=
+// 	Term       // + -
+// 	Factor     // * /
+// 	Range      // ..
+// 	Prefix     // ! - ++ -- aka PREC_UNARY
+// 	Postfix    // ++ --
+// 	Call       // . ()
+// 	Primary
+
 // class Precedence
 
 // class None < Precedence

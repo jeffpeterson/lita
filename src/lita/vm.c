@@ -96,11 +96,6 @@ let crash(const char *fmt, ...) {
   exit(70);
 }
 
-void panic(const char *str) {
-  fprintf(stderr, "Panic: %s", str);
-  exit(70);
-}
-
 Value setGlobal(Value name, Value val) {
   tableSet(&vm.globals, push(name), push(val));
   popn(2);
@@ -111,7 +106,7 @@ Value global(Value name) {
   return tableGet(&vm.globals, name, &name) ? name : nil;
 }
 
-Value global_class(const char *name) {
+Value globalClass(const char *name) {
   let vname = string(name);
   let klass = global(vname);
   if (isClass(klass)) return klass;
@@ -137,21 +132,15 @@ void initVM(World *world) {
 
   vm.str.init = newString("init");
 
-  // inspect_table(stderr, &vm.globals);
-  // pp(global(string("hash")));
-  // pp(global(string("Any")));
-  // pp(global(string("Object")));
-  // pp(global(string("Number")));
-
   /** Start collecting after 1MB is allocated. */
   vm.nextGC = 1024 * 1024;
 }
 
-static void register_def(ObjDef *def) {
+static void registerDef(ObjDef *def) {
   if (!def->class_name) crash("def must have a class_name");
   if (!def->size) crash("def must have a size");
 
-  let klass = global_class(def->class_name);
+  let klass = globalClass(def->class_name);
   asClass(klass)->instance_def = def;
 }
 
@@ -163,7 +152,7 @@ static InterpretResult defineNatives() {
     trace(native->class_name, fun);
 
     if (native->class_name) {
-      let klass = global_class(native->class_name);
+      let klass = globalClass(native->class_name);
       if (native->is_static) static_method(klass, fun);
       else method(klass, fun);
 
@@ -187,7 +176,7 @@ static InterpretResult defineNatives() {
 InterpretResult bootVM() {
   InterpretResult result = defineNatives();
 
-  foreach_obj_def(def) register_def(*def);
+  foreach_obj_def(def) registerDef(*def);
 
   setGlobal(string("stdin"), io(stdin, UNOWNED));
   setGlobal(string("stdout"), io(stdout, UNOWNED));
@@ -228,18 +217,6 @@ Value pope(Value val) {
 
 Value *popn(u8 n) { return vm.stackTop -= n; }
 
-// invoke the method on this
-InterpretResult vm_send(Value this, Value method_name, int argc, ...) {
-  push(this);
-  va_list args;
-
-  va_start(args, argc);
-  for (int i = 0; i < argc; i++) push(va_arg(args, Value));
-  va_end(args);
-
-  return vm_invoke(method_name, argc);
-}
-
 void vm_swap(u8 a, u8 b) {
   Value aa = peek(a);
   vm.stackTop[-1 - a] = peek(b);
@@ -265,7 +242,7 @@ static CallFrame *newFrame(usize slots) {
  *
  * Returns whether or not the call was successful.
  */
-static InterpretResult move_into_closure(ObjClosure *closure, int argCount) {
+static InterpretResult moveIntoClosure(ObjClosure *closure, int argCount) {
   ObjFunction *fun = closure->function;
 
   if (argCount < fun->arity)
@@ -303,7 +280,7 @@ static InterpretResult move_into_closure(ObjClosure *closure, int argCount) {
   return INTERPRET_OK;
 }
 
-static InterpretResult move_into_native(ObjNative *native, int argc) {
+static InterpretResult moveIntoNative(ObjNative *native, int argc) {
   if (argc < native->arity)
     return runtimeError("Expected %d arguments but got %d.", native->arity,
                         argc);
@@ -324,7 +301,7 @@ static InterpretResult move_into_native(ObjNative *native, int argc) {
 ObjClass *valueClass(Value v) {
   if (is_obj(v)) {
     Obj *obj = AS_OBJ(v);
-    if (!obj->klass) obj->klass = asClass(global_class(obj->def->class_name));
+    if (!obj->klass) obj->klass = asClass(globalClass(obj->def->class_name));
     return obj->klass;
   }
 
@@ -333,7 +310,7 @@ ObjClass *valueClass(Value v) {
                      : is_bool(v) ? "Bool"
                                   : "Any";
 
-  return asClass(global_class(name));
+  return asClass(globalClass(name));
 }
 
 /**
@@ -341,30 +318,30 @@ ObjClass *valueClass(Value v) {
  *
  * Returns whether or not the call was successful.
  */
-bool call_value(Value callee, int argCount) {
-  trace("call_value", callee);
+InterpretResult callValue(Value callee, int argCount) {
+  trace("callValue", callee);
 
   if (is_obj(callee)) {
-    if (isClosure(callee))
-      return !move_into_closure(asClosure(callee), argCount);
+    if (isClosure(callee)) return moveIntoClosure(asClosure(callee), argCount);
     else if (isNative(callee))
-      return !move_into_native(AS_NATIVE(callee), argCount);
+      return moveIntoNative(AS_NATIVE(callee), argCount);
     else if (isClass(callee)) {
       // Replace the class with a new instance.
       vm.stackTop[-argCount - 1] = OBJ_VAL(new_instance(asClass(callee)));
-      return !vm_invoke(OBJ_VAL(vm.str.init), argCount);
+      return vm_invoke(OBJ_VAL(vm.str.init), argCount);
     } else if (isBound(callee)) {
       ObjBound *bound = asBound(callee);
       vm.stackTop[-argCount - 1] = bound->receiver;
-      return call_value(bound->method, argCount);
+      return callValue(bound->method, argCount);
     }
   }
 
-  if (argCount == 1) return !vm_invoke(string(""), 1);
+  if (argCount == 1) return vm_invoke(string(""), 1);
   return false;
 }
 
-static bool invokeFromClass(ObjClass *klass, ObjString *name, int argCount) {
+static InterpretResult invokeFromClass(ObjClass *klass, ObjString *name,
+                                       int argCount) {
   Value method;
 
   if (!tableGet(&klass->methods, OBJ_VAL(name), &method)) {
@@ -373,7 +350,7 @@ static bool invokeFromClass(ObjClass *klass, ObjString *name, int argCount) {
     return invokeFromClass(klass->parent, name, argCount);
   }
 
-  return call_value(method, argCount);
+  return callValue(method, argCount);
 }
 
 /** [argCount self][0 ...args] */
@@ -394,7 +371,7 @@ InterpretResult vm_invoke(Value name, int argCount) {
     Value value;
     if (tableGet(&obj->fields, name, &value)) {
       vm.stackTop[-argCount - 1] = value;
-      return !call_value(value, argCount);
+      return callValue(value, argCount);
     }
   }
 
@@ -402,12 +379,11 @@ InterpretResult vm_invoke(Value name, int argCount) {
 
   if (config.tracing)
     fprintf(stderr, "[TRACE] invoking %s.%s()\n", klass->name->chars,
-            as_string(name)->chars);
+            asChars(name));
 
-  if (!invokeFromClass(klass, as_string(name), argCount)) {
-    return runtimeError("Undefined method %s on %s.",
-                        as_string(inspect(name))->chars,
-                        as_string(inspect(OBJ_VAL(klass)))->chars);
+  if (invokeFromClass(klass, as_string(name), argCount)) {
+    return runtimeError("Undefined method %s on %s.", asChars(inspect(name)),
+                        asChars(inspect(OBJ_VAL(klass))));
   }
 
   return INTERPRET_OK;
@@ -470,33 +446,7 @@ static void defineMethod(ObjString *name) {
   pop();
 }
 
-static bool isFalsey(Value value) {
-  return is_nil(value) || (is_bool(value) && !AS_BOOL(value));
-}
-
-/** [1 a][0 b] -> [0 result] */
-InterpretResult vm_add() {
-  Value b = peek(0);
-  Value a = peek(1);
-
-  if (!is_num(a) || !is_num(b)) return vm_invoke(string("+"), 1);
-
-  popn(2);
-  push(num(AS_NUMBER(a) + AS_NUMBER(b)));
-  return INTERPRET_OK;
-}
-
-/** [1 a][0 b] -> [0 result] */
-InterpretResult vm_multiply() {
-  Value b = peek(0);
-  Value a = peek(1);
-
-  if (!is_num(a) || !is_num(b)) return vm_invoke(string("*"), 1);
-
-  popn(2);
-  push(num(AS_NUMBER(a) * AS_NUMBER(b)));
-  return INTERPRET_OK;
-}
+static bool isFalsey(Value value) { return is_nil(value) || is_false(value); }
 
 /** [length ...args][0 arg] -> [0 array] */
 void vm_array(u32 length) {
@@ -514,11 +464,9 @@ InterpretResult vm_assert(Value src) {
 #endif
 
   if (isFalsey(value)) {
-    fprintf(stderr, "\n\n");
-    fstring_format(stderr, "{} -> {}", src, value);
-    fprintf(stderr, "\n\n");
+    fstring_format(stderr, "\n\n{} -> {}\n\n", src, value);
 
-    return runtimeError(FG_CYAN "%s" FG_DEFAULT " -> %s", as_string(src)->chars,
+    return runtimeError(FG_CYAN "%s" FG_DEFAULT " -> %s", asChars(src),
                         inspectc(value));
   }
 
@@ -530,24 +478,7 @@ InterpretResult vm_assert(Value src) {
 }
 
 // [argc fn][1 arg1][0 ...args ] -> [0 return]
-InterpretResult vm_call(int argc) {
-  return call_value(peek(argc), argc) ? INTERPRET_OK : INTERPRET_RUNTIME_ERROR;
-}
-
-/** [1 a][0 b] -> [0 result] */
-InterpretResult vm_divide() {
-  Value b = peek(0);
-  Value a = peek(1);
-  Value res = nil;
-
-  if (is_num(a) && is_num(b)) res = num(AS_NUMBER(a) / AS_NUMBER(b));
-
-  if (is_nil(res)) return vm_invoke(string("/"), 1);
-
-  popn(2);
-  push(res);
-  return INTERPRET_OK;
-}
+InterpretResult vm_call(int argc) { return callValue(peek(argc), argc); }
 
 // [] -> [0 value]
 InterpretResult vm_get_global(Value name) {
@@ -644,6 +575,7 @@ static InterpretResult vm_run() {
   if (vm.frameCount > 1) return runtimeError("VM already running.");
 
   register CallFrame *frame = CURRENT_FRAME;
+  InterpretResult err;
 
 #define READ_BYTE() (*frame->ip++)
 /** Update the cached frame variable. Idempotent. */
@@ -655,13 +587,14 @@ static InterpretResult vm_run() {
 #define READ_STRING() asString(READ_CONSTANT())
 #define BINARY_OP(valueType, op)                                               \
   do {                                                                         \
-    if (!is_num(peek(0)) || !is_num(peek(1))) {                                \
-      runtimeError("Operands must be numbers.");                               \
-      return INTERPRET_RUNTIME_ERROR;                                          \
+    if (is_num(peek(0)) && is_num(peek(1))) {                                  \
+      double b = AS_NUMBER(pop());                                             \
+      double a = AS_NUMBER(pop());                                             \
+      push(valueType(a op b));                                                 \
+    } else {                                                                   \
+      if ((err = vm_invoke(string(#op), 1))) return err;                       \
+      SYNC_FRAME();                                                            \
     }                                                                          \
-    double b = AS_NUMBER(pop());                                               \
-    double a = AS_NUMBER(pop());                                               \
-    push(valueType(a op b));                                                   \
   } while (false)
 
   for (;;) {
@@ -709,14 +642,11 @@ static InterpretResult vm_run() {
     frame->prev_stack = vm.stackTop;
     frame->prev_ip = frame->ip;
 
-    InterpretResult err;
     u8 instruction = READ_BYTE();
 
     switch (instruction) {
-    case OP_CONSTANT: {
-      push(READ_CONSTANT());
-      break;
-    }
+    case OP_CONSTANT: push(READ_CONSTANT()); break;
+
     case OP_NIL: push(NIL_VAL); break;
     case OP_TRUE: push(BOOL_VAL(true)); break;
     case OP_FALSE: push(BOOL_VAL(false)); break;
@@ -725,7 +655,7 @@ static InterpretResult vm_run() {
     case OP_POP: pop(); break;
     case OP_POPN: popn(READ_BYTE()); break;
     case OP_SWAP: {
-      uint8_t args = READ_BYTE();
+      u8 args = READ_BYTE();
       vm_swap(args & 0x0f, args >> 4);
       break;
     }
@@ -748,18 +678,17 @@ static InterpretResult vm_run() {
     case OP_GET_GLOBAL:
       if ((err = vm_get_global(READ_CONSTANT()))) return err;
       break;
-
     case OP_SET_GLOBAL:
       if ((err = vm_set_global(READ_CONSTANT()))) return err;
       break;
 
     case OP_GET_LOCAL: {
-      uint8_t slot = READ_BYTE();
+      u8 slot = READ_BYTE();
       push(frame->slots[slot]);
       break;
     }
     case OP_SET_LOCAL: {
-      uint8_t slot = READ_BYTE();
+      u8 slot = READ_BYTE();
       frame->slots[slot] = peek(0);
       break;
     }
@@ -783,38 +712,24 @@ static InterpretResult vm_run() {
       break;
 
     case OP_GET_UPVALUE: {
-      uint8_t slot = READ_BYTE();
+      u8 slot = READ_BYTE();
       push(*frame->closure->upvalues[slot]->location);
       break;
     }
 
     case OP_SET_UPVALUE: {
-      uint8_t slot = READ_BYTE();
+      u8 slot = READ_BYTE();
       *frame->closure->upvalues[slot]->location = peek(0);
       break;
     }
 
-    case OP_EQUAL:
-      vm_invoke(string("=="), 1);
-      SYNC_FRAME();
-      break;
-
+    case OP_EQUAL: BINARY_OP(BOOL_VAL, ==); break;
     case OP_GREATER: BINARY_OP(BOOL_VAL, >); break;
     case OP_LESS: BINARY_OP(BOOL_VAL, <); break;
-
-    case OP_ADD:
-      if ((err = vm_add())) return err;
-      SYNC_FRAME();
-      break;
-    case OP_DIVIDE:
-      if ((err = vm_divide())) return err;
-      SYNC_FRAME();
-      break;
+    case OP_ADD: BINARY_OP(NUMBER_VAL, +); break;
+    case OP_DIVIDE: BINARY_OP(NUMBER_VAL, /); break;
     case OP_SUBTRACT: BINARY_OP(NUMBER_VAL, -); break;
-    case OP_MULTIPLY:
-      if ((err = vm_multiply())) return err;
-      SYNC_FRAME();
-      break;
+    case OP_MULTIPLY: BINARY_OP(NUMBER_VAL, *); break;
     case OP_NOT: push(BOOL_VAL(isFalsey(pop()))); break;
     case OP_NEGATE:
       if (!is_num(peek(0))) {
@@ -825,17 +740,17 @@ static InterpretResult vm_run() {
       break;
 
     case OP_JUMP: {
-      uint16_t offset = READ_SHORT();
+      u16 offset = READ_SHORT();
       frame->ip += offset;
       break;
     }
     case OP_JUMP_IF_FALSE: {
-      uint16_t offset = READ_SHORT();
+      u16 offset = READ_SHORT();
       if (isFalsey(peek(0))) frame->ip += offset;
       break;
     }
     case OP_LOOP: {
-      uint16_t offset = READ_SHORT();
+      u16 offset = READ_SHORT();
       frame->ip -= offset;
       break;
     }
@@ -848,15 +763,10 @@ static InterpretResult vm_run() {
     case OP_CLASS: { // []
       let name = READ_CONSTANT();
       bool isLocal = (bool)READ_BYTE();
-      let klass;
 
-      // Re-open existing global classes
-      if (isLocal || !tableGet(&vm.globals, name, &klass)) {
-        klass = OBJ_VAL(newClass(as_string(name)));
-        if (!isLocal) tableSet(&vm.globals, name, klass);
-      }
+      if (isLocal) push(OBJ_VAL(newClass(as_string(name))));
+      else push(globalClass(asChars(name)));
 
-      push(klass);
       break;
     }
 
@@ -909,8 +819,8 @@ static InterpretResult vm_run() {
       push(OBJ_VAL(closure));
 
       for (int i = 0; i < closure->upvalueCount; i++) {
-        uint8_t isLocal = READ_BYTE();
-        uint8_t index = READ_BYTE();
+        u8 isLocal = READ_BYTE();
+        u8 index = READ_BYTE();
 
         if (isLocal)
           closure->upvalues[i] = captureUpvalue(frame->slots + index);
@@ -994,7 +904,7 @@ InterpretResult run_function(ObjFunction *fun) {
 
 InterpretResult run_closure(ObjClosure *closure) {
   push(OBJ_VAL(closure));
-  return move_into_closure(closure, 0) || vm_run();
+  return moveIntoClosure(closure, 0) || vm_run();
 }
 
 InterpretResult interpret(const char *source, ObjString *name) {

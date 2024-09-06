@@ -8,9 +8,5 @@ macro assert(...args)
 				print "Expected: "
 				return x
 		x ->
-			if x
-				print '.
-				return x
-			else
-				print 'F
-				return x
+			if x: x; print '.
+			else: x; print 'F

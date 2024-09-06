@@ -29,7 +29,7 @@ static Value fn_init_1() {
     OP_GET_LOCAL, 0,
     OP_RETURN,
   };
-  int lines[] = { 21, 21, 21, 21, 21, 21, 21, 22, 22, 22,};
+  int lines[] = { 38, 38, 38, 38, 38, 38, 38, 39, 39, 39,};
   c->code = cloneMemory(code, sizeof(code));
   c->lines = cloneMemory(lines, sizeof(lines));
 
@@ -65,7 +65,7 @@ static Value fn_src_slash_lita_slash_lib_slash_Parser_dot_lita_0() {
     OP_ASSERT_STACK, 4, 2,
     OP_RETURN,
   };
-  int lines[] = { 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22,};
+  int lines[] = { 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 39, 39, 39, 39, 39, 39, 39, 39, 39, 39, 39, 39,};
   c->code = cloneMemory(code, sizeof(code));
   c->lines = cloneMemory(lines, sizeof(lines));
 

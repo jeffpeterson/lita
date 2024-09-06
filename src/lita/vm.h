@@ -90,12 +90,10 @@ Value pope(Value val);
 /** pop() n values off the stack. */
 Value *popn(u8 n);
 
-InterpretResult vm_send(Value this, Value method_name, int argc, ...);
-
 Value global(Value name);
 Value setGlobal(Value name, Value val);
 
-Value global_class(const char *name);
+Value globalClass(const char *name);
 
 Value intern(Value val);
 Obj *getInterned(Hash *hash, const char *bytes, int length);
@@ -108,17 +106,9 @@ void assertOkResult(InterpretResult result);
 /** Something went wrong. Stop the VM and exit. */
 let crash(const char *fmt, ...);
 
-/**
- * Something went terribly wrong.
- * Memory is unsafe. Exit the process now.
- */
-void panic(const char *str);
-
-bool call_value(Value callee, int argCount);
+InterpretResult callValue(Value callee, int argCount);
 
 Value vm_peek(int i);
-InterpretResult vm_add();
-InterpretResult vm_multiply();
 InterpretResult vm_assert(Value src);
 InterpretResult vm_call(int argc);
 InterpretResult vm_invoke(Value name, int argCount);

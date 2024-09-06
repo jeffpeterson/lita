@@ -4,6 +4,7 @@
   "scopeName": "source.lita",
   "patterns": [
     {"include": "#comments"},
+    {"include": "#shebang"},
     {"include": "#keywords"},
     {"include": "#statements"},
     {"include": "#callables"},
@@ -11,8 +12,7 @@
     {"include": "#embeds"},
     {"include": "#strings"},
     {"include": "#regex"},
-    {"include": "#digits"},
-    {"include": "#shebang"}
+    {"include": "#digits"}
   ],
   "repository": {
     "shebang": {

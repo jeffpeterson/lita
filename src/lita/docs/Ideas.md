@@ -1,7 +1,7 @@
 # Language Ideas
 
 Some distinction between checking if a value is empty and checking if it's
-falsy. I think a postfix `?` would make sense for one of those operations.
+falsey. I think a postfix `?` would make sense for one of those operations.
 
 Some form of optional chaining. This could be implemented on `nil`:
 `nil.foo.bar //=> nil`. `!` could be used to prevent this:

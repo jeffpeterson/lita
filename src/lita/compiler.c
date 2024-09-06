@@ -134,7 +134,6 @@ typedef struct ClassCompiler {
 Parser parser;
 Compiler *current = NULL;
 ClassCompiler *currentClass = NULL;
-Chunk *compilingChunk;
 
 static Ctx newCtx() {
   return (Ctx){.precedence = PREC_NONE, .canAssign = false};
@@ -1161,6 +1160,9 @@ static void function(FunType type) {
 static void getter() {
   let name = consumeIdent("Expect property name.");
 
+  // TODO: Figure out what fields was meant to do.
+  tableSet(&currentClass->fields, name, TRUE_VAL);
+
   if (match(TOKEN_EQUAL)) {
     u8 nameConstant = makeConstant(name);
     Compiler compiler;
@@ -1251,7 +1253,9 @@ static void classDeclaration(Ctx *ctx) {
   emitSwap(0, 1); // [1 class][0 super] -> [1 super][0 class]
 
   if (match(TOKEN_INDENT)) {
-    while (!check(TOKEN_DEDENT) && !check(TOKEN_EOF)) method();
+    while (!check(TOKEN_DEDENT) && !check(TOKEN_EOF))
+      if (match(TOKEN_CLASS)) classDeclaration(ctx);
+      else method();
 
     consume(TOKEN_DEDENT, "Expect dedent after class body.");
   } else {
@@ -1450,7 +1454,7 @@ static void whileStatement() {
   emitLoop(loopStart); // Loop back to the condition.
 
   patchJump(exitJump); // Exit the loop.
-  assertStackSize(1, "falsy while condition");
+  assertStackSize(1, "falsey while condition");
   emitByte(OP_POP); // []
 }
 

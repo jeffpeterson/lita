@@ -1,7 +1,7 @@
 #!/usr/bin/env lita
 
 if !$1 or !$2
-	print "Usage: " $0 " <from> <to>\n"
+	print("Usage: "$0" <from> <to>\n")
 	return 1
 
 fn replace(string)
@@ -15,6 +15,6 @@ let files = ["src/lita/"$1".c", "src/lita/"$1".h"]
 fn cloneFile(path)
 	let dest = replace(path)
 	write(dest, replace(read(path)))
-	print "Copied "path" to "dest"\n"
+	print("Copied "path" to "dest"\n")
 
 files.each(cloneFile)

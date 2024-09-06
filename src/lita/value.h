@@ -42,12 +42,6 @@ typedef enum {
 
 typedef uint64_t Value;
 
-#define is_bool(val) (((val) | 1) == TRUE_VAL)
-#define is_nil(val) ((val) == NIL_VAL)
-#define is_void(val) ((val) == VOID_VAL)
-#define is_num(val) (((val) & QNAN) != QNAN)
-#define is_obj(val) valueIsObject(val)
-
 #define AS_BOOL(val) ((val) == TRUE_VAL)
 #define AS_NUMBER(val) valueToNum(val)
 #define AS_OBJ(val) ((Obj *)(uintptr_t)((val) & ~(TAG_OBJ | QNAN)))
@@ -60,8 +54,14 @@ typedef uint64_t Value;
 #define VOID_VAL ((Value)(uint64_t)(QNAN | TAG_VOID))
 #define NUMBER_VAL(num) doubleToValue(num)
 #define OBJ_VAL(obj) (Value)(TAG_OBJ | QNAN | (uint64_t)(uintptr_t)(obj))
-#define obj(o) OBJ_VAL(o)
-#define number(n) NUMBER_VAL(n)
+
+#define is_bool(val) (((val) | 1) == TRUE_VAL)
+#define is_true(val) ((val) == TRUE_VAL)
+#define is_false(val) ((val) == FALSE_VAL)
+#define is_nil(val) ((val) == NIL_VAL)
+#define is_void(val) ((val) == VOID_VAL)
+#define is_num(val) (((val) & QNAN) != QNAN)
+#define is_obj(val) valueIsObject(val)
 
 static inline double valueToNum(Value value) {
   double num;
@@ -115,6 +115,9 @@ typedef struct {
 #define nil NIL_VAL
 #define True TRUE_VAL
 #define False FALSE_VAL
+
+#define obj(o) OBJ_VAL(o)
+#define number(n) NUMBER_VAL(n)
 
 #define not_nil(val) (!is_nil(val))
 #define not_void(val) (!is_void(val))

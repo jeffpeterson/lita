@@ -1,7 +1,7 @@
 # Todo
 
-- [ ] Native methods manipulate stack directly
-- [ ] `match` expression
+- [x] Native methods manipulate stack directly
+- [x] `match` expression
 - [ ] Control-flow expressions
 - [ ] OrderedSet
 - [ ] Intern ranges

@@ -123,7 +123,7 @@ static Value fn_each_3() {
     string("while condition"),
     string("get"),
     NUMBER_VAL(1.000000),
-    string("falsy while condition"),
+    string("falsey while condition"),
   };
   c->constants.values = cloneMemory(values, sizeof(values));
   return obj(f);
