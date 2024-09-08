@@ -48,6 +48,7 @@ ObjString *newString(const char *chars) {
 }
 
 ObjString *take_string(char *chars, int length) {
+  if (length == -1) length = strlen(chars);
   Hash hash;
   ObjString *interned = (ObjString *)getInterned(&hash, chars, length);
 

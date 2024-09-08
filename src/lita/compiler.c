@@ -289,6 +289,13 @@ static void emitBytes_(u8 byte1, u8 byte2, const char *comment) {
   emitByte_(byte2, comment);
 }
 
+#define emit3Bytes(a, b, c)                                                    \
+  emit3Bytes_(a, b, c, "At " __FILE__ ":" STRINGIFY(__LINE__))
+static void emit3Bytes_(u8 a, u8 b, u8 c, const char *comment) {
+  emitBytes_(a, b, comment);
+  emitByte_(c, comment);
+}
+
 #define emitLoop(start) emitLoop_(start, "At " __FILE__ ":" STRINGIFY(__LINE__))
 static void emitLoop_(int loopStart, const char *comment) {
   emitByte_(OP_LOOP, comment);
@@ -329,8 +336,7 @@ static void emitDebugStack_(const char *tag, const char *comment) {
 static void assertStackSize_(u8 size, const char *explain,
                              const char *comment) {
   let explainv = makeConstant(string(explain));
-  emitBytes_(OP_ASSERT_STACK, explainv, comment);
-  emitByte_(size + current->localCount, comment);
+  emit3Bytes_(OP_ASSERT_STACK, explainv, size + current->localCount, comment);
 }
 
 /**
@@ -363,8 +369,7 @@ static void emit_(Value val, const char *comment) {
  */
 #define emitJump(op) emitJump_(op, "At " __FILE__ ":" STRINGIFY(__LINE__))
 static int emitJump_(u8 instruction, const char *comment) {
-  emitByte_(instruction, comment);
-  emitBytes_(0xff, 0xff, comment);
+  emit3Bytes_(instruction, 0xff, 0xff, comment);
   return currentChunk()->count - 3;
 }
 
@@ -1378,6 +1383,7 @@ static void ifStatement() {
 }
 
 static void match_() {
+  let matchFn = makeConstant(string("=="));
   expression("Expect expression after 'match'."); // [0 match expr]
   assertStackSize(1, "match expression");
   consume(TOKEN_INDENT, "Expect block after match expression.");
@@ -1397,12 +1403,11 @@ static void match_() {
     // do {...} while (parseAbove(PREC_COMMA)));
     if (parseAbove(PREC_ARROW)) { // [match expr][match expr][pattern]
       consume(TOKEN_ARROW, "Expect '->' after pattern.");
-      emitByte(OP_EQUAL); // [match expr][bool]
+      emit3Bytes(OP_INVOKE, matchFn, 1);
       assertStackSize(2, "match expr, match result");
 
       int skipJump = emitJump(
           OP_JUMP_IF_FALSE); // Jump to next pattern if this one doesn't match.
-                             // TODO: OP_JUMP_IF_VOID and matching sets locals.
 
       emitBytes(OP_POP, OP_POP); // [] pop match success and match expr
       expression("Expected expression after '->'."); // [expr]

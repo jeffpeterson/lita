@@ -7,6 +7,7 @@
 #include "lib.h"
 #include "memory.h"
 #include "native.h"
+#include "string.h"
 #include "term.h"
 #include "tuple.h"
 #include "vm.h"
@@ -87,6 +88,12 @@ NATIVE_METHOD_NAMED(Any, not_eql, "!=", 1) {
 }
 NATIVE_METHOD(Any, hash, 0) {
   return OBJ_VAL(stringf("%#x", hash_value(this)));
+}
+
+NATIVE_METHOD(Object, etype, 0) {
+  const ecs_type_t *type = ecs_get_type(vm.world, as_obj(this)->eid);
+  char *type_str = ecs_type_str(vm.world, type);
+  return OBJ_VAL(take_string(type_str, -1));
 }
 
 NATIVE_METHOD_NAMED(Number, gt, ">", 1) {

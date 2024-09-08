@@ -17,10 +17,20 @@ typedef struct ObjDef ObjDef;
 #define REGISTER_OBJECT_DEF(def) const SECTION(defs) ObjDef *def##_def = &def;
 #define foreach_obj_def(var) section_foreach_entry(defs, ObjDef *, var)
 
+#define DEF_MARK(type, var, ...) DEF_OBJ_FN(type, mark, var, __VA_ARGS__)
+#define DEF_ALLOC(type, var, ...) DEF_OBJ_FN(type, alloc, var, __VA_ARGS__)
+#define DEF_FREE(type, var, ...) DEF_OBJ_FN(type, free, var, __VA_ARGS__)
+
+#define DEF_OBJ_FN(type, name, var, ...)                                       \
+  void name##type(Obj *obj) {                                                  \
+    Obj##type *var = (Obj##type *)obj;                                         \
+    __VA_ARGS__;                                                               \
+  }
+
 typedef enum Ownership { UNOWNED, OWNED } Ownership;
 
 typedef void ObjFn(Obj *obj);
-typedef int ObjLengthFn(Obj *obj);
+typedef int ObjIntFn(Obj *obj);
 typedef int ObjIOFn(Obj *obj, FILE *io);
 typedef const char *ObjBytesFn(Obj *obj, int length);
 
@@ -28,7 +38,7 @@ typedef struct ObjDef {
   const char *class_name;
   const usize size;
   const bool interned;
-  ObjLengthFn *length;
+  ObjIntFn *length;
   ObjFn *alloc;
   ObjFn *free;
   ObjFn *mark;
