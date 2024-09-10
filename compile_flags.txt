@@ -1,0 +1,11 @@
+-g
+-Isrc
+-I/opt/homebrew/include
+-L/opt/homebrew/lib
+-lpcre2-8
+-lreadline
+-Wall
+-Werror
+-Wno-error=unused-variable
+-Wno-unused-function
+-Wno-unused-command-line-argument

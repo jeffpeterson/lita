@@ -28,7 +28,7 @@
       "patterns": [
         {
           "name": "keyword.control.lita",
-          "match": "\\b(and|atom|else|for|if|in|macro|match|or|proc|return|while|print|assert)\\b"
+          "match": "\\b(and|atom|else|for|if|in|macro|match|or|proc|return|while|print|assert|throw)\\b"
         },
         {
           "name": "keyword.operator.lita",

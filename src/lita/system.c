@@ -66,7 +66,7 @@ void runFile(ObjString *path) {
   assertOkResult(interpret(source->chars, path));
 }
 
-void compileFile(ObjString *path) {
+void compileFileToC(ObjString *path) {
   ObjString *source = readFile(path);
   ObjFunction *fun = compile(source->chars, path);
 

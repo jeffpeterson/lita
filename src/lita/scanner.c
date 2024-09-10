@@ -13,6 +13,7 @@ void initScanner(const char *source) {
   scanner.start = source;
   scanner.current = source;
   scanner.line = 1;
+  scanner.column = 1;
   scanner.gap = false;
 
   scanner.indent.prev = 0;
@@ -68,6 +69,10 @@ bool isSubscript(u32 c) { return c >= 0x2080 && c <= 0x2089; }
 static u32 advance() {
   u32 c = codePoint(scanner.current);
   scanner.current += utfBytes(scanner.current);
+
+  if (c == '\n') scanner.line++, scanner.column = 1;
+  else scanner.column++;
+
   return c;
 }
 
@@ -108,15 +113,15 @@ Token syntheticToken(const char *text) {
   return token;
 }
 
+Token nextToken = {};
+
 static Token makeToken(TokenType type) {
-  Token token;
+  Token token = nextToken;
   token.type = type;
   token.escaped = false;
   token.hadGap = scanner.gap;
   scanner.gap = false;
-  token.start = scanner.start;
   token.length = (int)(scanner.current - scanner.start);
-  token.line = scanner.line;
   return token;
 }
 
@@ -126,6 +131,7 @@ static Token errorToken(const char *message) {
   token.start = message;
   token.length = (int)strlen(message);
   token.line = scanner.line;
+  token.column = scanner.column;
   return token;
 }
 
@@ -151,7 +157,6 @@ static bool skipWhitespace() {
       continue;
 
     case '\n':
-      scanner.line++;
       newline = true;
       in->inside = true;
       in->cur = 0; // Ignore any indentation we found.
@@ -166,7 +171,6 @@ static bool skipWhitespace() {
 
     case '\\':
       if (peekNext() == '\n') {
-        scanner.line++;
         in->inside = true;
         in->cur = 0;
         advance();
@@ -205,37 +209,29 @@ static TokenType checkKeyword(int start, int length, const char *rest,
 static TokenType identifierType() {
   switch (scanner.start[0]) {
   case 'a':
-    if (scanner.current - scanner.start > 1) {
-      switch (scanner.start[1]) {
-      case 'n': return checkKeyword(2, 1, "d", TOKEN_AND);
-      case 's': return checkKeyword(2, 4, "sert", TOKEN_ASSERT);
-      }
+    switch (scanner.start[1]) {
+    case 'n': return checkKeyword(2, 1, "d", TOKEN_AND);
+    case 's': return checkKeyword(2, 4, "sert", TOKEN_ASSERT);
     }
     break;
   case 'c':
-    if (scanner.current - scanner.start > 1) {
-      switch (scanner.start[1]) {
-      case 'l': return checkKeyword(2, 3, "ass", TOKEN_CLASS);
-      case 'f': return checkKeyword(2, 1, "n", TOKEN_CFN);
-      }
+    switch (scanner.start[1]) {
+    case 'l': return checkKeyword(2, 3, "ass", TOKEN_CLASS);
+    case 'f': return checkKeyword(2, 1, "n", TOKEN_CFN);
     }
     break;
   case 'e': return checkKeyword(1, 3, "lse", TOKEN_ELSE);
   case 'f':
-    if (scanner.current - scanner.start > 1) {
-      switch (scanner.start[1]) {
-      case 'a': return checkKeyword(2, 3, "lse", TOKEN_FALSE);
-      case 'o': return checkKeyword(2, 1, "r", TOKEN_FOR);
-      case 'n': return checkKeyword(2, 0, "", TOKEN_FN);
-      }
+    switch (scanner.start[1]) {
+    case 'a': return checkKeyword(2, 3, "lse", TOKEN_FALSE);
+    case 'o': return checkKeyword(2, 1, "r", TOKEN_FOR);
+    case 'n': return checkKeyword(2, 0, "", TOKEN_FN);
     }
     break;
   case 'i':
-    if (scanner.current - scanner.start > 1) {
-      switch (scanner.start[1]) {
-      case 'f': return checkKeyword(2, 0, "", TOKEN_IF);
-      case 'n': return checkKeyword(2, 0, "", TOKEN_IN);
-      }
+    switch (scanner.start[1]) {
+    case 'f': return checkKeyword(2, 0, "", TOKEN_IF);
+    case 'n': return checkKeyword(2, 0, "", TOKEN_IN);
     }
     break;
   case 'l': return checkKeyword(1, 2, "et", TOKEN_LET);
@@ -246,11 +242,13 @@ static TokenType identifierType() {
   case 'r': return checkKeyword(1, 5, "eturn", TOKEN_RETURN);
   case 's': return checkKeyword(1, 4, "uper", TOKEN_SUPER);
   case 't':
-    if (scanner.current - scanner.start > 1) {
-      switch (scanner.start[1]) {
-      case 'h': return checkKeyword(2, 2, "is", TOKEN_THIS);
-      case 'r': return checkKeyword(2, 2, "ue", TOKEN_TRUE);
+    switch (scanner.start[1]) {
+    case 'h':
+      switch (scanner.start[2]) {
+      case 'i': return checkKeyword(3, 1, "s", TOKEN_THIS);
+      case 'r': return checkKeyword(3, 2, "ow", TOKEN_THROW);
       }
+    case 'r': return checkKeyword(2, 2, "ue", TOKEN_TRUE);
     }
     break;
   case 'w': return checkKeyword(1, 4, "hile", TOKEN_WHILE);
@@ -259,12 +257,9 @@ static TokenType identifierType() {
     TokenType type = checkKeyword(1, 6, "_END__", TOKEN_EOF);
     if (type == TOKEN_EOF) {
       scanner.data = scanner.current;
-      while (!isAtEnd()) {
-        advance();
-        scanner.dataLength++;
-      }
+      while (!isAtEnd()) advance();
+      scanner.dataLength = scanner.current - scanner.data;
     }
-
     return type;
   }
   }
@@ -279,7 +274,7 @@ static Token identifier() {
   return makeToken(identifierType());
 }
 
-static Token number() {
+static Token number_() {
   if (match('x')) {
     while (matches(isHex)) continue;
     return makeToken(TOKEN_HEX);
@@ -302,7 +297,6 @@ static Token backticks() {
 
     if (ch == '`' && scanner.current[-1] != '\\') break;
 
-    if (ch == '\n') scanner.line++;
     if (ch == '\\') escaped = true;
 
     advance();
@@ -326,7 +320,6 @@ static Token string_() {
 
     if (ch == '"' && scanner.current[-1] != '\\') break;
 
-    if (ch == '\n') scanner.line++;
     if (ch == '\\') escaped = true;
 
     advance();
@@ -344,8 +337,15 @@ static Token string_() {
 
 static Token symbol() { return makeToken(TOKEN_QUOTE); }
 
-Token scanToken() {
+static void resetToken() {
   scanner.start = scanner.current;
+
+  nextToken = (Token){
+      .start = scanner.start, .line = scanner.line, .column = scanner.column};
+}
+
+Token scanToken() {
+  resetToken();
   Indent *in = &scanner.indent;
   bool scanned_newline = skipWhitespace();
 
@@ -363,7 +363,7 @@ Token scanToken() {
     } else return makeToken(TOKEN_NEWLINE);
   }
 
-  scanner.start = scanner.current;
+  resetToken();
 
   if (isAtEnd()) {
     if (in->prev > 0) {
@@ -377,7 +377,7 @@ Token scanToken() {
 
   if (isAlpha(c)) return identifier();
 
-  if (isDigit(c)) return number();
+  if (isDigit(c)) return number_();
 
   switch (c) {
   case '(': return makeToken(TOKEN_LEFT_PAREN);

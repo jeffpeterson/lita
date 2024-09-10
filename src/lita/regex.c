@@ -83,6 +83,17 @@ substitute:
 }
 
 NATIVE_GETTER(Regex, source, OBJ_VAL);
+NATIVE_METHOD_NAMED(Regex, plus, "+", 1) {
+  ObjRegex *regex = asRegex(this);
+  if (isString(args[0])) {
+    ObjString *source =
+        stringf("%s\\Q%s\\E", regex->source->chars, asChars(args[0]));
+    return OBJ_VAL(makeRegex(source));
+  } else {
+    return OBJ_VAL(
+        makeRegex(concat_strings(regex->source, asRegex(args[0])->source)));
+  }
+}
 
 REGISTER_OBJECT_DEF(Regex);
 const ObjDef Regex = {

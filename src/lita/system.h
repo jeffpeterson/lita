@@ -9,7 +9,7 @@ bool writeFile(ObjString *path, ObjString *content);
 bool appendFile(ObjString *path, ObjString *content);
 
 void runFile(ObjString *path);
-void compileFile(ObjString *path);
+void compileFileToC(ObjString *path);
 
 Value get_env(Value name);
 

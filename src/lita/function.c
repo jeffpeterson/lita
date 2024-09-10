@@ -5,6 +5,7 @@
 #include "lib.h"
 #include "memory.h"
 #include "native.h"
+#include "source_location.h"
 #include "term.h"
 #include "vm.h"
 
@@ -37,10 +38,11 @@ static void freeFunction(Obj *obj) {
 static int inspectFunction(Obj *obj, FILE *io) {
   ObjFunction *function = (ObjFunction *)obj;
   return fprintf(io,
-                 FG_MAGENTA "<function %s" FG_DEFAULT "/" FG_MAGENTA
-                            "%d>" FG_DEFAULT,
-                 function->name->chars, function->arity) -
-         FG_SIZE * 4;
+                 FG_MAGENTA "<function %s" FG_DEFAULT "/" FG_BLUE
+                            "%d" FG_MAGENTA " (" FG_DEFAULT,
+                 function->name->chars, function->arity) +
+         inspect_obj(io, (Obj *)function->location) +
+         fprintf(io, FG_MAGENTA ")>" FG_DEFAULT) - FG_SIZE * 7;
 }
 
 static int dumpFunction(Obj *obj, FILE *io) {

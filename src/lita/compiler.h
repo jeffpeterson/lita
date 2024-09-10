@@ -4,7 +4,7 @@
 #include "function.h"
 #include "object.h"
 
-ObjFunction *compile(const char *source, ObjString *name);
+ObjFunction *compile(const char *source, ObjString *path);
 void markCompilerRoots();
 
 #endif

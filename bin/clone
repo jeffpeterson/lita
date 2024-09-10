@@ -6,14 +6,14 @@ if !$1 or !$2
 
 fn replace(string)
 	return string \
-		.replace($1.underscore, $2.underscore) \
+		.replace($1.camelize, $2.camelize) \
 		.replace($1.camelize.capitalize, $2.camelize.capitalize) \
 		.replace($1.uppercase, $2.uppercase)
 
 let files = ["src/lita/"$1".c", "src/lita/"$1".h"]
 
 fn cloneFile(path)
-	let dest = replace(path)
+	let dest = path.replace($1, $2.underscore)
 	write(dest, replace(read(path)))
 	print("Copied "path" to "dest"\n")
 

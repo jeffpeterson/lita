@@ -59,6 +59,7 @@ const char *objectBytes(Obj *obj, int length) {
 }
 
 int inspect_obj(FILE *io, Obj *obj) {
+  if (!obj) return fprintf(io, "nil");
   if (obj->def->inspect) return obj->def->inspect(obj, io);
   return fprintf(io, "%s(", obj->klass->name->chars) +
          inspect_table(io, &obj->fields) + fprintf(io, ")");
@@ -92,10 +93,11 @@ ObjDef Object = {
     .size = sizeof(Obj),
 };
 
-void markRelationships(World *world, EntityId eid) {
-  // ecs_query_t *q = ecs_query(
-  //     world, {.terms = {{.first.id = EcsWildcard, .second.name = "$target"},
-  //                       {ecs_id(ObjComponent), .src.name = "$target"}}});
+void markRelationships(World *world, EntityId eid){
+    // ecs_query_t *q = ecs_query(
+    //     world, {.terms = {{.first.id = EcsWildcard, .second.name =
+    //     "$target"},
+    //                       {ecs_id(ObjComponent), .src.name = "$target"}}});
 };
 
 void ObjectsImport(World *world) {

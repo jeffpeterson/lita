@@ -37,7 +37,7 @@ static Value fn_inspect_1() {
     OP_NIL,
     OP_RETURN,
   };
-  int lines[] = { 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 3, 3,};
+  int lines[] = { 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,};
   c->code = cloneMemory(code, sizeof(code));
   c->lines = cloneMemory(lines, sizeof(lines));
 
@@ -79,7 +79,7 @@ static Value fn_string_2() {
     OP_NIL,
     OP_RETURN,
   };
-  int lines[] = { 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 4, 4,};
+  int lines[] = { 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3,};
   c->code = cloneMemory(code, sizeof(code));
   c->lines = cloneMemory(lines, sizeof(lines));
 
@@ -115,7 +115,7 @@ static Value fn_length_3() {
     OP_NIL,
     OP_RETURN,
   };
-  int lines[] = { 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 5, 5,};
+  int lines[] = { 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4,};
   c->code = cloneMemory(code, sizeof(code));
   c->lines = cloneMemory(lines, sizeof(lines));
 
@@ -195,7 +195,7 @@ static Value fn_src_slash_lita_slash_range_dot_lita_0() {
     OP_ASSERT_STACK, 10, 2,
     OP_RETURN,
   };
-  int lines[] = { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 3, 3, 3, 3, 4, 4, 4, 4, 5, 5, 5, 5, 5, 5, 5, 5, 6, 6, 6, 6, 6, 6, 6, 6,};
+  int lines[] = { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4, 5, 5, 5, 5, 5, 5, 5, 5, 6, 6, 6, 6,};
   c->code = cloneMemory(code, sizeof(code));
   c->lines = cloneMemory(lines, sizeof(lines));
 

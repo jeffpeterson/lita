@@ -21,6 +21,7 @@
 #include "memory.h"
 #include "object.h"
 #include "range.h"
+#include "source_location.h"
 #include "string.h"
 #include "system.h"
 #include "term.h"
@@ -569,6 +570,11 @@ static void vm_return() {
   push(result);
 }
 
+static void vm_throw(let location) {
+  let err = pop();
+  crash("%s thrown at %s", inspectc(err), inspectc(location));
+}
+
 static InterpretResult vm_run() {
   if (vm.frameCount == 0) return runtimeError("No function to run.");
   if (vm.frameCount > 1) return runtimeError("VM already running.");
@@ -857,6 +863,11 @@ static InterpretResult vm_run() {
       SYNC_FRAME();
       break;
     }
+
+    case OP_THROW:
+      vm_throw(READ_CONSTANT());
+      SYNC_FRAME();
+      break;
 
     case OP_DEBUG_STACK: {
       let tag = READ_CONSTANT();

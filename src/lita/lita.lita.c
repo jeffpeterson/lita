@@ -30,7 +30,7 @@ static Value fn_class_1() {
     OP_NIL,
     OP_RETURN,
   };
-  int lines[] = { 2, 2, 2, 2, 2, 2, 2, 2, 2, 3, 3,};
+  int lines[] = { 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,};
   c->code = cloneMemory(code, sizeof(code));
   c->lines = cloneMemory(lines, sizeof(lines));
 
@@ -106,7 +106,7 @@ static Value fn_src_slash_lita_slash_lita_dot_lita_0() {
     OP_ASSERT_STACK, 6, 2,
     OP_RETURN,
   };
-  int lines[] = { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 3, 3, 3, 3, 3, 3, 3, 3, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 6, 6, 6, 6, 6, 6, 6, 6,};
+  int lines[] = { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 6, 6, 6, 6,};
   c->code = cloneMemory(code, sizeof(code));
   c->lines = cloneMemory(lines, sizeof(lines));
 

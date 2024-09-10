@@ -74,6 +74,7 @@ OpInfo op_info[] = {
     [OP_NEGATE] = {"OP_NEGATE", SIMPLE, 1, 1},
     [OP_PRINT] = {"OP_PRINT", SIMPLE, 1, 1},
     [OP_RETURN] = {"OP_RETURN", SIMPLE, 1, 1},
+    [OP_THROW] = {"OP_THROW", CONSTANT, 1, 0},
 
     [OP_ADD] = {"OP_ADD", SIMPLE, 2, 1},
     [OP_SUBTRACT] = {"OP_SUBTRACT", SIMPLE, 2, 1},

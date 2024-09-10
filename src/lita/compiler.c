@@ -21,6 +21,8 @@ typedef struct Parser {
   Token stack[255];
   u8 stackSize;
 
+  ObjString *path;
+
   int indebt;
   bool hadError;
   bool panicMode;
@@ -411,10 +413,18 @@ static void emitReturn_(char *comment) {
   emitByte_(OP_RETURN, comment);
 }
 
+static ObjSourceLocation *getSourceLocation() {
+  int line = parser.previous.line;
+  int column = parser.previous.column;
+  if (!line) line = 1, column = 1;
+  return newSourceLocation(parser.path, line, column);
+}
+
 static void initCompiler(Compiler *compiler, FunType type, ObjString *name) {
   compiler->fun = NULL;
   compiler->fun = newFunction();
   compiler->fun->name = name;
+  compiler->fun->location = getSourceLocation();
   compiler->type = type;
   compiler->localCount = 0;
   compiler->scopeDepth = 0;
@@ -1444,6 +1454,13 @@ static void return_() {
   }
 }
 
+static void throw_() {
+  Value sourceLocation = OBJ_VAL(getSourceLocation());
+
+  if (!expression(NULL)) emit(nil);
+  emitBytes(OP_THROW, makeConstant(sourceLocation));
+}
+
 static void whileStatement() {
   int loopStart = currentChunk()->count;
 
@@ -1532,17 +1549,18 @@ static void statement() {
   // Todo: continue statement
 }
 
-ObjFunction *compile(const char *source, ObjString *name) {
+ObjFunction *compile(const char *source, ObjString *path) {
   initScanner(source);
 
   if (DEBUG_TOKENS || config.debug >= 4) debugTokens();
 
-  Compiler compiler;
-  initCompiler(&compiler, TYPE_SCRIPT, name);
-
+  parser.path = path;
   parser.indebt = 0;
   parser.hadError = false;
   parser.panicMode = false;
+
+  Compiler compiler;
+  initCompiler(&compiler, TYPE_SCRIPT, path);
 
   advance();
 
@@ -1589,6 +1607,7 @@ ParseRule rules[] = {
     [TOKEN_MATCH] = {match_, NULL, PREC_KEYWORD},
     [TOKEN_PRINT] = {print, NULL, PREC_KEYWORD},
     [TOKEN_RETURN] = {return_, NULL, PREC_KEYWORD},
+    [TOKEN_THROW] = {throw_, NULL, PREC_KEYWORD},
     [TOKEN_FN] = {function_, NULL, PREC_KEYWORD},
 
     [TOKEN_SEMICOLON] = {NULL, semi, PREC_SEMI},

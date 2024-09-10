@@ -68,7 +68,7 @@ int main(int argc, char *argv[]) {
 
   switch (mode) {
   case COMPILE:
-    for (int i = optind; i < argc; i++) compileFile(newString(argv[i]));
+    for (int i = optind; i < argc; i++) compileFileToC(newString(argv[i]));
     break;
 
   case INTERPRET: {

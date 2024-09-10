@@ -89,6 +89,7 @@ typedef enum {
   TOKEN_RETURN,
   TOKEN_SUPER,
   TOKEN_THIS,
+  TOKEN_THROW,
   TOKEN_TRUE,
   TOKEN_LET,
   TOKEN_WHILE,
@@ -101,6 +102,7 @@ typedef struct {
   const char *start;
   int length;
   int line;
+  int column;
 } Token;
 
 typedef struct Indent {
@@ -114,6 +116,7 @@ typedef struct {
   const char *start;   /** Start of the current token. */
   const char *current; /** Current char being scanned. */
   int line;            /** Current line number. */
+  int column;          /** Current column number. */
   Indent indent;       /** Indent status. */
   bool gap;            /** Space between this and the prior token? */
   const char *data;

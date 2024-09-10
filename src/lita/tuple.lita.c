@@ -30,7 +30,7 @@ static Value fn__star__1() {
     OP_NIL,
     OP_RETURN,
   };
-  int lines[] = { 2, 2, 2, 2, 2, 2, 2, 2, 2, 3, 3,};
+  int lines[] = { 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,};
   c->code = cloneMemory(code, sizeof(code));
   c->lines = cloneMemory(lines, sizeof(lines));
 
@@ -61,7 +61,7 @@ static Value fn_head_2() {
     OP_NIL,
     OP_RETURN,
   };
-  int lines[] = { 3, 3, 3, 3, 3, 3, 3, 3, 3, 4, 4,};
+  int lines[] = { 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3,};
   c->code = cloneMemory(code, sizeof(code));
   c->lines = cloneMemory(lines, sizeof(lines));
 
@@ -112,7 +112,7 @@ static Value fn_each_3() {
     OP_NIL,
     OP_RETURN,
   };
-  int lines[] = { 5, 5, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 9, 9, 9, 9, 9, 9, 9, 9, 9,};
+  int lines[] = { 5, 5, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 9, 9,};
   c->code = cloneMemory(code, sizeof(code));
   c->lines = cloneMemory(lines, sizeof(lines));
 
@@ -150,7 +150,7 @@ static Value fn_zipEach_5() {
     OP_NIL,
     OP_RETURN,
   };
-  int lines[] = { 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 11, 11,};
+  int lines[] = { 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10,};
   c->code = cloneMemory(code, sizeof(code));
   c->lines = cloneMemory(lines, sizeof(lines));
 
@@ -187,7 +187,7 @@ static Value fn_zip_4() {
     OP_NIL,
     OP_RETURN,
   };
-  int lines[] = { 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 13, 13,};
+  int lines[] = { 10, 10, 10, 10, 10, 10, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11,};
   c->code = cloneMemory(code, sizeof(code));
   c->lines = cloneMemory(lines, sizeof(lines));
 
@@ -292,7 +292,7 @@ static Value fn_src_slash_lita_slash_tuple_dot_lita_0() {
     OP_ASSERT_STACK, 12, 2,
     OP_RETURN,
   };
-  int lines[] = { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 3, 3, 3, 3, 4, 4, 4, 4, 9, 9, 9, 9, 13, 13, 13, 13, 13, 13, 13, 13, 14, 14, 14, 14, 14, 14, 14, 14,};
+  int lines[] = { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 9, 9, 9, 9, 11, 11, 11, 11, 13, 13, 13, 13, 13, 13, 13, 13, 14, 14, 14, 14,};
   c->code = cloneMemory(code, sizeof(code));
   c->lines = cloneMemory(lines, sizeof(lines));
 

@@ -4,6 +4,7 @@
 #include "chunk.h"
 #include "common.h"
 #include "object.h"
+#include "source_location.h"
 #include "string.h"
 #include "value.h"
 
@@ -16,6 +17,7 @@ typedef struct ObjFunction {
   int arity;
   bool variadic;
   ObjString *name;
+  ObjSourceLocation *location;
   int upvalueCount;
   Chunk chunk;
 } ObjFunction;
