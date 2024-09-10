@@ -89,4 +89,13 @@ static inline bool is_interned(Value val) {
   return obj->def->interned;
 }
 
+typedef struct ObjComponent {
+  Obj *obj;
+} ObjComponent;
+
+ECS_COMPONENT_DECLARE(ObjComponent);
+// ECS_SYSTEM_DECLARE(MarkRelationships);
+
+void ObjectsImport(World *world);
+
 #endif

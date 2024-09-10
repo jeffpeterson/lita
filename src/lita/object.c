@@ -17,13 +17,14 @@ Obj *allocateObject(const ObjDef *def) {
   obj->def = def;
   obj->klass = NULL;
   obj->isMarked = false;
-  obj->eid = ecs_new(vm.world);
   // Todo: Only hash for non-interned objects.
   Value val = OBJ_VAL(obj);
   obj->hash = hash_bytes((char *)&val, sizeof(Value));
   obj->next = vm.objects;
   vm.objects = obj;
   initTable(&obj->fields);
+
+  obj->eid = ecs_insert(vm.world, ecs_value(ObjComponent, {obj}));
 
   if (def->alloc) def->alloc(obj);
 
@@ -90,3 +91,17 @@ ObjDef Object = {
     .class_name = "Object",
     .size = sizeof(Obj),
 };
+
+void markRelationships(World *world, EntityId eid) {
+  // ecs_query_t *q = ecs_query(
+  //     world, {.terms = {{.first.id = EcsWildcard, .second.name = "$target"},
+  //                       {ecs_id(ObjComponent), .src.name = "$target"}}});
+};
+
+void ObjectsImport(World *world) {
+  ECS_MODULE(world, Objects);
+
+  ECS_COMPONENT_DEFINE(world, ObjComponent);
+
+  // ECS_SYSTEM(world, MarkRelationships, 0, ObjComponent, (*, ObjComponent));
+}

@@ -10,6 +10,9 @@ Value regex(const char *source) { return obj(makeRegex(newString(source))); }
 static u32 defaultOptions = PCRE2_UTF | PCRE2_UCP;
 
 ObjRegex *makeRegex(ObjString *source) {
+  // Obj *obj = new_instance(global_class("Regex"));
+  // ecs_set_pair(vm.world, obj->eid, RegexSource, {source});
+
   ObjRegex *regex = allocateRegex();
   u32 options = defaultOptions;
   regex->obj.def = &Regex;
@@ -34,6 +37,11 @@ static int regexLength(Obj *obj) {
 static void markRegex(Obj *obj) {
   ObjRegex *regex = (ObjRegex *)obj;
   markObject((Obj *)regex->source);
+}
+
+static void freeRegex(Obj *obj) {
+  ObjRegex *regex = (ObjRegex *)obj;
+  pcre2_code_free(regex->re);
 }
 
 static int inspectRegex(Obj *obj, FILE *io) {
@@ -81,7 +89,28 @@ const ObjDef Regex = {
     .class_name = "Regex",
     .size = sizeof(ObjRegex),
     .mark = markRegex,
+    .free = freeRegex,
     .inspect = inspectRegex,
     .dump = dumpRegex,
     .length = regexLength,
 };
+
+static void CompileRegex(ecs_iter_t *it) {
+  // EntityId *source = ecs_field(&it, Regex2, 0);
+}
+
+static ECS_DTOR(Regex2, regex, { pcre2_code_free(regex->code); });
+
+void RegexesImport(World *world) {
+  ECS_MODULE(world, Regexes);
+
+  ECS_COMPONENT(world, RegexError);
+  ECS_COMPONENT(world, Regex2);
+
+  ECS_TAG_DEFINE(world, RegexSource);
+
+  ECS_SYSTEM(world, CompileRegex, EcsOnUpdate, (RegexSource, $source), !Regex2,
+             !RegexError);
+
+  ecs_set_hooks(world, Regex2, {.dtor = ecs_dtor(Regex2)});
+}

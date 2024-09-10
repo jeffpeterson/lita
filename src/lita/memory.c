@@ -109,6 +109,8 @@ static void blackenObject(Obj *obj) {
   markObject((Obj *)obj->klass);
   markTable(&obj->fields);
 
+  // ecs_run(vm.world, MarkRelationships, 0);
+
   if (obj->def->mark) return obj->def->mark(obj);
 }
 

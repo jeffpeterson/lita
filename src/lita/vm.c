@@ -130,8 +130,6 @@ void initVM(World *world) {
   initTable(&vm.interned);
   initTable(&vm.keep);
 
-  vm.str.init = newString("init");
-
   /** Start collecting after 1MB is allocated. */
   vm.nextGC = 1024 * 1024;
 }
@@ -174,6 +172,9 @@ static InterpretResult defineNatives() {
 }
 
 InterpretResult bootVM() {
+  ECS_IMPORT(vm.world, Lita);
+
+  vm.str.init = newString("init");
   InterpretResult result = defineNatives();
 
   foreach_obj_def(def) registerDef(*def);
@@ -181,8 +182,6 @@ InterpretResult bootVM() {
   setGlobal(string("stdin"), io(stdin, UNOWNED));
   setGlobal(string("stdout"), io(stdout, UNOWNED));
   setGlobal(string("stderr"), io(stderr, UNOWNED));
-
-  ECS_IMPORT(vm.world, Lita);
 
   return result;
 }
@@ -959,7 +958,10 @@ ECS_COMPONENT_DECLARE(VM);
 
 void LitaImport(World *world) {
   ECS_MODULE(world, Lita);
+
   ECS_IMPORT(world, Buffers);
+  ECS_IMPORT(world, Objects);
+  ECS_IMPORT(world, Regexes);
   ECS_IMPORT(world, Tables);
 
   ECS_COMPONENT_DEFINE(world, VM);
