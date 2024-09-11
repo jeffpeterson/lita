@@ -193,15 +193,15 @@ assert match 1
 	1 -> true
 	else false
 
-fn num_to_ord(x)
+fn ordinal(x)
 	return match x
 		1 -> 'one
 		2 -> 'two
 		else x.string
 
-assert num_to_ord(1) == 'one
-assert num_to_ord(2) == 'two
-assert num_to_ord(3) == '3
+assert ordinal(1) == 'one
+assert ordinal(2) == 'two
+assert ordinal(3) == '3
 
 // Check for broken tail-call implementation.
 // (Re-using frames for all self-calls, not just tail-calls)

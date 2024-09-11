@@ -14,8 +14,12 @@ typedef struct ObjDef ObjDef;
 #define getDef(val) (as_obj(val)->def)
 #define as(def, val) ((Obj##def *)asObjDef(&def, val))
 #define ALLOCATE_OBJ(def) ((Obj##def *)allocateObject(&def))
-#define REGISTER_OBJECT_DEF(def) const SECTION(defs) ObjDef *def##_def = &def;
+
 #define foreach_obj_def(var) section_foreach_entry(defs, ObjDef *, var)
+#define REGISTER_OBJECT_DEF(def) const SECTION(defs) ObjDef *def##_def = &def;
+#define DEFINE_OBJECT_TYPE(def, ...)                                           \
+  REGISTER_OBJECT_DEF(def);                                                    \
+  ObjDef def = {.class_name = #def, .size = sizeof(def), __VA_ARGS__}
 
 #define DEF_MARK(type, var, ...) DEF_OBJ_FN(type, mark, var, __VA_ARGS__)
 #define DEF_ALLOC(type, var, ...) DEF_OBJ_FN(type, alloc, var, __VA_ARGS__)

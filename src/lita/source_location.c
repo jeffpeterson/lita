@@ -34,10 +34,5 @@ static int inspectSourceLocation(Obj *obj, FILE *io) {
 
 NATIVE_GETTER(SourceLocation, path, OBJ_VAL);
 
-REGISTER_OBJECT_DEF(SourceLocation);
-ObjDef SourceLocation = {
-    .class_name = "SourceLocation",
-    .size = sizeof(ObjSourceLocation),
-    .mark = markSourceLocation,
-    .inspect = inspectSourceLocation,
-};
+DEFINE_OBJECT_TYPE(SourceLocation, .mark = markSourceLocation,
+                   .inspect = inspectSourceLocation);
