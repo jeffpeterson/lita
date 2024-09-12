@@ -29,7 +29,7 @@ void initScanner(const char *source) {
 
 void resetScanner() { initScanner(scanner.source); }
 
-static u8 utfBytes(const char *str) {
+u8 utfBytes(const char *str) {
   const u8 *s = (u8 *)str;
   if (s[0] < 0x80) return s[0] ? 1 : 0;
   if (s[1] < 0x80) return 0;
@@ -40,7 +40,7 @@ static u8 utfBytes(const char *str) {
   return 4;
 }
 
-static u32 codePoint(const char *str) {
+u32 codePoint(const char *str) {
   switch (utfBytes(str)) {
   case 1: return str[0];
   case 2: return ((str[0] & 0x1F) << 6) | (str[1] & 0x3F);

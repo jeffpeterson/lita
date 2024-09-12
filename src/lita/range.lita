@@ -3,3 +3,13 @@ class Range
 	.string  = "" start.string '.. end.string
 	.length  = end - start
 	.map(f) = f(start) .. f(end)
+	.array
+		let a = []
+		let i = start
+		if start <= end
+			while i <= end
+				a << i++
+		else
+			while i >= end
+				a << i--
+		return a

@@ -463,12 +463,9 @@ InterpretResult vm_assert(Value src) {
   fprintf(stderr, "\n");
 #endif
 
-  if (isFalsey(value)) {
-    fstring_format(stderr, "\n\n{} -> {}\n\n", src, value);
-
+  if (isFalsey(value))
     return runtimeError(FG_CYAN "%s" FG_DEFAULT " -> %s", asChars(src),
                         inspectc(value));
-  }
 
 #if DEBUG_ASSERTS
   fprintf(stderr, "%s", FG_GREEN "." FG_DEFAULT);

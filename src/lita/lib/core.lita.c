@@ -273,8 +273,68 @@ static Value fn_dump_7() {
   return obj(f);
 }
 
+             // inc
+static Value fn_inc_8() {
+  ObjFunction *f = newFunction();
+  f->arity = 0;
+  f->upvalueCount = 0;
+  f->name = newString("inc");
+
+  Chunk *c = &f->chunk;
+  initChunk(c);
+  c->count = c->capacity = 8;
+  u8 code[] = {
+    OP_GET_LOCAL, 0,
+    OP_CONSTANT, 0,
+    OP_ADD,
+    OP_RETURN,
+    OP_NIL,
+    OP_RETURN,
+  };
+  int lines[] = { 35, 35, 35, 35, 35, 35, 35, 35,};
+  c->code = cloneMemory(code, sizeof(code));
+  c->lines = cloneMemory(lines, sizeof(lines));
+
+  c->constants.count = c->constants.capacity = 1;
+  Value values[] = {
+    NUMBER_VAL(1.000000),
+  };
+  c->constants.values = cloneMemory(values, sizeof(values));
+  return obj(f);
+}
+
+             // dec
+static Value fn_dec_9() {
+  ObjFunction *f = newFunction();
+  f->arity = 0;
+  f->upvalueCount = 0;
+  f->name = newString("dec");
+
+  Chunk *c = &f->chunk;
+  initChunk(c);
+  c->count = c->capacity = 8;
+  u8 code[] = {
+    OP_GET_LOCAL, 0,
+    OP_CONSTANT, 0,
+    OP_SUBTRACT,
+    OP_RETURN,
+    OP_NIL,
+    OP_RETURN,
+  };
+  int lines[] = { 36, 36, 36, 36, 36, 36, 36, 36,};
+  c->code = cloneMemory(code, sizeof(code));
+  c->lines = cloneMemory(lines, sizeof(lines));
+
+  c->constants.count = c->constants.capacity = 1;
+  Value values[] = {
+    NUMBER_VAL(1.000000),
+  };
+  c->constants.values = cloneMemory(values, sizeof(values));
+  return obj(f);
+}
+
              // dump
-static Value fn_dump_8() {
+static Value fn_dump_10() {
   ObjFunction *f = newFunction();
   f->arity = 0;
   f->upvalueCount = 0;
@@ -294,7 +354,7 @@ static Value fn_dump_8() {
     OP_NIL,
     OP_RETURN,
   };
-  int lines[] = { 35, 35, 35, 35, 35, 35, 35, 35, 35, 35, 35, 35, 35, 35, 35,};
+  int lines[] = { 37, 37, 37, 37, 37, 37, 37, 37, 37, 37, 37, 37, 37, 37, 37,};
   c->code = cloneMemory(code, sizeof(code));
   c->lines = cloneMemory(lines, sizeof(lines));
 
@@ -309,7 +369,7 @@ static Value fn_dump_8() {
 }
 
              // print
-static Value fn_print_9() {
+static Value fn_print_11() {
   ObjFunction *f = newFunction();
   f->arity = 1;
   f->upvalueCount = 0;
@@ -327,7 +387,7 @@ static Value fn_print_9() {
     OP_NIL,
     OP_RETURN,
   };
-  int lines[] = { 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36,};
+  int lines[] = { 38, 38, 38, 38, 38, 38, 38, 38, 38, 38, 38, 38,};
   c->code = cloneMemory(code, sizeof(code));
   c->lines = cloneMemory(lines, sizeof(lines));
 
@@ -341,7 +401,7 @@ static Value fn_print_9() {
 }
 
              // .
-static Value fn__dot__10() {
+static Value fn__dot__12() {
   ObjFunction *f = newFunction();
   f->arity = 1;
   f->upvalueCount = 0;
@@ -358,7 +418,7 @@ static Value fn__dot__10() {
     OP_NIL,
     OP_RETURN,
   };
-  int lines[] = { 37, 37, 37, 37, 37, 37, 37, 37,};
+  int lines[] = { 39, 39, 39, 39, 39, 39, 39, 39,};
   c->code = cloneMemory(code, sizeof(code));
   c->lines = cloneMemory(lines, sizeof(lines));
 
@@ -370,7 +430,7 @@ static Value fn__dot__10() {
 }
 
              // inspect
-static Value fn_inspect_11() {
+static Value fn_inspect_13() {
   ObjFunction *f = newFunction();
   f->arity = 0;
   f->upvalueCount = 0;
@@ -385,7 +445,7 @@ static Value fn_inspect_11() {
     OP_NIL,
     OP_RETURN,
   };
-  int lines[] = { 40, 40, 40, 40, 40,};
+  int lines[] = { 42, 42, 42, 42, 42,};
   c->code = cloneMemory(code, sizeof(code));
   c->lines = cloneMemory(lines, sizeof(lines));
 
@@ -398,7 +458,7 @@ static Value fn_inspect_11() {
 }
 
              // init
-static Value fn_init_12() {
+static Value fn_init_14() {
   ObjFunction *f = newFunction();
   f->arity = 3;
   f->upvalueCount = 0;
@@ -423,7 +483,7 @@ static Value fn_init_12() {
     OP_GET_LOCAL, 0,
     OP_RETURN,
   };
-  int lines[] = { 42, 42, 42, 42, 42, 42, 42, 42, 42, 42, 42, 42, 42, 42, 42, 42, 42, 42, 42, 42, 42, 42, 42, 42,};
+  int lines[] = { 44, 44, 44, 44, 44, 44, 44, 44, 44, 44, 44, 44, 44, 44, 44, 44, 44, 44, 44, 44, 44, 44, 44, 44,};
   c->code = cloneMemory(code, sizeof(code));
   c->lines = cloneMemory(lines, sizeof(lines));
 
@@ -446,7 +506,7 @@ static Value fn_src_slash_lita_slash_lib_slash_core_dot_lita_0() {
 
   Chunk *c = &f->chunk;
   initChunk(c);
-  c->count = c->capacity = 178;
+  c->count = c->capacity = 186;
   u8 code[] = {
     OP_CLASS, 0, 0,
     OP_GET_LOCAL, 0,
@@ -518,41 +578,45 @@ static Value fn_src_slash_lita_slash_lib_slash_core_dot_lita_0() {
     OP_GET_VAR, 6,
     OP_INHERIT,
     OP_SWAP, 1,
-    OP_CLOSURE, 22,
-    OP_METHOD, 4,
     OP_CLOSURE, 23,
-    OP_METHOD, 18,
+    OP_METHOD, 22,
     OP_CLOSURE, 25,
     OP_METHOD, 24,
+    OP_CLOSURE, 26,
+    OP_METHOD, 4,
+    OP_CLOSURE, 27,
+    OP_METHOD, 18,
+    OP_CLOSURE, 29,
+    OP_METHOD, 28,
     OP_POP,
     OP_POP,
-    OP_CLASS, 26, 0,
+    OP_CLASS, 30, 0,
     OP_GET_LOCAL, 0,
     OP_GET_VAR, 6,
     OP_INHERIT,
     OP_SWAP, 1,
-    OP_CLOSURE, 28,
-    OP_METHOD, 27,
-    OP_POP,
-    OP_POP,
-    OP_CLASS, 29, 0,
-    OP_CLOSURE, 30,
+    OP_CLOSURE, 32,
     OP_METHOD, 31,
+    OP_POP,
+    OP_POP,
+    OP_CLASS, 33, 0,
+    OP_CLOSURE, 34,
+    OP_METHOD, 35,
     OP_GET_LOCAL, 0,
     OP_GET_VAR, 6,
     OP_INHERIT,
     OP_SWAP, 1,
     OP_POP,
     OP_POP,
-    OP_GET_GLOBAL, 29,
-    OP_ASSERT_STACK, 32, 2,
+    OP_GET_GLOBAL, 33,
+    OP_ASSERT_STACK, 36, 2,
     OP_RETURN,
   };
-  int lines[] = { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 12, 12, 12, 12, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 15, 15, 15, 15, 23, 23, 23, 23, 23, 23, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 27, 27, 27, 27, 27, 27, 27, 27, 27, 27, 27, 27, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 30, 30, 30, 30, 31, 31, 31, 31, 32, 32, 32, 32, 32, 32, 34, 34, 34, 34, 34, 34, 34, 34, 34, 34, 35, 35, 35, 35, 36, 36, 36, 36, 37, 37, 37, 37, 37, 37, 39, 39, 39, 39, 39, 39, 39, 39, 39, 39, 40, 40, 40, 40, 40, 40, 42, 42, 42, 42, 42, 42, 42, 42, 42, 42, 42, 42, 42, 42, 42, 42, 42, 42, 43, 43, 43, 43,};
+  int lines[] = { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 12, 12, 12, 12, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 15, 15, 15, 15, 23, 23, 23, 23, 23, 23, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 27, 27, 27, 27, 27, 27, 27, 27, 27, 27, 27, 27, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 30, 30, 30, 30, 31, 31, 31, 31, 32, 32, 32, 32, 32, 32, 34, 34, 34, 34, 34, 34, 34, 34, 34, 34, 35, 35, 35, 35, 36, 36, 36, 36, 37, 37, 37, 37, 38, 38, 38, 38, 39, 39, 39, 39, 39, 39, 41, 41, 41, 41, 41, 41, 41, 41, 41, 41, 42, 42, 42, 42, 42, 42, 44, 44, 44, 44, 44, 44, 44, 44, 44, 44, 44, 44, 44, 44, 44, 44, 44, 44, 45, 45, 45, 45,};
   c->code = cloneMemory(code, sizeof(code));
   c->lines = cloneMemory(lines, sizeof(lines));
 
-  c->constants.count = c->constants.capacity = 33;
+  c->constants.count = c->constants.capacity = 37;
   Value values[] = {
     string("Nil"),
     string("Any"),
@@ -576,15 +640,19 @@ static Value fn_src_slash_lita_slash_lib_slash_core_dot_lita_0() {
     fn_print_6(),
     fn_dump_7(),
     string("Number"),
-    fn_dump_8(),
-    fn_print_9(),
+    string("inc"),
+    fn_inc_8(),
+    string("dec"),
+    fn_dec_9(),
+    fn_dump_10(),
+    fn_print_11(),
     string(""),
-    fn__dot__10(),
+    fn__dot__12(),
     string("Table"),
     string("inspect"),
-    fn_inspect_11(),
+    fn_inspect_13(),
     string("Atom"),
-    fn_init_12(),
+    fn_init_14(),
     string("init"),
     string("script return value"),
   };

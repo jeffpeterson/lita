@@ -165,6 +165,85 @@ static Value fn_map_4() {
   return obj(f);
 }
 
+             // array
+static Value fn_array_5() {
+  ObjFunction *f = newFunction();
+  f->arity = 0;
+  f->upvalueCount = 0;
+  f->name = newString("array");
+
+  Chunk *c = &f->chunk;
+  initChunk(c);
+  c->count = c->capacity = 93;
+  u8 code[] = {
+    OP_ARRAY, 0,
+    OP_GET_LOCAL, 0,
+    OP_GET_VAR, 1,
+    OP_GET_LOCAL, 0,
+    OP_GET_VAR, 1,
+    OP_GET_LOCAL, 0,
+    OP_GET_VAR, 2,
+    OP_GREATER,
+    OP_NOT,
+    OP_ASSERT_STACK, 3, 4,
+    OP_JUMP_IF_FALSE, 0, 34,
+    OP_POP,
+    OP_GET_LOCAL, 2,
+    OP_GET_LOCAL, 0,
+    OP_GET_VAR, 2,
+    OP_GREATER,
+    OP_NOT,
+    OP_ASSERT_STACK, 4, 4,
+    OP_JUMP_IF_FALSE, 0, 12,
+    OP_POP,
+    OP_GET_LOCAL, 1,
+    OP_GET_LOCAL, 2,
+    OP_INVOKE, 5, 1,
+    OP_POP,
+    OP_LOOP, 0, 26,
+    OP_ASSERT_STACK, 6, 4,
+    OP_POP,
+    OP_JUMP, 0, 31,
+    OP_POP,
+    OP_GET_LOCAL, 2,
+    OP_GET_LOCAL, 0,
+    OP_GET_VAR, 2,
+    OP_LESS,
+    OP_NOT,
+    OP_ASSERT_STACK, 4, 4,
+    OP_JUMP_IF_FALSE, 0, 12,
+    OP_POP,
+    OP_GET_LOCAL, 1,
+    OP_GET_LOCAL, 2,
+    OP_INVOKE, 5, 1,
+    OP_POP,
+    OP_LOOP, 0, 26,
+    OP_ASSERT_STACK, 6, 4,
+    OP_POP,
+    OP_GET_LOCAL, 1,
+    OP_RETURN,
+    OP_POP,
+    OP_NIL,
+    OP_RETURN,
+  };
+  int lines[] = { 7, 7, 8, 8, 8, 8, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 12, 12, 12, 12, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 15, 15, 15, 15, 15, 15,};
+  c->code = cloneMemory(code, sizeof(code));
+  c->lines = cloneMemory(lines, sizeof(lines));
+
+  c->constants.count = c->constants.capacity = 7;
+  Value values[] = {
+    NUMBER_VAL(0.000000),
+    string("start"),
+    string("end"),
+    string("if condition"),
+    string("while condition"),
+    string("<<"),
+    string("falsey while condition"),
+  };
+  c->constants.values = cloneMemory(values, sizeof(values));
+  return obj(f);
+}
+
              // src/lita/range.lita
 static Value fn_src_slash_lita_slash_range_dot_lita_0() {
   ObjFunction *f = newFunction();
@@ -174,7 +253,7 @@ static Value fn_src_slash_lita_slash_range_dot_lita_0() {
 
   Chunk *c = &f->chunk;
   initChunk(c);
-  c->count = c->capacity = 34;
+  c->count = c->capacity = 38;
   u8 code[] = {
     OP_CLASS, 0, 0,
     OP_GET_LOCAL, 0,
@@ -189,17 +268,19 @@ static Value fn_src_slash_lita_slash_range_dot_lita_0() {
     OP_METHOD, 6,
     OP_CLOSURE, 9,
     OP_METHOD, 8,
+    OP_CLOSURE, 11,
+    OP_METHOD, 10,
     OP_POP,
     OP_POP,
     OP_GET_GLOBAL, 0,
-    OP_ASSERT_STACK, 10, 2,
+    OP_ASSERT_STACK, 12, 2,
     OP_RETURN,
   };
-  int lines[] = { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4, 5, 5, 5, 5, 5, 5, 5, 5, 6, 6, 6, 6,};
+  int lines[] = { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4, 5, 5, 5, 5, 15, 15, 15, 15, 16, 16, 16, 16, 16, 16, 16, 16,};
   c->code = cloneMemory(code, sizeof(code));
   c->lines = cloneMemory(lines, sizeof(lines));
 
-  c->constants.count = c->constants.capacity = 11;
+  c->constants.count = c->constants.capacity = 13;
   Value values[] = {
     string("Range"),
     string("Object"),
@@ -211,6 +292,8 @@ static Value fn_src_slash_lita_slash_range_dot_lita_0() {
     fn_length_3(),
     string("map"),
     fn_map_4(),
+    string("array"),
+    fn_array_5(),
     string("script return value"),
   };
   c->constants.values = cloneMemory(values, sizeof(values));

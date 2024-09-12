@@ -32,9 +32,11 @@ class Bool
 	.dump      = this ? 'TRUE_VAL : 'FALSE_VAL
 
 class Number
-	.dump      = "NUMBER_VAL(" string ')
-	.print(io) = io.write(string)
-	.(b)       = this * b
+	.inc		= this + 1
+	.dec		= this - 1
+	.dump		= "NUMBER_VAL(" string ')
+	.print(io)	= io.write(string)
+	.(b)		= this * b
 
 class Table
 	.inspect = "{}"

@@ -26,6 +26,11 @@ assert x == nil
 assert x' == 1
 assert x₂' == 3
 assert x?
+assert x'++ == 1
+assert x' == 2
+
+// Ranges
+// assert (1..3).array == [1, 2, 3]
 
 // Functions
 fn subtract(a, b)

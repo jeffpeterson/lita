@@ -5,6 +5,7 @@
 #include "lib.h"
 #include "memory.h"
 #include "native.h"
+#include "scanner.h"
 #include "string.h"
 #include "table.h"
 #include "term.h"
@@ -291,6 +292,16 @@ ALIAS_OPERATOR(String, concat, invoke, "", 1);
 ALIAS_OPERATOR(String, concat, star, "*", 1);
 NATIVE_METHOD(String, escape, 0) {
   return OBJ_VAL(escape_string(asString(this)));
+}
+NATIVE_METHOD(String, codePoint, 0) {
+  ObjString *str = as_string(this);
+  if (str->length == 0) return NIL_VAL;
+  return NUMBER_VAL(codePoint(str->chars));
+}
+NATIVE_METHOD(String, codePointSize, 0) {
+  ObjString *str = as_string(this);
+  if (str->length == 0) return NIL_VAL;
+  return NUMBER_VAL(utfBytes(str->chars));
 }
 
 NATIVE_METHOD(String, replace, 2) {

@@ -163,7 +163,7 @@ static Value sourceSince(const char *start) {
                                        parser.previous.length - start));
 }
 
-static void errorAt(Token *token, const char *message) {
+static void verrorAt(Token *token, const char *message, va_list args) {
   if (parser.panicMode) return;
 
   parser.panicMode = true;
@@ -185,15 +185,32 @@ static void errorAt(Token *token, const char *message) {
     fprintf(stderr, " at '%.*s'", token->length, token->start);
   }
 
-  fprintf(stderr, ": %s\n\n", message);
+  fprintf(stderr, ": ");
+  vfprintf(stderr, message, args);
+  fprintf(stderr, "\n\n");
   parser.hadError = true;
   exit(1);
 }
 
-static void error(const char *message) { errorAt(&parser.previous, message); }
+static void errorAt(Token *token, const char *message, ...) {
+  va_list args;
+  va_start(args, message);
+  verrorAt(token, message, args);
+  va_end(args);
+}
 
-static void errorAtCurrent(const char *message) {
-  errorAt(&parser.current, message);
+static void error(const char *message, ...) {
+  va_list args;
+  va_start(args, message);
+  verrorAt(&parser.previous, message, args);
+  va_end(args);
+}
+
+static void errorAtCurrent(const char *message, ...) {
+  va_list args;
+  va_start(args, message);
+  verrorAt(&parser.current, message, args);
+  va_end(args);
 }
 
 /** Puts the given value in the constant table and returns its index. */
@@ -766,7 +783,6 @@ static bool assignment(Ctx *ctx, OpCode getOp, OpCode setOp, u8 arg,
       emitBytes(OP_PEEK, 0);      // [value][value]
     }
 
-    // TODO: Replace emitConstant() usage with emit()
     emitConstant(NUMBER_VAL(1));
     emitByte(type == TOKEN_PLUS_PLUS ? OP_ADD : OP_SUBTRACT);
     emitBytes(setOp, arg);
@@ -1084,7 +1100,9 @@ static void prefix(Ctx *ctx) {
   switch (operatorType) {
   case TOKEN_BANG: emitByte(OP_NOT); break;
   case TOKEN_MINUS: emitByte(OP_NEGATE); break;
-  default: return; // Unreachable.
+  default:
+    error("Unknown prefix operator: %.*s.", parser.previous.length,
+          parser.previous.start);
   }
 }
 
@@ -1467,12 +1485,9 @@ static void whileStatement() {
   expression("Expect expression after 'while'."); // [0 condition]
   assertStackSize(1, "while condition");
 
-  if (!check(TOKEN_INDENT))
-    consume(TOKEN_COLON, "Expect ':' or block after condition.");
-
   int exitJump = emitJump(OP_JUMP_IF_FALSE);
-  emitByte(OP_POP);    // []
-  statement();         // []
+  emitByte(OP_POP);
+  if (check(TOKEN_INDENT) || match(TOKEN_COLON)) statement();
   emitLoop(loopStart); // Loop back to the condition.
 
   patchJump(exitJump); // Exit the loop.

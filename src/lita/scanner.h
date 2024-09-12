@@ -3,6 +3,9 @@
 
 #include "common.h"
 
+u8 utfBytes(const char *str);
+u32 codePoint(const char *str);
+
 bool in(u32 c, char start, char end);
 bool isAlpha(u32 c);
 bool isDigit(u32 c);
