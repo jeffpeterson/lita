@@ -16,11 +16,6 @@
 #include "regex.h"
 #endif
 
-ObjString *as_string(let x) {
-  assert(isString(x));
-  return asString(x);
-}
-
 Value string(const char *str) { return obj(newString(str)); }
 
 /** Allocate an ObjString for a (null-terminated) char string. */
@@ -34,13 +29,13 @@ static ObjString *makeString(char *chars, int length, Hash hash) {
   return string;
 }
 
-ObjString *concat_strings(ObjString *a, ObjString *b) {
+ObjString *concatStrings(ObjString *a, ObjString *b) {
   int length = a->length + b->length;
   char *chars = ALLOCATE(char, length + 1);
   memcpy(chars, a->chars, a->length);
   memcpy(chars + a->length, b->chars, b->length);
   chars[length] = '\0';
-  return take_string(chars, length);
+  return takeString(chars, length);
 }
 
 ObjString *newString(const char *chars) {
@@ -48,7 +43,7 @@ ObjString *newString(const char *chars) {
   return copyString(chars, strlen(chars));
 }
 
-ObjString *take_string(char *chars, int length) {
+ObjString *takeString(char *chars, int length) {
   if (length == -1) length = strlen(chars);
   Hash hash;
   ObjString *interned = (ObjString *)getInterned(&hash, chars, length);
@@ -72,28 +67,28 @@ ObjString *copyString(const char *chars, usize length) {
   return makeString(heapChars, length, hash);
 }
 
-ObjString *buffer_to_string(Buffer *buf) {
+ObjString *bufferToString(Buffer *buf) {
   if (buf->count == 0 || buf->bytes[buf->count - 1] != '\0')
-    append_char_to_buffer(buf, '\0');
-  resize_buffer(buf, buf->count);
-  return take_string((char *)buf->bytes, buf->count - 1);
+    appendCharToBuffer(buf, '\0');
+  resizeBuffer(buf, buf->count);
+  return takeString((char *)buf->bytes, buf->count - 1);
 }
 
-ObjString *escape_string(ObjString *str) {
-  Buffer out = new_buffer(str->length + 3);
-  append_char_to_buffer(&out, '"');
+ObjString *escapeString(ObjString *str) {
+  Buffer out = newBuffer(str->length + 3);
+  appendCharToBuffer(&out, '"');
 
   for (int i = 0; i < str->length; i++) {
     u8 ch = str->chars[i];
 
-    if (ch == '\\') append_char_to_buffer(&out, ch);
+    if (ch == '\\') appendCharToBuffer(&out, ch);
 
     if (isprint(ch) || ch > 127) {
-      append_char_to_buffer(&out, ch);
+      appendCharToBuffer(&out, ch);
       continue;
     }
 
-    append_char_to_buffer(&out, '\\');
+    appendCharToBuffer(&out, '\\');
 
     ch = ch >= '\0' && ch <= '\6'  ? ch + '0'
          : ch == '\a'              ? 'a'
@@ -105,12 +100,12 @@ ObjString *escape_string(ObjString *str) {
          : ch == '\t'              ? 't'
          : ch == '\\' || ch == '"' ? ch
                                    : 'x';
-    append_char_to_buffer(&out, ch);
+    appendCharToBuffer(&out, ch);
   }
 
-  append_char_to_buffer(&out, '"');
+  appendCharToBuffer(&out, '"');
 
-  return buffer_to_string(&out);
+  return bufferToString(&out);
 }
 
 ObjString *unescapeString(ObjString *str) {
@@ -144,10 +139,10 @@ ObjString *unescapeString(ObjString *str) {
 
   out[len] = '\0';
 
-  return take_string(GROW_ARRAY(char, out, str->length + 1, len + 1), len);
+  return takeString(GROW_ARRAY(char, out, str->length + 1, len + 1), len);
 }
 
-ObjString *string_to_c_ident(ObjString *str) {
+ObjString *stringToCIdent(ObjString *str) {
   char *out = NULL;
   usize size = 0;
   FILE *io = open_memstream(&out, &size);
@@ -186,12 +181,12 @@ ObjString *string_to_c_ident(ObjString *str) {
     case '?': fputs("_question_", io); break;
 
     default: {
-      bool is_alpha = (ch >= 'a' && ch <= 'z') || (ch >= 'A' && ch <= 'Z');
-      bool is_word = is_alpha || ch == '_';
-      bool is_digit = ch >= '0' && ch <= '9';
+      bool isAlpha = (ch >= 'a' && ch <= 'z') || (ch >= 'A' && ch <= 'Z');
+      bool isWord = isAlpha || ch == '_';
+      bool isDigit = ch >= '0' && ch <= '9';
 
-      if (i == 0 && !is_word) fputc('_', io);
-      if (is_word || is_digit) fputc(ch, io);
+      if (i == 0 && !isWord) fputc('_', io);
+      if (isWord || isDigit) fputc(ch, io);
       else runtimeError("Invalid identifier: %s", str->chars);
     }
     }
@@ -210,19 +205,19 @@ ObjString *stringf(const char *fmt, ...) {
 
   if (len < 0) return copyString("", 0);
 
-  return take_string(str, len);
+  return takeString(str, len);
 }
 
-ObjString *vstring_format(const char *fmt, va_list args) {
+ObjString *vstringFormat(const char *fmt, va_list args) {
   char *out = NULL;
   usize size = 0;
   FILE *io = open_memstream(&out, &size);
-  vfstring_format(io, fmt, args);
+  vfstringFormat(io, fmt, args);
   fclose(io);
-  return take_string(out, size);
+  return takeString(out, size);
 }
 
-int vfstring_format(FILE *io, const char *fmt, va_list args) {
+int vfstringFormat(FILE *io, const char *fmt, va_list args) {
   int i = 0;
   int count = 0;
 
@@ -243,7 +238,7 @@ int vfstring_format(FILE *io, const char *fmt, va_list args) {
         fmt += i + 2; // Skip the first and second bracket
         i = 0;
         Value v = va_arg(args, Value);
-        count += inspect_value(io, v);
+        count += inspectValue(io, v);
         continue;
       }
 
@@ -254,23 +249,23 @@ int vfstring_format(FILE *io, const char *fmt, va_list args) {
   return fprintf(io, "%s", fmt) + count;
 }
 
-ObjString *string_format(const char *fmt, ...) {
+ObjString *stringFormat(const char *fmt, ...) {
   va_list args;
   va_start(args, fmt);
-  ObjString *str = vstring_format(fmt, args);
+  ObjString *str = vstringFormat(fmt, args);
   va_end(args);
   return str;
 }
 
-int fstring_format(FILE *io, const char *fmt, ...) {
+int fstringFormat(FILE *io, const char *fmt, ...) {
   va_list args;
   va_start(args, fmt);
-  int result = vfstring_format(io, fmt, args);
+  int result = vfstringFormat(io, fmt, args);
   va_end(args);
   return result;
 }
 
-static const char *string_bytes(Obj *obj, int length) {
+static const char *stringBytes(Obj *obj, int length) {
   ObjString *str = (ObjString *)obj;
   if (length != str->length) return NULL;
   return str->chars;
@@ -281,81 +276,81 @@ COMPILED_SOURCE(string);
 NATIVE_METHOD(String, string, 0) { return this; }
 NATIVE_METHOD(String, concat, 1) {
   if (!isString(args[0])) {
-    vm_invoke(string("string"), 0);
+    vmInvoke(string("string"), 0);
     return VOID;
   }
 
-  return obj(concat_strings(as_string(this), as_string(args[0])));
+  return obj(concatStrings(asString(this), asString(args[0])));
 }
 ALIAS_OPERATOR(String, concat, plus, "+", 1);
 ALIAS_OPERATOR(String, concat, invoke, "", 1);
 ALIAS_OPERATOR(String, concat, star, "*", 1);
 NATIVE_METHOD(String, escape, 0) {
-  return OBJ_VAL(escape_string(asString(this)));
+  return OBJ_VAL(escapeString(asString(this)));
 }
 NATIVE_METHOD(String, codePoint, 0) {
-  ObjString *str = as_string(this);
+  ObjString *str = asString(this);
   if (str->length == 0) return NIL_VAL;
   return NUMBER_VAL(codePoint(str->chars));
 }
 NATIVE_METHOD(String, codePointSize, 0) {
-  ObjString *str = as_string(this);
+  ObjString *str = asString(this);
   if (str->length == 0) return NIL_VAL;
   return NUMBER_VAL(utfBytes(str->chars));
 }
 
 NATIVE_METHOD(String, replace, 2) {
-  ObjString *str = as_string(this);
-  ObjString *to = as_string(args[1]);
+  ObjString *str = asString(this);
+  ObjString *to = asString(args[1]);
 
 #if ENABLE_REGEX
   if (isRegex(args[0])) return OBJ_VAL(replaceRegex(str, asRegex(args[0]), to));
 
 #endif
 
-  ObjString *from = as_string(args[0]);
-  Buffer out = new_buffer(str->length);
+  ObjString *from = asString(args[0]);
+  Buffer out = newBuffer(str->length);
 
   for (int i = 0; i < str->length; i++) {
     if (strncmp(str->chars + i, from->chars, from->length) == 0) {
-      append_str_to_buffer(&out, to->chars, to->length);
+      appendStrToBuffer(&out, to->chars, to->length);
       i += from->length - 1;
     } else {
-      append_char_to_buffer(&out, str->chars[i]);
+      appendCharToBuffer(&out, str->chars[i]);
     }
   }
 
-  return OBJ_VAL(buffer_to_string(&out));
+  return OBJ_VAL(bufferToString(&out));
 }
 
-static int string_length(Obj *obj) { return ((ObjString *)obj)->length; }
+static int stringLength(Obj *obj) { return ((ObjString *)obj)->length; }
 
-void free_string(Obj *obj) {
+void freeString(Obj *obj) {
   ObjString *string = (ObjString *)obj;
   FREE_ARRAY(char, string->chars, string->length + 1);
 }
 
-void mark_string(Obj *obj) {}
+void markString(Obj *obj) {}
 
-int inspect_string(Obj *obj, FILE *io) {
-  ObjString *str = escape_string((ObjString *)obj);
+int inspectString(Obj *obj, FILE *io) {
+  ObjString *str = escapeString((ObjString *)obj);
   return fprintf(io, FG_GREEN "%s" FG_DEFAULT, str->chars) - 10;
 }
 
-int dump_string(Obj *obj, FILE *io) {
-  ObjString *str = escape_string((ObjString *)obj);
+int dumpString(Obj *obj, FILE *io) {
+  ObjString *str = escapeString((ObjString *)obj);
   return fprintf(io, "string(%.*s)", str->length, str->chars);
 }
 
 REGISTER_OBJECT_DEF(String);
 const ObjDef String = {
-    .class_name = "String",
+    .className = "String",
     .size = sizeof(ObjString),
     .interned = true,
-    .bytes = string_bytes,
-    .free = free_string,
-    .mark = mark_string,
-    .inspect = inspect_string,
-    .dump = dump_string,
-    .length = string_length,
+    .bytes = stringBytes,
+    .free = freeString,
+    .mark = markString,
+    .inspect = inspectString,
+    .dump = dumpString,
+    .length = stringLength,
 };

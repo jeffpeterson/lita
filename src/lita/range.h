@@ -12,7 +12,7 @@ typedef struct ObjRange {
 } ObjRange;
 
 #define allocateRange() ALLOCATE_OBJ(Range)
-#define isRange(val) is_obj_def(val, &Range)
+#define isRange(val) isObjDef(val, &Range)
 #define asRange(val) as(Range, val)
 
 ObjRange *newRange(Value start, Value end);

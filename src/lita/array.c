@@ -6,7 +6,7 @@
 #include "native.h"
 #include "vm.h"
 
-ObjArray *copy_array(Value *values, u32 length) {
+ObjArray *copyArray(Value *values, u32 length) {
   ObjArray *arr = allocateArray();
   resize_array(arr, length);
   write_array(arr, 0, values, length);
@@ -65,7 +65,7 @@ static int inspectArray(Obj *obj, FILE *io) {
   int tot = fprintf(io, "[");
   for (int i = 0; i < arr->length; i++) {
     if (i > 0) tot += fprintf(io, ", ");
-    tot += inspect_value(io, arr->values[i]);
+    tot += inspectValue(io, arr->values[i]);
   }
   return fprintf(io, "]") + tot;
 }
@@ -101,13 +101,13 @@ NATIVE_METHOD(Array, slice, 0) {
   ObjArray *arr = asArray(this);
   int start = argc > 0 ? as_num(args[0]) : 0;
   int len = argc > 1 ? as_num(args[1]) : arr->length - start;
-  return OBJ_VAL(copy_array(arr->values + start, len));
+  return OBJ_VAL(copyArray(arr->values + start, len));
 }
 
 COMPILED_SOURCE(array);
 REGISTER_OBJECT_DEF(Array);
 const ObjDef Array = {
-    .class_name = "Array",
+    .className = "Array",
     .size = sizeof(ObjArray),
     .interned = false,
     .alloc = allocArray,

@@ -5,7 +5,7 @@
 #include "object.h"
 #include "value.h"
 
-#define isBound(val) is_obj_def(val, &Bound)
+#define isBound(val) isObjDef(val, &Bound)
 #define asBound(val) as(Bound, val)
 #define allocateBound() ALLOCATE_OBJ(Bound)
 

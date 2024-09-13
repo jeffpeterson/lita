@@ -21,7 +21,7 @@ let method(let klass, let fun) {
 
   let key = name(fun);
 
-  if (is_nil(key)) {
+  if (isNil(key)) {
     return crash("Method must be callable.");
   }
 
@@ -67,18 +67,18 @@ let findMethod(let klass, let name) {
 
 let find(let self, let key) {
   let val;
-  if (is_obj(self)) {
+  if (isObject(self)) {
     if (tableGet(&AS_OBJ(self)->fields, key, &val)) return val;
     if (isClass(self)) {
       val = find(superOf(self), key);
-      if (not_nil(val)) return val;
+      if (notNil(val)) return val;
     }
   }
 
   return findMethod(classOf(self), key);
 }
 
-bool has(let self, let key) { return !is_nil(find(self, key)); }
+bool has(let self, let key) { return !isNil(find(self, key)); }
 let get(let self, let key) { return bindFn(self, find(self, key)); }
 let set(let self, let key, let value) { return crash("Not implemented."); }
 

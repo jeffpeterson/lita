@@ -6,7 +6,7 @@
 #include "value.h"
 
 #define allocateUpvalue() ALLOCATE_OBJ(Upvalue)
-#define isUpvalue(val) is_obj_def(val, &Upvalue)
+#define isUpvalue(val) isObjDef(val, &Upvalue)
 #define asUpvalue(val) as(Upvalue, val)
 
 /**

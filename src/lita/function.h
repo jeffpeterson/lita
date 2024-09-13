@@ -8,7 +8,7 @@
 #include "string.h"
 #include "value.h"
 
-#define isFunction(val) is_obj_def(val, &Function)
+#define isFunction(val) isObjDef(val, &Function)
 #define asFunction(val) as(Function, val)
 #define allocateFunction() ALLOCATE_OBJ(Function)
 

@@ -5,7 +5,7 @@
 #include "object.h"
 
 #define allocateIterator() ALLOCATE_OBJ(Iterator)
-#define isIterator(val) is_obj_def(val, &Iterator)
+#define isIterator(val) isObjDef(val, &Iterator)
 #define asIterator(val) as(Iterator, val)
 
 typedef struct ObjIterator {

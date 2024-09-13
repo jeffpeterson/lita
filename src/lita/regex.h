@@ -31,7 +31,7 @@ typedef struct RegexError {
 } RegexError;
 
 #define allocateRegex() ALLOCATE_OBJ(Regex)
-#define isRegex(val) is_obj_def(val, &Regex)
+#define isRegex(val) isObjDef(val, &Regex)
 #define asRegex(val) as(Regex, val)
 
 ObjRegex *makeRegex(ObjString *source);

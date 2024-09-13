@@ -376,9 +376,8 @@ static void emitDefault_(Value value, const char *comment) {
 
 #define emit(value) emit_(value, "At " __FILE__ ":" STRINGIFY(__LINE__))
 static void emit_(Value val, const char *comment) {
-  if (is_nil(val)) return emitByte_(OP_NIL, comment);
-  if (is_bool(val))
-    return emitByte_(AS_BOOL(val) ? OP_TRUE : OP_FALSE, comment);
+  if (isNil(val)) return emitByte_(OP_NIL, comment);
+  if (isBool(val)) return emitByte_(AS_BOOL(val) ? OP_TRUE : OP_FALSE, comment);
   return emitConstant_(val, comment);
 }
 
@@ -1203,7 +1202,7 @@ static void getter() {
     u8 nameConstant = makeConstant(name);
     Compiler compiler;
 
-    initCompiler(&compiler, TYPE_METHOD, as_string(name));
+    initCompiler(&compiler, TYPE_METHOD, asString(name));
     beginScope();
     expression("Expect expression after `let ... =`.");
     emitBytes(OP_SET_PROPERTY, nameConstant);

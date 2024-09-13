@@ -10,11 +10,9 @@ void initTree(Tree *tree) {
 }
 
 bool treeGet(Tree *tree, Value key, Value *value) {
-  if (tree == NULL)
-    return false;
+  if (tree == NULL) return false;
 
-  if (is_void(tree->key))
-    return false;
+  if (isVoid(tree->key)) return false;
 
   int cmp = cmpValues(key, tree->key);
 
@@ -27,7 +25,7 @@ bool treeGet(Tree *tree, Value key, Value *value) {
 }
 
 bool treeSet(Tree *tree, Value key, Value value) {
-  if (is_void(tree->key)) {
+  if (isVoid(tree->key)) {
     tree->key = key;
     tree->value = value;
     tree->count++;
@@ -51,6 +49,5 @@ bool treeSet(Tree *tree, Value key, Value value) {
   if (treeSet(*branch, key, value)) {
     tree->count++;
     return true;
-  } else
-    return false;
+  } else return false;
 }

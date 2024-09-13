@@ -14,12 +14,13 @@ typedef struct ObjDef ObjDef;
 #define getDef(val) (as_obj(val)->def)
 #define as(def, val) ((Obj##def *)asObjDef(&def, val))
 #define ALLOCATE_OBJ(def) ((Obj##def *)allocateObject(&def))
+#define asObject(val) ((Obj *)asObjDef(&Object, val))
 
 #define foreach_obj_def(var) section_foreach_entry(defs, ObjDef *, var)
 #define REGISTER_OBJECT_DEF(def) const SECTION(defs) ObjDef *def##_def = &def;
 #define DEFINE_OBJECT_TYPE(def, ...)                                           \
   REGISTER_OBJECT_DEF(def);                                                    \
-  ObjDef def = {.class_name = #def, .size = sizeof(def), __VA_ARGS__}
+  ObjDef def = {.className = #def, .size = sizeof(def), __VA_ARGS__}
 
 #define DEF_MARK(type, var, ...) DEF_OBJ_FN(type, mark, var, __VA_ARGS__)
 #define DEF_ALLOC(type, var, ...) DEF_OBJ_FN(type, alloc, var, __VA_ARGS__)
@@ -39,7 +40,7 @@ typedef int ObjIOFn(Obj *obj, FILE *io);
 typedef const char *ObjBytesFn(Obj *obj, int length);
 
 typedef struct ObjDef {
-  const char *class_name;
+  const char *className;
   const usize size;
   const bool interned;
   ObjIntFn *length;
@@ -48,7 +49,7 @@ typedef struct ObjDef {
   ObjFn *mark;
   ObjIOFn *inspect; /** NOTE: Why can't we invoke .inspect? */
   ObjIOFn *dump;
-  ObjIOFn *dump_global;
+  ObjIOFn *dumpGlobal;
   ObjBytesFn *bytes;
 } ObjDef;
 
@@ -75,20 +76,19 @@ struct Obj {
 
 Obj *allocateObject(const ObjDef *def);
 Obj *asObjDef(const ObjDef *def, Value val);
-Obj *as_obj(Value x);
-Obj *new_instance(ObjClass *klass);
+Obj *newInstance(ObjClass *klass);
 const char *objectBytes(Obj *obj, int length);
-int inspect_obj(FILE *io, Obj *obj);
+int inspectObject(FILE *io, Obj *obj);
 int cmpObjects(Obj *a, Obj *b);
 
 // Value init_obj(Value klass, int argc, Value *args);
 
-static inline bool is_obj_def(Value value, const ObjDef *def) {
-  return is_obj(value) && AS_OBJ(value)->def == def;
+static inline bool isObjDef(Value value, const ObjDef *def) {
+  return isObject(value) && AS_OBJ(value)->def == def;
 }
 
-static inline bool is_interned(Value val) {
-  if (!is_obj(val)) return true;
+static inline bool isInterned(Value val) {
+  if (!isObject(val)) return true;
   Obj *obj = AS_OBJ(val);
   return obj->def->interned;
 }

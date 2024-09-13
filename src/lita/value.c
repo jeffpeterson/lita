@@ -8,7 +8,7 @@
 #include "xxhash.h"
 
 double as_num(Value x) {
-  assert(is_num(x));
+  assert(isNumber(x));
   return AS_NUMBER(x);
 }
 
@@ -35,11 +35,11 @@ void freeValueArray(ValueArray *array) {
   initValueArray(array);
 }
 
-void copy_values(Value *source, Value *dest, usize count) {
+void copyValues(Value *source, Value *dest, usize count) {
   memcpy(dest, source, count * sizeof(Value));
 }
 
-int inspect_value(FILE *io, Value val) {
+int inspectValue(FILE *io, Value val) {
   switch (val) {
   case True:
   case False:
@@ -51,10 +51,10 @@ int inspect_value(FILE *io, Value val) {
   default: break;
   }
 
-  if (is_num(val))
+  if (isNumber(val))
     return fprintf(io, FG_BLUE "%g" FG_DEFAULT, AS_NUMBER(val)) - FG_SIZE * 2;
 
-  if (is_obj(val)) return inspect_obj(io, AS_OBJ(val));
+  if (isObject(val)) return inspectObject(io, AS_OBJ(val));
   return 0;
 }
 
@@ -64,27 +64,27 @@ let inspect(let val) {
   char *str = NULL;
   size_t len = 0;
   FILE *io = open_memstream(&str, &len);
-  inspect_value(io, val);
+  inspectValue(io, val);
   fclose(io);
-  return OBJ_VAL(take_string(str, len));
+  return OBJ_VAL(takeString(str, len));
 }
 
 int trace(const char *label, Value value) {
   if (config.tracing)
     return fprintf(stderr, "[TRACE] %s: ", label) +
-           inspect_value(stderr, value) + fprintf(stderr, "\n");
+           inspectValue(stderr, value) + fprintf(stderr, "\n");
   else return 0;
 }
 
 let pp(let val) {
-  inspect_value(stderr, val);
+  inspectValue(stderr, val);
   fputc('\n', stderr);
   return val;
 }
 
 bool valuesEqual(Value a, Value b) {
 #if NAN_BOXING
-  if (is_num(a)) return is_num(b) && AS_NUMBER(a) == AS_NUMBER(b);
+  if (isNumber(a)) return isNumber(b) && AS_NUMBER(a) == AS_NUMBER(b);
   return a == b;
 #else
   if (a.type != b.type) return false;
@@ -101,10 +101,10 @@ bool valuesEqual(Value a, Value b) {
 
 // OBJ > NUMBER > BOOL > NIL > VOID
 int cmpValues(Value a, Value b) {
-  if (is_obj(a)) {
-    return is_obj(b) ? cmpObjects(AS_OBJ(a), AS_OBJ(b)) : -1;
-  } else if (is_num(a)) {
-    if (is_num(b)) {
+  if (isObject(a)) {
+    return isObject(b) ? cmpObjects(AS_OBJ(a), AS_OBJ(b)) : -1;
+  } else if (isNumber(a)) {
+    if (isNumber(b)) {
       double aa = AS_NUMBER(a);
       double bb = AS_NUMBER(b);
       return aa > bb ? 1 : bb > aa ? -1 : 0;
@@ -115,15 +115,15 @@ int cmpValues(Value a, Value b) {
   return AS_NUMBER(a) - AS_NUMBER(b);
 }
 
-Hash hash_bytes(const char *bytes, usize length) {
+Hash hashBytes(const char *bytes, usize length) {
   return XXH3_64bits(bytes, length);
 }
 
-Hash hash_value(Value val) {
-  return is_obj(val) ? AS_OBJ(val)->hash
-                     : hash_bytes((char *)&val, sizeof(Value));
+Hash hashValue(Value val) {
+  return isObject(val) ? AS_OBJ(val)->hash
+                       : hashBytes((char *)&val, sizeof(Value));
 }
 
-Hash hash_values(Value *vals, usize length) {
-  return hash_bytes((char *)vals, length * sizeof(Value));
+Hash hashValues(Value *vals, usize length) {
+  return hashBytes((char *)vals, length * sizeof(Value));
 }

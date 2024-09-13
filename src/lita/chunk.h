@@ -108,14 +108,14 @@ void freeChunk(Chunk *chunk);
 void growChunk(Chunk *chunk, int capacity);
 void writeChunk(Chunk *chunk, u8 byte, int line, Value comment);
 int addConstant(Chunk *chunk, Value value);
-Value get_constant(Chunk *chunk, int id);
+Value getConstant(Chunk *chunk, int id);
 
-extern OpInfo op_info[];
+extern OpInfo opInfo[];
 
 u8 instructionSize(OpCode code);
 
-int input_count(Chunk *chunk, u8 *ip);
-int output_count(Chunk *chunk, u8 *ip);
-int input_output_delta(Chunk *chunk, u8 *ip);
+int inputCount(Chunk *chunk, u8 *ip);
+int outputCount(Chunk *chunk, u8 *ip);
+int inputOutputDelta(Chunk *chunk, u8 *ip);
 
 #endif

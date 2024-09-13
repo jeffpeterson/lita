@@ -55,10 +55,10 @@ static InterpretResult vruntimeError(const char *format, va_list args) {
         disassembleChunk(&fun->chunk, fun->name->chars, instruction + 1);
 
       fprintf(stderr, "[line %d] in ", line);
-      inspect_obj(stderr, (Obj *)fun);
+      inspectObject(stderr, (Obj *)fun);
       fprintf(stderr, "\n");
     } else if (frame->native) {
-      inspect_obj(stderr, (Obj *)frame->native);
+      inspectObject(stderr, (Obj *)frame->native);
     }
   }
 
@@ -136,10 +136,10 @@ void initVM(World *world) {
 }
 
 static void registerDef(ObjDef *def) {
-  if (!def->class_name) crash("def must have a class_name");
+  if (!def->className) crash("def must have a className");
   if (!def->size) crash("def must have a size");
 
-  let klass = globalClass(def->class_name);
+  let klass = globalClass(def->className);
   asClass(klass)->instance_def = def;
 }
 
@@ -148,23 +148,23 @@ ObjFunction *core_lita();
 static InterpretResult defineNatives() {
   foreach_native(native) {
     let fun = fn(native->name, native->arity, native->fun);
-    trace(native->class_name, fun);
+    trace(native->className, fun);
 
-    if (native->class_name) {
-      let klass = globalClass(native->class_name);
+    if (native->className) {
+      let klass = globalClass(native->className);
       if (native->is_static) static_method(klass, fun);
       else method(klass, fun);
 
     } else setGlobal(string(native->name), fun);
   }
 
-  run_function(core_lita());
+  runFunction(core_lita());
 
   foreach_boot_function(boot) {
     ObjFunction *fun = boot->fun();
     trace("Booting", OBJ_VAL(fun));
     if (fun) {
-      InterpretResult result = run_function(fun);
+      InterpretResult result = runFunction(fun);
       if (result) return result;
     }
   }
@@ -217,7 +217,7 @@ Value pope(Value val) {
 
 Value *popn(u8 n) { return vm.stackTop -= n; }
 
-void vm_swap(u8 a, u8 b) {
+void vmSwap(u8 a, u8 b) {
   Value aa = peek(a);
   vm.stackTop[-1 - a] = peek(b);
   vm.stackTop[-1 - b] = aa;
@@ -231,8 +231,8 @@ static CallFrame *newFrame(usize slots) {
   frame->closure = NULL;
   frame->ip = NULL;
   frame->slots = vm.stackTop - slots;
-  frame->prev_stack = vm.stackTop;
-  frame->prev_ip = NULL;
+  frame->prevStack = vm.stackTop;
+  frame->prevIp = NULL;
   return frame;
 }
 
@@ -250,7 +250,7 @@ static InterpretResult moveIntoClosure(ObjClosure *closure, int argCount) {
                         argCount);
 
   if (fun->variadic) {
-    vm_array(argCount - fun->arity);
+    vmArray(argCount - fun->arity);
     argCount = fun->arity + 1;
   }
 
@@ -259,10 +259,10 @@ static InterpretResult moveIntoClosure(ObjClosure *closure, int argCount) {
   if (existing_frame->closure == closure &&
       *(existing_frame->ip) == OP_RETURN) {
     // Tail-call optimization.
-    copy_values(vm.stackTop - argCount, existing_frame->slots + 1, argCount);
+    copyValues(vm.stackTop - argCount, existing_frame->slots + 1, argCount);
     vm.stackTop = existing_frame->slots + argCount + 1;
     existing_frame->ip = fun->chunk.code;
-    existing_frame->prev_ip = NULL;
+    existing_frame->prevIp = NULL;
     return INTERPRET_OK;
   }
 
@@ -299,16 +299,16 @@ static InterpretResult moveIntoNative(ObjNative *native, int argc) {
 }
 
 ObjClass *valueClass(Value v) {
-  if (is_obj(v)) {
+  if (isObject(v)) {
     Obj *obj = AS_OBJ(v);
-    if (!obj->klass) obj->klass = asClass(globalClass(obj->def->class_name));
+    if (!obj->klass) obj->klass = asClass(globalClass(obj->def->className));
     return obj->klass;
   }
 
-  const char *name = is_nil(v)    ? "Nil"
-                     : is_num(v)  ? "Number"
-                     : is_bool(v) ? "Bool"
-                                  : "Any";
+  const char *name = isNil(v)      ? "Nil"
+                     : isNumber(v) ? "Number"
+                     : isBool(v)   ? "Bool"
+                                   : "Any";
 
   return asClass(globalClass(name));
 }
@@ -321,14 +321,14 @@ ObjClass *valueClass(Value v) {
 InterpretResult callValue(Value callee, int argCount) {
   trace("callValue", callee);
 
-  if (is_obj(callee)) {
+  if (isObject(callee)) {
     if (isClosure(callee)) return moveIntoClosure(asClosure(callee), argCount);
     else if (isNative(callee))
       return moveIntoNative(AS_NATIVE(callee), argCount);
     else if (isClass(callee)) {
       // Replace the class with a new instance.
-      vm.stackTop[-argCount - 1] = OBJ_VAL(new_instance(asClass(callee)));
-      return vm_invoke(OBJ_VAL(vm.str.init), argCount);
+      vm.stackTop[-argCount - 1] = OBJ_VAL(newInstance(asClass(callee)));
+      return vmInvoke(OBJ_VAL(vm.str.init), argCount);
     } else if (isBound(callee)) {
       ObjBound *bound = asBound(callee);
       vm.stackTop[-argCount - 1] = bound->receiver;
@@ -336,7 +336,7 @@ InterpretResult callValue(Value callee, int argCount) {
     }
   }
 
-  if (argCount == 1) return vm_invoke(string(""), 1);
+  if (argCount == 1) return vmInvoke(string(""), 1);
   return false;
 }
 
@@ -354,18 +354,18 @@ static InterpretResult invokeFromClass(ObjClass *klass, ObjString *name,
 }
 
 /** [argCount self][0 ...args] */
-InterpretResult vm_invoke(Value name, int argCount) {
+InterpretResult vmInvoke(Value name, int argCount) {
   Value receiver = peek(argCount);
 
-  // if (config.tracing) fstring_format(stderr, "[TRACE] invoke: {} on ", name);
+  // if (config.tracing) fstringFormat(stderr, "[TRACE] invoke: {} on ", name);
 
   if (config.tracing) {
-    fprintf(stderr, "[TRACE] vm_invoke(%s, %d) on: ", as_string(name)->chars,
+    fprintf(stderr, "[TRACE] vmInvoke(%s, %d) on: ", asString(name)->chars,
             argCount),
-        inspect_value(stderr, receiver), fprintf(stderr, "\n");
+        inspectValue(stderr, receiver), fprintf(stderr, "\n");
   }
 
-  if (is_obj(receiver)) {
+  if (isObject(receiver)) {
     Obj *obj = AS_OBJ(receiver);
 
     Value value;
@@ -381,7 +381,7 @@ InterpretResult vm_invoke(Value name, int argCount) {
     fprintf(stderr, "[TRACE] invoking %s.%s()\n", klass->name->chars,
             asChars(name));
 
-  if (invokeFromClass(klass, as_string(name), argCount)) {
+  if (invokeFromClass(klass, asString(name), argCount)) {
     return runtimeError("Undefined method %s on %s.", asChars(inspect(name)),
                         asChars(inspect(OBJ_VAL(klass))));
   }
@@ -446,16 +446,16 @@ static void defineMethod(ObjString *name) {
   pop();
 }
 
-static bool isFalsey(Value value) { return is_nil(value) || is_false(value); }
+static bool isFalsey(Value value) { return isNil(value) || isFalse(value); }
 
 /** [length ...args][0 arg] -> [0 array] */
-void vm_array(u32 length) {
-  ObjArray *arr = copy_array(vm.stackTop - length, length);
+void vmArray(u32 length) {
+  ObjArray *arr = copyArray(vm.stackTop - length, length);
   popn(length);
   push(OBJ_VAL(arr));
 }
 
-InterpretResult vm_assert(Value src) {
+InterpretResult vmAssert(Value src) {
   let value = peek(0);
 
 #if DEBUG_ASSERT_CODE
@@ -475,24 +475,24 @@ InterpretResult vm_assert(Value src) {
 }
 
 // [argc fn][1 arg1][0 ...args ] -> [0 return]
-InterpretResult vm_call(int argc) { return callValue(peek(argc), argc); }
+InterpretResult vmCall(int argc) { return callValue(peek(argc), argc); }
 
 // [] -> [0 value]
-InterpretResult vm_get_global(Value name) {
+InterpretResult vmGetGlobal(Value name) {
   let value;
 
   if (!tableGet(&vm.globals, name, &value)) {
-    if (is_nil(value = getEnv(name)))
-      if (!isString(name) || *as_string(name)->chars != '$')
+    if (isNil(value = getEnv(name)))
+      if (!isString(name) || *asString(name)->chars != '$')
         return runtimeError("Cannot get undefined variable '%s'.",
-                            as_string(name)->chars);
+                            asString(name)->chars);
   }
   push(value);
   return INTERPRET_OK;
 }
 
 // [0 value] -> [0 value]
-InterpretResult vm_set_global(Value name) {
+InterpretResult vmSetGlobal(Value name) {
   if (tableSet(&vm.globals, name, peek(0))) {
     // This is a new key and hasn't been defined.
     tableDelete(&vm.globals, name);
@@ -503,13 +503,13 @@ InterpretResult vm_set_global(Value name) {
 }
 
 // [0 self] -> [0 value]
-InterpretResult vm_get_property(Value name) {
-  return arity(push(get(pop(), name))) == 0 ? vm_call(0) : INTERPRET_OK;
+InterpretResult vmGetProperty(Value name) {
+  return arity(push(get(pop(), name))) == 0 ? vmCall(0) : INTERPRET_OK;
 }
 
 // [1 self][0 value] -> [0 value]
-InterpretResult vm_set_property(Value name) {
-  if (!is_obj(peek(1))) {
+InterpretResult vmSetProperty(Value name) {
+  if (!isObject(peek(1))) {
     return runtimeError("Only objects have properties.");
   }
 
@@ -519,7 +519,7 @@ InterpretResult vm_set_property(Value name) {
   Value value = peek(0);
 
   // Assigning 'nil' is deletion.
-  if (is_nil(value)) tableDelete(&obj->fields, name);
+  if (isNil(value)) tableDelete(&obj->fields, name);
   else tableSet(&obj->fields, name, value);
 
   popn(2);
@@ -528,37 +528,37 @@ InterpretResult vm_set_property(Value name) {
 }
 
 // [0 self] -> [0 value]
-InterpretResult vm_get_var(Value name) {
-  if (has(peek(0), name)) return vm_get_property(name);
+InterpretResult vmGetVar(Value name) {
+  if (has(peek(0), name)) return vmGetProperty(name);
   pop();
-  return vm_get_global(name);
+  return vmGetGlobal(name);
 }
 
 // [1 self][0 value] -> [0 value]
-InterpretResult vm_set_var(Value name) {
-  if (has(peek(0), name)) return vm_set_property(name);
-  vm_swap(0, 1);
+InterpretResult vmSetVar(Value name) {
+  if (has(peek(0), name)) return vmSetProperty(name);
+  vmSwap(0, 1);
   pop();
-  return vm_set_global(name);
+  return vmSetGlobal(name);
 }
 
-Value vm_peek(int idx) { return peek(idx); }
+Value vmPeek(int idx) { return peek(idx); }
 
 /** [1 start][0 end] -> [0 range] */
-void vm_range() {
+void vmRange() {
   let b = pop();
   let a = pop();
   push(range(a, b));
 }
 
 /** [length ...args][0 arg] -> [0 tuple] */
-void vm_tuple(u8 length) {
-  ObjTuple *tuple = copy_tuple(vm.stackTop - length, length);
+void vmTuple(u8 length) {
+  ObjTuple *tuple = copyTuple(vm.stackTop - length, length);
   popn(length);
   push(OBJ_VAL(tuple));
 }
 
-static void vm_return() {
+static void vmReturn() {
   CallFrame *frame = CURRENT_FRAME;
   Value result = pop(); // Pop return value off stack.
   closeUpvalues(frame->slots);
@@ -567,12 +567,12 @@ static void vm_return() {
   push(result);
 }
 
-static void vm_throw(let location) {
+static void vmThrow(let location) {
   let err = pop();
   crash("%s thrown at %s", inspectc(err), inspectc(location));
 }
 
-static InterpretResult vm_run() {
+static InterpretResult vmRun() {
   if (vm.frameCount == 0) return runtimeError("No function to run.");
   if (vm.frameCount > 1) return runtimeError("VM already running.");
 
@@ -589,12 +589,12 @@ static InterpretResult vm_run() {
 #define READ_STRING() asString(READ_CONSTANT())
 #define BINARY_OP(valueType, op)                                               \
   do {                                                                         \
-    if (is_num(peek(0)) && is_num(peek(1))) {                                  \
+    if (isNumber(peek(0)) && isNumber(peek(1))) {                              \
       double b = AS_NUMBER(pop());                                             \
       double a = AS_NUMBER(pop());                                             \
       push(valueType(a op b));                                                 \
     } else {                                                                   \
-      if ((err = vm_invoke(string(#op), 1))) return err;                       \
+      if ((err = vmInvoke(string(#op), 1))) return err;                        \
       SYNC_FRAME();                                                            \
     }                                                                          \
   } while (false)
@@ -614,9 +614,9 @@ static InterpretResult vm_run() {
       let result = frame->native->fun(peek(argc), argc, frame->slots + 1);
       frame->reentries++;
 
-      if (not_void(result)) {
+      if (notVoid(result)) {
         push(result);
-        vm_return();
+        vmReturn();
       }
 
       if (vm.frameCount == 0) {
@@ -628,21 +628,21 @@ static InterpretResult vm_run() {
       continue;
     }
 
-    if (frame->prev_ip) {
-      int actual = vm.stackTop - frame->prev_stack;
+    if (frame->prevIp) {
+      int actual = vm.stackTop - frame->prevStack;
       int expected =
-          input_output_delta(&frame->closure->function->chunk, frame->prev_ip);
+          inputOutputDelta(&frame->closure->function->chunk, frame->prevIp);
 
       if (actual != expected) {
-        OpInfo op = op_info[*frame->prev_ip];
+        OpInfo op = opInfo[*frame->prevIp];
         return runtimeError(
             "Stack size mismatch after %s: Expected %+d and got %+d.", op.name,
             expected, actual);
       }
     }
 
-    frame->prev_stack = vm.stackTop;
-    frame->prev_ip = frame->ip;
+    frame->prevStack = vm.stackTop;
+    frame->prevIp = frame->ip;
 
     u8 instruction = READ_BYTE();
 
@@ -658,11 +658,11 @@ static InterpretResult vm_run() {
     case OP_POPN: popn(READ_BYTE()); break;
     case OP_SWAP: {
       u8 args = READ_BYTE();
-      vm_swap(args & 0x0f, args >> 4);
+      vmSwap(args & 0x0f, args >> 4);
       break;
     }
     case OP_DEFAULT:
-      if (is_nil(peek(0))) {
+      if (isNil(peek(0))) {
         pop();
         push(READ_CONSTANT());
       } else {
@@ -671,17 +671,17 @@ static InterpretResult vm_run() {
       }
       break;
 
-    case OP_RANGE: vm_range(); break;
-    case OP_ARRAY: vm_array(as_num(READ_CONSTANT())); break;
-    case OP_TUPLE: vm_tuple(READ_BYTE()); break;
+    case OP_RANGE: vmRange(); break;
+    case OP_ARRAY: vmArray(as_num(READ_CONSTANT())); break;
+    case OP_TUPLE: vmTuple(READ_BYTE()); break;
 
     case OP_DEFINE_GLOBAL: tableSet(&vm.globals, READ_CONSTANT(), pop()); break;
 
     case OP_GET_GLOBAL:
-      if ((err = vm_get_global(READ_CONSTANT()))) return err;
+      if ((err = vmGetGlobal(READ_CONSTANT()))) return err;
       break;
     case OP_SET_GLOBAL:
-      if ((err = vm_set_global(READ_CONSTANT()))) return err;
+      if ((err = vmSetGlobal(READ_CONSTANT()))) return err;
       break;
 
     case OP_GET_LOCAL: {
@@ -696,20 +696,20 @@ static InterpretResult vm_run() {
     }
 
     case OP_GET_PROPERTY:
-      if ((err = vm_get_property(READ_CONSTANT()))) return err;
+      if ((err = vmGetProperty(READ_CONSTANT()))) return err;
       SYNC_FRAME();
       break;
     case OP_SET_PROPERTY:
-      if ((err = vm_set_property(READ_CONSTANT()))) return err;
+      if ((err = vmSetProperty(READ_CONSTANT()))) return err;
       SYNC_FRAME();
       break;
 
     case OP_GET_VAR:
-      if ((err = vm_get_var(READ_CONSTANT()))) return err;
+      if ((err = vmGetVar(READ_CONSTANT()))) return err;
       SYNC_FRAME();
       break;
     case OP_SET_VAR: // [1 self][0 value] -> [0 value]
-      if ((err = vm_set_var(READ_CONSTANT()))) return err;
+      if ((err = vmSetVar(READ_CONSTANT()))) return err;
       SYNC_FRAME();
       break;
 
@@ -734,7 +734,7 @@ static InterpretResult vm_run() {
     case OP_MULTIPLY: BINARY_OP(NUMBER_VAL, *); break;
     case OP_NOT: push(BOOL_VAL(isFalsey(pop()))); break;
     case OP_NEGATE:
-      if (!is_num(peek(0))) {
+      if (!isNumber(peek(0))) {
         runtimeError("Operand must be a number.");
         return INTERPRET_RUNTIME_ERROR;
       }
@@ -758,7 +758,7 @@ static InterpretResult vm_run() {
     }
 
     case OP_CALL:
-      if ((err = vm_call(READ_BYTE()))) return err;
+      if ((err = vmCall(READ_BYTE()))) return err;
       SYNC_FRAME();
       break;
 
@@ -766,7 +766,7 @@ static InterpretResult vm_run() {
       let name = READ_CONSTANT();
       bool isLocal = (bool)READ_BYTE();
 
-      if (isLocal) push(OBJ_VAL(newClass(as_string(name))));
+      if (isLocal) push(OBJ_VAL(newClass(asString(name))));
       else push(globalClass(asChars(name)));
 
       break;
@@ -800,7 +800,7 @@ static InterpretResult vm_run() {
     case OP_INVOKE: { // [n self][0 ...args]
       let name = READ_CONSTANT();
       u8 argc = READ_BYTE();
-      if ((err = vm_invoke(name, argc))) return err;
+      if ((err = vmInvoke(name, argc))) return err;
       SYNC_FRAME();
       break;
     }
@@ -838,18 +838,18 @@ static InterpretResult vm_run() {
       break;
 
     case OP_ASSERT:
-      if ((err = vm_assert(READ_CONSTANT()))) return err;
+      if ((err = vmAssert(READ_CONSTANT()))) return err;
       break;
 
     case OP_PRINT:
-      vm_get_global(string("stdout"));
-      if ((err = vm_invoke(string("print"), 1))) return err;
+      vmGetGlobal(string("stdout"));
+      if ((err = vmInvoke(string("print"), 1))) return err;
       // printf("\n");
       SYNC_FRAME();
       break;
 
     case OP_RETURN: {
-      vm_return();
+      vmReturn();
 
       if (!vm.frameCount) {
         vm.result = pop();
@@ -862,13 +862,13 @@ static InterpretResult vm_run() {
     }
 
     case OP_THROW:
-      vm_throw(READ_CONSTANT());
+      vmThrow(READ_CONSTANT());
       SYNC_FRAME();
       break;
 
     case OP_DEBUG_STACK: {
       let tag = READ_CONSTANT();
-      fprintf(stderr, "[DEBUG] %s: ", as_string(tag)->chars);
+      fprintf(stderr, "[DEBUG] %s: ", asString(tag)->chars);
       debugStack();
       fprintf(stderr, "\n");
       break;
@@ -881,7 +881,7 @@ static InterpretResult vm_run() {
         return runtimeError(
             "Stack size mismatch: Expected " FG_BLUE "%d" FG_DEFAULT
             " and got " FG_BLUE "%d" FG_DEFAULT ". %s",
-            size, vm.stackTop - frame->slots, as_string(comment)->chars);
+            size, vm.stackTop - frame->slots, asString(comment)->chars);
       }
       break;
     }
@@ -900,22 +900,22 @@ static InterpretResult vm_run() {
 #undef SYNC_FRAME
 }
 
-InterpretResult run_function(ObjFunction *fun) {
+InterpretResult runFunction(ObjFunction *fun) {
   if (fun == NULL) return INTERPRET_COMPILE_ERROR;
 
   push(OBJ_VAL(fun));
   ObjClosure *closure = newClosure(fun);
   pop();
-  return run_closure(closure);
+  return runClosure(closure);
 }
 
-InterpretResult run_closure(ObjClosure *closure) {
+InterpretResult runClosure(ObjClosure *closure) {
   push(OBJ_VAL(closure));
-  return moveIntoClosure(closure, 0) || vm_run();
+  return moveIntoClosure(closure, 0) || vmRun();
 }
 
 InterpretResult interpret(const char *source, ObjString *name) {
-  return run_function(compile(source, name));
+  return runFunction(compile(source, name));
 }
 
 Value intern(Value val) {
@@ -925,7 +925,7 @@ Value intern(Value val) {
 }
 
 Obj *getInterned(Hash *hash, const char *bytes, int length) {
-  *hash = hash_bytes(bytes, length);
+  *hash = hashBytes(bytes, length);
   return tableFindObj(&vm.interned, bytes, length, *hash);
 }
 
@@ -934,7 +934,7 @@ void repl() {
 
   ObjString *name = newString("REPL");
   ObjString *history =
-      concat_strings(newString(getenv("HOME")), newString("/.lita_history"));
+      concatStrings(newString(getenv("HOME")), newString("/.lita_history"));
 
   setGlobal(string("REPL"), OBJ_VAL(name));
   setGlobal(string("HISTORY_LOCATION"), OBJ_VAL(history));
@@ -948,7 +948,7 @@ void repl() {
     // TODO: Enqueue this as a request
     interpret(line, name);
     free(line);
-    inspect_value(stderr, vm.result);
+    inspectValue(stderr, vm.result);
     fprintf(stderr, "\n");
 
     if (config.debug >= 2) {

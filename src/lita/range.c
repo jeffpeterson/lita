@@ -12,13 +12,13 @@ ObjRange *newRange(Value start, Value end) {
   ObjRange *range = allocateRange();
   range->start = start;
   range->end = end;
-  range->obj.hash = hash_bytes((char *)&range->start, sizeof(Value) * 2);
+  range->obj.hash = hashBytes((char *)&range->start, sizeof(Value) * 2);
   return range;
 }
 
 static int rangeLength(Obj *obj) {
   ObjRange *range = (ObjRange *)obj;
-  return as_int(range->end) - as_int(range->start);
+  return asInt(range->end) - asInt(range->start);
 }
 
 static void markRange(Obj *obj) {
@@ -35,8 +35,8 @@ const char *rangeBytes(Obj *obj, int length) {
 
 static int inspectRange(Obj *obj, FILE *io) {
   ObjRange *range = (ObjRange *)obj;
-  return inspect_value(io, range->start) + fprintf(io, "..") +
-         inspect_value(io, range->end);
+  return inspectValue(io, range->start) + fprintf(io, "..") +
+         inspectValue(io, range->end);
 }
 
 COMPILED_SOURCE(range);
@@ -51,7 +51,7 @@ NATIVE_METHOD(Range, init, 2) {
 
 REGISTER_OBJECT_DEF(Range);
 const ObjDef Range = {
-    .class_name = "Range",
+    .className = "Range",
     .size = sizeof(ObjRange),
     .interned = true,
     .bytes = rangeBytes,

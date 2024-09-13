@@ -8,7 +8,7 @@
 #define str string
 
 #define allocateString() ALLOCATE_OBJ(String)
-#define isString(val) is_obj_def(val, &String)
+#define isString(val) isObjDef(val, &String)
 #define asString(val) as(String, val)
 #define asChars(val) (asString(val)->chars)
 
@@ -22,7 +22,6 @@ const ObjDef String;
 
 Value string(const char *str);
 
-ObjString *as_string(let x);
 ObjString *newString(const char *chars);
 
 /**
@@ -31,25 +30,25 @@ ObjString *newString(const char *chars);
  *
  * [length] should not include the null byte.
  */
-ObjString *take_string(char *chars, int length);
+ObjString *takeString(char *chars, int length);
 
 /**
  * Copy existing chars into a newly allocated Obj.
  */
 ObjString *copyString(const char *chars, usize length);
-ObjString *concat_strings(ObjString *a, ObjString *b);
-ObjString *buffer_to_string(Buffer *buf);
+ObjString *concatStrings(ObjString *a, ObjString *b);
+ObjString *bufferToString(Buffer *buf);
 
 ObjString *stringf(const char *fmt, ...);
-ObjString *string_to_c_ident(ObjString *str);
+ObjString *stringToCIdent(ObjString *str);
 
-ObjString *escape_string(ObjString *str);
+ObjString *escapeString(ObjString *str);
 ObjString *unescapeString(ObjString *str);
 
-ObjString *vstring_format(const char *fmt, va_list args);
-ObjString *string_format(const char *fmt, ...);
+ObjString *vstringFormat(const char *fmt, va_list args);
+ObjString *stringFormat(const char *fmt, ...);
 
-int vfstring_format(FILE *io, const char *fmt, va_list args);
-int fstring_format(FILE *io, const char *fmt, ...);
+int vfstringFormat(FILE *io, const char *fmt, va_list args);
+int fstringFormat(FILE *io, const char *fmt, ...);
 
 #endif

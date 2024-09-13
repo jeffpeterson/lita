@@ -98,7 +98,7 @@ static int dumpAtom(Obj *obj, FILE *io) {
 }
 
 const ObjDef Atom = {
-    .class_name = "Atom",
+    .className = "Atom",
     .size = sizeof(ObjAtom),
     .free = freeAtom,
     .mark = markAtom,

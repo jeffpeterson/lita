@@ -8,7 +8,7 @@
 #include "value.h"
 
 #define allocateNative() ALLOCATE_OBJ(Native)
-#define isNative(val) is_obj_def(val, &Native)
+#define isNative(val) isObjDef(val, &Native)
 #define asNative(val) as(Native, val)
 
 #define AS_NATIVE(val) ((ObjNative *)AS_OBJ(val))
@@ -29,7 +29,7 @@ ObjNative *newNative(ObjString *name, int arity, NativeFn fun);
 ObjDef Native;
 
 typedef struct NativeMethod {
-  const char *class_name;
+  const char *className;
   const char *name;
   int arity;
   NativeFn *fun;
@@ -77,8 +77,8 @@ typedef struct BootFunction {
 #define NATIVE_DELEGATE(klass, attr, to)                                       \
   NATIVE_METHOD(klass, attr, 0) {                                              \
     switch (CURRENT_FRAME->reentries) {                                        \
-    case 0: return vm_invoke(string(#to), 0), VOID;                            \
-    case 1: return vm_invoke(string(#attr), argc), VOID;                       \
+    case 0: return vmInvoke(string(#to), 0), VOID;                             \
+    case 1: return vmInvoke(string(#attr), argc), VOID;                        \
     default: return pop();                                                     \
     }                                                                          \
   }

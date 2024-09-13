@@ -54,7 +54,7 @@ int disassembleInstruction(Chunk *chunk, int offset) {
   else fprintf(stderr, FG_CYAN "%4d " FG_DEFAULT, chunk->lines[offset]);
 
   uint8_t instruction = code[offset++];
-  OpInfo info = op_info[instruction];
+  OpInfo info = opInfo[instruction];
 
   fprintf(stderr, "%02x" DIM "->" NO_DIM, instruction);
   if (info.name == NULL) {
@@ -76,7 +76,7 @@ int disassembleInstruction(Chunk *chunk, int offset) {
     uint8_t arg = code[offset++];
     byte(arg);
     arrow();
-    inspect_value(stderr, chunk->constants.values[arg]);
+    inspectValue(stderr, chunk->constants.values[arg]);
     break;
   }
 
@@ -85,7 +85,7 @@ int disassembleInstruction(Chunk *chunk, int offset) {
     byte(cnst);
     byte(code[offset++]);
     arrow();
-    inspect_value(stderr, chunk->constants.values[cnst]);
+    inspectValue(stderr, chunk->constants.values[cnst]);
     break;
   }
 
@@ -95,7 +95,7 @@ int disassembleInstruction(Chunk *chunk, int offset) {
     byte(constant);
     byte(argCount);
     arrow();
-    inspect_value(stderr, chunk->constants.values[constant]);
+    inspectValue(stderr, chunk->constants.values[constant]);
     fprintf(stderr, " (%d args)", argCount);
     break;
   }
@@ -142,7 +142,7 @@ int disassembleInstruction(Chunk *chunk, int offset) {
 
   if (chunk->comments && chunk->comments[offset - 1]) {
     fprintf(stderr, DIM "\t// ");
-    inspect_value(stderr, chunk->comments[offset - 1]);
+    inspectValue(stderr, chunk->comments[offset - 1]);
     fprintf(stderr, NO_DIM);
   }
 
@@ -206,7 +206,7 @@ static void debugValues(Value *start, int length) {
   int offsets[length];
   // int frameIndex = 0;
   for (int i = 0; i < length; i++) {
-    offsets[i] = fprintf(stderr, "[ ") + inspect_value(stderr, start[i]) +
+    offsets[i] = fprintf(stderr, "[ ") + inspectValue(stderr, start[i]) +
                  fprintf(stderr, " ]");
   }
 }

@@ -8,15 +8,15 @@
 #define inspected(s) FG_GREEN #s FG_DEFAULT
 
 void string_test() {
-  assert_equal(OBJ_VAL(concat_strings(newString("abc"), newString("def"))),
+  assert_equal(OBJ_VAL(concatStrings(newString("abc"), newString("def"))),
                string("abcdef"));
 
-  assert_equal(obj(string_format("abc{{}")), string("abc{}"));
+  assert_equal(obj(stringFormat("abc{{}")), string("abc{}"));
 
-  assert_equal(obj(string_format("hi {}", string("there"))),
+  assert_equal(obj(stringFormat("hi {}", string("there"))),
                string("hi " inspected("there")));
 
   assert_equal(
-      obj(string_format("Hi there {} and {}.", string("Bob"), string("Alice"))),
+      obj(stringFormat("Hi there {} and {}.", string("Bob"), string("Alice"))),
       string("Hi there " inspected("Bob") " and " inspected("Alice") "."));
 }

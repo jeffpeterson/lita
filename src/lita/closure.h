@@ -7,7 +7,7 @@
 #include "upvalue.h"
 #include "value.h"
 
-#define isClosure(val) is_obj_def(val, &Closure)
+#define isClosure(val) isObjDef(val, &Closure)
 #define asClosure(val) as(Closure, val)
 #define allocateClosure() ALLOCATE_OBJ(Closure)
 

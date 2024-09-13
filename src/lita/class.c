@@ -49,7 +49,7 @@ NATIVE_GETTER(Class, parent, OBJ_VAL);
 
 REGISTER_OBJECT_DEF(Class);
 ObjDef Class = {
-    .class_name = "Class",
+    .className = "Class",
     .size = sizeof(ObjClass),
     .alloc = allocClass,
     .free = freeClass,

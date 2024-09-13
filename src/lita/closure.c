@@ -53,7 +53,7 @@ NATIVE_DELEGATE(Closure, byteCount, function);
 
 REGISTER_OBJECT_DEF(Closure);
 ObjDef Closure = {
-    .class_name = "Closure",
+    .className = "Closure",
     .size = sizeof(ObjClosure),
     .mark = markClosure,
     .free = freeClosure,

@@ -6,7 +6,7 @@
 #include "value.h"
 
 #define allocateExample() ALLOCATE_OBJ(Example)
-#define isExample(val) is_obj_def(val, &Example)
+#define isExample(val) isObjDef(val, &Example)
 #define asExample(val) as(Example, val)
 
 typedef struct ObjExample {

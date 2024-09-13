@@ -11,7 +11,7 @@ typedef struct ObjIO {
   Ownership ownership;
 } ObjIO;
 
-#define isIO(val) is_obj_def(val, &IO)
+#define isIO(val) isObjDef(val, &IO)
 #define asIO(val) as(IO, val)
 #define allocateIO() ALLOCATE_OBJ(IO)
 

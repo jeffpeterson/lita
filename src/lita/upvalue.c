@@ -19,7 +19,7 @@ static void markUpvalue(Obj *obj) { markValue(((ObjUpvalue *)obj)->closed); }
 static int inspectUpvalue(Obj *obj, FILE *io) {
   ObjUpvalue *upvalue = (ObjUpvalue *)obj;
   return fprintf(io, "<upvalue(%s) -> ", upvalue->closed ? "closed" : "open") +
-         inspect_value(io, *upvalue->location) + fprintf(io, ">");
+         inspectValue(io, *upvalue->location) + fprintf(io, ">");
 }
 
 NATIVE_GETTER(Upvalue, closed, OBJ_VAL);
@@ -27,7 +27,7 @@ NATIVE_GETTER(Upvalue, location, *);
 
 REGISTER_OBJECT_DEF(Upvalue);
 ObjDef Upvalue = {
-    .class_name = "Upvalue",
+    .className = "Upvalue",
     .size = sizeof(ObjUpvalue),
     .mark = markUpvalue,
     .inspect = inspectUpvalue,

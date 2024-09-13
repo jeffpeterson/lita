@@ -29,7 +29,7 @@ static void markBound(Obj *obj) {
 
 static int inspectBound(Obj *obj, FILE *io) {
   ObjBound *bound = (ObjBound *)obj;
-  return fstring_format(io, "Bound({}, {})", bound->receiver, bound->method);
+  return fstringFormat(io, "Bound({}, {})", bound->receiver, bound->method);
 }
 
 NATIVE_GETTER(Bound, receiver, OBJ_VAL);
@@ -37,7 +37,7 @@ NATIVE_GETTER(Bound, method, OBJ_VAL);
 
 REGISTER_OBJECT_DEF(Bound);
 ObjDef Bound = {
-    .class_name = "Bound",
+    .className = "Bound",
     .size = sizeof(ObjBound),
     .mark = markBound,
     .inspect = inspectBound,

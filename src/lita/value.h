@@ -55,13 +55,13 @@ typedef uint64_t Value;
 #define NUMBER_VAL(num) doubleToValue(num)
 #define OBJ_VAL(obj) (Value)(TAG_OBJ | QNAN | (uint64_t)(uintptr_t)(obj))
 
-#define is_bool(val) (((val) | 1) == TRUE_VAL)
-#define is_true(val) ((val) == TRUE_VAL)
-#define is_false(val) ((val) == FALSE_VAL)
-#define is_nil(val) ((val) == NIL_VAL)
-#define is_void(val) ((val) == VOID_VAL)
-#define is_num(val) (((val) & QNAN) != QNAN)
-#define is_obj(val) valueIsObject(val)
+#define isBool(val) (((val) | 1) == TRUE_VAL)
+#define isTrue(val) ((val) == TRUE_VAL)
+#define isFalse(val) ((val) == FALSE_VAL)
+#define isNil(val) ((val) == NIL_VAL)
+#define isVoid(val) ((val) == VOID_VAL)
+#define isNumber(val) (((val)&QNAN) != QNAN)
+#define isObject(val) valueIsObject(val)
 
 static inline double valueToNum(Value value) {
   double num;
@@ -76,7 +76,7 @@ static inline Value doubleToValue(double num) {
 }
 
 static inline bool valueIsObject(Value val) {
-  return !is_nil(val) && (val & (QNAN | TAG_OBJ)) == (QNAN | TAG_OBJ);
+  return !isNil(val) && (val & (QNAN | TAG_OBJ)) == (QNAN | TAG_OBJ);
 }
 
 #else // else if !NAN_BOXING
@@ -90,11 +90,11 @@ typedef struct {
   } as;
 } Value;
 
-#define is_bool(value) ((value).type == VAL_BOOL)
-#define is_void(value) ((value).type == VAL_VOID)
-#define is_nil(value) ((value).type == VAL_NIL)
-#define is_num(value) ((value).type == VAL_NUMBER)
-#define is_obj(value) ((value).type == VAL_OBJ)
+#define isBool(value) ((value).type == VAL_BOOL)
+#define isVoid(value) ((value).type == VAL_VOID)
+#define isNil(value) ((value).type == VAL_NIL)
+#define isNumber(value) ((value).type == VAL_NUMBER)
+#define isObject(value) ((value).type == VAL_OBJ)
 
 #define AS_BOOL(value) ((value).as.boolean)
 #define AS_NUMBER(value) ((value).as.number)
@@ -119,8 +119,8 @@ typedef struct {
 #define obj(o) OBJ_VAL(o)
 #define number(n) NUMBER_VAL(n)
 
-#define not_nil(val) (!is_nil(val))
-#define not_void(val) (!is_void(val))
+#define notNil(val) (!isNil(val))
+#define notVoid(val) (!isVoid(val))
 
 typedef Value let;
 
@@ -132,13 +132,13 @@ typedef struct {
 
 bool valuesEqual(Value a, Value b);
 int cmpValues(Value a, Value b);
-void copy_values(Value *source, Value *dest, usize count);
+void copyValues(Value *source, Value *dest, usize count);
 
 void initValueArray(ValueArray *array);
 void writeValueArray(ValueArray *array, Value value);
 void freeValueArray(ValueArray *array);
 
-int inspect_value(FILE *io, Value value);
+int inspectValue(FILE *io, Value value);
 int trace(const char *label, Value value);
 
 let inspect(let val);
@@ -147,14 +147,14 @@ let pp(let val);
 
 typedef u64 Hash;
 
-Hash hash_bytes(const char *key, usize length);
-Hash hash_value(Value val);
-Hash hash_values(Value *vals, usize length);
+Hash hashBytes(const char *key, usize length);
+Hash hashValue(Value val);
+Hash hashValues(Value *vals, usize length);
 
 double as_num(Value x);
-static inline int as_int(Value x) { return AS_NUMBER(x); }
-static inline bool is_int(Value x) {
-  return is_num(x) && as_int(x) == AS_NUMBER(x);
+static inline int asInt(Value x) { return AS_NUMBER(x); }
+static inline bool isInt(Value x) {
+  return isNumber(x) && asInt(x) == AS_NUMBER(x);
 }
 
 #endif

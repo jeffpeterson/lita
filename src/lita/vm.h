@@ -20,10 +20,10 @@ typedef struct CallFrame {
 
   ObjClosure *closure; /** Fn containing the code. */
   u8 *ip;              /** Current instruction pointer. */
-  u8 *prev_ip;         /** Pointer to last instruction. */
+  u8 *prevIp;          /** Pointer to last instruction. */
   Value *slots;        /** Points into the VM's value stack. */
 
-  Value *prev_stack; /** Slots prior to last instruction. */
+  Value *prevStack; /** Slots prior to last instruction. */
 } CallFrame;
 
 typedef struct VM {
@@ -77,8 +77,8 @@ extern VM vm;
 void initVM(World *world);
 void freeVM();
 InterpretResult bootVM();
-InterpretResult run_function(ObjFunction *fun);
-InterpretResult run_closure(ObjClosure *closure);
+InterpretResult runFunction(ObjFunction *fun);
+InterpretResult runClosure(ObjClosure *closure);
 InterpretResult interpret(const char *source, ObjString *name);
 
 /** Push a value onto the stack and return it. */
@@ -108,19 +108,19 @@ let crash(const char *fmt, ...);
 
 InterpretResult callValue(Value callee, int argCount);
 
-Value vm_peek(int i);
-InterpretResult vm_assert(Value src);
-InterpretResult vm_call(int argc);
-InterpretResult vm_invoke(Value name, int argCount);
-InterpretResult vm_get_global(Value name);
-InterpretResult vm_get_property(Value name);
-InterpretResult vm_set_property(Value name);
-InterpretResult vm_get_var(Value name);
-InterpretResult vm_set_var(Value name);
-void vm_range();
-void vm_swap(u8 a, u8 b);
-void vm_array(u32 length);
-void vm_tuple(u8 length);
+Value vmPeek(int i);
+InterpretResult vmAssert(Value src);
+InterpretResult vmCall(int argc);
+InterpretResult vmInvoke(Value name, int argCount);
+InterpretResult vmGetGlobal(Value name);
+InterpretResult vmGetProperty(Value name);
+InterpretResult vmSetProperty(Value name);
+InterpretResult vmGetVar(Value name);
+InterpretResult vmSetVar(Value name);
+void vmRange();
+void vmSwap(u8 a, u8 b);
+void vmArray(u32 length);
+void vmTuple(u8 length);
 
 void repl();
 

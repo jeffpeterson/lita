@@ -6,7 +6,7 @@
 #include "value.h"
 
 #define allocateSourceLocation() ALLOCATE_OBJ(SourceLocation)
-#define isSourceLocation(val) is_obj_def(val, &SourceLocation)
+#define isSourceLocation(val) isObjDef(val, &SourceLocation)
 #define asSourceLocation(val) as(SourceLocation, val)
 
 typedef struct ObjSourceLocation {

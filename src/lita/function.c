@@ -41,7 +41,7 @@ static int inspectFunction(Obj *obj, FILE *io) {
                  FG_MAGENTA "<function %s" FG_DEFAULT "/" FG_BLUE
                             "%d" FG_MAGENTA " (" FG_DEFAULT,
                  function->name->chars, function->arity) +
-         inspect_obj(io, (Obj *)function->location) +
+         inspectObject(io, (Obj *)function->location) +
          fprintf(io, FG_MAGENTA ")>" FG_DEFAULT) - FG_SIZE * 7;
 }
 
@@ -50,7 +50,7 @@ static int dumpFunction(Obj *obj, FILE *io) {
   Value id;
 
   if (tableGet(&ids, OBJ_VAL(obj), &id))
-    return fprintf(io, "fn_%s_%g()", string_to_c_ident(fun->name)->chars,
+    return fprintf(io, "fn_%s_%g()", stringToCIdent(fun->name)->chars,
                    as_num(id));
   else return fprintf(io, "crash(\"Could not find fn %s\")", fun->name->chars);
 }
@@ -69,7 +69,7 @@ NATIVE_METHOD(Function, byteCount, 0) {
 
 REGISTER_OBJECT_DEF(Function);
 ObjDef Function = {
-    .class_name = "Function",
+    .className = "Function",
     .size = sizeof(ObjFunction),
     .mark = markFunction,
     .free = freeFunction,

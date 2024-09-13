@@ -5,7 +5,7 @@
 #include "object.h"
 #include "value.h"
 
-#define isClass(val) is_obj_def(val, &Class)
+#define isClass(val) isObjDef(val, &Class)
 #define asClass(val) as(Class, val)
 #define allocateClass() ALLOCATE_OBJ(Class)
 

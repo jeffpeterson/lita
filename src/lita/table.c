@@ -24,7 +24,7 @@ void freeTable(Table *table) {
 
 static Entry *findEntry(Entry *entries, int capacity, Value key) {
   uint32_t index =
-      hash_value(key) & (capacity - 1); // Optimized `% capacity` when 2^n
+      hashValue(key) & (capacity - 1); // Optimized `% capacity` when 2^n
 
   /**
    * Track the first tombstone we find so we can insert into it.
@@ -37,8 +37,8 @@ static Entry *findEntry(Entry *entries, int capacity, Value key) {
   for (;;) {
     Entry *entry = &entries[index];
 
-    if (is_void(entry->key)) {
-      if (is_nil(entry->value)) {
+    if (isVoid(entry->key)) {
+      if (isNil(entry->value)) {
         // Return the tombstone if we had found one so the caller
         // is able to insert into it, saving space.
         return tombstone != NULL ? tombstone : entry;
@@ -65,7 +65,7 @@ static void adjustCapacity(Table *table, int capacity) {
   table->total = 0;
   for (int i = 0; i < table->capacity; i++) {
     Entry *entry = &table->entries[i];
-    if (is_void(entry->key)) continue;
+    if (isVoid(entry->key)) continue;
 
     Entry *dest = findEntry(entries, capacity, entry->key);
     dest->key = entry->key;
@@ -87,7 +87,7 @@ bool tableGet(Table *table, Value key, Value *value) {
   if (table->len == 0) return false;
 
   Entry *entry = findEntry(table->entries, table->capacity, key);
-  if (is_void(entry->key)) return false;
+  if (isVoid(entry->key)) return false;
 
   if (value) *value = entry->value;
   return true;
@@ -100,8 +100,8 @@ bool tableSet(Table *table, Value key, Value value) {
   }
 
   Entry *entry = findEntry(table->entries, table->capacity, key);
-  bool isNewKey = is_void(entry->key);
-  if (isNewKey && is_nil(entry->value)) table->total++, table->len++;
+  bool isNewKey = isVoid(entry->key);
+  if (isNewKey && isNil(entry->value)) table->total++, table->len++;
 
   entry->key = key;
   entry->value = value;
@@ -111,7 +111,7 @@ bool tableSet(Table *table, Value key, Value value) {
 /** Increment the value at `key` by `amt`. */
 double tableInc(Table *table, Value key, double amt) {
   Value count;
-  if (tableGet(table, key, &count) && is_num(count)) {
+  if (tableGet(table, key, &count) && isNumber(count)) {
     amt += AS_NUMBER(count);
   }
   tableSet(table, key, NUMBER_VAL(amt));
@@ -123,7 +123,7 @@ bool tableDelete(Table *table, Value key) {
 
   // Find the entry.
   Entry *entry = findEntry(table->entries, table->capacity, key);
-  if (is_void(entry->key)) return false;
+  if (isVoid(entry->key)) return false;
 
   // Place a tombstone in the entry.
   entry->key = VOID_VAL;
@@ -135,7 +135,7 @@ bool tableDelete(Table *table, Value key) {
 void tableMerge(Table *from, Table *to) {
   for (int i = 0; i < from->capacity; i++) {
     Entry *entry = &from->entries[i];
-    if (!is_void(entry->key)) tableSet(to, entry->key, entry->value);
+    if (!isVoid(entry->key)) tableSet(to, entry->key, entry->value);
   }
 }
 
@@ -162,7 +162,7 @@ static void iterate_table_next(ObjIterator *iter) {
   ObjIterator *entries = asIterator(iter->state);
 
   while (iterateNext(entries))
-    if (is_void(entry->key)) continue;
+    if (isVoid(entry->key)) continue;
     else {
       iter->current = (Value *)entry;
       return;
@@ -195,7 +195,7 @@ Obj *tableFindObj(Table *table, const char *bytes, int length, Hash hash) {
 
   for (;;) {
     Entry *entry = &table->entries[index];
-    if (is_obj(entry->key)) {
+    if (isObject(entry->key)) {
       Obj *obj = AS_OBJ(entry->key);
 
       if (obj->hash == hash) {
@@ -205,7 +205,7 @@ Obj *tableFindObj(Table *table, const char *bytes, int length, Hash hash) {
       }
     } else {
       // Stop if we find an empty non-tombstone entry.
-      if (is_void(entry->key) && is_nil(entry->value)) return NULL;
+      if (isVoid(entry->key) && isNil(entry->value)) return NULL;
 
       // Otherwise, skip. Only objects are interned.
     }
@@ -218,7 +218,7 @@ Obj *tableFindObj(Table *table, const char *bytes, int length, Hash hash) {
 void tableRemoveWhite(Table *table) {
   for (int i = 0; i < table->capacity; i++) {
     Entry *entry = &table->entries[i];
-    if (is_nil(entry->key) || !is_obj(entry->key)) continue;
+    if (isNil(entry->key) || !isObject(entry->key)) continue;
 
     if (!AS_OBJ(entry->key)->isMarked) {
       tableDelete(table, entry->key);
@@ -245,16 +245,16 @@ int inspect_table(FILE *io, Table *table) {
   for (int i = 0; i < table->capacity; i++) {
     Entry *entry = &table->entries[i];
 
-    if (is_void(entry->key)) continue;
+    if (isVoid(entry->key)) continue;
 
     if (isString(entry->key)) {
       out += (idx > 0 ? fputs(", ", io) : 0) +
              fprintf(io, FG_GREEN "%s" FG_DEFAULT ": ",
                      asString(entry->key)->chars) +
-             inspect_value(io, entry->value);
+             inspectValue(io, entry->value);
     } else {
-      out += fprintf(io, " ") + inspect_value(io, entry->key) +
-             fprintf(io, " => ") + inspect_value(io, entry->value);
+      out += fprintf(io, " ") + inspectValue(io, entry->key) +
+             fprintf(io, " => ") + inspectValue(io, entry->value);
     }
     idx++;
   }
@@ -267,9 +267,9 @@ int fprintTableVerbose(FILE *io, Table *table) {
   for (int i = 0; i < table->capacity; i++) {
     Entry *entry = &table->entries[i];
 
-    if (!is_void(entry->key)) {
-      out += fprintf(io, "  ") + inspect_value(io, entry->key) +
-             fprintf(io, " => ") + inspect_value(io, entry->value) +
+    if (!isVoid(entry->key)) {
+      out += fprintf(io, "  ") + inspectValue(io, entry->key) +
+             fprintf(io, " => ") + inspectValue(io, entry->value) +
              fprintf(io, "\n");
     }
   }

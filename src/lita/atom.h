@@ -5,7 +5,7 @@
 #include "object.h"
 #include "table.h"
 
-#define isAtom(val) is_obj_def(val, &Atom)
+#define isAtom(val) isObjDef(val, &Atom)
 #define asAtom(val) as(Atom, val)
 #define allocateAtom() ALLOCATE_OBJ(Atom)
 

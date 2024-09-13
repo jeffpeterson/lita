@@ -64,7 +64,7 @@ int addConstant(Chunk *chunk, Value value) {
 
 Value get_constant(Chunk *chunk, int id) { return chunk->constants.values[id]; }
 
-OpInfo op_info[] = {
+OpInfo opInfo[] = {
     [OP_NIL] = {"OP_NIL", SIMPLE, 0, 1},
     [OP_TRUE] = {"OP_TRUE", SIMPLE, 0, 1},
     [OP_FALSE] = {"OP_FALSE", SIMPLE, 0, 1},
@@ -134,7 +134,7 @@ OpInfo op_info[] = {
 };
 
 u8 instructionSize(OpCode code) {
-  switch (op_info[code].type) {
+  switch (opInfo[code].type) {
   case SIMPLE: return 1;
   case BYTE:
   case CONSTANT: return 2;
@@ -144,8 +144,8 @@ u8 instructionSize(OpCode code) {
   }
 }
 
-int input_count(Chunk *chunk, u8 *ip) {
-  OpInfo op = op_info[*ip];
+int inputCount(Chunk *chunk, u8 *ip) {
+  OpInfo op = opInfo[*ip];
   switch (*ip) {
   case OP_CALL: return ip[1] + 1;
   case OP_SUPER_INVOKE:
@@ -157,11 +157,11 @@ int input_count(Chunk *chunk, u8 *ip) {
   }
 }
 
-int output_count(Chunk *chunk, u8 *ip) {
-  OpInfo op = op_info[*ip];
+int outputCount(Chunk *chunk, u8 *ip) {
+  OpInfo op = opInfo[*ip];
   return op.outputs;
 }
 
-int input_output_delta(Chunk *chunk, u8 *ip) {
-  return output_count(chunk, ip) - input_count(chunk, ip);
+int inputOutputDelta(Chunk *chunk, u8 *ip) {
+  return outputCount(chunk, ip) - inputCount(chunk, ip);
 }

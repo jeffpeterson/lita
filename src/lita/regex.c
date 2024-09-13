@@ -51,7 +51,7 @@ static int inspectRegex(Obj *obj, FILE *io) {
 
 static int dumpRegex(Obj *obj, FILE *io) {
   ObjRegex *regex = (ObjRegex *)obj;
-  ObjString *source = escape_string(regex->source);
+  ObjString *source = escapeString(regex->source);
   return fprintf(io, "regex(%.*s)", source->length, source->chars);
 }
 
@@ -59,7 +59,7 @@ ObjString *replaceRegex(ObjString *subject, ObjRegex *regex,
                         ObjString *replacement) {
   u32 options = PCRE2_SUBSTITUTE_GLOBAL | PCRE2_SUBSTITUTE_EXTENDED |
                 PCRE2_SUBSTITUTE_OVERFLOW_LENGTH;
-  Buffer output = new_buffer(subject->length * 2);
+  Buffer output = newBuffer(subject->length * 2);
   output.count = output.capacity;
 
   int result;
@@ -71,7 +71,7 @@ substitute:
                        replacement->length, output.bytes, &output.count);
 
   if (result == PCRE2_ERROR_NOMEMORY) {
-    resize_buffer(&output, output.count);
+    resizeBuffer(&output, output.count);
     goto substitute;
   } else if (result < 0) {
     PCRE2_UCHAR8 error_message[256];
@@ -79,7 +79,7 @@ substitute:
     crash("pcre2_substitute(%d): %s", result, (char *)error_message);
   }
 
-  return buffer_to_string(&output);
+  return bufferToString(&output);
 }
 
 NATIVE_GETTER(Regex, source, OBJ_VAL);
@@ -91,13 +91,13 @@ NATIVE_METHOD_NAMED(Regex, plus, "+", 1) {
     return OBJ_VAL(makeRegex(source));
   } else {
     return OBJ_VAL(
-        makeRegex(concat_strings(regex->source, asRegex(args[0])->source)));
+        makeRegex(concatStrings(regex->source, asRegex(args[0])->source)));
   }
 }
 
 REGISTER_OBJECT_DEF(Regex);
 const ObjDef Regex = {
-    .class_name = "Regex",
+    .className = "Regex",
     .size = sizeof(ObjRegex),
     .mark = markRegex,
     .free = freeRegex,

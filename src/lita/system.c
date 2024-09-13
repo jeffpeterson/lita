@@ -42,7 +42,7 @@ ObjString *readFile(ObjString *path) {
   buffer[bytesRead] = '\0';
 
   fclose(io);
-  return take_string(buffer, bytesRead);
+  return takeString(buffer, bytesRead);
 }
 
 bool writeFile(ObjString *path, ObjString *content) {
@@ -72,7 +72,7 @@ void compileFileToC(ObjString *path) {
 
   if (fun == NULL) exit(65);
 
-  ObjString *dst = concat_strings(path, newString(".c"));
+  ObjString *dst = concatStrings(path, newString(".c"));
   FILE *io = openFile(dst, "w");
   dumpModule(io, path, fun);
   fclose(io);
@@ -84,7 +84,7 @@ Value getEnv(Value name) {
   return string(getenv(chars));
 }
 
-Value read(Value path) { return obj(readFile(as_string(path))); }
+Value read(Value path) { return obj(readFile(asString(path))); }
 
 NATIVE_FUNCTION(shell, 1) {
   char *str = NULL;
@@ -93,25 +93,25 @@ NATIVE_FUNCTION(shell, 1) {
 
   fprintf(io, "%s", asChars(args[0]));
   for (int i = 1; i < argc; i++)
-    fprintf(io, " %s", escape_string(as_string(args[i]))->chars);
+    fprintf(io, " %s", escapeString(asString(args[i]))->chars);
 
   fclose(io);
-  return number(system(take_string(str, len)->chars));
+  return number(system(takeString(str, len)->chars));
 }
-NATIVE_FUNCTION(mkdir, 1) { return mkdir(as_string(args[0])->chars, 0777); }
+NATIVE_FUNCTION(mkdir, 1) { return mkdir(asString(args[0])->chars, 0777); }
 NATIVE_FUNCTION(read, 0) {
-  return OBJ_VAL(readFile(argc ? as_string(args[0]) : newString("/dev/stdin")));
+  return OBJ_VAL(readFile(argc ? asString(args[0]) : newString("/dev/stdin")));
 }
 NATIVE_FUNCTION(write, 1) {
   let path = argc == 1 ? string("/dev/stdout") : args[0];
   let content = args[argc - 1];
-  if (writeFile(as_string(path), as_string(content))) return content;
+  if (writeFile(asString(path), asString(content))) return content;
   else return crash("Could not write to file.");
 }
 NATIVE_FUNCTION(append, 1) {
   let path = argc == 1 ? string("/dev/stdout") : args[0];
   let content = args[argc - 1];
-  if (appendFile(as_string(path), as_string(content))) return content;
+  if (appendFile(asString(path), asString(content))) return content;
   else return crash("Could not append to file.");
 }
 NATIVE_FUNCTION(repl, 0) {

@@ -19,7 +19,7 @@ Obj *allocateObject(const ObjDef *def) {
   obj->isMarked = false;
   // Todo: Only hash for non-interned objects.
   Value val = OBJ_VAL(obj);
-  obj->hash = hash_bytes((char *)&val, sizeof(Value));
+  obj->hash = hashBytes((char *)&val, sizeof(Value));
   obj->next = vm.objects;
   vm.objects = obj;
   initTable(&obj->fields);
@@ -37,15 +37,11 @@ Obj *allocateObject(const ObjDef *def) {
 }
 
 Obj *asObjDef(const ObjDef *def, Value val) {
-  assert(is_obj_def(val, def));
+  assert(isObjDef(val, def));
   return AS_OBJ(val);
 }
-Obj *as_obj(Value x) {
-  assert(is_obj(x));
-  return AS_OBJ(x);
-}
 
-Obj *new_instance(ObjClass *klass) {
+Obj *newInstance(ObjClass *klass) {
   Obj *obj = allocateObject(&Object);
   obj->klass = klass;
   return obj;
@@ -58,7 +54,7 @@ const char *objectBytes(Obj *obj, int length) {
   return (char *)&obj->hash;
 }
 
-int inspect_obj(FILE *io, Obj *obj) {
+int inspectObject(FILE *io, Obj *obj) {
   if (!obj) return fprintf(io, "nil");
   if (obj->def->inspect) return obj->def->inspect(obj, io);
   return fprintf(io, "%s(", obj->klass->name->chars) +
@@ -83,13 +79,13 @@ int cmpObjects(Obj *a, Obj *b) {
 //   Value obj = OBJ_VAL(newObject(class));
 
 //   Value init = findMethod(klass, string("init"));
-//   if (is_nil(init)) return obj;
+//   if (isNil(init)) return obj;
 
 //   return call(init, obj, argc, args);
 // }
 
 ObjDef Object = {
-    .class_name = "Object",
+    .className = "Object",
     .size = sizeof(Obj),
 };
 

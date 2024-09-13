@@ -42,9 +42,7 @@ AT_VM_BOOT(setStartTime) {
 NATIVE_FUNCTION(clock, 0) { return number((double)clock() / CLOCKS_PER_SEC); }
 NATIVE_FUNCTION(time, 0) { return number((double)time(NULL)); }
 NATIVE_FUNCTION(elapsed, 0) { return number(elapsed()); }
-NATIVE_FUNCTION(hash, 1) {
-  return OBJ_VAL(stringf("%#x", hash_value(args[0])));
-}
+NATIVE_FUNCTION(hash, 1) { return OBJ_VAL(stringf("%#x", hashValue(args[0]))); }
 NATIVE_FUNCTION(pp, 1) { return argc > 1 ? pp(t(argc, args)) : pp(args[0]); }
 
 NATIVE_METHOD(Any, self, 0) { return this; }
@@ -58,14 +56,12 @@ NATIVE_METHOD_NAMED(Any, eql, "==", 1) {
 NATIVE_METHOD_NAMED(Any, not_eql, "!=", 1) {
   return BOOL_VAL(!valuesEqual(this, args[0]));
 }
-NATIVE_METHOD(Any, hash, 0) {
-  return OBJ_VAL(stringf("%#x", hash_value(this)));
-}
+NATIVE_METHOD(Any, hash, 0) { return OBJ_VAL(stringf("%#x", hashValue(this))); }
 
 NATIVE_METHOD(Object, etype, 0) {
-  const ecs_type_t *type = ecs_get_type(vm.world, as_obj(this)->eid);
+  const ecs_type_t *type = ecs_get_type(vm.world, asObject(this)->eid);
   char *type_str = ecs_type_str(vm.world, type);
-  return OBJ_VAL(take_string(type_str, -1));
+  return OBJ_VAL(takeString(type_str, -1));
 }
 
 NATIVE_METHOD_NAMED(Number, gt, ">", 1) {
@@ -108,7 +104,7 @@ static int nativeLength(Obj *obj) {
 
 REGISTER_OBJECT_DEF(Native);
 ObjDef Native = {
-    .class_name = "Native",
+    .className = "Native",
     .size = sizeof(ObjNative),
     .mark = markNative,
     .inspect = inspectNative,

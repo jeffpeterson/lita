@@ -4,59 +4,59 @@
 #include "memory.h"
 #include "string.h"
 
-Buffer new_buffer(usize capacity) {
+Buffer newBuffer(usize capacity) {
   Buffer buf;
-  init_buffer(&buf);
-  resize_buffer(&buf, capacity);
+  initBuffer(&buf);
+  resizeBuffer(&buf, capacity);
   return buf;
 }
 
-void init_buffer(Buffer *buf) {
+void initBuffer(Buffer *buf) {
   buf->count = 0;
   buf->capacity = 0;
   buf->bytes = NULL;
 }
 
-void free_buffer(Buffer *buf) { resize_buffer(buf, 0); }
+void freeBuffer(Buffer *buf) { resizeBuffer(buf, 0); }
 
-void resize_buffer(Buffer *buf, usize capacity) {
+void resizeBuffer(Buffer *buf, usize capacity) {
   if (capacity == buf->capacity) return;
   buf->bytes = GROW_ARRAY(u8, buf->bytes, buf->capacity, capacity);
   buf->capacity = capacity;
   if (capacity < buf->count) buf->count = capacity;
 }
 
-void grow_buffer(Buffer *buf, usize min_size) {
+void growBuffer(Buffer *buf, usize min_size) {
   if (min_size <= buf->capacity) return;
   usize capacity = buf->capacity || 1;
   while (capacity < min_size) capacity *= 2;
-  resize_buffer(buf, capacity);
+  resizeBuffer(buf, capacity);
 }
 
-usize read_buffer(Buffer *buf, usize offset, u8 *bytes, usize count) {
+usize readBuffer(Buffer *buf, usize offset, u8 *bytes, usize count) {
   memcpy(bytes, buf->bytes + offset, count);
   return offset + count;
 }
 
-usize write_buffer(Buffer *buf, usize offset, u8 *bytes, usize count) {
+usize writeBuffer(Buffer *buf, usize offset, u8 *bytes, usize count) {
   usize min_size = offset + count;
-  grow_buffer(buf, min_size);
+  growBuffer(buf, min_size);
   if (min_size > buf->count) buf->count = min_size;
 
   memcpy(buf->bytes + offset, bytes, count);
   return offset + count;
 }
 
-usize append_buffer(Buffer *buf, u8 *bytes, usize count) {
-  return write_buffer(buf, buf->count, bytes, count);
+usize appendBuffer(Buffer *buf, u8 *bytes, usize count) {
+  return writeBuffer(buf, buf->count, bytes, count);
 }
 
-usize append_char_to_buffer(Buffer *buf, char ch) {
-  return append_buffer(buf, (u8 *)&ch, 1);
+usize appendCharToBuffer(Buffer *buf, char ch) {
+  return appendBuffer(buf, (u8 *)&ch, 1);
 }
 
-usize append_str_to_buffer(Buffer *buf, char *str, usize length) {
-  return append_buffer(buf, (u8 *)str, length);
+usize appendStrToBuffer(Buffer *buf, char *str, usize length) {
+  return appendBuffer(buf, (u8 *)str, length);
 }
 
 ECS_COMPONENT_DECLARE(Buffer);

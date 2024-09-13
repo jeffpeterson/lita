@@ -7,7 +7,7 @@
 #include "tuple.h"
 #include "vm.h"
 
-let t(int len, let *vals) { return obj(copy_tuple(vals, len)); }
+let t(int len, let *vals) { return obj(copyTuple(vals, len)); }
 
 let t2(let a, let b) { return t(2, (let[]){a, b}); }
 let t3(let a, let b, let c) { return t(3, (let[]){a, b, c}); }
@@ -34,7 +34,7 @@ static ObjTuple *newTuple(Value *vals, int length, Hash hash) {
   return tuple;
 }
 
-ObjTuple *copy_tuple(Value *values, uint8_t length) {
+ObjTuple *copyTuple(Value *values, uint8_t length) {
   int size = length * sizeof(Value);
   Hash hash;
   ObjTuple *interned = (ObjTuple *)getInterned(&hash, (char *)values, size);
@@ -47,7 +47,7 @@ ObjTuple *copy_tuple(Value *values, uint8_t length) {
   return newTuple(heapVals, length, hash);
 }
 
-ObjTuple *take_tuple(Value *values, uint8_t length) {
+ObjTuple *takeTuple(Value *values, uint8_t length) {
   Hash hash;
   Obj *interned = getInterned(&hash, (char *)values, length * sizeof(Value));
 
@@ -59,7 +59,7 @@ ObjTuple *take_tuple(Value *values, uint8_t length) {
   return newTuple(values, length, hash);
 }
 
-ObjTuple *zip_tuples(ObjTuple *a, ObjTuple *b, Value (*fn)(Value, Value)) {
+ObjTuple *zipTuples(ObjTuple *a, ObjTuple *b, Value (*fn)(Value, Value)) {
   if (a->length != b->length) {
     runtimeError("Tuples must be same size.");
     return NULL;
@@ -72,7 +72,7 @@ ObjTuple *zip_tuples(ObjTuple *a, ObjTuple *b, Value (*fn)(Value, Value)) {
     values[i] = fn(a->values[i], b->values[i]);
   }
 
-  return take_tuple(values, length);
+  return takeTuple(values, length);
 }
 
 NATIVE_METHOD_NAMED(Tuple, add, "+", 1) {
@@ -97,11 +97,11 @@ NATIVE_METHOD(Tuple, map, 1) {
     push(tuple->values[i]);
     if (arity(fun) == 2) {
       push(number(i));
-      vm_call(2);
-    } else vm_call(1);
+      vmCall(2);
+    } else vmCall(1);
     return VOID;
   } else {
-    vm_tuple(tuple->length);
+    vmTuple(tuple->length);
     return pop();
   }
 }
@@ -129,7 +129,7 @@ static int inspectTuple(Obj *obj, FILE *io) {
   int tot = fprintf(io, "(");
   for (int i = 0; i < tuple->length; i++) {
     if (i > 0) tot += fprintf(io, ", ");
-    tot += inspect_value(io, tuple->values[i]);
+    tot += inspectValue(io, tuple->values[i]);
   }
   return fprintf(io, ")") + tot;
 }
@@ -151,7 +151,7 @@ COMPILED_SOURCE(tuple);
 
 REGISTER_OBJECT_DEF(Tuple);
 const ObjDef Tuple = {
-    .class_name = "Tuple",
+    .className = "Tuple",
     .size = sizeof(ObjTuple),
     .interned = true,
     .free = freeTuple,

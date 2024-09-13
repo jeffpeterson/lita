@@ -11,7 +11,7 @@ ObjIO *makeIO(FILE *fp, Ownership ownership) {
   io->fp = fp;
   io->ownership = ownership;
   // TODO: Handle this with getInterned or something:
-  io->obj.hash = hash_bytes((char *)&io->fp, sizeof(&io->fp));
+  io->obj.hash = hashBytes((char *)&io->fp, sizeof(&io->fp));
   return io;
 }
 
@@ -35,14 +35,14 @@ static void freeIO(Obj *obj) {
 
 NATIVE_METHOD(IO, write, 1) {
   ObjIO *io = asIO(this);
-  ObjString *str = as_string(args[0]);
+  ObjString *str = asString(args[0]);
   fwrite(str->chars, sizeof(char), str->length, io->fp);
   return this;
 }
 
 REGISTER_OBJECT_DEF(IO);
 const ObjDef IO = {
-    .class_name = "IO",
+    .className = "IO",
     .size = sizeof(ObjIO),
     .free = freeIO,
     .interned = true,

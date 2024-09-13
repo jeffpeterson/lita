@@ -10,10 +10,10 @@ int currentId = 0;
 Table ids;
 
 int dumpValue(FILE *io, Value v) {
-  if (is_nil(v)) return fputs("nil", io);
-  if (is_bool(v)) return fputs(AS_BOOL(v) ? "TRUE_VAL" : "FALSE_VAL", io);
-  if (is_num(v)) return fprintf(io, "NUMBER_VAL(%f)", AS_NUMBER(v));
-  if (is_obj(v)) return dumpObject(io, AS_OBJ(v));
+  if (isNil(v)) return fputs("nil", io);
+  if (isBool(v)) return fputs(AS_BOOL(v) ? "TRUE_VAL" : "FALSE_VAL", io);
+  if (isNumber(v)) return fprintf(io, "NUMBER_VAL(%f)", AS_NUMBER(v));
+  if (isObject(v)) return dumpObject(io, AS_OBJ(v));
 
   return fprintf(io, "crash(\"Value without dump: %s\")", inspectc(v));
 }
@@ -27,7 +27,7 @@ int dumpObject(FILE *io, Obj *obj) {
 bool id_for(let v, int *id) {
   let vid;
   if (tableGet(&ids, v, &vid)) {
-    *id = as_int(vid);
+    *id = asInt(vid);
     return true;
   }
 
@@ -40,16 +40,16 @@ static int dumpFn(FILE *io, ObjFunction *fun) {
   int id;
   if (id_for(obj(fun), &id)) return id;
 
-  ObjString *name = string_to_c_ident(fun->name);
+  ObjString *name = stringToCIdent(fun->name);
   Chunk chunk = fun->chunk;
   ValueArray values = chunk.constants;
 
   for (int i = 0; i < values.count; i++) {
     Value v = values.values[i];
 
-    if (is_obj(v)) {
+    if (isObject(v)) {
       Obj *obj = AS_OBJ(v);
-      if (obj->def->dump_global) obj->def->dump_global(obj, io);
+      if (obj->def->dumpGlobal) obj->def->dumpGlobal(obj, io);
       else if (isFunction(v)) dumpFn(io, asFunction(v));
     }
   }
@@ -75,7 +75,7 @@ static int dumpFn(FILE *io, ObjFunction *fun) {
 
   u8 *ip = chunk.code;
   while (ip < chunk.code + chunk.count) {
-    fprintf(io, "    %s,", op_info[*ip].name);
+    fprintf(io, "    %s,", opInfo[*ip].name);
     u8 size = instructionSize(*ip++);
     for (int i = 1; i < size; i++) fprintf(io, " %d,", *ip++);
     fprintf(io, "\n");
@@ -147,7 +147,7 @@ void dumpModule(FILE *io, ObjString *path, ObjFunction *fun) {
           "ObjFunction *%s() {\n"
           "  return asFunction(fn_%s_%d());\n"
           "}\n",
-          name->chars, string_to_c_ident(fun->name)->chars, id);
+          name->chars, stringToCIdent(fun->name)->chars, id);
 
   freeTable(&ids);
 }
