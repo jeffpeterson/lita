@@ -310,17 +310,19 @@ static Value fn_print_5() {
 
   Chunk *c = &f->chunk;
   initChunk(c);
-  c->count = c->capacity = 11;
+  c->count = c->capacity = 13;
   u8 code[] = {
     OP_GET_LOCAL, 0,
     OP_GET_VAR, 0,
     OP_CLOSURE, 1,
+    OP_NIL,
+    OP_NIL,
     OP_CALL, 1,
     OP_POP,
     OP_NIL,
     OP_RETURN,
   };
-  int lines[] = { 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25,};
+  int lines[] = { 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25,};
   c->code = cloneMemory(code, sizeof(code));
   c->lines = cloneMemory(lines, sizeof(lines));
 

@@ -35,6 +35,7 @@ typedef enum Ownership { UNOWNED, OWNED } Ownership;
 typedef void ObjFn(Obj *obj);
 typedef int ObjIntFn(Obj *obj);
 typedef int ObjIOFn(Obj *obj, FILE *io);
+typedef InterpretResult ObjVMFn(Obj *obj, int argCount);
 typedef const char *ObjBytesFn(Obj *obj, int length);
 
 typedef struct ObjDef {
@@ -45,7 +46,8 @@ typedef struct ObjDef {
   ObjFn *alloc;
   ObjFn *free;
   ObjFn *mark;
-  ObjIOFn *inspect; /** NOTE: Why can't we invoke .inspect? */
+  ObjVMFn *call;
+  ObjIOFn *inspect;
   ObjIOFn *dump;
   ObjIOFn *dumpGlobal;
   ObjBytesFn *bytes;
@@ -58,11 +60,11 @@ typedef struct ObjClass ObjClass;
 struct Obj {
   EntityId eid;
   const ObjDef *def;
-  bool isMarked;    /** Is marked by GC in the current mark cycle. */
-  struct Obj *next; /** Linked list of objects used for GC. */
-  Hash hash;        /** All objects have a hash value. */
-  ObjClass *klass;
-  Table fields; /** Fields assigned to this instance. */
+  bool isMarked;    // Is marked by GC in the current mark cycle.
+  struct Obj *next; // Linked list of objects used for GC.
+  Hash hash;        // All objects have a hash value.
+  ObjClass *klass;  //
+  Table fields;     // Fields assigned to this instance.
 };
 
 // TODO: Use this for yield keyword?

@@ -15,15 +15,15 @@
 #define CURRENT_FRAME (&vm.frames[vm.frameCount - 1])
 
 typedef struct CallFrame {
-  ObjNative *native; /** Native function being executed. */
-  usize reentries;   /** Number of times this native has been entered. */
+  Obj *obj; // Object being executed.
 
-  ObjClosure *closure; /** Fn containing the code. */
-  u8 *ip;              /** Current instruction pointer. */
-  u8 *prevIp;          /** Pointer to last instruction. */
-  Value *slots;        /** Points into the VM's value stack. */
-
-  Value *prevStack; /** Slots prior to last instruction. */
+  usize reentries;  // Number of times this native has been re-entered.
+                    //
+  u8 *ip;           // Current instruction pointer.
+  u8 *prevIp;       // Pointer to last instruction.
+  Value *slots;     // Points into the VM's value stack.
+                    //
+  Value *prevStack; // Slots prior to last instruction.
 } CallFrame;
 
 typedef struct VM {
@@ -56,21 +56,16 @@ typedef struct VM {
    * Garbage collect all remaining white objects.
    */
   Obj **grayStack;
-  int grayCount;         /** Number of entries in `grayStack`. */
-  int grayCapacity;      /** Capacity allocated for `grayStack`. */
-  size_t bytesAllocated; /** Total memory we have allocated. */
-  size_t nextGC;         /** Threshold to trigger the next GC. */
+  int grayCount;         // Number of entries in `grayStack`.
+  int grayCapacity;      // Capacity allocated for `grayStack`.
+  size_t bytesAllocated; // Total memory we have allocated.
+  size_t nextGC;         // Threshold to trigger the next GC.
 
-  struct str { /** Static strings. */
+  /** Static strings. */
+  struct str {
     ObjString *init;
   } str;
 } VM;
-
-typedef enum InterpretResult {
-  INTERPRET_OK,
-  INTERPRET_RUNTIME_ERROR,
-  INTERPRET_COMPILE_ERROR,
-} InterpretResult;
 
 extern VM vm;
 
@@ -80,6 +75,9 @@ InterpretResult bootVM();
 InterpretResult runFunction(ObjFunction *fun);
 InterpretResult runClosure(ObjClosure *closure);
 InterpretResult interpret(const char *source, ObjString *name);
+
+CallFrame *newFrame(Obj *obj, usize slots);
+ObjFunction *toFunction(Obj *obj);
 
 /** Push a value onto the stack and return it. */
 Value push(Value value);

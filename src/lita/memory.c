@@ -139,10 +139,7 @@ static void markRoots() {
     markValue(*slot);
   }
 
-  for (int i = 0; i < vm.frameCount; i++) {
-    markObject((Obj *)vm.frames[i].closure);
-    markObject((Obj *)vm.frames[i].native);
-  }
+  for (int i = 0; i < vm.frameCount; i++) markObject((Obj *)vm.frames[i].obj);
 
   for (ObjUpvalue *upvalue = vm.openUpvalues; upvalue != NULL;
        upvalue = upvalue->next) {

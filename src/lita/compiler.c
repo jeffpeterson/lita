@@ -434,6 +434,7 @@ static void emitReturn_(char *comment) {
 static void emitClosure_(Compiler *compiler, const char *comment) {
   ObjFunction *fun = compiler->fun;
 
+  // TODO: support functions outside of closures:
   // if (!fun->upvalueCount) return emitConstant_(OBJ_VAL(fun), comment);
 
   emitBytes_(OP_CLOSURE, makeConstant(OBJ_VAL(fun)), comment);

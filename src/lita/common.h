@@ -59,6 +59,12 @@ typedef uint64_t u64;
 typedef __uint128_t u128;
 typedef size_t usize;
 
+typedef enum InterpretResult {
+  INTERPRET_OK,
+  INTERPRET_RUNTIME_ERROR,
+  INTERPRET_COMPILE_ERROR,
+} InterpretResult;
+
 typedef struct Config {
   bool tracing;
   u8 debug;

@@ -4,6 +4,7 @@
 #include "lib.h"
 #include "memory.h"
 #include "native.h"
+#include "vm.h"
 
 let bound(let receiver, let method) { return obj(newBound(receiver, method)); }
 
@@ -30,6 +31,12 @@ static int inspectBound(Obj *obj, FILE *io) {
   return fstringFormat(io, "Bound({}, {})", bound->receiver, bound->method);
 }
 
+static InterpretResult callBound(Obj *obj, int argc) {
+  ObjBound *bound = (ObjBound *)obj;
+  vm.stackTop[-argc - 1] = bound->receiver;
+  return callValue(bound->method, argc);
+}
+
 NATIVE_GETTER(Bound, receiver, OBJ_VAL);
 NATIVE_GETTER(Bound, method, OBJ_VAL);
 
@@ -40,4 +47,5 @@ const ObjDef Bound = {
     .mark = markBound,
     .inspect = inspectBound,
     .length = boundLength,
+    .call = callBound,
 };

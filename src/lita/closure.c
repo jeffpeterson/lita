@@ -45,6 +45,45 @@ static int inspectClosure(Obj *obj, FILE *io) {
          FG_SIZE * 4;
 }
 
+/**
+ * Move the instruction pointer (ip) to a new a closure along with arguments on
+ * the stack.
+ *
+ * Returns whether or not the call was successful.
+ */
+static InterpretResult callClosure(Obj *obj, int argCount) {
+  ObjClosure *closure = (ObjClosure *)obj;
+  ObjFunction *fun = closure->function;
+
+  if (argCount < fun->arity)
+    return runtimeError("Expected %d arguments but got %d.", fun->arity,
+                        argCount);
+
+  if (fun->variadic) {
+    vmArray(argCount - fun->arity);
+    argCount = fun->arity + 1;
+  }
+
+  CallFrame *existing_frame = &vm.frames[vm.frameCount - 1];
+
+  if (existing_frame->obj == obj && *(existing_frame->ip) == OP_RETURN) {
+    // Tail-call optimization.
+    copyValues(vm.stackTop - argCount, existing_frame->slots + 1, argCount);
+    vm.stackTop = existing_frame->slots + argCount + 1;
+    existing_frame->ip = fun->chunk.code;
+    existing_frame->prevIp = NULL;
+    return INTERPRET_OK;
+  }
+
+  if (vm.frameCount == FRAMES_MAX) return runtimeError("Call stack overflow.");
+
+  CallFrame *frame = newFrame(obj, argCount + 1);
+  if (!frame) return runtimeError("Call stack overflow.");
+  frame->ip = fun->chunk.code;
+
+  return INTERPRET_OK;
+}
+
 NATIVE_GETTER(Closure, function, OBJ_VAL);
 NATIVE_DELEGATE(Closure, name, function);
 NATIVE_DELEGATE(Closure, arity, function);
@@ -57,6 +96,7 @@ const ObjDef Closure = {
     .size = sizeof(ObjClosure),
     .mark = markClosure,
     .free = freeClosure,
+    .call = callClosure,
     .inspect = inspectClosure,
     .length = closureLength,
 };

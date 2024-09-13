@@ -243,20 +243,18 @@ void debugExecution() {
 
   if (frame != prev_frame) {
     fprintf(stderr, "\n");
-    for (int i = 0; i < vm.frameCount; i++)
-      if (vm.frames[i].closure)
-        fprintf(stderr, "[ Frame %s ]",
-                vm.frames[i].closure->function->name->chars);
-      else if (vm.frames[i].native)
-        fprintf(stderr, "[ Native %s ]", vm.frames[i].native->name->chars);
-      else fprintf(stderr, "[ Unknown frame ]");
+    for (int i = 0; i < vm.frameCount; i++) {
+      fprintf(stderr, "[ ");
+      inspectObject(stderr, vm.frames[i].obj);
+      fprintf(stderr, " ]");
+    }
   }
 
   fprintf(stderr, DIM "\n");
   if (frame->ip)
     disassembleInstruction(
-        &frame->closure->function->chunk,
-        (int)(frame->ip - frame->closure->function->chunk.code));
+        &toFunction(frame->obj)->chunk,
+        (int)(frame->ip - toFunction(frame->obj)->chunk.code));
   fprintf(stderr, NO_DIM);
   prev_frame = frame;
 }

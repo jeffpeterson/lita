@@ -44,6 +44,13 @@ static int inspectClass(Obj *obj, FILE *io) {
          FG_SIZE * 2;
 }
 
+static InterpretResult callClass(Obj *obj, int argc) {
+  ObjClass *klass = (ObjClass *)obj;
+  // Replace the class with a new instance.
+  vm.stackTop[-argc - 1] = OBJ_VAL(newInstance(klass));
+  return vmInvoke(OBJ_VAL(vm.str.init), argc);
+}
+
 NATIVE_GETTER(Class, name, OBJ_VAL);
 NATIVE_GETTER(Class, parent, OBJ_VAL);
 
@@ -56,4 +63,5 @@ const ObjDef Class = {
     .mark = markClass,
     .inspect = inspectClass,
     .length = classLength,
+    .call = callClass,
 };

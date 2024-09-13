@@ -102,11 +102,27 @@ static int nativeLength(Obj *obj) {
   return native->arity;
 }
 
+static InterpretResult callNative(Obj *obj, int argc) {
+  ObjNative *native = (ObjNative *)obj;
+
+  if (argc < native->arity)
+    return runtimeError("Expected %d arguments but got %d.", native->arity,
+                        argc);
+
+  if (vm.frameCount == FRAMES_MAX) return runtimeError("Call stack overflow.");
+
+  CallFrame *frame = newFrame(obj, argc + 1);
+  if (!frame) return runtimeError("Call stack overflow.");
+
+  return INTERPRET_OK;
+}
+
 REGISTER_OBJECT_DEF(Native);
 const ObjDef Native = {
     .className = "Native",
     .size = sizeof(ObjNative),
     .mark = markNative,
+    .call = callNative,
     .inspect = inspectNative,
     .length = nativeLength,
 };

@@ -37,25 +37,30 @@ static void resetStack() {
   vm.openUpvalues = NULL;
 }
 
+static void functionError(u8 *ip, ObjFunction *fun) {
+  size_t instruction = ip - fun->chunk.code - 1;
+  int line = fun->chunk.lines[instruction];
+
+  if (DEBUG_ERRORS || config.debug)
+    disassembleChunk(&fun->chunk, fun->name->chars, instruction + 1);
+
+  fprintf(stderr, "[line %d] in ", line);
+  inspectObject(stderr, (Obj *)fun);
+  fprintf(stderr, "\n");
+}
+
 static InterpretResult vruntimeError(const char *format, va_list args) {
   fprintf(stderr, "\n%d frames:\n", vm.frameCount);
   for (int i = 0; i < vm.frameCount; i++) {
     CallFrame *frame = &vm.frames[i];
 
-    if (frame->closure) {
-      ObjFunction *fun = frame->closure->function;
-      size_t instruction = frame->ip - fun->chunk.code - 1;
-      int line = fun->chunk.lines[instruction];
-
-      if (DEBUG_ERRORS || config.debug)
-        disassembleChunk(&fun->chunk, fun->name->chars, instruction + 1);
-
-      fprintf(stderr, "[line %d] in ", line);
-      inspectObject(stderr, (Obj *)fun);
-      fprintf(stderr, "\n");
-    } else if (frame->native) {
-      inspectObject(stderr, (Obj *)frame->native);
-    }
+    if (frame->obj->def == &Closure) {
+      ObjClosure *closure = (ObjClosure *)frame->obj;
+      functionError(frame->ip, closure->function);
+    } else if (frame->obj->def == &Function) {
+      ObjFunction *fun = (ObjFunction *)frame->obj;
+      functionError(frame->ip, fun);
+    } else inspectObject(stderr, frame->obj);
   }
 
   fprintf(stderr, "\nStack:\t");
@@ -219,79 +224,23 @@ void vmSwap(u8 a, u8 b) {
   vm.stackTop[-1 - b] = aa;
 }
 
-static CallFrame *newFrame(usize slots) {
+/**
+ * slots should be likely args + 1 to account for the receiver/callee.
+ *
+ * stack: [..., this, arg1, arg2]
+ *     receiver-^               ^-stackTop
+ */
+CallFrame *newFrame(Obj *obj, usize slots) {
+  if (vm.frameCount == FRAMES_MAX) return NULL;
   CallFrame *frame = &vm.frames[vm.frameCount++];
 
-  frame->native = NULL;
+  frame->obj = obj;
   frame->reentries = 0;
-  frame->closure = NULL;
   frame->ip = NULL;
   frame->slots = vm.stackTop - slots;
   frame->prevStack = vm.stackTop;
   frame->prevIp = NULL;
   return frame;
-}
-
-/**
- * Move the instruction pointer (ip) to a new a closure along with arguments on
- * the stack.
- *
- * Returns whether or not the call was successful.
- */
-static InterpretResult moveIntoClosure(ObjClosure *closure, int argCount) {
-  ObjFunction *fun = closure->function;
-
-  if (argCount < fun->arity)
-    return runtimeError("Expected %d arguments but got %d.", fun->arity,
-                        argCount);
-
-  if (fun->variadic) {
-    vmArray(argCount - fun->arity);
-    argCount = fun->arity + 1;
-  }
-
-  CallFrame *existing_frame = &vm.frames[vm.frameCount - 1];
-
-  if (existing_frame->closure == closure &&
-      *(existing_frame->ip) == OP_RETURN) {
-    // Tail-call optimization.
-    copyValues(vm.stackTop - argCount, existing_frame->slots + 1, argCount);
-    vm.stackTop = existing_frame->slots + argCount + 1;
-    existing_frame->ip = fun->chunk.code;
-    existing_frame->prevIp = NULL;
-    return INTERPRET_OK;
-  }
-
-  if (vm.frameCount == FRAMES_MAX) return runtimeError("Call stack overflow.");
-
-  /**
-   * Account for args and the receiver if method, else the callee.
-   * stack: [..., this, arg1, arg2]
-   *     receiver-^               ^-stackTop
-   */
-  CallFrame *frame = newFrame(argCount + 1);
-  frame->closure = closure;
-  frame->ip = fun->chunk.code;
-
-  return INTERPRET_OK;
-}
-
-static InterpretResult moveIntoNative(ObjNative *native, int argc) {
-  if (argc < native->arity)
-    return runtimeError("Expected %d arguments but got %d.", native->arity,
-                        argc);
-
-  if (vm.frameCount == FRAMES_MAX) return runtimeError("Call stack overflow.");
-
-  /**
-   * Account for args and the receiver if method, else the callee.
-   * stack: [..., this, arg1, arg2]
-   *     receiver-^               ^-stackTop
-   */
-  CallFrame *frame = newFrame(argc + 1);
-  frame->native = native;
-
-  return INTERPRET_OK;
 }
 
 ObjClass *valueClass(Value v) {
@@ -309,31 +258,13 @@ ObjClass *valueClass(Value v) {
   return asClass(globalClass(name));
 }
 
-/**
- * Invoke some Value as a function.
- *
- * Returns whether or not the call was successful.
- */
-InterpretResult callValue(Value callee, int argCount) {
-  trace("callValue", callee);
-
+InterpretResult callValue(Value callee, int argc) {
   if (isObject(callee)) {
-    if (isClosure(callee)) return moveIntoClosure(asClosure(callee), argCount);
-    else if (isNative(callee))
-      return moveIntoNative(AS_NATIVE(callee), argCount);
-    else if (isClass(callee)) {
-      // Replace the class with a new instance.
-      vm.stackTop[-argCount - 1] = OBJ_VAL(newInstance(asClass(callee)));
-      return vmInvoke(OBJ_VAL(vm.str.init), argCount);
-    } else if (isBound(callee)) {
-      ObjBound *bound = asBound(callee);
-      vm.stackTop[-argCount - 1] = bound->receiver;
-      return callValue(bound->method, argCount);
-    }
+    Obj *obj = AS_OBJ(callee);
+    if (obj->def->call) return obj->def->call(obj, argc);
   }
 
-  if (argCount == 1) return vmInvoke(string(""), 1);
-  return false;
+  return vmInvoke(string(""), argc);
 }
 
 static InterpretResult invokeFromClass(ObjClass *klass, ObjString *name,
@@ -568,6 +499,12 @@ static void vmThrow(let location) {
   crash("%s thrown at %s", inspectc(err), inspectc(location));
 }
 
+ObjFunction *toFunction(Obj *obj) {
+  if (obj->def == &Function) return (ObjFunction *)obj;
+  if (obj->def == &Closure) return ((ObjClosure *)obj)->function;
+  return NULL;
+}
+
 static InterpretResult vmRun() {
   if (vm.frameCount == 0) return runtimeError("No function to run.");
   if (vm.frameCount > 1) return runtimeError("VM already running.");
@@ -581,7 +518,7 @@ static InterpretResult vmRun() {
 #define READ_SHORT()                                                           \
   (frame->ip += 2, (uint16_t)((frame->ip[-2] << 8) | frame->ip[-1]))
 #define READ_CONSTANT()                                                        \
-  (frame->closure->function->chunk.constants.values[READ_BYTE()])
+  (toFunction(frame->obj)->chunk.constants.values[READ_BYTE()])
 #define READ_STRING() asString(READ_CONSTANT())
 #define BINARY_OP(valueType, op)                                               \
   do {                                                                         \
@@ -600,14 +537,15 @@ static InterpretResult vmRun() {
 
     vm.stackHigh = vm.stackTop;
 
-    // TODO: move this to SYNC_FRAME or similar? Only need to check if the
-    // frame has changed.
-    if (frame->native) {
+    // TODO: move this to SYNC_FRAME or similar? Only need to check if
+    // the frame has changed.
+    if (frame->obj->def == &Native) {
+      ObjNative *native = (ObjNative *)frame->obj;
       int argc = vm.stackTop - frame->slots - 1;
       if (config.tracing)
         fprintf(stderr, "[TRACE] Calling native %s with %d args\n",
-                frame->native->name->chars, argc);
-      let result = frame->native->fun(peek(argc), argc, frame->slots + 1);
+                native->name->chars, argc);
+      let result = native->fun(peek(argc), argc, frame->slots + 1);
       frame->reentries++;
 
       if (notVoid(result)) {
@@ -625,9 +563,9 @@ static InterpretResult vmRun() {
     }
 
     if (frame->prevIp) {
+      ObjFunction *fun = toFunction(frame->obj);
       int actual = vm.stackTop - frame->prevStack;
-      int expected =
-          inputOutputDelta(&frame->closure->function->chunk, frame->prevIp);
+      int expected = inputOutputDelta(&fun->chunk, frame->prevIp);
 
       if (actual != expected) {
         OpInfo op = opInfo[*frame->prevIp];
@@ -711,13 +649,13 @@ static InterpretResult vmRun() {
 
     case OP_GET_UPVALUE: {
       u8 slot = READ_BYTE();
-      push(*frame->closure->upvalues[slot]->location);
+      push(*((ObjClosure *)frame->obj)->upvalues[slot]->location);
       break;
     }
 
     case OP_SET_UPVALUE: {
       u8 slot = READ_BYTE();
-      *frame->closure->upvalues[slot]->location = peek(0);
+      *((ObjClosure *)frame->obj)->upvalues[slot]->location = peek(0);
       break;
     }
 
@@ -822,7 +760,7 @@ static InterpretResult vmRun() {
 
         if (isLocal)
           closure->upvalues[i] = captureUpvalue(frame->slots + index);
-        else closure->upvalues[i] = frame->closure->upvalues[index];
+        else closure->upvalues[i] = ((ObjClosure *)frame->obj)->upvalues[index];
       }
 
       break;
@@ -907,7 +845,7 @@ InterpretResult runFunction(ObjFunction *fun) {
 
 InterpretResult runClosure(ObjClosure *closure) {
   push(OBJ_VAL(closure));
-  return moveIntoClosure(closure, 0) || vmRun();
+  return vmCall(0) || vmRun();
 }
 
 InterpretResult interpret(const char *source, ObjString *name) {
