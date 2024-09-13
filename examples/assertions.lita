@@ -180,6 +180,15 @@ while i < 10
 assert i == 10
 assert j == 10
 
+fn whileElse(n)
+	while n-- > 0
+	else return "else"
+	return "done"
+
+assert whileElse(1) == "done"
+assert whileElse(9) == "done"
+assert whileElse(0) == "else"
+
 fn empty_fn()
 
 assert empty_fn() == nil

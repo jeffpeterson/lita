@@ -474,16 +474,17 @@ static ObjFunction *endCompiler() {
 }
 
 /** Adds a local variable with the given name to the current compiler scope. */
-static void addLocal(Token name) {
+static int addLocal(Token name) {
   if (current->localCount == UINT8_COUNT) {
     error("Too many local variables in function.");
-    return;
+    return -1;
   }
-
-  Local *local = &current->locals[current->localCount++];
+  int i = current->localCount++;
+  Local *local = &current->locals[i];
   local->name = name;
   local->depth = -1; // Set properly when initialized.
   local->isCaptured = false;
+  return i;
 }
 
 /**
@@ -1482,6 +1483,11 @@ static void throw_() {
 }
 
 static void whileStatement() {
+  beginScope();
+  emit(True);
+  int runElse = addLocal(syntheticToken("else"));
+  defineVariable(0);
+
   int loopStart = currentChunk()->count;
 
   expression("Expect expression after 'while'."); // [0 condition]
@@ -1489,12 +1495,21 @@ static void whileStatement() {
 
   int exitJump = emitJump(OP_JUMP_IF_FALSE);
   emitByte(OP_POP);
+  emit(False);
+  emit3Bytes(OP_SET_LOCAL, runElse, OP_POP);
+
   if (check(TOKEN_INDENT) || match(TOKEN_COLON)) statement();
+  else skipNewlines();
   emitLoop(loopStart); // Loop back to the condition.
 
   patchJump(exitJump); // Exit the loop.
   assertStackSize(1, "falsey while condition");
   emitByte(OP_POP); // []
+
+  int elseJump = emitJump(OP_JUMP_IF_FALSE);
+  if (match(TOKEN_ELSE)) statement();
+  patchJump(elseJump);
+  endScope();
 }
 
 static void synchronize() {

@@ -83,15 +83,19 @@ static Value fn_each_3() {
 
   Chunk *c = &f->chunk;
   initChunk(c);
-  c->count = c->capacity = 48;
+  c->count = c->capacity = 57;
   u8 code[] = {
     OP_CONSTANT, 0,
+    OP_TRUE,
     OP_GET_LOCAL, 2,
     OP_GET_LOCAL, 0,
     OP_GET_VAR, 1,
     OP_LESS,
-    OP_ASSERT_STACK, 2, 4,
-    OP_JUMP_IF_FALSE, 0, 27,
+    OP_ASSERT_STACK, 2, 5,
+    OP_JUMP_IF_FALSE, 0, 31,
+    OP_POP,
+    OP_FALSE,
+    OP_SET_LOCAL, 3,
     OP_POP,
     OP_GET_LOCAL, 1,
     OP_GET_LOCAL, 0,
@@ -106,13 +110,15 @@ static Value fn_each_3() {
     OP_CALL, 1,
     OP_CALL, 1,
     OP_POP,
-    OP_LOOP, 0, 40,
-    OP_ASSERT_STACK, 5, 4,
+    OP_LOOP, 0, 44,
+    OP_ASSERT_STACK, 5, 5,
+    OP_POP,
+    OP_JUMP_IF_FALSE, 0, 0,
     OP_POP,
     OP_NIL,
     OP_RETURN,
   };
-  int lines[] = { 5, 5, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 9, 9,};
+  int lines[] = { 5, 5, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 9, 9,};
   c->code = cloneMemory(code, sizeof(code));
   c->lines = cloneMemory(lines, sizeof(lines));
 

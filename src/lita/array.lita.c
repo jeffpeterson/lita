@@ -50,7 +50,7 @@ static Value fn__eq__eq__2() {
 
   Chunk *c = &f->chunk;
   initChunk(c);
-  c->count = c->capacity = 116;
+  c->count = c->capacity = 125;
   u8 code[] = {
     OP_GET_LOCAL, 0,
     OP_GET_VAR, 0,
@@ -80,12 +80,16 @@ static Value fn__eq__eq__2() {
     OP_JUMP, 0, 1,
     OP_POP,
     OP_CONSTANT, 3,
+    OP_TRUE,
     OP_GET_LOCAL, 2,
     OP_GET_LOCAL, 0,
     OP_GET_VAR, 0,
     OP_LESS,
-    OP_ASSERT_STACK, 4, 4,
-    OP_JUMP_IF_FALSE, 0, 45,
+    OP_ASSERT_STACK, 4, 5,
+    OP_JUMP_IF_FALSE, 0, 49,
+    OP_POP,
+    OP_FALSE,
+    OP_SET_LOCAL, 3,
     OP_POP,
     OP_GET_LOCAL, 0,
     OP_GET_VAR, 5,
@@ -102,7 +106,7 @@ static Value fn__eq__eq__2() {
     OP_INVOKE, 5, 1,
     OP_EQUAL,
     OP_NOT,
-    OP_ASSERT_STACK, 1, 4,
+    OP_ASSERT_STACK, 1, 5,
     OP_JUMP_IF_FALSE, 0, 7,
     OP_POP,
     OP_FALSE,
@@ -110,8 +114,10 @@ static Value fn__eq__eq__2() {
     OP_POP,
     OP_JUMP, 0, 1,
     OP_POP,
-    OP_LOOP, 0, 58,
-    OP_ASSERT_STACK, 7, 4,
+    OP_LOOP, 0, 62,
+    OP_ASSERT_STACK, 7, 5,
+    OP_POP,
+    OP_JUMP_IF_FALSE, 0, 0,
     OP_POP,
     OP_TRUE,
     OP_RETURN,
@@ -119,7 +125,7 @@ static Value fn__eq__eq__2() {
     OP_NIL,
     OP_RETURN,
   };
-  int lines[] = { 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 7, 7, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 10, 10, 10, 10, 10,};
+  int lines[] = { 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 7, 7, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 10, 10, 10, 10, 10,};
   c->code = cloneMemory(code, sizeof(code));
   c->lines = cloneMemory(lines, sizeof(lines));
 
@@ -147,15 +153,19 @@ static Value fn_each_3() {
 
   Chunk *c = &f->chunk;
   initChunk(c);
-  c->count = c->capacity = 48;
+  c->count = c->capacity = 57;
   u8 code[] = {
     OP_CONSTANT, 0,
+    OP_TRUE,
     OP_GET_LOCAL, 2,
     OP_GET_LOCAL, 0,
     OP_GET_VAR, 1,
     OP_LESS,
-    OP_ASSERT_STACK, 2, 4,
-    OP_JUMP_IF_FALSE, 0, 27,
+    OP_ASSERT_STACK, 2, 5,
+    OP_JUMP_IF_FALSE, 0, 31,
+    OP_POP,
+    OP_FALSE,
+    OP_SET_LOCAL, 3,
     OP_POP,
     OP_GET_LOCAL, 1,
     OP_GET_LOCAL, 0,
@@ -170,13 +180,15 @@ static Value fn_each_3() {
     OP_CALL, 1,
     OP_CALL, 1,
     OP_POP,
-    OP_LOOP, 0, 40,
-    OP_ASSERT_STACK, 5, 4,
+    OP_LOOP, 0, 44,
+    OP_ASSERT_STACK, 5, 5,
+    OP_POP,
+    OP_JUMP_IF_FALSE, 0, 0,
     OP_POP,
     OP_NIL,
     OP_RETURN,
   };
-  int lines[] = { 13, 13, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 17, 17,};
+  int lines[] = { 13, 13, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 17, 17,};
   c->code = cloneMemory(code, sizeof(code));
   c->lines = cloneMemory(lines, sizeof(lines));
 
@@ -202,16 +214,20 @@ static Value fn_map_4() {
 
   Chunk *c = &f->chunk;
   initChunk(c);
-  c->count = c->capacity = 59;
+  c->count = c->capacity = 68;
   u8 code[] = {
     OP_ARRAY, 0,
     OP_CONSTANT, 0,
+    OP_TRUE,
     OP_GET_LOCAL, 3,
     OP_GET_LOCAL, 0,
     OP_GET_VAR, 1,
     OP_LESS,
-    OP_ASSERT_STACK, 2, 5,
-    OP_JUMP_IF_FALSE, 0, 32,
+    OP_ASSERT_STACK, 2, 6,
+    OP_JUMP_IF_FALSE, 0, 36,
+    OP_POP,
+    OP_FALSE,
+    OP_SET_LOCAL, 4,
     OP_POP,
     OP_GET_LOCAL, 2,
     OP_GET_LOCAL, 1,
@@ -228,8 +244,10 @@ static Value fn_map_4() {
     OP_CALL, 1,
     OP_INVOKE, 5, 1,
     OP_POP,
-    OP_LOOP, 0, 45,
-    OP_ASSERT_STACK, 6, 5,
+    OP_LOOP, 0, 49,
+    OP_ASSERT_STACK, 6, 6,
+    OP_POP,
+    OP_JUMP_IF_FALSE, 0, 0,
     OP_POP,
     OP_GET_LOCAL, 2,
     OP_RETURN,
@@ -237,7 +255,7 @@ static Value fn_map_4() {
     OP_NIL,
     OP_RETURN,
   };
-  int lines[] = { 18, 18, 19, 19, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 22, 22, 22, 22, 22, 22,};
+  int lines[] = { 18, 18, 19, 19, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 22, 22, 22, 22, 22, 22,};
   c->code = cloneMemory(code, sizeof(code));
   c->lines = cloneMemory(lines, sizeof(lines));
 
