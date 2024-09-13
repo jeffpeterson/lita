@@ -68,8 +68,8 @@ typedef enum Precedence {
 } Precedence;      // Higher Precedence
 
 typedef struct Ctx {
-  Precedence precedence; /** The current precedence. */
-  bool canAssign;        /** If we can parse assignments. */
+  Precedence precedence; // The current precedence.
+  bool canAssign;        // If we can parse assignments.
 } Ctx;
 
 typedef void ParseFn(Ctx *ctx);
@@ -84,15 +84,15 @@ ParseRule rules[];
 
 /** A variable defined deeper than the global scope. */
 typedef struct Local {
-  Token name;      /** Name of the local variable. */
-  int depth;       /** How many scopes deep this local is. -1 until defined. */
-  bool isCaptured; /** Has a closure captured this local? */
+  Token name;      // Name of the local variable.
+  int depth;       // How many scopes deep this local is. -1 until defined.
+  bool isCaptured; // Has a closure captured this local?
 } Local;
 
 /** A local variable that has been closed over by a function. */
 typedef struct ClosedUpvalue {
-  u8 index;     /** The local slot being closed over. */
-  bool isLocal; /** Local slot or enclosing upvalue? */
+  u8 index;     // The local slot being closed over.
+  bool isLocal; // Local slot or enclosing upvalue?
 } ClosedUpvalue;
 
 typedef enum FunType {
@@ -109,9 +109,9 @@ typedef enum FunType {
  * The root compiler gets an anonymous function with name "".
  */
 typedef struct Compiler {
-  struct Compiler *enclosing; /** Compiler of the scope enclosing this one. */
-  ObjFunction *fun;           /** The function being compiled. */
-  FunType type; /** Regular function or a script (root-level anon function). */
+  struct Compiler *enclosing; // Compiler of the scope enclosing this one.
+  ObjFunction *fun;           // The function being compiled.
+  FunType type; // Regular function or a script (root-level anon function).
 
   /**
    * Stack of local variables.
@@ -121,9 +121,9 @@ typedef struct Compiler {
    * and we can share offsets directly.
    */
   Local locals[UINT8_COUNT];
-  int localCount;            /** Number of locals currently in scope. */
-  ClosedUpvalue              /** Variables this compiler has closed over. */
-      upvalues[UINT8_COUNT]; /** How many times beginScope() has been called. */
+  int localCount;            // Number of locals currently in scope.
+  ClosedUpvalue              // Variables this compiler has closed over.
+      upvalues[UINT8_COUNT]; // How many times beginScope() has been called.
   int scopeDepth;
 } Compiler;
 
@@ -427,6 +427,21 @@ static void emitReturn_(char *comment) {
   }
 
   emitByte_(OP_RETURN, comment);
+}
+
+#define emitClosure(compiler)                                                  \
+  emitClosure_(compiler, "At " __FILE__ ":" STRINGIFY(__LINE__))
+static void emitClosure_(Compiler *compiler, const char *comment) {
+  ObjFunction *fun = compiler->fun;
+
+  // if (!fun->upvalueCount) return emitConstant_(OBJ_VAL(fun), comment);
+
+  emitBytes_(OP_CLOSURE, makeConstant(OBJ_VAL(fun)), comment);
+
+  for (int i = 0; i < fun->upvalueCount; i++) {
+    emitByte_(compiler->upvalues[i].isLocal, comment);
+    emitByte_(compiler->upvalues[i].index, comment);
+  }
 }
 
 static ObjSourceLocation *getSourceLocation() {
@@ -929,8 +944,8 @@ static void dotSugar(Ctx *ctx) {
 
   emitByte(OP_RETURN);
 
-  ObjFunction *fun = endCompiler();
-  emitBytes(OP_CLOSURE, makeConstant(OBJ_VAL(fun)));
+  endCompiler();
+  emitClosure(&compiler);
 }
 
 static void literal(Ctx *ctx) {
@@ -1183,13 +1198,8 @@ static void function(FunType type) {
 
   emitReturn();
   // no endScope(). Compiler will be deallocated.
-  ObjFunction *fun = endCompiler();
-  emitBytes(OP_CLOSURE, makeConstant(OBJ_VAL(fun)));
-
-  for (int i = 0; i < fun->upvalueCount; i++) {
-    emitByte(compiler.upvalues[i].isLocal ? 1 : 0);
-    emitByte(compiler.upvalues[i].index);
-  }
+  endCompiler();
+  emitClosure(&compiler);
 }
 
 static void getter() {
@@ -1208,9 +1218,8 @@ static void getter() {
     emitBytes(OP_SET_PROPERTY, nameConstant);
     emitByte(OP_RETURN);
 
-    ObjFunction *fun = endCompiler();
-    emitBytes(OP_CLOSURE, makeConstant(OBJ_VAL(fun)));
-
+    endCompiler();
+    emitClosure(&compiler);
     emitBytes(OP_METHOD, nameConstant);
   }
 
