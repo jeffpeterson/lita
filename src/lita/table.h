@@ -3,10 +3,10 @@
 
 #include "common.h"
 #include "ecs.h"
-#include "object.h"
 #include "value.h"
 
 typedef struct ObjIterator ObjIterator;
+typedef struct Obj Obj;
 
 typedef struct Entry {
   Value key;

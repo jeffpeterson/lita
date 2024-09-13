@@ -26,7 +26,7 @@ typedef struct ObjNative {
 Value fn(const char *name, int arity, NativeFn fun);
 ObjNative *newNative(ObjString *name, int arity, NativeFn fun);
 
-ObjDef Native;
+extern const ObjDef Native;
 
 typedef struct NativeMethod {
   const char *className;

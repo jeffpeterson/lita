@@ -14,7 +14,7 @@ typedef struct ObjExample {
   ObjString *comment;
 } ObjExample;
 
-ObjDef Example;
+extern const ObjDef Example;
 
 ObjExample *newExample(ObjString *comment);
 Value example(const char *comment);

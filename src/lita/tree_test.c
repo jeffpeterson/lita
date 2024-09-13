@@ -1,6 +1,5 @@
 #include <assert.h>
 
-#include "lib.h"
 #include "tree.h"
 
 void tree_test() {
@@ -10,15 +9,15 @@ void tree_test() {
 
   assert(a.count == 0);
 
-  assert(!treeGet(&a, num(5), &v));
+  assert(!treeGet(&a, number(5), &v));
 
-  assert(treeSet(&a, num(5), num(55)));
-  assert(treeGet(&a, num(5), &v));
+  assert(treeSet(&a, number(5), number(55)));
+  assert(treeGet(&a, number(5), &v));
   assert(as_num(v) == 55);
   assert(a.count == 1);
 
-  assert(!treeSet(&a, num(5), num(555)));
-  assert(treeGet(&a, num(5), &v));
+  assert(!treeSet(&a, number(5), number(555)));
+  assert(treeGet(&a, number(5), &v));
   assert(as_num(v) == 555);
   assert(a.count == 1);
 

@@ -16,7 +16,7 @@ typedef struct ObjBound {
   let method;   /** Method being bound. */
 } ObjBound;
 
-ObjDef Bound;
+extern const ObjDef Bound;
 
 ObjBound *newBound(let receiver, let method);
 let bound(let receiver, let method);

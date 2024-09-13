@@ -84,10 +84,12 @@ int cmpObjects(Obj *a, Obj *b) {
 //   return call(init, obj, argc, args);
 // }
 
-ObjDef Object = {
+const ObjDef Object = {
     .className = "Object",
     .size = sizeof(Obj),
 };
+
+ECS_COMPONENT_DECLARE(ObjComponent);
 
 void markRelationships(World *world, EntityId eid){
     // ecs_query_t *q = ecs_query(

@@ -17,7 +17,7 @@ typedef struct ObjClass {
   Table methods;
 } ObjClass;
 
-ObjDef Class;
+extern const ObjDef Class;
 
 ObjClass *newClass(ObjString *name);
 Value class(const char *name);

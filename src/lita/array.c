@@ -1,10 +1,8 @@
 #include <assert.h>
 
 #include "array.h"
-#include "lib.h"
 #include "memory.h"
 #include "native.h"
-#include "vm.h"
 
 ObjArray *copyArray(Value *values, u32 length) {
   ObjArray *arr = allocateArray();

@@ -34,7 +34,7 @@ static int inspectExample(Obj *obj, FILE *io) {
 NATIVE_GETTER(Example, comment, OBJ_VAL);
 
 REGISTER_OBJECT_DEF(Example);
-ObjDef Example = {
+const ObjDef Example = {
     .className = "Example",
     .size = sizeof(ObjExample),
     .mark = markExample,

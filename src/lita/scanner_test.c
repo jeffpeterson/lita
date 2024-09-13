@@ -1,7 +1,6 @@
 #include <assert.h>
 
 #include "debug.h"
-#include "lib.h"
 #include "scanner.h"
 
 static Token log(Token token) {

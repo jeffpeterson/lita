@@ -68,7 +68,7 @@ NATIVE_METHOD(Function, byteCount, 0) {
 }
 
 REGISTER_OBJECT_DEF(Function);
-ObjDef Function = {
+const ObjDef Function = {
     .className = "Function",
     .size = sizeof(ObjFunction),
     .mark = markFunction,

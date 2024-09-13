@@ -1,7 +1,6 @@
 #include <assert.h>
 
 #include "buffer.h"
-#include "lib.h"
 #include "string.h"
 
 void buffer_test() {

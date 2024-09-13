@@ -106,6 +106,10 @@ const ObjDef Regex = {
     .length = regexLength,
 };
 
+ECS_COMPONENT_DECLARE(RegexError);
+ECS_COMPONENT_DECLARE(Regex2);
+ECS_TAG_DECLARE(RegexSource);
+
 static void CompileRegex(ecs_iter_t *it) {
   // EntityId *source = ecs_field(&it, Regex2, 0);
 }

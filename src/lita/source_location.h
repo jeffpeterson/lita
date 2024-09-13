@@ -16,7 +16,7 @@ typedef struct ObjSourceLocation {
   int column;
 } ObjSourceLocation;
 
-ObjDef SourceLocation;
+extern const ObjDef SourceLocation;
 
 ObjSourceLocation *newSourceLocation(ObjString *path, int line, int column);
 Value sourceLocation(const char *path, int line, int column);

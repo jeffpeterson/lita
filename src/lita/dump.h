@@ -9,7 +9,7 @@
 #include "object.h"
 #include "value.h"
 
-Table ids;
+extern Table ids;
 
 void dumpModule(FILE *io, ObjString *name, ObjFunction *fun);
 int dumpValue(FILE *io, Value v);

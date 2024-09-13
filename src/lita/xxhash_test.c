@@ -1,7 +1,6 @@
 #include <assert.h>
 
-#include "debug.h"
-#include "lib.h"
+#include "common.h"
 #include "xxhash.h"
 
 void xxhash_test() {

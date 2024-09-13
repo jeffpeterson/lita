@@ -14,7 +14,7 @@ typedef struct ObjTuple {
   Value *values;
 } ObjTuple;
 
-const ObjDef Tuple;
+extern const ObjDef Tuple;
 
 ObjTuple *copyTuple(Value *values, uint8_t length);
 ObjTuple *takeTuple(Value *values, uint8_t length);

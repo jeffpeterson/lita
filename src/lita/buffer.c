@@ -2,7 +2,6 @@
 
 #include "buffer.h"
 #include "memory.h"
-#include "string.h"
 
 Buffer newBuffer(usize capacity) {
   Buffer buf;

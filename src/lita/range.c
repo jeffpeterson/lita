@@ -1,6 +1,5 @@
 #include <assert.h>
 
-#include "lib.h"
 #include "memory.h"
 #include "native.h"
 #include "range.h"

@@ -18,7 +18,7 @@ struct ObjString {
   char *chars;
 };
 
-const ObjDef String;
+extern const ObjDef String;
 
 Value string(const char *str);
 

@@ -1,7 +1,6 @@
 #include <assert.h>
 
 #include "ecs.h"
-#include "lib.h"
 
 // Component names ('Position') use PascalCase
 typedef struct Position {

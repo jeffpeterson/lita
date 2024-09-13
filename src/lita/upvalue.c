@@ -2,9 +2,7 @@
 
 #include "memory.h"
 #include "native.h"
-#include "string.h"
 #include "upvalue.h"
-#include "vm.h"
 
 ObjUpvalue *newUpvalue(Value *slot) {
   ObjUpvalue *upvalue = allocateUpvalue();
@@ -26,7 +24,7 @@ NATIVE_GETTER(Upvalue, closed, OBJ_VAL);
 NATIVE_GETTER(Upvalue, location, *);
 
 REGISTER_OBJECT_DEF(Upvalue);
-ObjDef Upvalue = {
+const ObjDef Upvalue = {
     .className = "Upvalue",
     .size = sizeof(ObjUpvalue),
     .mark = markUpvalue,

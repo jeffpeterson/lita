@@ -3,10 +3,8 @@
 
 #include <stdarg.h>
 
-typedef enum ObjType ObjType;
 typedef struct ObjDef ObjDef;
 
-#include "chunk.h"
 #include "common.h"
 #include "table.h"
 #include "value.h"
@@ -20,7 +18,7 @@ typedef struct ObjDef ObjDef;
 #define REGISTER_OBJECT_DEF(def) const SECTION(defs) ObjDef *def##_def = &def;
 #define DEFINE_OBJECT_TYPE(def, ...)                                           \
   REGISTER_OBJECT_DEF(def);                                                    \
-  ObjDef def = {.className = #def, .size = sizeof(def), __VA_ARGS__}
+  const ObjDef def = {.className = #def, .size = sizeof(def), __VA_ARGS__}
 
 #define DEF_MARK(type, var, ...) DEF_OBJ_FN(type, mark, var, __VA_ARGS__)
 #define DEF_ALLOC(type, var, ...) DEF_OBJ_FN(type, alloc, var, __VA_ARGS__)
@@ -53,7 +51,7 @@ typedef struct ObjDef {
   ObjBytesFn *bytes;
 } ObjDef;
 
-ObjDef Object;
+extern const ObjDef Object;
 
 typedef struct ObjClass ObjClass;
 
@@ -97,7 +95,7 @@ typedef struct ObjComponent {
   Obj *obj;
 } ObjComponent;
 
-ECS_COMPONENT_DECLARE(ObjComponent);
+extern ECS_COMPONENT_DECLARE(ObjComponent);
 // ECS_SYSTEM_DECLARE(MarkRelationships);
 
 void ObjectsImport(World *world);

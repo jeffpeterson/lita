@@ -2,12 +2,10 @@
 #include <ctype.h>
 #include <stdarg.h>
 
-#include "lib.h"
 #include "memory.h"
 #include "native.h"
 #include "scanner.h"
 #include "string.h"
-#include "table.h"
 #include "term.h"
 #include "value.h"
 #include "vm.h"

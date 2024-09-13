@@ -1,7 +1,6 @@
 #include <libgen.h>
 
 #include "dump.h"
-#include "lib.h"
 #include "object.h"
 #include "scanner.h"
 #include "string.h"
@@ -32,7 +31,7 @@ bool id_for(let v, int *id) {
   }
 
   *id = currentId++;
-  tableSet(&ids, v, num(*id));
+  tableSet(&ids, v, number(*id));
   return false;
 }
 

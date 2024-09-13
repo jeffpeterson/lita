@@ -52,7 +52,7 @@ NATIVE_DELEGATE(Closure, bytes, function);
 NATIVE_DELEGATE(Closure, byteCount, function);
 
 REGISTER_OBJECT_DEF(Closure);
-ObjDef Closure = {
+const ObjDef Closure = {
     .className = "Closure",
     .size = sizeof(ObjClosure),
     .mark = markClosure,

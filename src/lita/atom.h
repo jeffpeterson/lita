@@ -14,7 +14,7 @@ typedef struct ObjAtom {
   Table *values;
 } ObjAtom;
 
-const ObjDef Atom;
+extern const ObjDef Atom;
 
 ObjAtom *copy_atom(Value *values, uint8_t length);
 ObjAtom *take_atom(Value *values, uint8_t length);

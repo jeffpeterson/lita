@@ -22,7 +22,7 @@ typedef struct ObjClosure {
   ObjUpvalue **upvalues; /** Array of upvalue pointers being closed-over. */
 } ObjClosure;
 
-ObjDef Closure;
+extern const ObjDef Closure;
 
 ObjClosure *newClosure(ObjFunction *function);
 

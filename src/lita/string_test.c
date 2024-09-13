@@ -1,6 +1,5 @@
 #include <assert.h>
 
-#include "lib.h"
 #include "string.h"
 #include "term.h"
 

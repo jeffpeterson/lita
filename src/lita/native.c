@@ -103,7 +103,7 @@ static int nativeLength(Obj *obj) {
 }
 
 REGISTER_OBJECT_DEF(Native);
-ObjDef Native = {
+const ObjDef Native = {
     .className = "Native",
     .size = sizeof(ObjNative),
     .mark = markNative,

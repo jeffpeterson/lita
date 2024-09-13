@@ -69,6 +69,9 @@ extern Config config;
 #define STRINGIFY_(x) #x
 #define STRINGIFY(x) STRINGIFY_(x)
 #define DEPRECATED(msg) __attribute__((deprecated(msg)))
+
+#if defined(__APPLE__)
+
 #define SECTION(name) __attribute__((used, section("__DATA," #name)))
 #define SECTION_START(name) __asm("section$start$__DATA$" #name)
 #define SECTION_STOP(name) __asm("section$end$__DATA$" #name)
@@ -83,5 +86,15 @@ extern Config config;
          &__stop_##section_name;                                               \
        });                                                                     \
        elem++)
+
+#else
+#define SECTION(name) __attribute__((used, section(#name)))
+#define SECTION_START(name) __start_##name
+#define SECTION_STOP(name) __stop_##name
+
+#define section_foreach_entry(section_name, type_t, elem)                      \
+  for (type_t *elem = &__start_##section_name; elem < &__stop_##section_name;  \
+       elem++)
+#endif
 
 #endif

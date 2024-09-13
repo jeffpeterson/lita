@@ -24,7 +24,7 @@ typedef struct ObjUpvalue {
   struct ObjUpvalue *next; /** Linked list of all upvalues tracked by VM. */
 } ObjUpvalue;
 
-ObjDef Upvalue;
+extern const ObjDef Upvalue;
 
 ObjUpvalue *newUpvalue(Value *slot);
 

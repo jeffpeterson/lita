@@ -22,7 +22,7 @@ typedef struct ObjFunction {
   Chunk chunk;
 } ObjFunction;
 
-ObjDef Function;
+extern const ObjDef Function;
 
 ObjFunction *newFunction();
 

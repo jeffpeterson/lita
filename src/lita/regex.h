@@ -39,11 +39,11 @@ Value regex(const char *source);
 ObjString *replaceRegex(ObjString *subject, ObjRegex *regex,
                         ObjString *replacement);
 
-const ObjDef Regex;
+extern const ObjDef Regex;
 
-ECS_COMPONENT_DECLARE(RegexError);
-ECS_COMPONENT_DECLARE(Regex2);
-ECS_TAG_DECLARE(RegexSource);
+extern ECS_COMPONENT_DECLARE(RegexError);
+extern ECS_COMPONENT_DECLARE(Regex2);
+extern ECS_TAG_DECLARE(RegexSource);
 
 void RegexesImport(World *world);
 

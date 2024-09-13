@@ -4,8 +4,6 @@
 #include "lib.h"
 #include "memory.h"
 #include "native.h"
-#include "string.h"
-#include "vm.h"
 
 let bound(let receiver, let method) { return obj(newBound(receiver, method)); }
 
@@ -36,7 +34,7 @@ NATIVE_GETTER(Bound, receiver, OBJ_VAL);
 NATIVE_GETTER(Bound, method, OBJ_VAL);
 
 REGISTER_OBJECT_DEF(Bound);
-ObjDef Bound = {
+const ObjDef Bound = {
     .className = "Bound",
     .size = sizeof(ObjBound),
     .mark = markBound,

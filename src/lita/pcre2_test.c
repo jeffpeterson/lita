@@ -4,7 +4,6 @@
 #include <pcre2.h>
 
 #include "debug.h"
-#include "lib.h"
 
 void pcre2_test() {
   // https://www.pcre.org/current/doc/html/pcre2demo.html

@@ -21,7 +21,7 @@ typedef struct ObjIterator {
   bool done;      /** True if the iteration is ended. */
 } ObjIterator;
 
-const ObjDef Iterator;
+extern const ObjDef Iterator;
 
 bool iterateNext(ObjIterator *iter);
 

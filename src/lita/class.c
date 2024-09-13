@@ -48,7 +48,7 @@ NATIVE_GETTER(Class, name, OBJ_VAL);
 NATIVE_GETTER(Class, parent, OBJ_VAL);
 
 REGISTER_OBJECT_DEF(Class);
-ObjDef Class = {
+const ObjDef Class = {
     .className = "Class",
     .size = sizeof(ObjClass),
     .alloc = allocClass,

@@ -4,7 +4,6 @@
 
 #include "compiler.h"
 #include "dump.h"
-#include "lib.h"
 #include "native.h"
 #include "string.h"
 #include "system.h"
