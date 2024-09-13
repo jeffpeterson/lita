@@ -54,7 +54,7 @@ test: $(TEST)
 
 $(TARGET).wasm $(TARGET).js $(TARGET).html: $(TARGET_O:%.o=%.wasm.o)
 	@mkdir -p $(dir $@)
-	$(eval CFLAGS := -g -DREADLINE=0 -DENABLE_REGEX=0 -Isrc -I/opt/homebrew/include -L/opt/homebrew/lib -Wall $(WARN_ERRORS))
+	$(eval CFLAGS := -g -DNO_READLINE -DENABLE_REGEX=0 -Isrc -I/opt/homebrew/include -L/opt/homebrew/lib -Wall $(WARN_ERRORS))
 	emcc -lc $(CFLAGS) -o $(TARGET).html $^
 
 $(TARGET).zig.wasm: $(filter-out src/flecs/%,$(TARGET_C))

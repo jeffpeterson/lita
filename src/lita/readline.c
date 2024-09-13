@@ -3,7 +3,7 @@
 
 #include "readline.h"
 
-#if !READLINE
+#if NO_READLINE
 
 int write_history(const char *path) { return 0; }
 int read_history(const char *path) { return 0; }
@@ -13,11 +13,13 @@ char *readline(const char *prompt) {
   printf("%s", prompt);
   fflush(stdout);
 
-  size_t line_size = 128;
-  char *line = (char *)malloc(line_size);
-  if (line == NULL) return NULL;
+  usize lineSize;
+  char *line = NULL;
 
-  getline(&line, &line_size, stdin);
+  if (getline(&line, &lineSize, stdin) == -1) {
+    free(line);
+    return NULL;
+  }
 
   return line;
 }
