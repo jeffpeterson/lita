@@ -1,8 +1,3 @@
-#define Function ReadlineFunction
-#include <readline/history.h>
-#include <readline/readline.h>
-#undef Function
-
 #include <assert.h>
 #include <stdarg.h>
 #include <stdio.h>
@@ -21,6 +16,7 @@
 #include "memory.h"
 #include "object.h"
 #include "range.h"
+#include "readline.h"
 #include "source_location.h"
 #include "string.h"
 #include "system.h"
