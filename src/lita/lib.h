@@ -33,9 +33,4 @@ let name(let fn);
 let method(let klass, let fun);
 let static_method(let klass, let fun);
 
-// # Files
-let read(let path);
-let write(let path, let content);
-let append(let path, let content);
-
 #endif

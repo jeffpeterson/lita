@@ -482,7 +482,7 @@ InterpretResult vm_get_global(Value name) {
   let value;
 
   if (!tableGet(&vm.globals, name, &value)) {
-    if (is_nil(value = get_env(name)))
+    if (is_nil(value = getEnv(name)))
       if (!isString(name) || *as_string(name)->chars != '$')
         return runtimeError("Cannot get undefined variable '%s'.",
                             as_string(name)->chars);

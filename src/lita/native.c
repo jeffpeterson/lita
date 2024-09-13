@@ -1,5 +1,3 @@
-#include <stdlib.h>
-#include <sys/stat.h>
 #include <time.h>
 
 #include "array.h"
@@ -41,18 +39,6 @@ AT_VM_BOOT(setStartTime) {
   return NULL;
 }
 
-NATIVE_FUNCTION(shell, 1) {
-  char *str = NULL;
-  usize len = 0;
-  FILE *io = open_memstream(&str, &len);
-
-  fprintf(io, "%s", asChars(args[0]));
-  for (int i = 1; i < argc; i++)
-    fprintf(io, " %s", escape_string(as_string(args[i]))->chars);
-
-  fclose(io);
-  return number(system(take_string(str, len)->chars));
-}
 NATIVE_FUNCTION(clock, 0) { return number((double)clock() / CLOCKS_PER_SEC); }
 NATIVE_FUNCTION(time, 0) { return number((double)time(NULL)); }
 NATIVE_FUNCTION(elapsed, 0) { return number(elapsed()); }
@@ -60,20 +46,6 @@ NATIVE_FUNCTION(hash, 1) {
   return OBJ_VAL(stringf("%#x", hash_value(args[0])));
 }
 NATIVE_FUNCTION(pp, 1) { return argc > 1 ? pp(t(argc, args)) : pp(args[0]); }
-NATIVE_FUNCTION(read, 0) { return read(argc ? args[0] : string("/dev/stdin")); }
-NATIVE_FUNCTION(mkdir, 1) { return mkdir(as_string(args[0])->chars, 0777); }
-NATIVE_FUNCTION(write, 1) {
-  let path = argc == 1 ? string("/dev/stdout") : args[0];
-  return write(path, args[argc - 1]);
-}
-NATIVE_FUNCTION(append, 1) {
-  let path = argc == 1 ? string("/dev/stdout") : args[0];
-  return append(path, args[argc - 1]);
-}
-NATIVE_FUNCTION(repl, 0) {
-  repl();
-  return nil;
-}
 
 NATIVE_METHOD(Any, self, 0) { return this; }
 NATIVE_METHOD(Any, class, 0) { return classOf(this); }

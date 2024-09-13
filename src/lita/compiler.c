@@ -1034,7 +1034,9 @@ static void namedVariable(Token name, Ctx *ctx) {
     getOp = OP_GET_GLOBAL;
     setOp = OP_SET_GLOBAL;
   }
-
+  // canAssign:
+  // printf("namedVariable: %.*s: %d\n", name.length, name.start,
+  // ctx->canAssign);
   if (assignment(ctx, getOp, setOp, arg, false)) return;
 
   emitBytes(getOp, arg);

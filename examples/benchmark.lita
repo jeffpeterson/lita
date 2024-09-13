@@ -1,0 +1,6 @@
+// 0..999
+fn upto(end)
+	let i = 0
+	while pp(i++) <= end
+
+upto(10)

@@ -7,7 +7,6 @@
 #include "lib.h"
 #include "memory.h"
 #include "string.h"
-#include "system.h"
 #include "term.h"
 #include "tuple.h"
 #include "vm.h"
@@ -90,20 +89,4 @@ let name(let fn) {
          : isClosure(fn)  ? obj(asClosure(fn)->function->name)
          : isBound(fn)    ? name(asBound(fn)->method)
                           : nil;
-}
-
-let read(let path) { return obj(readFile(as_string(path))); }
-
-let write(let path, let content) {
-  if (!writeFile(as_string(path), as_string(content)))
-    return crash("Could not write to file.");
-
-  return content;
-}
-
-let append(let path, let content) {
-  if (!appendFile(as_string(path), as_string(content)))
-    return crash("Could not append to file.");
-
-  return content;
 }

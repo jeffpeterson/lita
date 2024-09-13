@@ -11,6 +11,6 @@ bool appendFile(ObjString *path, ObjString *content);
 void runFile(ObjString *path);
 void compileFileToC(ObjString *path);
 
-Value get_env(Value name);
+Value getEnv(Value name);
 
 #endif
