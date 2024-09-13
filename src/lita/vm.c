@@ -272,7 +272,7 @@ static InterpretResult invokeFromClass(ObjClass *klass, ObjString *name,
   Value method;
 
   if (!tableGet(&klass->methods, OBJ_VAL(name), &method)) {
-    if (!klass->parent) return false;
+    if (!klass->parent) return INTERPRET_RUNTIME_ERROR;
 
     return invokeFromClass(klass->parent, name, argCount);
   }
