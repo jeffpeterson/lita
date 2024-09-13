@@ -1,0 +1,6 @@
+#!/usr/bin/env sh
+
+dest=${1:-"$HOME/sbin/"}
+
+ln -s $PWD/.bin/lita $dest
+ln -s $PWD/.bin/lita-dev $dest
