@@ -26,7 +26,9 @@ TARGET_O  := $(TARGET_C:src/%.c=_build/%.o)
 TEST_O  := $(filter-out %/main.o,$(OBJECTS))
 TARGET_GIT := $(TARGET)@$(shell git rev-parse --short HEAD)
 
-default: $(TARGET_GIT) test assertions $(TARGET)
+PRUNABLES := $(shell find .bin -name 'lita-*' -mtime +14 | tail -n +30)
+
+default: $(TARGET_GIT) test assertions $(TARGET) prune
 
 # zig not working yet
 zig: $(TARGET).zig.wasm
@@ -45,7 +47,7 @@ db/%: $(DEV)
 	@lldb -- $(DEV) $(FLAGS) examples/$*.lita
 
 %: examples/%.lita $(DEV)
-	@$(DEV) $(FLAGS) $<
+	$(DEV) $(FLAGS) $<
 	@git diff --quiet && git notes --ref=$@ add -fm OK 2>/dev/null || true
 
 lib: $(LITA_LIB)
@@ -71,7 +73,7 @@ $(DEV): $(TARGET_O) | test
 	$(CC) $(CFLAGS) -o $@ $^
 
 $(TARGET)@%: $(DEV)
-	git diff --exit-code --quiet && cp $< $@ || true
+	@git diff --exit-code --quiet && cp $< $@ || true
 
 $(TARGET): $(DEV) | assertions
 	-cp $@ $@-$(shell date -r $@ "+%Y-%m-%d-%H:%M:%S")
@@ -111,10 +113,18 @@ serve: html
 clean:
 	-rm -f $(DEV) $(TEST) $(shell find _build -name "*.o")
 
+prune: tmp/pruned
+
+tmp/pruned: $(PRUNABLES)
+	@echo "Before: $$(du -sh .bin)"
+	@echo $^ | tee /dev/tty | xargs rm
+	@echo "After: $$(du -sh .bin)"
+	@touch $@
+
 flecs:
 	curl https://raw.githubusercontent.com/SanderMertens/flecs/v4.0.1/flecs.c > src/lita/flecs.c
 	curl https://raw.githubusercontent.com/SanderMertens/flecs/v4.0.1/flecs.h > src/lita/flecs.h
 
-.PHONY: default all clean test db db/test lib
+.PHONY: default all clean test db db/test lib prune
 .PRECIOUS: $(TARGET) %.c %.o
 .SUFFIXES: # disable crazy built-in rules that append .c
