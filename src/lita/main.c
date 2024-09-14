@@ -47,6 +47,7 @@ int main(int argc, char *argv[]) {
 
   int opt;
   bool start_repl = false;
+  bool evaled = false;
   enum { COMPILE, INTERPRET } mode = INTERPRET;
 
   while ((opt = getopt(argc, argv, "hcirtde:")) != -1) {
@@ -57,7 +58,10 @@ int main(int argc, char *argv[]) {
     case 't': config.tracing = true; break;
     case 'd': config.debug++; break;
     // TODO: enqueue this as a request to interpret
-    case 'e': assertOkResult(interpret(optarg, newString("-e"))); break;
+    case 'e':
+      evaled = true;
+      assertOkResult(interpret(optarg, newString("-e")));
+      break;
     case 'h': usage(argc, argv); exit(0);
     case '?': usage(argc, argv); exit(1);
     }
@@ -86,7 +90,7 @@ int main(int argc, char *argv[]) {
       setGlobal(string("ARGV"), OBJ_VAL(args));
 
       runFile(path);
-    } else repl();
+    } else if (!evaled) repl();
   }
   }
 
