@@ -266,9 +266,7 @@ static bool consume(TokenType type, const char *message) {
   return false;
 }
 
-static void skipNewlines() {
-  while (match(TOKEN_NEWLINE)) {}
-}
+static void skipNewline() { match(TOKEN_NEWLINE); }
 
 static void consumeAtLeast(TokenType type, const char *message) {
   if (parser.current.type >= type) {
@@ -1191,7 +1189,7 @@ static void function(FunType type) {
   } else if (match(TOKEN_EQUAL) || match(TOKEN_FAT_ARROW)) {
     expression("Expect expression as function body.");
     emitByte(OP_RETURN);
-    skipNewlines();
+    skipNewline();
   } else if (match(TOKEN_INDENT)) {
     block();
   }
@@ -1223,7 +1221,7 @@ static void getter() {
     emitBytes(OP_METHOD, nameConstant);
   }
 
-  skipNewlines();
+  skipNewline();
 }
 
 static void method() {
@@ -1303,7 +1301,7 @@ static void classDeclaration(Ctx *ctx) {
 
     consume(TOKEN_DEDENT, "Expect dedent after class body.");
   } else {
-    skipNewlines();
+    skipNewline();
   }
 
   emitByte(OP_POP); // Pop the class
@@ -1454,7 +1452,7 @@ static void match_() {
       emitBytes(OP_POP, OP_POP); // [] pop match success and match expr
       expression("Expected expression after '->'."); // [expr]
       assertStackSize(1, "after-match expression");
-      skipNewlines();
+      skipNewline();
       emitLoop(exitJump);
 
       patchJump(skipJump);
@@ -1510,7 +1508,7 @@ static void whileStatement() {
   emit3Bytes(OP_SET_LOCAL, runElse, OP_POP);
 
   if (check(TOKEN_INDENT) || match(TOKEN_COLON)) statement();
-  else skipNewlines();
+  else skipNewline();
   emitLoop(loopStart); // Loop back to the condition.
 
   patchJump(exitJump); // Exit the loop.
@@ -1563,7 +1561,7 @@ static void declaration() {
     statement();
   }
 
-  skipNewlines();
+  skipNewline();
 
   if (parser.panicMode) synchronize();
 }
@@ -1581,11 +1579,11 @@ static void statement() {
     whileStatement();
   } else {
     expression("Expected expression.");
-    skipNewlines();
+    skipNewline();
     if (shouldCleanStack()) emitByte(OP_POP);
   }
 
-  skipNewlines();
+  skipNewline();
 
   // Todo: switch statement
   // Todo: break statement

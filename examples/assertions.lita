@@ -2,6 +2,7 @@
 assert true
 assert ""
 assert 0
+assert (assert 1) == 1
 
 // Falsy
 assert !false
@@ -162,7 +163,7 @@ let p2 = Point(3, 4)
 assert p1 + p2 == Point(4, 6)
 
 // Precedence
-assert (assert 1) == 1
+// assert (1 + 2 * 3) == 7
 
 assert (3b) == 12
 assert (b 3) == 12

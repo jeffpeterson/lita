@@ -9,6 +9,9 @@ void vm_test() {
   assertOK("1 + 2");
   assertEqual(vm.result, number(3));
 
+  assertOK("8 + 9\n");
+  assertEqual(vm.result, number(17));
+
   assertOK("fn xx = 7");
   assertOK("xx()");
   assertEqual(vm.result, number(7));
