@@ -1317,6 +1317,7 @@ static void funDeclaration() {
   u8 global = parseVariable("Expect function name.");
   markDefined();
   function(TYPE_FUNCTION);
+  if (!shouldCleanStack()) emitBytes(OP_PEEK, 0);
   defineVariable(global);
 }
 
@@ -1330,6 +1331,8 @@ static u8 varDeclaration() {
 
   if (match(TOKEN_EQUAL)) parseAt(PREC_ASSIGNMENT);
   else emitByte(OP_NIL);
+
+  if (!shouldCleanStack()) emitBytes(OP_PEEK, 0);
 
   defineVariable(global);
   return global;

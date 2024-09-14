@@ -504,7 +504,7 @@ static Value fn_src_slash_lita_slash_scanner_dot_lita_0() {
 
   Chunk *c = &f->chunk;
   initChunk(c);
-  c->count = c->capacity = 99;
+  c->count = c->capacity = 101;
   u8 code[] = {
     OP_NIL,
     OP_DEFINE_GLOBAL, 0,
@@ -556,11 +556,12 @@ static Value fn_src_slash_lita_slash_scanner_dot_lita_0() {
     OP_CONSTANT, 28,
     OP_DEFINE_GLOBAL, 27,
     OP_CONSTANT, 30,
+    OP_PEEK, 0,
     OP_DEFINE_GLOBAL, 29,
     OP_ASSERT_STACK, 31, 2,
     OP_RETURN,
   };
-  int lines[] = { 1, 1, 1, 4, 4, 4, 4, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 10, 10, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 13, 13, 13, 13, 14, 14, 14, 14, 15, 15, 15, 15, 15, 15, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 19, 19, 19, 19, 20, 20, 20, 20, 21, 21, 21, 21, 27, 27, 27, 27, 29, 29, 29, 29, 30, 30, 30, 30, 30, 30, 32, 32, 32, 32, 33, 33, 33, 33, 34, 34, 34, 34, 54, 54, 54, 54,};
+  int lines[] = { 1, 1, 1, 4, 4, 4, 4, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 10, 10, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 13, 13, 13, 13, 14, 14, 14, 14, 15, 15, 15, 15, 15, 15, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 19, 19, 19, 19, 20, 20, 20, 20, 21, 21, 21, 21, 27, 27, 27, 27, 29, 29, 29, 29, 30, 30, 30, 30, 30, 30, 32, 32, 32, 32, 33, 33, 33, 33, 34, 34, 34, 34, 34, 34, 54, 54, 54, 54,};
   c->code = cloneMemory(code, sizeof(code));
   c->lines = cloneMemory(lines, sizeof(lines));
 
