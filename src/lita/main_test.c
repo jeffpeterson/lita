@@ -21,6 +21,7 @@ void string_test();
 void table_test();
 void tree_test();
 void scanner_test();
+void vm_test();
 
 int main(int argc, char *argv[]) {
   World *world = ecs_init_w_args(argc, argv);
@@ -40,6 +41,7 @@ int main(int argc, char *argv[]) {
   run(string_test);
   run(table_test);
   run(tree_test);
+  run(vm_test);
   fprintf(stderr, FG_GREEN "\nTests passed.\n\n" FG_DEFAULT);
   freeVM();
   ecs_fini(world);

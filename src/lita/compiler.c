@@ -169,7 +169,7 @@ static void verrorAt(Token *token, const char *message, va_list args) {
   parser.panicMode = true;
 
   if (config.debug || DEBUG_ERRORS || DEBUG_PRINT_CODE) {
-    disassembleChunk(currentChunk(), current->fun->name->chars, -1);
+    disassembleChunk(currentChunk(), stringChars(current->fun->name), -1);
     fprintf(stderr, "Compilation failed. Current chunk above ^^^\n\n");
   }
 
@@ -481,7 +481,7 @@ static ObjFunction *endCompiler() {
   ObjFunction *fun = current->fun;
 
   if (!parser.hadError && (config.debug || DEBUG_PRINT_CODE))
-    disassembleChunk(currentChunk(), fun->name->chars, -1);
+    disassembleChunk(currentChunk(), stringChars(fun->name), -1);
 
   current = current->enclosing;
   return fun;

@@ -41,7 +41,8 @@ static int inspectClosure(Obj *obj, FILE *io) {
   return fprintf(io,
                  FG_MAGENTA "<closure %s" FG_DEFAULT "/" FG_MAGENTA
                             "%d>" FG_DEFAULT,
-                 closure->function->name->chars, closure->function->arity) -
+                 stringChars(closure->function->name),
+                 closure->function->arity) -
          FG_SIZE * 4;
 }
 

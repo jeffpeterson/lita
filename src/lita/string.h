@@ -21,6 +21,7 @@ struct ObjString {
 extern const ObjDef String;
 
 Value string(const char *str);
+char *stringChars(ObjString *string);
 
 ObjString *newString(const char *chars);
 

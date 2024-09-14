@@ -27,7 +27,7 @@ static void markSourceLocation(Obj *obj) {
 static int inspectSourceLocation(Obj *obj, FILE *io) {
   ObjSourceLocation *sourceLocation = (ObjSourceLocation *)obj;
   return fprintf(io, UNDERLINE "%s:%d:%d" NO_UNDERLINE,
-                 sourceLocation->path->chars, sourceLocation->line,
+                 stringChars(sourceLocation->path), sourceLocation->line,
                  sourceLocation->column) -
          sizeof(UNDERLINE) - sizeof(NO_UNDERLINE);
 }

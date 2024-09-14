@@ -61,8 +61,8 @@ static int dumpFn(FILE *io, ObjFunction *fun) {
           "  f->arity = %d;\n"
           "  f->upvalueCount = %d;\n"
           "  f->name = newString(\"%s\");\n",
-          fun->name->chars, name->chars, id, fun->arity, fun->upvalueCount,
-          fun->name->chars);
+          stringChars(fun->name), stringChars(name), id, fun->arity,
+          fun->upvalueCount, stringChars(fun->name));
 
   fprintf(io,
           "\n"

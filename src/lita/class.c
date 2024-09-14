@@ -40,7 +40,7 @@ static void freeClass(Obj *obj) {
 
 static int inspectClass(Obj *obj, FILE *io) {
   ObjClass *klass = (ObjClass *)obj;
-  return fprintf(io, FG_MAGENTA "%s" FG_DEFAULT, klass->name->chars) -
+  return fprintf(io, FG_MAGENTA "%s" FG_DEFAULT, stringChars(klass->name)) -
          FG_SIZE * 2;
 }
 

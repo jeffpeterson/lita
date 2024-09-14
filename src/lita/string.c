@@ -16,6 +16,12 @@
 
 Value string(const char *str) { return obj(newString(str)); }
 
+char *stringChars(ObjString *string) {
+  if (!string) return NULL;
+  assert(string->obj.def == &String);
+  return string->chars;
+}
+
 /** Allocate an ObjString for a (null-terminated) char string. */
 static ObjString *makeString(char *chars, int length, Hash hash) {
   ObjString *string = allocateString();
