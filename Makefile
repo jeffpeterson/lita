@@ -78,7 +78,6 @@ $(TARGET)@%: $(DEV)
 $(TARGET): $(DEV) | assertions
 	-cp $@ $@-$(shell date -r $@ "+%Y-%m-%d-%H:%M:%S")
 	cp $< $@
-	chmod +x $@
 
 $(TEST): $(TEST_O)
 	@mkdir -p $(dir $@)
