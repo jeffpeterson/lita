@@ -24,8 +24,9 @@ TARGET_C := $(filter-out %_test.c,$(SOURCES))
 TARGET_O  := $(TARGET_C:src/%.c=_build/%.o)
 # TARGET_O  := $(filter-out %.lita.o,$(TARGET_O))
 TEST_O  := $(filter-out %/main.o,$(OBJECTS))
+TARGET_GIT := $(TARGET)@$(shell git rev-parse --short HEAD)
 
-default: test assertions $(TARGET)
+default: $(TARGET_GIT) test assertions $(TARGET)
 
 # zig not working yet
 zig: $(TARGET).zig.wasm
@@ -68,6 +69,9 @@ $(TARGET).zig.wasm: $(filter-out src/flecs/%,$(TARGET_C))
 $(DEV): $(TARGET_O) | test
 	@mkdir -p $(dir $@)
 	$(CC) $(CFLAGS) -o $@ $^
+
+$(TARGET)@%: $(DEV)
+	git diff --exit-code --quiet && cp $< $@ || true
 
 $(TARGET): $(DEV) | assertions
 	-cp $@ $@-$(shell date -r $@ "+%Y-%m-%d-%H:%M:%S")
