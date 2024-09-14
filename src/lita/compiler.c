@@ -434,8 +434,7 @@ static void emitReturn_(char *comment) {
 static void emitClosure_(Compiler *compiler, const char *comment) {
   ObjFunction *fun = compiler->fun;
 
-  // TODO: support functions outside of closures:
-  // if (!fun->upvalueCount) return emitConstant_(OBJ_VAL(fun), comment);
+  if (!fun->upvalueCount) return emitConstant_(OBJ_VAL(fun), comment);
 
   emitBytes_(OP_CLOSURE, makeConstant(OBJ_VAL(fun)), comment);
 
@@ -464,16 +463,16 @@ static void initCompiler(Compiler *compiler, FunType type, ObjString *name) {
   current = compiler;
 
   // Reserve first local for `this`.
-  Local *self = &current->locals[current->localCount++];
-  self->depth = 0;
-  self->isCaptured = false;
+  Local *this = &current->locals[current->localCount++];
+  this->depth = 0;
+  this->isCaptured = false;
 
   if (type != TYPE_FUNCTION) {
-    self->name.start = "this";
-    self->name.length = 4;
+    this->name.start = "this";
+    this->name.length = 4;
   } else {
-    self->name.start = "";
-    self->name.length = 0;
+    this->name.start = "";
+    this->name.length = 0;
   }
 }
 

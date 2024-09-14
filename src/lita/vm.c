@@ -231,7 +231,20 @@ void vmSwap(u8 a, u8 b) {
  *     receiver-^               ^-stackTop
  */
 CallFrame *newFrame(Obj *obj, usize slots) {
+  CallFrame *existingFrame = CURRENT_FRAME;
+
+  if (existingFrame->obj == obj && existingFrame->ip &&
+      *(existingFrame->ip) == OP_RETURN) {
+    // Tail-call optimization.
+    copyValues(vm.stackTop - slots, existingFrame->slots, slots);
+    vm.stackTop = existingFrame->slots + slots;
+    existingFrame->ip = toFunction(obj)->chunk.code;
+    existingFrame->prevIp = NULL;
+    return existingFrame;
+  }
+
   if (vm.frameCount == FRAMES_MAX) return NULL;
+
   CallFrame *frame = &vm.frames[vm.frameCount++];
 
   frame->obj = obj;
@@ -372,8 +385,6 @@ static void defineMethod(ObjString *name) {
   tableSet(&klass->methods, OBJ_VAL(name), method);
   pop();
 }
-
-static bool isFalsey(Value value) { return isNil(value) || isFalse(value); }
 
 /** [length ...args][0 arg] -> [0 array] */
 void vmArray(u32 length) {
@@ -834,6 +845,11 @@ static InterpretResult vmRun() {
 #undef SYNC_FRAME
 }
 
+static InterpretResult runClosure(ObjClosure *closure) {
+  push(OBJ_VAL(closure));
+  return vmCall(0) || vmRun();
+}
+
 InterpretResult runFunction(ObjFunction *fun) {
   if (fun == NULL) return INTERPRET_COMPILE_ERROR;
 
@@ -841,11 +857,6 @@ InterpretResult runFunction(ObjFunction *fun) {
   ObjClosure *closure = newClosure(fun);
   pop();
   return runClosure(closure);
-}
-
-InterpretResult runClosure(ObjClosure *closure) {
-  push(OBJ_VAL(closure));
-  return vmCall(0) || vmRun();
 }
 
 InterpretResult interpret(const char *source, ObjString *name) {

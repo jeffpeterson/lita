@@ -41,6 +41,7 @@ let static_method(let klass, let fun) {
 int arity(Value fun) {
   if (isBound(fun)) return arity(asBound(fun)->method);
   if (isClosure(fun)) return asClosure(fun)->function->arity;
+  if (isFunction(fun)) return asFunction(fun)->arity;
   if (isNative(fun)) return asNative(fun)->arity;
   if (isClass(fun)) return arity(findMethod(fun, string("init")));
 
@@ -52,7 +53,8 @@ let classOf(let self) { return obj(valueClass(self)); }
 let superOf(let klass) { return obj(asClass(klass)->parent); }
 
 let bindFn(let self, let fun) {
-  if (isClosure(fun) || isNative(fun)) return bound(self, fun);
+  if (isClosure(fun) || isNative(fun) || isFunction(fun))
+    return bound(self, fun);
 
   return fun;
 }

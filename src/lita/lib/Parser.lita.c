@@ -57,7 +57,7 @@ static Value fn_src_slash_lita_slash_lib_slash_Parser_dot_lita_0() {
     OP_GET_VAR, 1,
     OP_INHERIT,
     OP_SWAP, 1,
-    OP_CLOSURE, 3,
+    OP_CONSTANT, 3,
     OP_METHOD, 2,
     OP_POP,
     OP_POP,

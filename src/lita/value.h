@@ -130,6 +130,7 @@ typedef struct {
   Value *values;
 } ValueArray;
 
+bool isFalsey(Value value);
 bool valuesEqual(Value a, Value b);
 int cmpValues(Value a, Value b);
 void copyValues(Value *source, Value *dest, usize count);

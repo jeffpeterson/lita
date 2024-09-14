@@ -73,7 +73,6 @@ void initVM(World *world);
 void freeVM();
 InterpretResult bootVM();
 InterpretResult runFunction(ObjFunction *fun);
-InterpretResult runClosure(ObjClosure *closure);
 InterpretResult interpret(const char *source, ObjString *name);
 
 CallFrame *newFrame(Obj *obj, usize slots);

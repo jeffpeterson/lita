@@ -55,6 +55,24 @@ static int dumpFunction(Obj *obj, FILE *io) {
   else return fprintf(io, "crash(\"Could not find fn %s\")", fun->name->chars);
 }
 
+static InterpretResult callFunction(Obj *obj, int argc) {
+  ObjFunction *fun = (ObjFunction *)obj;
+
+  if (argc < fun->arity)
+    return runtimeError("Expected %d arguments but got %d.", fun->arity, argc);
+
+  if (fun->variadic) {
+    vmArray(argc - fun->arity);
+    argc = fun->arity + 1;
+  }
+
+  CallFrame *frame = newFrame(obj, argc + 1);
+  if (!frame) return runtimeError("Call stack overflow.");
+  frame->ip = fun->chunk.code;
+
+  return INTERPRET_OK;
+}
+
 NATIVE_GETTER(Function, arity, NUMBER_VAL);
 NATIVE_GETTER(Function, variadic, BOOL_VAL);
 NATIVE_GETTER(Function, name, OBJ_VAL);
@@ -76,4 +94,5 @@ const ObjDef Function = {
     .inspect = inspectFunction,
     .length = functionLength,
     .dump = dumpFunction,
+    .call = callFunction,
 };

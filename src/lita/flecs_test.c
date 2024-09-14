@@ -25,7 +25,7 @@ void Move(ecs_iter_t *it) {
   }
 }
 
-void ecs_test() {
+void flecs_test() {
   ecs_world_t *world = ecs_init();
 
   // Declarative function-style macros use SCREAMING_SNAKE_CASE

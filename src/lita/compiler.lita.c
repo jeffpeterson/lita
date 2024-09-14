@@ -72,9 +72,9 @@ static Value fn_src_slash_lita_slash_compiler_dot_lita_0() {
   initChunk(c);
   c->count = c->capacity = 65;
   u8 code[] = {
-    OP_CLOSURE, 1,
+    OP_CONSTANT, 1,
     OP_DEFINE_GLOBAL, 0,
-    OP_CLOSURE, 3,
+    OP_CONSTANT, 3,
     OP_DEFINE_GLOBAL, 2,
     OP_CLASS, 4, 0,
     OP_GET_LOCAL, 0,

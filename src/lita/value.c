@@ -7,6 +7,8 @@
 #include "value.h"
 #include "xxhash.h"
 
+bool isFalsey(Value value) { return isNil(value) || isFalse(value); }
+
 double as_num(Value x) {
   assert(isNumber(x));
   return AS_NUMBER(x);
