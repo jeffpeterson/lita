@@ -21,6 +21,7 @@ static Value fn_class_1() {
   Chunk *c = &f->chunk;
   initChunk(c);
   c->count = c->capacity = 11;
+  c->version = 0;
   u8 code[] = {
     OP_GET_LOCAL, 0,
     OP_GET_VAR, 0,
@@ -52,6 +53,7 @@ static Value fn_hash_2() {
   Chunk *c = &f->chunk;
   initChunk(c);
   c->count = c->capacity = 11;
+  c->version = 0;
   u8 code[] = {
     OP_GET_LOCAL, 0,
     OP_GET_VAR, 0,
@@ -83,6 +85,7 @@ static Value fn_src_slash_lita_slash_lita_dot_lita_0() {
   Chunk *c = &f->chunk;
   initChunk(c);
   c->count = c->capacity = 38;
+  c->version = 0;
   u8 code[] = {
     OP_CLASS, 0, 0,
     OP_GET_LOCAL, 0,
