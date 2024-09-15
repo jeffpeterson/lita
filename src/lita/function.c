@@ -89,6 +89,7 @@ REGISTER_OBJECT_DEF(Function);
 const ObjDef Function = {
     .className = "Function",
     .size = sizeof(ObjFunction),
+    .alloc = allocFunction,
     .mark = markFunction,
     .free = freeFunction,
     .inspect = inspectFunction,
