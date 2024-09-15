@@ -69,13 +69,14 @@ static int dumpFn(FILE *io, ObjFunction *fun) {
           "  Chunk *c = &f->chunk;\n"
           "  initChunk(c);\n"
           "  c->count = c->capacity = %d;\n"
+          "  c->version = %d;\n"
           "  u8 code[] = {\n",
-          chunk.count);
+          chunk.count, chunk.version);
 
   u8 *ip = chunk.code;
   while (ip < chunk.code + chunk.count) {
     fprintf(io, "    %s,", opInfo[*ip].name);
-    u8 size = instructionSize(*ip++);
+    u8 size = instructionSize(&chunk, ip++);
     for (int i = 1; i < size; i++) fprintf(io, " %d,", *ip++);
     fprintf(io, "\n");
   }

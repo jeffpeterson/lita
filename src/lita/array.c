@@ -17,9 +17,11 @@ void resize_array(ObjArray *arr, u32 capacity) {
 }
 
 void grow_array(ObjArray *arr, u32 minCapacity) {
-  u32 capacity = arr->capacity || 1;
+  if (arr->capacity >= minCapacity) return;
+  u32 capacity = arr->capacity;
+  if (capacity < 8) capacity = 8;
   while (capacity < minCapacity) capacity *= 2;
-  if (capacity > arr->capacity) resize_array(arr, capacity);
+  resize_array(arr, capacity);
 }
 
 void write_array(ObjArray *arr, u32 index, Value *values, u32 length) {

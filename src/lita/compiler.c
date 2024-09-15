@@ -46,9 +46,10 @@ typedef struct Parser {
 
 /** Higher precedence means tighter binding. */
 typedef enum Precedence {
-  PREC_NONE,       // Lower precedence
+  PREC_NONE, // Lower precedence
+  // PREC_NEWLINE,    // NEWLINE
   PREC_KEYWORD,    // if else while for etc...
-  PREC_SEMI,       // ; NEWLINE
+  PREC_SEMI,       // ; ?
   PREC_ARROW,      // ->
   PREC_COMMA,      // ,
   PREC_OR,         // or
@@ -961,9 +962,11 @@ static void grouping(Ctx *ctx) {
   consume(TOKEN_RIGHT_PAREN, "Expect ')' after expression.");
 }
 
-// static void newline(Ctx *ctx) {
-//   // emitByte(OP_POP);
-// }
+static void newline(Ctx *ctx) {
+  error("newline");
+  if (check(TOKEN_EOF)) return;
+  emitByte(OP_POP);
+}
 
 static void number_(Ctx *ctx) {
   double value = strtod(parser.previous.start, NULL);
@@ -1690,4 +1693,5 @@ ParseRule rules[] = {
     [TOKEN_DOT] = {dotSugar, dot, PREC_DOT},
 
     [TOKEN_LEFT_PAREN] = {grouping, call, PREC_CALL},
+    // [TOKEN_NEWLINE] = {NULL, newline, PREC_NEWLINE},
 };

@@ -525,11 +525,15 @@ static InterpretResult vmRun() {
 
 #define READ_BYTE() (*frame->ip++)
 /** Update the cached frame variable. Idempotent. */
-#define SYNC_FRAME() (frame = CURRENT_FRAME)
+#define SYNC_FRAME()                                                           \
+  do {                                                                         \
+    frame = CURRENT_FRAME;                                                     \
+  } while (false)
+
 #define READ_SHORT()                                                           \
   (frame->ip += 2, (uint16_t)((frame->ip[-2] << 8) | frame->ip[-1]))
 #define READ_CONSTANT()                                                        \
-  (toFunction(frame->obj)->chunk.constants.values[READ_BYTE()])
+  (readConstant(&toFunction(frame->obj)->chunk, &frame->ip))
 #define READ_STRING() asString(READ_CONSTANT())
 #define BINARY_OP(valueType, op)                                               \
   do {                                                                         \

@@ -78,6 +78,7 @@ typedef enum OpCode {
 } OpCode;
 
 typedef struct {
+  int version;
   int count;
   int capacity;
   u8 *code;
@@ -107,15 +108,19 @@ void markChunk(Chunk *chunk);
 void freeChunk(Chunk *chunk);
 void growChunk(Chunk *chunk, int capacity);
 void writeChunk(Chunk *chunk, u8 byte, int line, Value comment);
+int writeChunkLong(Chunk *chunk, u32 c, int line, Value comment);
 int addConstant(Chunk *chunk, Value value);
-Value getConstant(Chunk *chunk, int id);
+Value getConstant(Chunk *chunk, u32 id);
+Value readConstant(Chunk *chunk, u8 **ip);
 
 extern OpInfo opInfo[];
 
-u8 instructionSize(OpCode code);
+u8 instructionSize(Chunk *chunk, u8 *ip);
 
 int inputCount(Chunk *chunk, u8 *ip);
 int outputCount(Chunk *chunk, u8 *ip);
 int inputOutputDelta(Chunk *chunk, u8 *ip);
 
+int encodeLong(u32 c, u8 *bytes);
+int decodeLong(u32 *c, u8 *bytes);
 #endif

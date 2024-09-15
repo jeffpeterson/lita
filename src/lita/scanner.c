@@ -53,6 +53,11 @@ u32 codePoint(const char *str) {
   }
 }
 
+CodePoint makeCodePoint(u32 c) {
+  return (CodePoint){(c >> 18) & 0xFF, (c >> 12) & 0xFF, (c >> 6) & 0xFF,
+                     c & 0xFF, 0};
+}
+
 static bool isAtEnd() { return *scanner.current == '\0'; }
 bool in(u32 c, char start, char end) { return c >= start && c <= end; }
 bool isAlpha(u32 c) { return in(c, 'a', 'z') || in(c, 'A', 'Z') || c == '_'; }

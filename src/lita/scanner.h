@@ -3,8 +3,13 @@
 
 #include "common.h"
 
+typedef struct CodePoint {
+  u8 bytes[5];
+} CodePoint;
+
 u8 utfBytes(const char *str);
 u32 codePoint(const char *str);
+CodePoint makeCodePoint(u32 c);
 
 bool in(u32 c, char start, char end);
 bool isAlpha(u32 c);

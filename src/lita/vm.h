@@ -15,9 +15,9 @@
 #define CURRENT_FRAME (&vm.frames[vm.frameCount - 1])
 
 typedef struct CallFrame {
-  Obj *obj; // Object being executed.
-
-  usize reentries;  // Number of times this native has been re-entered.
+  Obj *obj;         // Object being executed.
+                    //
+  usize reentries;  // Number of times a native has been re-entered.
                     //
   u8 *ip;           // Current instruction pointer.
   u8 *prevIp;       // Pointer to last instruction.
