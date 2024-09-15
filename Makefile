@@ -76,7 +76,7 @@ $(TARGET)@%: $(DEV)
 	@git diff --exit-code --quiet && cp $< $@ || true
 
 $(TARGET): $(DEV) | assertions
-	-cp $@ $@-$(shell date -r $@ "+%Y-%m-%d-%H:%M:%S")
+	-cp $@ $@-$(shell date -r $@ "+%Y-%m-%d-%H_%M_%S")
 	cp $< $@
 
 $(TEST): $(TEST_O)
@@ -114,10 +114,11 @@ clean:
 
 prune: tmp/pruned
 
-tmp/pruned: $(PRUNABLES)
-	@echo "Before: $$(du -sh .bin)"
+# TODO: this doesn't work because the prunables are older than the tmp/pruned file
+tmp/pruned: | $(PRUNABLES)
+	@echo "Before pruning: $$(du -sh .bin)"
 	@echo $^ | tee /dev/tty | xargs rm
-	@echo "After: $$(du -sh .bin)"
+	@echo "After pruning: $$(du -sh .bin)"
 	@touch $@
 
 flecs:
