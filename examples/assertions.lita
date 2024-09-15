@@ -163,10 +163,12 @@ let p2 = Point(3, 4)
 assert p1 + p2 == Point(4, 6)
 
 // Precedence
-// assert (1 + 2 * 3) == 7
+let x = 1
+assert 1 + 2 * 3x + 4 / 2 == 9; nil
+// assert 1 + 2 * 3x - 4 / 2 == 5; nil
 
-assert (3b) == 12
-assert (b 3) == 12
+assert 3b == 12
+assert b 3 == 12
 
 // ?: operator
 assert (1 ? 2) == 2
