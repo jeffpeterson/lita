@@ -8,7 +8,7 @@
 // 50 7B 53 4f 4c 0a ; P{SOL\n -> SOL B(inary)
 // 71 1A 4c 49 54 41 0a ; q.LITA\n -> LITA
 void initChunk(Chunk *chunk) {
-  chunk->version = 0;
+  chunk->version = 1;
   chunk->count = 0;
   chunk->capacity = 0;
   chunk->code = NULL;
@@ -59,7 +59,7 @@ void writeChunk(Chunk *chunk, u8 byte, int line, Value comment) {
   chunk->count++;
 }
 
-int writeChunkLong(Chunk *chunk, u32 c, int line, Value comment) {
+int writeChunkLong(Chunk *chunk, Long c, int line, Value comment) {
   u8 bytes[5];
   int count = encodeLong(c, bytes);
   for (int i = 0; i < count; i++) writeChunk(chunk, bytes[i], line, comment);
@@ -77,12 +77,12 @@ int addConstant(Chunk *chunk, Value value) {
   return chunk->constants.count - 1;
 }
 
-Value getConstant(Chunk *chunk, u32 id) { return chunk->constants.values[id]; }
+Value getConstant(Chunk *chunk, Long id) { return chunk->constants.values[id]; }
 
 Value readConstant(Chunk *chunk, u8 **ip) {
   if (chunk->version < 1) return getConstant(chunk, *(*ip)++);
-  u32 id;
-  (*ip) += decodeLong(&id, *ip);
+  Long id;
+  *ip += decodeLong(&id, *ip);
   return getConstant(chunk, id);
 }
 
@@ -198,10 +198,10 @@ int inputOutputDelta(Chunk *chunk, u8 *ip) {
  * written to the code array in reverse order with the least significant byte
  * first.
  */
-int decodeLong(u32 *cp, u8 *bytes) {
+int decodeLong(Long *cp, u8 *bytes) {
   int i = 0, c = 0;
   do {
-    c |= (bytes[i] & 0x7F) << (7 * i);
+    c |= (bytes[i] & 0x7f) << (7 * i);
   } while (bytes[i++] & 0x80);
   if (cp) *cp = c;
   return i;
@@ -213,7 +213,7 @@ int decodeLong(u32 *cp, u8 *bytes) {
  * written to the code array in reverse order with the least significant byte
  * first.
  */
-int encodeLong(u32 c, u8 *bytes) {
+int encodeLong(Long c, u8 *bytes) {
   int i = 0;
   do {
     bytes[i] = c & 0x7F;

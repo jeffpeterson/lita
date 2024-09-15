@@ -7,6 +7,7 @@
 #include "native.h"
 #include "object.h"
 #include "table.h"
+#include "term.h"
 #include "upvalue.h"
 #include "value.h"
 
@@ -102,6 +103,11 @@ void assertOkResult(InterpretResult result);
 
 /** Something went wrong. Stop the VM and exit. */
 let crash(const char *fmt, ...);
+
+#define ASSERT(x)                                                              \
+  (x || crash("Assertion failed: " FG_CYAN "%s" FG_DEFAULT " in " FG_MAGENTA   \
+              "%s" FG_DEFAULT " (" UNDERLINE "%s:%d" NO_UNDERLINE ")",         \
+              #x, __func__, __FILE__, __LINE__))
 
 InterpretResult callValue(Value callee, int argCount);
 

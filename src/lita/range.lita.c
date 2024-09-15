@@ -21,7 +21,7 @@ static Value fn_inspect_1() {
   Chunk *c = &f->chunk;
   initChunk(c);
   c->count = c->capacity = 25;
-  c->version = 0;
+  c->version = 1;
   u8 code[] = {
     OP_CONSTANT, 0,
     OP_GET_LOCAL, 0,
@@ -64,7 +64,7 @@ static Value fn_string_2() {
   Chunk *c = &f->chunk;
   initChunk(c);
   c->count = c->capacity = 25;
-  c->version = 0;
+  c->version = 1;
   u8 code[] = {
     OP_CONSTANT, 0,
     OP_GET_LOCAL, 0,
@@ -107,7 +107,7 @@ static Value fn_length_3() {
   Chunk *c = &f->chunk;
   initChunk(c);
   c->count = c->capacity = 12;
-  c->version = 0;
+  c->version = 1;
   u8 code[] = {
     OP_GET_LOCAL, 0,
     OP_GET_VAR, 0,
@@ -141,7 +141,7 @@ static Value fn_map_4() {
   Chunk *c = &f->chunk;
   initChunk(c);
   c->count = c->capacity = 20;
-  c->version = 0;
+  c->version = 1;
   u8 code[] = {
     OP_GET_LOCAL, 1,
     OP_GET_LOCAL, 0,
@@ -179,7 +179,7 @@ static Value fn_array_5() {
   Chunk *c = &f->chunk;
   initChunk(c);
   c->count = c->capacity = 111;
-  c->version = 0;
+  c->version = 1;
   u8 code[] = {
     OP_ARRAY, 0,
     OP_GET_LOCAL, 0,
@@ -271,7 +271,7 @@ static Value fn_src_slash_lita_slash_range_dot_lita_0() {
   Chunk *c = &f->chunk;
   initChunk(c);
   c->count = c->capacity = 38;
-  c->version = 0;
+  c->version = 1;
   u8 code[] = {
     OP_CLASS, 0, 0,
     OP_GET_LOCAL, 0,

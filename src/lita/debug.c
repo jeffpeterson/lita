@@ -24,7 +24,8 @@ void disassembleChunk(Chunk *chunk, const char *name, int until) {
   if (until < 0 || until > chunk->count) until = chunk->count;
 
   fprintf(stderr, "╔═════════════════════════════════════════╗\r");
-  fprintf(stderr, "╔═ " FG_MAGENTA "%s" FG_DEFAULT " \n", name);
+  fprintf(stderr, "╔═ " FG_MAGENTA "%s" FG_BLUE " v%d" FG_DEFAULT " \n", name,
+          chunk->version);
   fprintf(stderr, "║ Byte Line OpCode               Operands ║\n");
   fprintf(stderr, "╟───── ──── ──────────────────── ─────────╢\n");
 
@@ -41,20 +42,26 @@ void disassembleChunk(Chunk *chunk, const char *name, int until) {
   else fprintf(stderr, "╚═════════════════════════════════════════╝\n");
 }
 
-static void byte(uint8_t arg) { fprintf(stderr, " %02x", arg); }
+static void byte(u8 arg) { fprintf(stderr, " %02x", arg); }
+static void longHex(Long arg) {
+  if (arg > LONG_BYTE_MAX) fprintf(stderr, FG_YELLOW);
+  fprintf(stderr, " %02x", arg);
+  fprintf(stderr, FG_DEFAULT);
+}
 static void arrow() { fputs("\t\e[2m->\e[22m ", stderr); }
 static void newline() { fputs("\n", stderr); }
 
 int disassembleInstruction(Chunk *chunk, int offset) {
-  uint8_t *code = chunk->code;
+  u8 *code = chunk->code;
   fprintf(stderr, RESET "║ %04x ", offset);
 
   if (offset > 0 && chunk->lines[offset] == chunk->lines[offset - 1])
     fprintf(stderr, DIM "   │ " NO_DIM);
   else fprintf(stderr, FG_CYAN "%4d " FG_DEFAULT, chunk->lines[offset]);
 
-  uint8_t instruction = code[offset++];
+  u8 instruction = code[offset++];
   OpInfo info = opInfo[instruction];
+  Long constant;
 
   fprintf(stderr, "%02x" DIM "->" NO_DIM, instruction);
   if (info.name == NULL) {
@@ -73,25 +80,27 @@ int disassembleInstruction(Chunk *chunk, int offset) {
   case BYTE: byte(code[offset++]); break;
 
   case CONSTANT: {
-    uint8_t arg = code[offset++];
-    byte(arg);
+    if (chunk->version < 1) constant = code[offset++];
+    else offset += decodeLong(&constant, code + offset);
+    longHex(constant);
     arrow();
-    inspectValue(stderr, chunk->constants.values[arg]);
+    inspectValue(stderr, chunk->constants.values[constant]);
     break;
   }
 
   case CONSTANT_BYTE: {
-    u8 cnst = code[offset++];
-    byte(cnst);
+    if (chunk->version < 1) constant = code[offset++];
+    else offset += decodeLong(&constant, code + offset);
+    longHex(constant);
     byte(code[offset++]);
     arrow();
-    inspectValue(stderr, chunk->constants.values[cnst]);
+    inspectValue(stderr, chunk->constants.values[constant]);
     break;
   }
 
   case INVOKE: {
-    uint8_t constant = code[offset++];
-    uint8_t argCount = code[offset++];
+    offset += decodeLong(&constant, code + offset);
+    u8 argCount = code[offset++];
     byte(constant);
     byte(argCount);
     arrow();
@@ -116,7 +125,6 @@ int disassembleInstruction(Chunk *chunk, int offset) {
 
   switch (instruction) {
   case OP_CLOSURE: {
-    uint8_t constant = code[offset - 1];
     ObjFunction *fun = asFunction(chunk->constants.values[constant]);
 
     for (int j = 0; j < fun->upvalueCount; j++) {
@@ -132,7 +140,7 @@ int disassembleInstruction(Chunk *chunk, int offset) {
   }
 
   case OP_SWAP: {
-    uint8_t args = code[offset - 1];
+    u8 args = code[offset - 1];
     arrow();
     fprintf(stderr, "%x %x", args >> 4, args & 0x0f);
     break;
@@ -141,7 +149,7 @@ int disassembleInstruction(Chunk *chunk, int offset) {
   }
 
   if (chunk->comments && chunk->comments[offset - 1]) {
-    fprintf(stderr, DIM "\t// ");
+    fprintf(stderr, DIM "\t\t// ");
     inspectValue(stderr, chunk->comments[offset - 1]);
     fprintf(stderr, NO_DIM);
   }

@@ -215,14 +215,14 @@ static void errorAtCurrent(const char *message, ...) {
 }
 
 /** Puts the given value in the constant table and returns its index. */
-static u8 makeConstant(Value value) {
+static Long makeConstant(Value value) {
   int constant = addConstant(currentChunk(), value);
-  if (constant > UINT8_MAX) {
+  if (constant > UINT32_MAX) {
     error("Too many constants in one chunk.");
     return 0;
   }
 
-  return (u8)constant;
+  return constant;
 }
 
 static void advance() {
@@ -289,14 +289,18 @@ static Value consumeIdent(const char *message) {
  */
 static bool shouldCleanStack() { return !check(TOKEN_EOF); }
 
+#define emitLong(size) emitLong_(size, "At " __FILE__ ":" STRINGIFY(__LINE__))
+static void emitLong_(Long value, const char *comment) {
+  Token token = parser.previous;
+  ObjString *str = stringf("(%.*s) %s", token.length, token.start, comment);
+
+  writeChunkLong(currentChunk(), value, token.line, OBJ_VAL(str));
+}
+
 #define emitByte(size) emitByte_(size, "At " __FILE__ ":" STRINGIFY(__LINE__))
 static void emitByte_(u8 byte, const char *comment) {
   Token token = parser.previous;
-  ObjString *str;
-
-  if (config.debug)
-    str = stringf("(%.*s) %s", token.length, token.start, comment);
-  else str = newString(comment);
+  ObjString *str = stringf("(%.*s) %s", token.length, token.start, comment);
 
   writeChunk(currentChunk(), byte, token.line, OBJ_VAL(str));
 }
@@ -346,15 +350,18 @@ static void emitSwap_(u8 a, u8 b, const char *comment) {
 #define emitDebugStack(tag)                                                    \
   emitDebugStack_(tag, "At " __FILE__ ":" STRINGIFY(__LINE__))
 static void emitDebugStack_(const char *tag, const char *comment) {
-  emitBytes_(OP_DEBUG_STACK, makeConstant(string(tag)), comment);
+  emitByte_(OP_DEBUG_STACK, comment);
+  emitLong_(makeConstant(OBJ_VAL(string(tag))), comment);
 }
 
 #define assertStackSize(size, explain)                                         \
   assertStackSize_(size, explain, "At " __FILE__ ":" STRINGIFY(__LINE__))
 static void assertStackSize_(u8 size, const char *explain,
                              const char *comment) {
-  let explainv = makeConstant(string(explain));
-  emit3Bytes_(OP_ASSERT_STACK, explainv, size + current->localCount, comment);
+  Long explainv = makeConstant(string(explain));
+  emitByte_(OP_ASSERT_STACK, comment);
+  emitLong_(explainv, comment);
+  emitByte_(size + current->localCount, comment);
 }
 
 /**
@@ -364,13 +371,15 @@ static void assertStackSize_(u8 size, const char *explain,
 #define emitConstant(value)                                                    \
   emitConstant_(value, "At " __FILE__ ":" STRINGIFY(__LINE__))
 static void emitConstant_(Value value, const char *comment) {
-  emitBytes_(OP_CONSTANT, makeConstant(value), comment);
+  emitByte_(OP_CONSTANT, comment);
+  emitLong_(makeConstant(value), comment);
 }
 
 #define emitDefault(value)                                                     \
   emitDefault_(value, "At " __FILE__ ":" STRINGIFY(__LINE__))
 static void emitDefault_(Value value, const char *comment) {
-  emitBytes_(OP_DEFAULT, makeConstant(value), comment);
+  emitByte_(OP_DEFAULT, comment);
+  emitLong_(makeConstant(value), comment);
 }
 
 #define emit(value) emit_(value, "At " __FILE__ ":" STRINGIFY(__LINE__))
@@ -395,11 +404,11 @@ static int emitJump_(u8 instruction, const char *comment) {
  *
  * Patches a previously emitted JUMP instruction at the given offset.
  * The new jump operand will point to the next instruction that is
- * emitted after this call to `patchJump`.
+ * emitted after this call to `landJump`.
  */
-#define patchJump(offset)                                                      \
-  patchJump_(offset, "At " __FILE__ ":" STRINGIFY(__LINE__))
-static void patchJump_(int offset, const char *comment) {
+#define landJump(offset)                                                       \
+  landJump_(offset, "At " __FILE__ ":" STRINGIFY(__LINE__))
+static void landJump_(int offset, const char *comment) {
   offset++; // +1 to skip the instruction.
   // -2 to account for the jump offset itself.
   int jump = currentChunk()->count - offset - 2;
@@ -435,7 +444,8 @@ static void emitClosure_(Compiler *compiler, const char *comment) {
 
   if (!fun->upvalueCount) return emitConstant_(OBJ_VAL(fun), comment);
 
-  emitBytes_(OP_CLOSURE, makeConstant(OBJ_VAL(fun)), comment);
+  emitByte_(OP_CLOSURE, comment);
+  emitLong_(makeConstant(OBJ_VAL(fun)), comment);
 
   for (int i = 0; i < fun->upvalueCount; i++) {
     emitByte_(compiler->upvalues[i].isLocal, comment);
@@ -488,7 +498,7 @@ static ObjFunction *endCompiler() {
 
 /** Adds a local variable with the given name to the current compiler scope. */
 static int addLocal(Token name) {
-  if (current->localCount == UINT8_COUNT) {
+  if (current->localCount == LONG_BYTE_MAX) {
     error("Too many local variables in function.");
     return -1;
   }
@@ -535,11 +545,11 @@ static void endScope() {
 }
 
 /** Adds the token to the constants table. */
-static u8 identifierConstant(Token *name) {
+static Long identifierConstant(Token *name) {
   return makeConstant(identifierValue(name));
 }
 
-static u8 consumeIdentConstant(const char *message) {
+static Long consumeIdentConstant(const char *message) {
   return makeConstant(consumeIdent(message));
 }
 
@@ -580,7 +590,7 @@ static int addUpvalue(Compiler *compiler, u8 index, bool isLocal) {
     if (upvalue->index == index && upvalue->isLocal == isLocal) return i;
   }
 
-  if (upvalueCount == UINT8_COUNT) {
+  if (upvalueCount == LONG_BYTE_MAX) {
     error("Too many closure variables in function.");
     return 0;
   }
@@ -647,7 +657,7 @@ static bool declareVariable() {
  *
  * Returns the constant id if the variable is global, 0 otherwise.
  */
-static u8 parseVariable(const char *errorMessage) {
+static Long parseVariable(const char *errorMessage) {
   consume(TOKEN_IDENTIFIER, errorMessage);
 
   declareVariable();
@@ -665,12 +675,13 @@ static u8 parseVariable(const char *errorMessage) {
  * At runtime, local variables point to that value on the stack, and global
  * variables pop the value and put in the the globals table.
  */
-static void defineVariable(u8 global) {
+static void defineVariable(Long global) {
   if (current->scopeDepth > 0) {
     markDefined();
     return;
   }
-  emitBytes(OP_DEFINE_GLOBAL, global);
+  emitByte(OP_DEFINE_GLOBAL);
+  emitLong(global);
 }
 
 static ParseRule *getRule(TokenType type) { return &rules[type]; }
@@ -765,7 +776,7 @@ static u8 argumentList() {
  * `binary` means the setOp and getOp require the current value
  * on the stack to function properly.
  */
-static bool assignment(Ctx *ctx, OpCode getOp, OpCode setOp, u8 arg,
+static bool assignment(Ctx *ctx, OpCode getOp, OpCode setOp, Long arg,
                        bool binary) {
   if (!ctx->canAssign) return false;
 
@@ -785,21 +796,24 @@ static bool assignment(Ctx *ctx, OpCode getOp, OpCode setOp, u8 arg,
     // We need the last stack value to call get/set
     // Todo: implement assignment via ObjUpvalue?
     //       push the upvalue/value onto the stack. call OP_GET/OP_SET
-    if (binary) {                 // [<inst>]
-      emitBytes(OP_PEEK, 0);      // [<inst>][<inst>]
-      emitBytes(getOp, arg);      // [<inst>][value]
+    if (binary) {            // [<inst>]
+      emitBytes(OP_PEEK, 0); // [<inst>][<inst>]
+      emitByte(getOp);
+      emitLong(arg);
       emitDefault(NUMBER_VAL(0)); // [<inst>][value ?? 0]
       emitSwap(0, 1);             // [value][<inst>]
       emitBytes(OP_PEEK, 1);      // [value][<inst>][value]
     } else {
-      emitBytes(getOp, arg);      // [value]
+      emitByte(getOp);
+      emitLong(arg);
       emitDefault(NUMBER_VAL(0)); // [value ?? 0]
       emitBytes(OP_PEEK, 0);      // [value][value]
     }
 
     emitConstant(NUMBER_VAL(1));
     emitByte(type == TOKEN_PLUS_PLUS ? OP_ADD : OP_SUBTRACT);
-    emitBytes(setOp, arg);
+    emitByte(setOp);
+    emitLong(arg);
     emitByte(OP_POP);
     return true;
 
@@ -811,7 +825,8 @@ static bool assignment(Ctx *ctx, OpCode getOp, OpCode setOp, u8 arg,
 
     if (binary) emitBytes(OP_PEEK, 0);
 
-    emitBytes(getOp, arg);
+    emitByte(getOp);
+    emitLong(arg);
     emitDefault(NUMBER_VAL(0));
     expression("Expect expression after assignment.");
 
@@ -820,7 +835,8 @@ static bool assignment(Ctx *ctx, OpCode getOp, OpCode setOp, u8 arg,
              : type == TOKEN_SLASH_EQUAL ? OP_DIVIDE
                                          : OP_MULTIPLY);
 
-    emitBytes(setOp, arg);
+    emitByte(setOp);
+    emitLong(arg);
     return true;
 
   default: break;
@@ -837,7 +853,7 @@ static void and_(Ctx *ctx) {
   int endJump = emitJump(OP_JUMP_IF_FALSE);
   emitByte(OP_POP);
   parseAt(PREC_AND);
-  patchJump(endJump);
+  landJump(endJump);
 }
 
 static void array(Ctx *ctx) {
@@ -847,7 +863,8 @@ static void array(Ctx *ctx) {
       length++;
     } while (match(TOKEN_COMMA));
 
-  emitBytes(OP_ARRAY, makeConstant(NUMBER_VAL(length)));
+  emitByte(OP_ARRAY);
+  emitLong(makeConstant(NUMBER_VAL(length)));
   consume(TOKEN_RIGHT_BRACKET, "Expect ']' after array.");
 }
 
@@ -874,9 +891,10 @@ static void binary(Ctx *ctx) {
   case TOKEN_STAR: emitByte(OP_MULTIPLY); break;
   case TOKEN_SLASH: emitByte(OP_DIVIDE); break;
   default: {
-    u8 name =
+    Long name =
         makeConstant(OBJ_VAL(copyString(operator.start, operator.length)));
-    emitBytes(OP_INVOKE, name);
+    emitByte(OP_INVOKE);
+    emitLong(name);
     emitByte(1); // argc
   }
   }
@@ -905,15 +923,19 @@ static void tuple(Ctx *ctx) {
 }
 
 static void dot(Ctx *ctx) {
-  u8 name = makeConstant(consumeIdent("Expect property name after '.'"));
+  Long name = makeConstant(consumeIdent("Expect property name after '.'"));
 
   if (assignment(ctx, OP_GET_PROPERTY, OP_SET_PROPERTY, name, true)) return;
 
   else if (match(TOKEN_LEFT_PAREN)) {
     u8 argCount = argumentList();
-    emitBytes(OP_INVOKE, name);
+    emitByte(OP_INVOKE);
+    emitLong(name);
     emitByte(argCount);
-  } else emitBytes(OP_GET_PROPERTY, name);
+  } else {
+    emitByte(OP_GET_PROPERTY);
+    emitLong(name);
+  }
 }
 
 static void dotSugar(Ctx *ctx) {
@@ -926,7 +948,7 @@ static void dotSugar(Ctx *ctx) {
   initCompiler(&compiler, TYPE_FUNCTION, asString(fnName));
   beginScope();
 
-  u8 nameConstant = makeConstant(methodName);
+  Long nameConstant = makeConstant(methodName);
   trace("dotSugar name const", NUMBER_VAL(nameConstant));
 
   current->fun->arity++;
@@ -937,9 +959,13 @@ static void dotSugar(Ctx *ctx) {
 
   if (match(TOKEN_LEFT_PAREN)) {
     u8 argc = argumentList();
-    emitBytes(OP_INVOKE, nameConstant);
+    emitByte(OP_INVOKE);
+    emitLong(nameConstant);
     emitByte(argc);
-  } else emitBytes(OP_GET_PROPERTY, nameConstant);
+  } else {
+    emitByte(OP_GET_PROPERTY);
+    emitLong(nameConstant);
+  }
 
   emitByte(OP_RETURN);
 
@@ -985,10 +1011,10 @@ static void or_(Ctx *ctx) {
   int elseJump = emitJump(OP_JUMP_IF_FALSE);
   int endJump = emitJump(OP_JUMP);
 
-  patchJump(elseJump);
+  landJump(elseJump);
   emitByte(OP_POP);
   parseAt(PREC_OR);
-  patchJump(endJump);
+  landJump(endJump);
 }
 
 static void print(Ctx *ctx) {
@@ -1042,7 +1068,8 @@ static void namedVariable(Token name, Ctx *ctx) {
   } else if (currentClass) {
     arg = identifierConstant(&name);
     Token self = syntheticToken("this");
-    emitBytes(OP_GET_LOCAL, resolveLocal(current, &self));
+    emitByte(OP_GET_LOCAL);
+    emitLong(resolveLocal(current, &self));
     getOp = OP_GET_VAR;
     setOp = OP_SET_VAR;
   } else {
@@ -1055,7 +1082,8 @@ static void namedVariable(Token name, Ctx *ctx) {
   // ctx->canAssign);
   if (assignment(ctx, getOp, setOp, arg, false)) return;
 
-  emitBytes(getOp, arg);
+  emitByte(getOp);
+  emitLong(arg);
 }
 
 static void question(Ctx *ctx) {
@@ -1067,14 +1095,14 @@ static void question(Ctx *ctx) {
   }
 
   int elseJump = emitJump(OP_JUMP);
-  patchJump(thenJump);
+  landJump(thenJump);
 
   if (match(TOKEN_COLON)) {
     emitByte(OP_POP);
     if (!parseAt(ctx->precedence)) error("Expect expression after ':'.");
   }
 
-  patchJump(elseJump);
+  landJump(elseJump);
 }
 
 static void variable(Ctx *ctx) { namedVariable(parser.previous, ctx); }
@@ -1084,18 +1112,20 @@ static void super_(Ctx *ctx) {
 
   // Todo: super() calls the current method.
   consume(TOKEN_DOT, "Expect '.' after 'super'.");
-  u8 name = consumeIdentConstant("Expect superclass method name.");
+  Long name = consumeIdentConstant("Expect superclass method name.");
 
   namedVariable(syntheticToken("this"), ctx);
 
   if (match(TOKEN_LEFT_PAREN)) {
     u8 argCount = argumentList();
     namedVariable(syntheticToken("super"), ctx);
-    emitBytes(OP_SUPER_INVOKE, name);
+    emitByte(OP_SUPER_INVOKE);
+    emitLong(name);
     emitByte(argCount);
   } else {
     namedVariable(syntheticToken("super"), ctx);
-    emitBytes(OP_GET_SUPER, name);
+    emitByte(OP_GET_SUPER);
+    emitLong(name);
   }
 }
 
@@ -1157,7 +1187,7 @@ static void function(FunType type) {
       do {
         if (match(TOKEN_ELLIPSIS)) {
           compiler.fun->variadic = true;
-          u8 constant = 0;
+          Long constant = 0;
           if (check(TOKEN_IDENTIFIER))
             constant = parseVariable("Expect parameter name after \"...\".");
           else declareVariable();
@@ -1169,7 +1199,7 @@ static void function(FunType type) {
         if (current->fun->arity > 255)
           errorAtCurrent("Can't have more than 255 parameters.");
 
-        u8 constant = parseVariable("Expect parameter name.");
+        Long constant = parseVariable("Expect parameter name.");
         defineVariable(constant);
       } while (match(TOKEN_COMMA));
     }
@@ -1182,11 +1212,13 @@ static void function(FunType type) {
     for (int i = 1; i < current->localCount; i++) {
 
       Value name = identifierValue(&current->locals[i].name);
-      u8 constant = makeConstant(name);
+      Long constant = makeConstant(name);
       tableSet(&currentClass->fields, name, TRUE_VAL);
       emitBytes(OP_GET_LOCAL, 0); // self
-      emitBytes(OP_GET_LOCAL, i); // value
-      emitBytes(OP_SET_PROPERTY, constant);
+      emitByte(OP_GET_LOCAL);     // value
+      emitLong(i);
+      emitByte(OP_SET_PROPERTY);
+      emitLong(constant);
       emitByte(OP_POP); // Pop the value
     }
   } else if (match(TOKEN_EQUAL) || match(TOKEN_FAT_ARROW)) {
@@ -1210,18 +1242,20 @@ static void getter() {
   tableSet(&currentClass->fields, name, TRUE_VAL);
 
   if (match(TOKEN_EQUAL)) {
-    u8 nameConstant = makeConstant(name);
+    Long nameConstant = makeConstant(name);
     Compiler compiler;
 
     initCompiler(&compiler, TYPE_METHOD, asString(name));
     beginScope();
     expression("Expect expression after `let ... =`.");
-    emitBytes(OP_SET_PROPERTY, nameConstant);
+    emitByte(OP_SET_PROPERTY);
+    emitLong(nameConstant);
     emitByte(OP_RETURN);
 
     endCompiler();
     emitClosure(&compiler);
-    emitBytes(OP_METHOD, nameConstant);
+    emitByte(OP_METHOD);
+    emitLong(nameConstant);
   }
 
   skipNewline();
@@ -1240,7 +1274,7 @@ static void method() {
     name = parser.previous;
   }
 
-  u8 constant = identifierConstant(&name);
+  Long constant = identifierConstant(&name);
 
   FunType type = TYPE_METHOD;
   if (name.length == 4 && memcmp(name.start, "init", 4) == 0) {
@@ -1248,7 +1282,8 @@ static void method() {
   }
 
   function(type);
-  emitBytes(OP_METHOD, constant);
+  emitByte(OP_METHOD);
+  emitLong(constant);
 }
 
 // static void indent(Ctx *ctx) {
@@ -1260,10 +1295,11 @@ static void method() {
 static void classDeclaration(Ctx *ctx) {
   Value name = consumeIdent("Expect class name.");
   Token className = parser.previous;
-  u8 nameConstant = makeConstant(name);
+  Long nameConstant = makeConstant(name);
 
   bool isLocal = declareVariable();
-  emitBytes(OP_CLASS, nameConstant);
+  emitByte(OP_CLASS);
+  emitLong(nameConstant);
   emitByte(isLocal);
 
   if (isLocal) markDefined();
@@ -1275,7 +1311,8 @@ static void classDeclaration(Ctx *ctx) {
   if (check(TOKEN_LEFT_PAREN)) {
     function(TYPE_CLASS);
     Value init = OBJ_VAL(newString("init"));
-    emitBytes(OP_METHOD, makeConstant(init));
+    emitByte(OP_METHOD);
+    emitLong(makeConstant(init));
   }
 
   if (match(TOKEN_LESS)) {
@@ -1315,7 +1352,7 @@ static void classDeclaration(Ctx *ctx) {
 }
 
 static void funDeclaration() {
-  u8 global = parseVariable("Expect function name.");
+  Long global = parseVariable("Expect function name.");
   markDefined();
   function(TYPE_FUNCTION);
   if (!shouldCleanStack()) emitBytes(OP_PEEK, 0);
@@ -1327,8 +1364,8 @@ static void function_(Ctx *ctx) {
   function(TYPE_FUNCTION);
 }
 
-static u8 varDeclaration() {
-  u8 global = parseVariable("Expect variable name.");
+static Long varDeclaration() {
+  Long global = parseVariable("Expect variable name.");
 
   if (match(TOKEN_EQUAL)) parseAt(PREC_ASSIGNMENT);
   else emitByte(OP_NIL);
@@ -1349,7 +1386,8 @@ static void assert_(Ctx *ctx) {
   else if (!parseAt(ctx->precedence))
     return error("Expect expression after assert.");
 
-  emitBytes(OP_ASSERT, makeConstant(sourceSince(start)));
+  emitByte(OP_ASSERT);
+  emitLong(makeConstant(sourceSince(start)));
 }
 
 // for ;;i++:
@@ -1391,15 +1429,15 @@ static void forStatement() {
 
     emitLoop(loopStart);        // Loop back to condition.
     loopStart = incrementStart; // End loop with increment.
-    patchJump(bodyJump);        // Begin body.
+    landJump(bodyJump);         // Begin body.
   }
 
   statement();         // []
   emitLoop(loopStart); // Loop back to condition.
 
-  if (exitJump != -1) {  // If we had a condition,
-    patchJump(exitJump); // [0 cond]               begin exit.
-    emitByte(OP_POP);    //  Pop condition.
+  if (exitJump != -1) { // If we had a condition,
+    landJump(exitJump); // [0 cond]               begin exit.
+    emitByte(OP_POP);   //  Pop condition.
   }
 
   endScope(); // []
@@ -1418,22 +1456,22 @@ static void ifStatement() {
   statement();                    // Then branch.
 
   int elseJump = emitJump(OP_JUMP); // Jump over else branch.
-  patchJump(thenJump);              // End of then branch. Start of else branch.
+  landJump(thenJump);               // End of then branch. Start of else branch.
 
   emitByte(OP_POP);                   // [] pop condition
   if (match(TOKEN_ELSE)) statement(); // Else branch.
-  patchJump(elseJump);                // End of else branch.
+  landJump(elseJump);                 // End of else branch.
 }
 
 static void match_() {
-  let matchFn = makeConstant(string("=="));
+  Long matchFn = makeConstant(string("=="));
   expression("Expect expression after 'match'."); // [0 match expr]
   assertStackSize(1, "match expression");
   consume(TOKEN_INDENT, "Expect block after match expression.");
 
   int startJump = emitJump(OP_JUMP); // Jump over the exit jump.
   int exitJump = emitJump(OP_JUMP);  // Below, we use this to exit.
-  patchJump(startJump);
+  landJump(startJump);
 
   // For each pattern in the match block:
   while (!check(TOKEN_DEDENT) && !check(TOKEN_EOF) && !check(TOKEN_ELSE)) {
@@ -1446,7 +1484,9 @@ static void match_() {
     // do {...} while (parseAbove(PREC_COMMA)));
     if (parseAbove(PREC_ARROW)) { // [match expr][match expr][pattern]
       consume(TOKEN_ARROW, "Expect '->' after pattern.");
-      emit3Bytes(OP_INVOKE, matchFn, 1);
+      emitByte(OP_INVOKE);
+      emitLong(matchFn);
+      emitByte(1);
       assertStackSize(2, "match expr, match result");
 
       int skipJump = emitJump(
@@ -1458,7 +1498,7 @@ static void match_() {
       skipNewline();
       emitLoop(exitJump);
 
-      patchJump(skipJump);
+      landJump(skipJump);
       emitByte(OP_POP); // [match expr] Pop the match failure.
     } else {
       error("Expect pattern and then '->'.");
@@ -1471,7 +1511,7 @@ static void match_() {
     expression("Expected expression after 'else'."); // [expr]
   }
 
-  patchJump(exitJump);
+  landJump(exitJump);
   consume(TOKEN_DEDENT, "Expect dedent after match block.");
 }
 
@@ -1491,7 +1531,8 @@ static void throw_() {
   Value sourceLocation = OBJ_VAL(getSourceLocation());
 
   if (!expression(NULL)) emit(nil);
-  emitBytes(OP_THROW, makeConstant(sourceLocation));
+  emitByte(OP_THROW);
+  emitLong(makeConstant(sourceLocation));
 }
 
 static void whileStatement() {
@@ -1508,19 +1549,21 @@ static void whileStatement() {
   int exitJump = emitJump(OP_JUMP_IF_FALSE);
   emitByte(OP_POP);
   emit(False);
-  emit3Bytes(OP_SET_LOCAL, runElse, OP_POP);
+  emitByte(OP_SET_LOCAL);
+  emitLong(runElse);
+  emitByte(OP_POP);
 
   if (check(TOKEN_INDENT) || match(TOKEN_COLON)) statement();
   else skipNewline();
   emitLoop(loopStart); // Loop back to the condition.
 
-  patchJump(exitJump); // Exit the loop.
+  landJump(exitJump); // Exit the loop.
   assertStackSize(1, "falsey while condition");
   emitByte(OP_POP); // []
 
   int elseJump = emitJump(OP_JUMP_IF_FALSE);
   if (match(TOKEN_ELSE)) statement();
-  patchJump(elseJump);
+  landJump(elseJump);
   endScope();
 }
 

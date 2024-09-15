@@ -103,14 +103,17 @@ typedef struct OpInfo {
   i8 outputs;
 } OpInfo;
 
+typedef u32 Long;
+#define LONG_BYTE_MAX 0x7f
+
 void initChunk(Chunk *chunk);
 void markChunk(Chunk *chunk);
 void freeChunk(Chunk *chunk);
 void growChunk(Chunk *chunk, int capacity);
 void writeChunk(Chunk *chunk, u8 byte, int line, Value comment);
-int writeChunkLong(Chunk *chunk, u32 c, int line, Value comment);
+int writeChunkLong(Chunk *chunk, Long c, int line, Value comment);
 int addConstant(Chunk *chunk, Value value);
-Value getConstant(Chunk *chunk, u32 id);
+Value getConstant(Chunk *chunk, Long id);
 Value readConstant(Chunk *chunk, u8 **ip);
 
 extern OpInfo opInfo[];
@@ -121,6 +124,6 @@ int inputCount(Chunk *chunk, u8 *ip);
 int outputCount(Chunk *chunk, u8 *ip);
 int inputOutputDelta(Chunk *chunk, u8 *ip);
 
-int encodeLong(u32 c, u8 *bytes);
-int decodeLong(u32 *c, u8 *bytes);
+int encodeLong(Long c, u8 *bytes);
+int decodeLong(Long *c, u8 *bytes);
 #endif

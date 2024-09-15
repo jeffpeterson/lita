@@ -21,7 +21,7 @@ static Value fn_compile_1() {
   Chunk *c = &f->chunk;
   initChunk(c);
   c->count = c->capacity = 2;
-  c->version = 0;
+  c->version = 1;
   u8 code[] = {
     OP_NIL,
     OP_RETURN,
@@ -47,7 +47,7 @@ static Value fn_markCompilerRoots_2() {
   Chunk *c = &f->chunk;
   initChunk(c);
   c->count = c->capacity = 2;
-  c->version = 0;
+  c->version = 1;
   u8 code[] = {
     OP_NIL,
     OP_RETURN,
@@ -73,7 +73,7 @@ static Value fn_src_slash_lita_slash_compiler_dot_lita_0() {
   Chunk *c = &f->chunk;
   initChunk(c);
   c->count = c->capacity = 65;
-  c->version = 0;
+  c->version = 1;
   u8 code[] = {
     OP_CONSTANT, 1,
     OP_DEFINE_GLOBAL, 0,

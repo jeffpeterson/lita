@@ -5,12 +5,13 @@
 #include "string.h"
 #include "term.h"
 #include "value.h"
+#include "vm.h"
 #include "xxhash.h"
 
 bool isFalsey(Value value) { return isNil(value) || isFalse(value); }
 
 double as_num(Value x) {
-  assert(isNumber(x));
+  ASSERT(isNumber(x));
   return AS_NUMBER(x);
 }
 
