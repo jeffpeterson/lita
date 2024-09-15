@@ -46,9 +46,8 @@ typedef struct Parser {
 
 /** Higher precedence means tighter binding. */
 typedef enum Precedence {
-  PREC_NONE, // Lower precedence
-  // PREC_NEWLINE,    // NEWLINE
-  PREC_KEYWORD,    // if else while for etc...
+  PREC_NONE,       // Lower precedence
+  PREC_NEWLINE,    // NEWLINE
   PREC_SEMI,       // ; ?
   PREC_ARROW,      // ->
   PREC_COMMA,      // ,
@@ -1698,11 +1697,11 @@ ParseRule rules[] = {
     [TOKEN_SUPER] = {super_, NULL, PREC_NONE},
     [TOKEN_THIS] = {this_, NULL, PREC_NONE},
 
-    [TOKEN_MATCH] = {match_, NULL, PREC_KEYWORD},
-    [TOKEN_PRINT] = {print, NULL, PREC_KEYWORD},
-    [TOKEN_RETURN] = {return_, NULL, PREC_KEYWORD},
-    [TOKEN_THROW] = {throw_, NULL, PREC_KEYWORD},
-    [TOKEN_FN] = {function_, NULL, PREC_KEYWORD},
+    [TOKEN_MATCH] = {match_, NULL, PREC_NONE},
+    [TOKEN_PRINT] = {print, NULL, PREC_NONE},
+    [TOKEN_RETURN] = {return_, NULL, PREC_NONE},
+    [TOKEN_THROW] = {throw_, NULL, PREC_NONE},
+    [TOKEN_FN] = {function_, NULL, PREC_NONE},
 
     [TOKEN_SEMICOLON] = {NULL, semi, PREC_SEMI},
     [TOKEN_QUESTION] = {NULL, question, PREC_SEMI},
