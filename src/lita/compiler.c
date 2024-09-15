@@ -266,7 +266,7 @@ static bool consume(TokenType type, const char *message) {
   return false;
 }
 
-static void skipNewline() { match(TOKEN_NEWLINE); }
+static bool skipNewline() { return match(TOKEN_NEWLINE); }
 
 static void consumeAtLeast(TokenType type, const char *message) {
   if (parser.current.type >= type) {
@@ -1742,5 +1742,5 @@ ParseRule rules[] = {
     [TOKEN_DOT] = {dotSugar, dot, PREC_DOT},
 
     [TOKEN_LEFT_PAREN] = {grouping, call, PREC_CALL},
-    // [TOKEN_NEWLINE] = {NULL, newline, PREC_NEWLINE},
+    [TOKEN_NEWLINE] = {NULL, newline, PREC_NEWLINE},
 };
