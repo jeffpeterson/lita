@@ -697,6 +697,12 @@ static bool parseAbove(Precedence precedence);
  * Returns true if successful.
  */
 static bool parseAt(Precedence precedence) {
+  if (precedence <= PREC_NONE) {
+    error("Cannot parse at PREC_NONE. PREC_NONE tokens have no infix. "
+          "parseAbove(PREC_NONE) instead.");
+    return false;
+  }
+
   ParseRule *rule = getRule(parser.current.type);
   ParseFn *prefix = rule->prefix;
   if (prefix == NULL) return false;
@@ -717,7 +723,8 @@ static bool parseAt(Precedence precedence) {
     advance();
     ParseFn *infix = rule->infix;
     if (infix == NULL) {
-      error("No infix operator.");
+      error("Missing infix operator. Set precedence to PREC_NONE if this is "
+            "intentional.");
       return false;
     }
     infix(&ctx);
