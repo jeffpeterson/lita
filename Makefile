@@ -16,10 +16,10 @@ OBJECTS := $(patsubst src/%.c,_build/%.o, $(SOURCES))
 LITA_SRC := $(shell find src/lita -name "*.lita" -not -path "*/ideas/*")
 LITA_C   := $(LITA_SRC:.lita=.lita.c)
 LITA_O   := $(LITA_C:src/%.c=_build/%.o)
-NON_LITA_C := $(filter-out %.lita.c,$(SOURCES))
 # LITA_EXISTING_C := $(shell find src/lita/lib -name "*.c")
 
 TARGET_C := $(filter-out %_test.c,$(SOURCES))
+NON_LITA_C := $(filter-out %.lita.c,$(TARGET_C))
 
 TARGET_O  := $(TARGET_C:src/%.c=_build/%.o)
 # TARGET_O  := $(filter-out %.lita.o,$(TARGET_O))
