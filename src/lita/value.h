@@ -152,10 +152,11 @@ Hash hashBytes(const char *key, usize length);
 Hash hashValue(Value val);
 Hash hashValues(Value *vals, usize length);
 
-double as_num(Value x);
-static inline int asInt(Value x) { return AS_NUMBER(x); }
-static inline bool isInt(Value x) {
-  return isNumber(x) && asInt(x) == AS_NUMBER(x);
+#define as_num(v) asNumber(v)
+double asNumber(Value v);
+static inline int asInt(Value v) { return AS_NUMBER(v); }
+static inline bool isInt(Value v) {
+  return isNumber(v) && asInt(v) == AS_NUMBER(v);
 }
 
 #endif

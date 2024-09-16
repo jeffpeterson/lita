@@ -10,9 +10,9 @@
 
 bool isFalsey(Value value) { return isNil(value) || isFalse(value); }
 
-double as_num(Value x) {
-  ASSERT(isNumber(x));
-  return AS_NUMBER(x);
+double asNumber(Value v) {
+  ASSERT(isNumber(v));
+  return AS_NUMBER(v);
 }
 
 void initValueArray(ValueArray *array) {

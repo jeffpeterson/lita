@@ -5,7 +5,7 @@
 #include "common.h"
 #include "object.h"
 
-#define str string
+#define str(...) string(__VA_ARGS__)
 
 #define allocateString() ALLOCATE_OBJ(String)
 #define isString(val) isObjDef(val, &String)

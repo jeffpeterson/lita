@@ -302,7 +302,20 @@ NATIVE_METHOD(String, codePointSize, 0) {
   if (str->length == 0) return NIL_VAL;
   return NUMBER_VAL(utfBytes(str->chars));
 }
+NATIVE_METHOD(String, slice, 2) {
+  ObjString *str = asString(this);
+  int start = asInt(args[0]);
+  int length = asInt(args[1]);
+  if (start == 0 && length < 0) start = length, length = -length;
+  if (start < 0) start = str->length + start;
+  if (length < 0) start += length, length = -length;
+  if (start >= str->length) return string("");
+  if (start < 0) start = 0;
+  if (start + length > str->length) length = str->length - start;
+  if (start == 0 && length == str->length) return this;
 
+  return OBJ_VAL(copyString(str->chars + start, length));
+}
 NATIVE_METHOD(String, replace, 2) {
   ObjString *str = asString(this);
   ObjString *to = asString(args[1]);
