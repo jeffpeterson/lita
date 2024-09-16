@@ -1,16 +1,15 @@
 class Range
-	.inspect = "" start.inspect '.. end.inspect
-	.string  = "" start.string '.. end.string
+	.string  = "" start '.. end
 	.length  = end - start
 	.map(f) = f(start) .. f(end)
 	.array
 		let a = []
 		let i = start
-		if start <= end
-			while i <= end
-				a << i++
-		else
-			while i >= end
-				a << i--
+		while i <= end
+			a << i
+			i++
+		else while i >= end
+			a << i
+			i--
 		return a
 	.sample = random(start, end)
