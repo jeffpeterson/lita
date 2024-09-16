@@ -156,7 +156,7 @@ OpInfo opInfo[] = {
 };
 
 u8 instructionSize(Chunk *chunk, u8 *ip) {
-  switch (opInfo[*ip].type) {
+  switch (opInfo[*ip++].type) {
   case SIMPLE: return 1;
   case BYTE: return 2;
   case CONSTANT:
@@ -172,13 +172,13 @@ u8 instructionSize(Chunk *chunk, u8 *ip) {
 
 int inputCount(Chunk *chunk, u8 *ip) {
   OpInfo op = opInfo[*ip];
-  switch (*ip) {
-  case OP_CALL: return ip[1] + 1;
-  case OP_SUPER_INVOKE:
-  case OP_INVOKE: return ip[2] + 1;
+  switch (*ip++) {
+  case OP_CALL: return ip[0] + 1;
+  case OP_INVOKE: readConstant(chunk, &ip); return ip[0] + 1;
+  case OP_SUPER_INVOKE: readConstant(chunk, &ip); return ip[0] + 2;
   case OP_POPN:
-  case OP_TUPLE: return ip[1];
-  case OP_ARRAY: return as_num(getConstant(chunk, ip[1]));
+  case OP_TUPLE: return ip[0];
+  case OP_ARRAY: return asInt(readConstant(chunk, &ip));
   default: return op.inputs;
   }
 }
@@ -196,7 +196,7 @@ int inputOutputDelta(Chunk *chunk, u8 *ip) {
  * The long is encoded in 7-bit chunks, with the most significant bit of each
  * byte set to indicate that there are more bytes to follow. The bytes are
  * written to the code array in reverse order with the least significant byte
- * first.
+ * first. Returns the number of bytes read.
  */
 int decodeLong(Long *cp, u8 *bytes) {
   int i = 0, c = 0;
@@ -211,7 +211,7 @@ int decodeLong(Long *cp, u8 *bytes) {
  * The long is encoded in 7-bit chunks, with the most significant bit of each
  * byte set to indicate that there are more bytes to follow. The bytes are
  * written to the code array in reverse order with the least significant byte
- * first.
+ * first. Returns the number of bytes written.
  */
 int encodeLong(Long c, u8 *bytes) {
   int i = 0;

@@ -13,7 +13,7 @@ typedef enum OpCode {
   OP_FALSE,         // [] -> [false]
                     //
   OP_RANGE,         // [start, end] -> [Range]
-  OP_TUPLE,         // (n) [...args, arg] -> [tuple]
+  OP_TUPLE,         // (argc) [...args] -> [tuple]
                     //
   OP_PEEK,          // (n) [...] -> [..., peek(n)]
   OP_POP,           // [v] -> []
@@ -61,14 +61,14 @@ typedef enum OpCode {
   OP_PRINT,         // [value] -> [value]
   OP_RETURN,        // [value] -> []
                     //
-  OP_INVOKE,        // (name, n) [self, ...args] -> [return]
-  OP_SUPER_INVOKE,  // (name, n) [self, ...args, super] -> [return]
+  OP_INVOKE,        // (name, argc) [self, ...args] -> [return]
+  OP_SUPER_INVOKE,  // (name, argc) [self, ...args, super] -> [return]
   OP_ASSERT,        // (source_code) [value] -> [value]
                     //
   OP_GET_VAR,       // (name) [self] -> [value]
   OP_SET_VAR,       // (name) [self, value] -> [value]
                     //
-  OP_ARRAY,         // (n) [...args, arg] -> [array]
+  OP_ARRAY,         // (argc) [...args] -> [array]
   _OP_MATCH,        // UNUSED
   OP_DEBUG_STACK,   // (tag) Logs the stack.
   OP_ASSERT_STACK,  // (size) Asserts the stack is the expected size.

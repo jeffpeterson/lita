@@ -23,3 +23,5 @@ class Array
 
 	.print(io)
 		each(.print(io))
+
+	.sample = get(random(length))

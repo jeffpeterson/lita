@@ -101,7 +101,7 @@ int disassembleInstruction(Chunk *chunk, int offset) {
   case INVOKE: {
     offset += decodeLong(&constant, code + offset);
     u8 argCount = code[offset++];
-    byte(constant);
+    longHex(constant);
     byte(argCount);
     arrow();
     inspectValue(stderr, chunk->constants.values[constant]);

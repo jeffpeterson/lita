@@ -13,3 +13,4 @@ class Range
 			while i >= end
 				a << i--
 		return a
+	.sample = random(start, end)

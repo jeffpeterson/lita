@@ -125,6 +125,10 @@ flecs:
 	curl https://raw.githubusercontent.com/SanderMertens/flecs/v4.0.1/flecs.c > src/lita/flecs.c
 	curl https://raw.githubusercontent.com/SanderMertens/flecs/v4.0.1/flecs.h > src/lita/flecs.h
 
+pcg:
+	curl https://raw.githubusercontent.com/imneme/pcg-c-basic/master/pcg_basic.c > src/lita/pcg_basic.c
+	curl https://raw.githubusercontent.com/imneme/pcg-c-basic/master/pcg_basic.h > src/lita/pcg_basic.h
+
 .PHONY: default all clean test db db/test lib prune
 .PRECIOUS: $(TARGET) %.c %.o
 .SUFFIXES: # disable crazy built-in rules that append .c

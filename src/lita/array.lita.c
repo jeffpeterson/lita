@@ -341,6 +341,44 @@ static Value fn_print_5() {
   return obj(f);
 }
 
+             // sample
+static Value fn_sample_7() {
+  ObjFunction *f = newFunction();
+  f->arity = 0;
+  f->upvalueCount = 0;
+  f->name = newString("sample");
+
+  Chunk *c = &f->chunk;
+  initChunk(c);
+  c->count = c->capacity = 19;
+  c->version = 1;
+  u8 code[] = {
+    OP_GET_LOCAL, 0,
+    OP_GET_VAR, 0,
+    OP_GET_LOCAL, 0,
+    OP_GET_VAR, 1,
+    OP_GET_LOCAL, 0,
+    OP_GET_VAR, 2,
+    OP_CALL, 1,
+    OP_CALL, 1,
+    OP_RETURN,
+    OP_NIL,
+    OP_RETURN,
+  };
+  int lines[] = { 27, 27, 27, 27, 27, 27, 27, 27, 27, 27, 27, 27, 27, 27, 27, 27, 27, 27, 27,};
+  c->code = cloneMemory(code, sizeof(code));
+  c->lines = cloneMemory(lines, sizeof(lines));
+
+  c->constants.count = c->constants.capacity = 3;
+  Value values[] = {
+    string("get"),
+    string("random"),
+    string("length"),
+  };
+  c->constants.values = cloneMemory(values, sizeof(values));
+  return obj(f);
+}
+
              // src/lita/array.lita
 static Value fn_src_slash_lita_slash_array_dot_lita_0() {
   ObjFunction *f = newFunction();
@@ -350,7 +388,7 @@ static Value fn_src_slash_lita_slash_array_dot_lita_0() {
 
   Chunk *c = &f->chunk;
   initChunk(c);
-  c->count = c->capacity = 38;
+  c->count = c->capacity = 42;
   c->version = 1;
   u8 code[] = {
     OP_CLASS, 0, 0,
@@ -368,17 +406,19 @@ static Value fn_src_slash_lita_slash_array_dot_lita_0() {
     OP_METHOD, 8,
     OP_CONSTANT, 11,
     OP_METHOD, 10,
+    OP_CONSTANT, 13,
+    OP_METHOD, 12,
     OP_POP,
     OP_POP,
     OP_GET_GLOBAL, 0,
-    OP_ASSERT_STACK, 12, 2,
+    OP_ASSERT_STACK, 14, 2,
     OP_RETURN,
   };
-  int lines[] = { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 10, 10, 10, 10, 17, 17, 17, 17, 22, 22, 22, 22, 25, 25, 25, 25, 26, 26, 26, 26, 26, 26, 26, 26,};
+  int lines[] = { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 10, 10, 10, 10, 17, 17, 17, 17, 22, 22, 22, 22, 25, 25, 25, 25, 27, 27, 27, 27, 27, 27, 27, 27, 28, 28, 28, 28,};
   c->code = cloneMemory(code, sizeof(code));
   c->lines = cloneMemory(lines, sizeof(lines));
 
-  c->constants.count = c->constants.capacity = 13;
+  c->constants.count = c->constants.capacity = 15;
   Value values[] = {
     string("Array"),
     string("Object"),
@@ -392,6 +432,8 @@ static Value fn_src_slash_lita_slash_array_dot_lita_0() {
     fn_map_4(),
     string("print"),
     fn_print_5(),
+    string("sample"),
+    fn_sample_7(),
     string("script return value"),
   };
   c->constants.values = cloneMemory(values, sizeof(values));
