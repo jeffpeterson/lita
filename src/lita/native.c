@@ -43,11 +43,9 @@ NATIVE_FUNCTION(elapsed, 0) { return number(elapsed()); }
 NATIVE_FUNCTION(hash, 1) { return OBJ_VAL(stringf("%#x", hashValue(args[0]))); }
 NATIVE_FUNCTION(pp, 1) { return argc > 1 ? pp(t(argc, args)) : pp(args[0]); }
 
-NATIVE_METHOD(Any, self, 0) { return this; }
 NATIVE_METHOD(Any, class, 0) { return classOf(this); }
 NATIVE_METHOD(Any, inspect, 0) { return inspect(this); }
 NATIVE_METHOD(Any, object_id, 0) { return NUMBER_VAL((u64)AS_OBJ(this)); }
-NATIVE_METHOD(Any, string, 0) { return inspect(this); }
 NATIVE_METHOD_NAMED(Any, eql, "==", 1) {
   return BOOL_VAL(valuesEqual(this, args[0]));
 }
@@ -58,24 +56,14 @@ NATIVE_METHOD(Object, etype, 0) {
   char *type_str = ecs_type_str(vm.world, type);
   return OBJ_VAL(takeString(type_str, -1));
 }
-
-NATIVE_METHOD_NAMED(Number, gt, ">", 1) {
-  return BOOL_VAL(as_num(this) > as_num(args[0]));
-}
-NATIVE_METHOD_NAMED(Number, gte, ">=", 1) {
-  return BOOL_VAL(as_num(this) >= as_num(args[0]));
-}
-NATIVE_METHOD_NAMED(Number, lt, "<", 1) {
-  return BOOL_VAL(as_num(this) < as_num(args[0]));
-}
-NATIVE_METHOD_NAMED(Number, lte, "<=", 1) {
-  return BOOL_VAL(as_num(this) <= as_num(args[0]));
+NATIVE_METHOD_NAMED(Any, spaceship, "<=>", 1) {
+  return asNumber(this) - asNumber(args[0]);
 }
 NATIVE_METHOD_NAMED(Number, star, "*", 1) {
-  return NUMBER_VAL(as_num(this) * as_num(args[0]));
+  return NUMBER_VAL(asNumber(this) * asNumber(args[0]));
 }
 NATIVE_METHOD(Number, string, 0) {
-  return OBJ_VAL(stringf("%g", as_num(this)));
+  return OBJ_VAL(stringf("%g", asNumber(this)));
 }
 
 static void markNative(Obj *obj) {

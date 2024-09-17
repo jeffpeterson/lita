@@ -1711,6 +1711,7 @@ ParseRule rules[] = {
     [TOKEN_GREATER_EQUAL] = {NULL, binary, PREC_COMPARISON},
     [TOKEN_LESS] = {NULL, binary, PREC_COMPARISON},
     [TOKEN_LESS_EQUAL] = {NULL, binary, PREC_COMPARISON},
+    [TOKEN_SPACESHIP] = {NULL, binary, PREC_COMPARISON},
 
     [TOKEN_MINUS] = {prefix, binary, PREC_TERM},
     [TOKEN_PLUS] = {NULL, binary, PREC_TERM},

@@ -292,6 +292,11 @@ ALIAS_OPERATOR(String, concat, star, "*", 1);
 NATIVE_METHOD(String, escape, 0) {
   return OBJ_VAL(escapeString(asString(this)));
 }
+NATIVE_METHOD_NAMED(String, spaceship, "<=>", 1) {
+  ObjString *str = asString(this);
+  ObjString *other = asString(args[0]);
+  return memcmp(str->chars, other->chars, str->length);
+}
 NATIVE_METHOD(String, codePoint, 0) {
   ObjString *str = asString(this);
   if (str->length == 0) return NIL_VAL;

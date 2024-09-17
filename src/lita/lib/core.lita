@@ -1,5 +1,12 @@
 class Any < nil
 	!= (v) = !(this == v)
+	.self = this
+	.string = inspect
+
+	> (v) = this <=> v >= 0
+	< (v) = this <=> v <= 0
+	>= (v) = this <=> v > 0
+	<= (v) = this <=> v < 0
 
 class Nil < Any
 	.string = ""

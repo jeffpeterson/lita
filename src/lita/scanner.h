@@ -65,6 +65,7 @@ typedef enum {
   TOKEN_LESS,
   TOKEN_LESS_LESS,
   TOKEN_LESS_EQUAL,
+  TOKEN_SPACESHIP,
 
   // Literals.
   TOKEN_NUMBER,
