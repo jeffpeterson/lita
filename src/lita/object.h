@@ -1,8 +1,6 @@
 #ifndef lita_object_h
 #define lita_object_h
 
-#include <stdarg.h>
-
 typedef struct ObjDef ObjDef;
 
 #include "common.h"

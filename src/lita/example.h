@@ -1,8 +1,8 @@
 #ifndef lita_example_h
 #define lita_example_h
 
-#include "common.h"
 #include "object.h"
+#include "string.h"
 #include "value.h"
 
 #define allocateExample() ALLOCATE_OBJ(Example)

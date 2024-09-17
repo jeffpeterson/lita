@@ -17,11 +17,11 @@ typedef struct ObjArray {
 #define allocateArray() ALLOCATE_OBJ(Array)
 
 ObjArray *copyArray(Value *values, u32 length);
-void resize_array(ObjArray *arr, u32 capacity);
-void grow_array(ObjArray *arr, u32 minCapacity);
-void write_array(ObjArray *arr, u32 index, Value *values, u32 length);
-void append_array(ObjArray *arr, Value value);
-Value read_array(ObjArray *arr, u32 index);
+void resizeArray(ObjArray *arr, u32 capacity);
+void growArray(ObjArray *arr, u32 minCapacity);
+void writeArray(ObjArray *arr, u32 index, Value *values, u32 length);
+void appendArray(ObjArray *arr, Value value);
+Value readArray(ObjArray *arr, u32 index);
 
 extern const ObjDef Array;
 

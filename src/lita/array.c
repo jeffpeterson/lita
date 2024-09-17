@@ -1,42 +1,40 @@
-#include <assert.h>
-
 #include "array.h"
 #include "memory.h"
 #include "native.h"
 
 ObjArray *copyArray(Value *values, u32 length) {
   ObjArray *arr = allocateArray();
-  resize_array(arr, length);
-  write_array(arr, 0, values, length);
+  resizeArray(arr, length);
+  writeArray(arr, 0, values, length);
   return arr;
 }
 
-void resize_array(ObjArray *arr, u32 capacity) {
+void resizeArray(ObjArray *arr, u32 capacity) {
   arr->values = GROW_ARRAY(Value, arr->values, arr->capacity, capacity);
   arr->capacity = capacity;
 }
 
-void grow_array(ObjArray *arr, u32 minCapacity) {
+void growArray(ObjArray *arr, u32 minCapacity) {
   if (arr->capacity >= minCapacity) return;
   u32 capacity = arr->capacity;
   if (capacity < 8) capacity = 8;
   while (capacity < minCapacity) capacity *= 2;
-  resize_array(arr, capacity);
+  resizeArray(arr, capacity);
 }
 
-void write_array(ObjArray *arr, u32 index, Value *values, u32 length) {
+void writeArray(ObjArray *arr, u32 index, Value *values, u32 length) {
   u32 minLength = index + length;
-  if (arr->capacity <= minLength) grow_array(arr, minLength);
+  if (arr->capacity <= minLength) growArray(arr, minLength);
   memcpy(arr->values + index, values, length * sizeof(Value));
   for (int i = arr->length; i < index; i++) arr->values[i] = nil;
   if (minLength > arr->length) arr->length = minLength;
 }
 
-void append_array(ObjArray *arr, Value value) {
-  write_array(arr, arr->length, &value, 1);
+void appendArray(ObjArray *arr, Value value) {
+  writeArray(arr, arr->length, &value, 1);
 }
 
-Value read_array(ObjArray *arr, u32 index) {
+Value readArray(ObjArray *arr, u32 index) {
   if (index >= arr->length) return nil;
   return arr->values[index];
 }
@@ -87,14 +85,14 @@ NATIVE_METHOD_NAMED(Array, plus, "+", 1) {
   ObjArray *a = asArray(this);
   ObjArray *b = asArray(args[0]);
   ObjArray *out = allocateArray();
-  resize_array(out, a->length + b->length);
-  write_array(out, 0, a->values, a->length);
-  write_array(out, a->length, b->values, b->length);
+  resizeArray(out, a->length + b->length);
+  writeArray(out, 0, a->values, a->length);
+  writeArray(out, a->length, b->values, b->length);
   return OBJ_VAL(out);
 }
 NATIVE_METHOD(Array, push, 0) {
   ObjArray *arr = asArray(this);
-  for (int i = 0; i < argc; i++) append_array(arr, args[i]);
+  for (int i = 0; i < argc; i++) appendArray(arr, args[i]);
   return this;
 }
 NATIVE_METHOD(Array, slice, 0) {

@@ -4,11 +4,9 @@
 #include <string.h>
 
 #include "class.h"
-#include "lib.h"
 #include "memory.h"
 #include "object.h"
 #include "table.h"
-#include "term.h"
 #include "vm.h"
 
 Obj *allocateObject(const ObjDef *def) {
@@ -58,7 +56,7 @@ int inspectObject(FILE *io, Obj *obj) {
   if (!obj) return fprintf(io, "nil");
   if (obj->def->inspect) return obj->def->inspect(obj, io);
   return fprintf(io, "%s(", obj->klass->name->chars) +
-         inspect_table(io, &obj->fields) + fprintf(io, ")");
+         inspectTable(io, &obj->fields) + fprintf(io, ")");
 }
 
 int cmpObjects(Obj *a, Obj *b) {

@@ -1,7 +1,6 @@
 #ifndef lita_iterator_h
 #define lita_iterator_h
 
-#include "common.h"
 #include "object.h"
 
 #define allocateIterator() ALLOCATE_OBJ(Iterator)

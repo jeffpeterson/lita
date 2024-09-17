@@ -12,11 +12,11 @@
 #define asString(val) as(String, val)
 #define asChars(val) (asString(val)->chars)
 
-struct ObjString {
+typedef struct ObjString {
   Obj obj;
   int length;
   char *chars;
-};
+} ObjString;
 
 extern const ObjDef String;
 

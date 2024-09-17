@@ -5,9 +5,7 @@
 #include <string.h>
 
 #include "array.h"
-#include "chunk.h"
 #include "common.h"
-#include "debug.h"
 #include "string.h"
 #include "system.h"
 #include "vm.h"
@@ -82,7 +80,7 @@ int main(int argc, char *argv[]) {
 
       for (int i = optind + 1; i < argc; i++) {
         let arg = string(argv[i]);
-        append_array(args, arg);
+        appendArray(args, arg);
         setGlobal(OBJ_VAL(stringf("$%d", i - optind)), arg);
       }
 

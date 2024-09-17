@@ -35,12 +35,12 @@ double tableInc(Table *table, Value key, double amt);
 
 Obj *tableFindObj(Table *table, const char *bytes, int length, Hash hash);
 
-ObjIterator *iterate_table(Table *table);
+ObjIterator *iterateTable(Table *table);
 
 void tableRemoveWhite(Table *table);
 void markTable(Table *table);
-char *table_bytes(Table *table, int length);
-int inspect_table(FILE *io, Table *table);
+char *tableBytes(Table *table, int length);
+int inspectTable(FILE *io, Table *table);
 
 extern ECS_COMPONENT_DECLARE(Table);
 

@@ -7,7 +7,6 @@
 #include "common.h"
 
 typedef struct Obj Obj;
-typedef struct ObjString ObjString;
 
 typedef enum {
   VAL_VOID,
@@ -60,7 +59,7 @@ typedef uint64_t Value;
 #define isFalse(val) ((val) == FALSE_VAL)
 #define isNil(val) ((val) == NIL_VAL)
 #define isVoid(val) ((val) == VOID_VAL)
-#define isNumber(val) (((val)&QNAN) != QNAN)
+#define isNumber(val) (((val) & QNAN) != QNAN)
 #define isObject(val) valueIsObject(val)
 
 static inline double valueToNum(Value value) {

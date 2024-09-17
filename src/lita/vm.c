@@ -1,23 +1,19 @@
-#include <assert.h>
 #include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
 #include "array.h"
-#include "bound.h"
 #include "class.h"
 #include "common.h"
 #include "compiler.h"
 #include "debug.h"
 #include "io.h"
-#include "iterator.h"
 #include "lib.h"
 #include "memory.h"
 #include "object.h"
 #include "range.h"
 #include "readline.h"
-#include "source_location.h"
 #include "string.h"
 #include "system.h"
 #include "term.h"
@@ -918,7 +914,9 @@ void LitaImport(World *world) {
 
   ECS_IMPORT(world, Buffers);
   ECS_IMPORT(world, Objects);
+#if ENABLE_REGEX
   ECS_IMPORT(world, Regexes);
+#endif
   ECS_IMPORT(world, Tables);
 
   ECS_COMPONENT_DEFINE(world, VM);

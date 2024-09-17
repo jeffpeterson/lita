@@ -1,8 +1,8 @@
 #ifndef lita_class_h
 #define lita_class_h
 
-#include "common.h"
 #include "object.h"
+#include "string.h"
 #include "value.h"
 
 #define isClass(val) isObjDef(val, &Class)

@@ -1,6 +1,5 @@
 #include <stdlib.h>
 
-#include "buffer.h"
 #include "chunk.h"
 #include "memory.h"
 #include "vm.h"

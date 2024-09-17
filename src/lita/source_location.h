@@ -1,8 +1,8 @@
 #ifndef lita_sourceLocation_h
 #define lita_sourceLocation_h
 
-#include "common.h"
 #include "object.h"
+#include "string.h"
 #include "value.h"
 
 #define allocateSourceLocation() ALLOCATE_OBJ(SourceLocation)

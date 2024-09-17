@@ -5,7 +5,6 @@
 
 #include <pcre2.h>
 
-#include "common.h"
 #include "ecs.h"
 #include "object.h"
 #include "string.h"

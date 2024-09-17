@@ -139,25 +139,25 @@ void tableMerge(Table *from, Table *to) {
   }
 }
 
-static void iterate_table_entries_next(ObjIterator *iter) {
+static void iterateTableEntriesNext(ObjIterator *iter) {
   Entry *entry = (Entry *)iter->current;
   iter->current = (Value *)++entry;
 }
 
 /** Iterates over all entries of this table. */
-static ObjIterator *iterate_table_entries(Table *table) {
+static ObjIterator *iterateTableEntries(Table *table) {
   ObjIterator *iter = allocateIterator();
 
   iter->size = 2;
   iter->total = table->capacity;
   iter->current = (Value *)table->entries;
-  iter->next = iterate_table_entries_next;
+  iter->next = iterateTableEntriesNext;
   iter->done = table->capacity == 0;
 
   return iter;
 }
 
-static void iterate_table_next(ObjIterator *iter) {
+static void iterateTableNext(ObjIterator *iter) {
   Entry *entry = (Entry *)iter->current;
   ObjIterator *entries = asIterator(iter->state);
 
@@ -172,15 +172,15 @@ static void iterate_table_next(ObjIterator *iter) {
 }
 
 /** Iterates over the key-value pairs of this table. */
-ObjIterator *iterate_table(Table *table) {
-  ObjIterator *entries = iterate_table_entries(table);
+ObjIterator *iterateTable(Table *table) {
+  ObjIterator *entries = iterateTableEntries(table);
   ObjIterator *iter = allocateIterator();
 
   iter->state = OBJ_VAL(entries);
   iter->size = 2;
   iter->total = table->len;
   iter->current = (Value *)table->entries;
-  iter->next = iterate_table_next;
+  iter->next = iterateTableNext;
   iter->done = table->len == 0;
 
   return iter;
@@ -234,12 +234,12 @@ void markTable(Table *table) {
   }
 }
 
-char *table_bytes(Table *table, int length) {
+char *tableBytes(Table *table, int length) {
   if (length != table->len * sizeof(Entry)) return NULL;
   return (char *)table->entries;
 }
 
-int inspect_table(FILE *io, Table *table) {
+int inspectTable(FILE *io, Table *table) {
   int out = 0;
   int idx = 0;
   for (int i = 0; i < table->capacity; i++) {

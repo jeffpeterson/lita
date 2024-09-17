@@ -1,5 +1,3 @@
-#include <assert.h>
-
 #include "atom.h"
 #include "dump.h"
 #include "iterator.h"
@@ -79,12 +77,12 @@ static int atomLength(Obj *obj) {
 
 static int inspectAtom(Obj *obj, FILE *io) {
   ObjAtom *atom = (ObjAtom *)obj;
-  return fprintf(io, "{") + inspect_table(io, atom->values) + fprintf(io, "}");
+  return fprintf(io, "{") + inspectTable(io, atom->values) + fprintf(io, "}");
 }
 
 static int dumpAtom(Obj *obj, FILE *io) {
   ObjAtom *atom = (ObjAtom *)obj;
-  ObjIterator *iter = iterate_table(atom->values);
+  ObjIterator *iter = iterateTable(atom->values);
   int len = atomLength((Obj *)atom);
   int tot = fprintf(io, "atom(%d", len);
 

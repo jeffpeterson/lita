@@ -1,7 +1,6 @@
 #ifndef lita_atom_h
 #define lita_atom_h
 
-#include "common.h"
 #include "object.h"
 #include "table.h"
 
