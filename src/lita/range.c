@@ -1,9 +1,6 @@
-#include <assert.h>
-
+#include "range.h"
 #include "memory.h"
 #include "native.h"
-#include "range.h"
-#include "vm.h"
 
 Value range(Value start, Value end) { return obj(newRange(start, end)); }
 

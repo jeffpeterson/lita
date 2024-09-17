@@ -2,6 +2,7 @@
 #define lita_object_h
 
 typedef struct ObjDef ObjDef;
+typedef struct ObjIterator ObjIterator;
 
 #include "common.h"
 #include "table.h"
@@ -35,6 +36,7 @@ typedef int ObjIntFn(Obj *obj);
 typedef int ObjIOFn(Obj *obj, FILE *io);
 typedef InterpretResult ObjVMFn(Obj *obj, int argCount);
 typedef const char *ObjBytesFn(Obj *obj, int length);
+typedef ObjIterator *ObjIterateFn(Obj *obj);
 
 typedef struct ObjDef {
   const char *className;
@@ -45,6 +47,7 @@ typedef struct ObjDef {
   ObjFn *free;
   ObjFn *mark;
   ObjVMFn *call;
+  ObjIterateFn *iterate;
   ObjIOFn *inspect;
   ObjIOFn *dump;
   ObjIOFn *dumpGlobal;

@@ -18,9 +18,6 @@ typedef struct Parser {
   Token current;
   Token previous;
 
-  Token stack[255];
-  u8 stackSize;
-
   ObjString *path;
 
   int indebt;
@@ -232,11 +229,9 @@ static void advance() {
             parser.previous.start);
   }
 
-  for (;;) {
-    parser.current =
-        parser.stackSize ? parser.stack[--parser.stackSize] : scanToken();
+  while (true) {
+    parser.current = scanToken();
     if (parser.current.type != TOKEN_ERROR) break;
-
     errorAtCurrent(parser.current.start);
   }
 }
