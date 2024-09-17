@@ -1,3 +1,6 @@
+class Any < nil
+	!= (v) = !(this == v)
+
 class Nil < Any
 	.string = ""
 	.dump = 'nil

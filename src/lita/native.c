@@ -51,9 +51,6 @@ NATIVE_METHOD(Any, string, 0) { return inspect(this); }
 NATIVE_METHOD_NAMED(Any, eql, "==", 1) {
   return BOOL_VAL(valuesEqual(this, args[0]));
 }
-NATIVE_METHOD_NAMED(Any, not_eql, "!=", 1) {
-  return BOOL_VAL(!valuesEqual(this, args[0]));
-}
 NATIVE_METHOD(Any, hash, 0) { return OBJ_VAL(stringf("%#x", hashValue(this))); }
 
 NATIVE_METHOD(Object, etype, 0) {
