@@ -281,9 +281,8 @@ static InterpretResult invokeFromClass(ObjClass *klass, ObjString *name,
   Value method;
 
   if (!tableGet(&klass->methods, OBJ_VAL(name), &method)) {
-    if (!klass->parent) return INTERPRET_RUNTIME_ERROR;
-
-    return invokeFromClass(klass->parent, name, argCount);
+    if (klass->parent) return invokeFromClass(klass->parent, name, argCount);
+    else return INTERPRET_RUNTIME_ERROR;
   }
 
   return callValue(method, argCount);
@@ -718,15 +717,15 @@ static InterpretResult vmRun() {
     }
 
     case OP_INHERIT: { // [1 class][0 super]
-      if (!isClass(peek(0))) {
-        return runtimeError("Superclass must be a class.");
+
+      if (notNil(peek(0))) {
+        ObjClass *superclass = asClass(peek(0));
+        ObjClass *subclass = asClass(peek(1));
+        subclass->parent = superclass;
+        subclass->instance_def = superclass->instance_def;
+        // tableMerge(&superclass->methods, &subclass->methods);
       }
 
-      ObjClass *superclass = asClass(peek(0));
-      ObjClass *subclass = asClass(peek(1));
-      subclass->parent = superclass;
-      subclass->instance_def = superclass->instance_def;
-      // tableMerge(&superclass->methods, &subclass->methods);
       break;
     }
 

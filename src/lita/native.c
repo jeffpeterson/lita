@@ -1,7 +1,5 @@
 #include <time.h>
 
-#include "array.h"
-#include "debug.h"
 #include "lib.h"
 #include "memory.h"
 #include "native.h"

@@ -35,7 +35,7 @@ Obj *allocateObject(const ObjDef *def) {
 }
 
 Obj *asObjDef(const ObjDef *def, Value val) {
-  assert(isObjDef(val, def));
+  ASSERT(isObjDef(val, def));
   return AS_OBJ(val);
 }
 

@@ -561,7 +561,6 @@ static int resolveLocal(Compiler *compiler, Token *name) {
     if (identifiersEqual(name, &local->name)) {
       if (local->depth == -1)
         error("Can't read local variable in its own initializer.");
-
       return i;
     }
   }
@@ -1316,24 +1315,15 @@ static void classDeclaration(Ctx *ctx) {
     emitLong(makeConstant(init));
   }
 
-  if (match(TOKEN_LESS)) {
-    // expression();
-    consume(TOKEN_IDENTIFIER, "Expect superclass name.");
-    variable(ctx);
-
-    if (identifiersEqual(&className, &parser.previous)) {
-      error("A class can't inherit from itself.");
-    }
-  } else {
-    namedVariable(syntheticToken("Object"), ctx);
-  }
+  if (match(TOKEN_LESS)) expression("Expect superclass.");
+  else namedVariable(syntheticToken("Object"), ctx);
 
   beginScope();
   addLocal(syntheticToken("super"));
-  defineVariable(0);
+  markDefined();
 
   emitByte(OP_INHERIT);
-  emitSwap(0, 1); // [1 class][0 super] -> [1 super][0 class]
+  emitSwap(0, 1); // [class, super] -> [1 super][0 class]
 
   if (match(TOKEN_INDENT)) {
     while (!check(TOKEN_DEDENT) && !check(TOKEN_EOF))
