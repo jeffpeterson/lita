@@ -56,7 +56,7 @@ NATIVE_METHOD(Object, etype, 0) {
   char *type_str = ecs_type_str(vm.world, type);
   return OBJ_VAL(takeString(type_str, -1));
 }
-NATIVE_METHOD_NAMED(Any, spaceship, "<=>", 1) {
+NATIVE_METHOD_NAMED(Number, spaceship, "<=>", 1) {
   return asNumber(this) - asNumber(args[0]);
 }
 NATIVE_METHOD_NAMED(Number, star, "*", 1) {

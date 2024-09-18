@@ -109,7 +109,7 @@ assert nil.string == ""
 assert "" 3 == "3"
 assert "" 3.5 == "3.5"
 assert "hi".hash == "0xd7ea6e9a"
-// assert "abc" < "abz"
+assert "abc" < "abz"
 
 assert "abcdef".slice(1, 2) == "bc"
 assert "abcdef".slice(1, 10) == "bcdef"

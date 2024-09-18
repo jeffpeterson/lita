@@ -295,7 +295,7 @@ NATIVE_METHOD(String, escape, 0) {
 NATIVE_METHOD_NAMED(String, spaceship, "<=>", 1) {
   ObjString *str = asString(this);
   ObjString *other = asString(args[0]);
-  return strcmp(str->chars, other->chars);
+  return number(strcmp(str->chars, other->chars));
 }
 NATIVE_METHOD(String, codePoint, 0) {
   ObjString *str = asString(this);
