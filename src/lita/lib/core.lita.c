@@ -113,11 +113,9 @@ static Value fn__gt__4() {
   c->version = 1;
   u8 code[] = {
     OP_GET_LOCAL, 0,
-    OP_GREATER,
-    OP_NOT,
     OP_GET_LOCAL, 1,
-    OP_GREATER,
-    OP_CONSTANT, 0,
+    OP_INVOKE, 0, 1,
+    OP_CONSTANT, 1,
     OP_LESS,
     OP_NOT,
     OP_RETURN,
@@ -128,8 +126,9 @@ static Value fn__gt__4() {
   c->code = cloneMemory(code, sizeof(code));
   c->lines = cloneMemory(lines, sizeof(lines));
 
-  c->constants.count = c->constants.capacity = 1;
+  c->constants.count = c->constants.capacity = 2;
   Value values[] = {
+    string("<=>"),
     NUMBER_VAL(0.000000),
   };
   c->constants.values = cloneMemory(values, sizeof(values));
@@ -149,11 +148,9 @@ static Value fn__lt__5() {
   c->version = 1;
   u8 code[] = {
     OP_GET_LOCAL, 0,
-    OP_GREATER,
-    OP_NOT,
     OP_GET_LOCAL, 1,
-    OP_GREATER,
-    OP_CONSTANT, 0,
+    OP_INVOKE, 0, 1,
+    OP_CONSTANT, 1,
     OP_GREATER,
     OP_NOT,
     OP_RETURN,
@@ -164,8 +161,9 @@ static Value fn__lt__5() {
   c->code = cloneMemory(code, sizeof(code));
   c->lines = cloneMemory(lines, sizeof(lines));
 
-  c->constants.count = c->constants.capacity = 1;
+  c->constants.count = c->constants.capacity = 2;
   Value values[] = {
+    string("<=>"),
     NUMBER_VAL(0.000000),
   };
   c->constants.values = cloneMemory(values, sizeof(values));
@@ -185,11 +183,9 @@ static Value fn__gt__eq__6() {
   c->version = 1;
   u8 code[] = {
     OP_GET_LOCAL, 0,
-    OP_GREATER,
-    OP_NOT,
     OP_GET_LOCAL, 1,
-    OP_GREATER,
-    OP_CONSTANT, 0,
+    OP_INVOKE, 0, 1,
+    OP_CONSTANT, 1,
     OP_GREATER,
     OP_RETURN,
     OP_NIL,
@@ -199,8 +195,9 @@ static Value fn__gt__eq__6() {
   c->code = cloneMemory(code, sizeof(code));
   c->lines = cloneMemory(lines, sizeof(lines));
 
-  c->constants.count = c->constants.capacity = 1;
+  c->constants.count = c->constants.capacity = 2;
   Value values[] = {
+    string("<=>"),
     NUMBER_VAL(0.000000),
   };
   c->constants.values = cloneMemory(values, sizeof(values));
@@ -220,11 +217,9 @@ static Value fn__lt__eq__7() {
   c->version = 1;
   u8 code[] = {
     OP_GET_LOCAL, 0,
-    OP_GREATER,
-    OP_NOT,
     OP_GET_LOCAL, 1,
-    OP_GREATER,
-    OP_CONSTANT, 0,
+    OP_INVOKE, 0, 1,
+    OP_CONSTANT, 1,
     OP_LESS,
     OP_RETURN,
     OP_NIL,
@@ -234,8 +229,9 @@ static Value fn__lt__eq__7() {
   c->code = cloneMemory(code, sizeof(code));
   c->lines = cloneMemory(lines, sizeof(lines));
 
-  c->constants.count = c->constants.capacity = 1;
+  c->constants.count = c->constants.capacity = 2;
   Value values[] = {
+    string("<=>"),
     NUMBER_VAL(0.000000),
   };
   c->constants.values = cloneMemory(values, sizeof(values));

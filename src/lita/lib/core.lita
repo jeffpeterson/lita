@@ -3,8 +3,8 @@ class Any < nil
 	.self = this
 	.string = inspect
 
-	> (v) = this <=> v >= 0
-	< (v) = this <=> v <= 0
+	> (v)  = this <=> v >= 0
+	< (v)  = this <=> v <= 0
 	>= (v) = this <=> v > 0
 	<= (v) = this <=> v < 0
 

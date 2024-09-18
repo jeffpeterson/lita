@@ -86,7 +86,10 @@ let a = 2
 let b = 4
 
 assert 1 < 2
-assert 2 + 2 == 4
+assert 2 > 1
+assert 2 <= 2
+assert 2 >= 2
+assert 1 + 2 == 3
 assert a + b == 6
 assert 2(3) == 6
 assert 2b == 8
