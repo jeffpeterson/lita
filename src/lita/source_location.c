@@ -1,11 +1,8 @@
-#include <assert.h>
-
+#include "source_location.h"
 #include "memory.h"
 #include "native.h"
-#include "source_location.h"
 #include "string.h"
 #include "term.h"
-#include "vm.h"
 
 Value sourceLocation(const char *path, int line, int column) {
   return obj(newSourceLocation(newString(path), line, column));
@@ -32,7 +29,16 @@ static int inspectSourceLocation(Obj *obj, FILE *io) {
          sizeof(UNDERLINE) - sizeof(NO_UNDERLINE);
 }
 
-NATIVE_GETTER(SourceLocation, path, OBJ_VAL);
+static int dumpSourceLocation(Obj *obj, FILE *io) {
+  ObjSourceLocation *sourceLocation = (ObjSourceLocation *)obj;
+  return fprintf(io, "sourceLocation(%s, %d, %d)",
+                 stringChars(escapeString(sourceLocation->path)),
+                 sourceLocation->line, sourceLocation->column);
+}
 
+NATIVE_GETTER(SourceLocation, path, OBJ_VAL);
+NATIVE_GETTER(SourceLocation, line, NUMBER_VAL);
+NATIVE_GETTER(SourceLocation, column, NUMBER_VAL);
 DEFINE_OBJECT_TYPE(SourceLocation, .mark = markSourceLocation,
-                   .inspect = inspectSourceLocation);
+                   .inspect = inspectSourceLocation,
+                   .dump = dumpSourceLocation);

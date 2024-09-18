@@ -15,8 +15,10 @@
 static Value fn__star__1() {
   ObjFunction *f = newFunction();
   f->arity = 1;
+  f->variadic = 0;
   f->upvalueCount = 0;
   f->name = newString("*");
+  f->location = asSourceLocation(sourceLocation("src/lita/tuple.lita", 2, 2));
 
   Chunk *c = &f->chunk;
   initChunk(c);
@@ -47,8 +49,10 @@ static Value fn__star__1() {
 static Value fn_head_2() {
   ObjFunction *f = newFunction();
   f->arity = 0;
+  f->variadic = 0;
   f->upvalueCount = 0;
   f->name = newString("head");
+  f->location = asSourceLocation(sourceLocation("src/lita/tuple.lita", 3, 3));
 
   Chunk *c = &f->chunk;
   initChunk(c);
@@ -80,8 +84,10 @@ static Value fn_head_2() {
 static Value fn_each_3() {
   ObjFunction *f = newFunction();
   f->arity = 1;
+  f->variadic = 0;
   f->upvalueCount = 0;
   f->name = newString("each");
+  f->location = asSourceLocation(sourceLocation("src/lita/tuple.lita", 4, 3));
 
   Chunk *c = &f->chunk;
   initChunk(c);
@@ -142,8 +148,10 @@ static Value fn_each_3() {
 static Value fn_zipEach_5() {
   ObjFunction *f = newFunction();
   f->arity = 2;
+  f->variadic = 0;
   f->upvalueCount = 2;
   f->name = newString("zipEach");
+  f->location = asSourceLocation(sourceLocation("src/lita/tuple.lita", 10, 6));
 
   Chunk *c = &f->chunk;
   initChunk(c);
@@ -176,8 +184,10 @@ static Value fn_zipEach_5() {
 static Value fn_zip_4() {
   ObjFunction *f = newFunction();
   f->arity = 2;
+  f->variadic = 0;
   f->upvalueCount = 0;
   f->name = newString("zip");
+  f->location = asSourceLocation(sourceLocation("src/lita/tuple.lita", 9, 3));
 
   Chunk *c = &f->chunk;
   initChunk(c);
@@ -215,8 +225,10 @@ static Value fn_zip_4() {
 static Value fn__dot_print_7() {
   ObjFunction *f = newFunction();
   f->arity = 1;
+  f->variadic = 0;
   f->upvalueCount = 1;
   f->name = newString(".print");
+  f->location = asSourceLocation(sourceLocation("src/lita/tuple.lita", 13, 21));
 
   Chunk *c = &f->chunk;
   initChunk(c);
@@ -244,8 +256,10 @@ static Value fn__dot_print_7() {
 static Value fn_print_6() {
   ObjFunction *f = newFunction();
   f->arity = 1;
+  f->variadic = 0;
   f->upvalueCount = 0;
   f->name = newString("print");
+  f->location = asSourceLocation(sourceLocation("src/lita/tuple.lita", 13, 3));
 
   Chunk *c = &f->chunk;
   initChunk(c);
@@ -279,8 +293,10 @@ static Value fn_print_6() {
 static Value fn_src_slash_lita_slash_tuple_dot_lita_0() {
   ObjFunction *f = newFunction();
   f->arity = 0;
+  f->variadic = 0;
   f->upvalueCount = 0;
   f->name = newString("src/lita/tuple.lita");
+  f->location = asSourceLocation(sourceLocation("src/lita/tuple.lita", 1, 1));
 
   Chunk *c = &f->chunk;
   initChunk(c);

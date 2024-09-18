@@ -15,8 +15,10 @@
 static Value fn__not__eq__1() {
   ObjFunction *f = newFunction();
   f->arity = 1;
+  f->variadic = 0;
   f->upvalueCount = 0;
   f->name = newString("!=");
+  f->location = asSourceLocation(sourceLocation("src/lita/lib/core.lita", 2, 2));
 
   Chunk *c = &f->chunk;
   initChunk(c);
@@ -46,8 +48,10 @@ static Value fn__not__eq__1() {
 static Value fn_self_2() {
   ObjFunction *f = newFunction();
   f->arity = 0;
+  f->variadic = 0;
   f->upvalueCount = 0;
   f->name = newString("self");
+  f->location = asSourceLocation(sourceLocation("src/lita/lib/core.lita", 3, 3));
 
   Chunk *c = &f->chunk;
   initChunk(c);
@@ -74,8 +78,10 @@ static Value fn_self_2() {
 static Value fn_string_3() {
   ObjFunction *f = newFunction();
   f->arity = 0;
+  f->variadic = 0;
   f->upvalueCount = 0;
   f->name = newString("string");
+  f->location = asSourceLocation(sourceLocation("src/lita/lib/core.lita", 4, 3));
 
   Chunk *c = &f->chunk;
   initChunk(c);
@@ -104,8 +110,10 @@ static Value fn_string_3() {
 static Value fn__gt__4() {
   ObjFunction *f = newFunction();
   f->arity = 1;
+  f->variadic = 0;
   f->upvalueCount = 0;
   f->name = newString(">");
+  f->location = asSourceLocation(sourceLocation("src/lita/lib/core.lita", 6, 2));
 
   Chunk *c = &f->chunk;
   initChunk(c);
@@ -139,8 +147,10 @@ static Value fn__gt__4() {
 static Value fn__lt__5() {
   ObjFunction *f = newFunction();
   f->arity = 1;
+  f->variadic = 0;
   f->upvalueCount = 0;
   f->name = newString("<");
+  f->location = asSourceLocation(sourceLocation("src/lita/lib/core.lita", 7, 2));
 
   Chunk *c = &f->chunk;
   initChunk(c);
@@ -174,8 +184,10 @@ static Value fn__lt__5() {
 static Value fn__gt__eq__6() {
   ObjFunction *f = newFunction();
   f->arity = 1;
+  f->variadic = 0;
   f->upvalueCount = 0;
   f->name = newString(">=");
+  f->location = asSourceLocation(sourceLocation("src/lita/lib/core.lita", 8, 2));
 
   Chunk *c = &f->chunk;
   initChunk(c);
@@ -208,8 +220,10 @@ static Value fn__gt__eq__6() {
 static Value fn__lt__eq__7() {
   ObjFunction *f = newFunction();
   f->arity = 1;
+  f->variadic = 0;
   f->upvalueCount = 0;
   f->name = newString("<=");
+  f->location = asSourceLocation(sourceLocation("src/lita/lib/core.lita", 9, 2));
 
   Chunk *c = &f->chunk;
   initChunk(c);
@@ -242,8 +256,10 @@ static Value fn__lt__eq__7() {
 static Value fn_string_8() {
   ObjFunction *f = newFunction();
   f->arity = 0;
+  f->variadic = 0;
   f->upvalueCount = 0;
   f->name = newString("string");
+  f->location = asSourceLocation(sourceLocation("src/lita/lib/core.lita", 12, 3));
 
   Chunk *c = &f->chunk;
   initChunk(c);
@@ -271,8 +287,10 @@ static Value fn_string_8() {
 static Value fn_dump_9() {
   ObjFunction *f = newFunction();
   f->arity = 0;
+  f->variadic = 0;
   f->upvalueCount = 0;
   f->name = newString("dump");
+  f->location = asSourceLocation(sourceLocation("src/lita/lib/core.lita", 13, 3));
 
   Chunk *c = &f->chunk;
   initChunk(c);
@@ -300,8 +318,10 @@ static Value fn_dump_9() {
 static Value fn_dump_10() {
   ObjFunction *f = newFunction();
   f->arity = 0;
+  f->variadic = 0;
   f->upvalueCount = 0;
   f->name = newString("dump");
+  f->location = asSourceLocation(sourceLocation("src/lita/lib/core.lita", 25, 3));
 
   Chunk *c = &f->chunk;
   initChunk(c);
@@ -343,8 +363,10 @@ static Value fn_dump_10() {
 static Value fn_dump_global_11() {
   ObjFunction *f = newFunction();
   f->arity = 0;
+  f->variadic = 0;
   f->upvalueCount = 0;
   f->name = newString("dump_global");
+  f->location = asSourceLocation(sourceLocation("src/lita/lib/core.lita", 26, 3));
 
   Chunk *c = &f->chunk;
   initChunk(c);
@@ -406,8 +428,10 @@ static Value fn_dump_global_11() {
 static Value fn_string_12() {
   ObjFunction *f = newFunction();
   f->arity = 0;
+  f->variadic = 0;
   f->upvalueCount = 0;
   f->name = newString("string");
+  f->location = asSourceLocation(sourceLocation("src/lita/lib/core.lita", 40, 3));
 
   Chunk *c = &f->chunk;
   initChunk(c);
@@ -442,8 +466,10 @@ static Value fn_string_12() {
 static Value fn_print_13() {
   ObjFunction *f = newFunction();
   f->arity = 1;
+  f->variadic = 0;
   f->upvalueCount = 0;
   f->name = newString("print");
+  f->location = asSourceLocation(sourceLocation("src/lita/lib/core.lita", 41, 3));
 
   Chunk *c = &f->chunk;
   initChunk(c);
@@ -475,8 +501,10 @@ static Value fn_print_13() {
 static Value fn_dump_14() {
   ObjFunction *f = newFunction();
   f->arity = 0;
+  f->variadic = 0;
   f->upvalueCount = 0;
   f->name = newString("dump");
+  f->location = asSourceLocation(sourceLocation("src/lita/lib/core.lita", 42, 3));
 
   Chunk *c = &f->chunk;
   initChunk(c);
@@ -511,8 +539,10 @@ static Value fn_dump_14() {
 static Value fn_inc_15() {
   ObjFunction *f = newFunction();
   f->arity = 0;
+  f->variadic = 0;
   f->upvalueCount = 0;
   f->name = newString("inc");
+  f->location = asSourceLocation(sourceLocation("src/lita/lib/core.lita", 45, 3));
 
   Chunk *c = &f->chunk;
   initChunk(c);
@@ -542,8 +572,10 @@ static Value fn_inc_15() {
 static Value fn_dec_16() {
   ObjFunction *f = newFunction();
   f->arity = 0;
+  f->variadic = 0;
   f->upvalueCount = 0;
   f->name = newString("dec");
+  f->location = asSourceLocation(sourceLocation("src/lita/lib/core.lita", 46, 3));
 
   Chunk *c = &f->chunk;
   initChunk(c);
@@ -573,8 +605,10 @@ static Value fn_dec_16() {
 static Value fn_dump_17() {
   ObjFunction *f = newFunction();
   f->arity = 0;
+  f->variadic = 0;
   f->upvalueCount = 0;
   f->name = newString("dump");
+  f->location = asSourceLocation(sourceLocation("src/lita/lib/core.lita", 47, 3));
 
   Chunk *c = &f->chunk;
   initChunk(c);
@@ -609,8 +643,10 @@ static Value fn_dump_17() {
 static Value fn_print_18() {
   ObjFunction *f = newFunction();
   f->arity = 1;
+  f->variadic = 0;
   f->upvalueCount = 0;
   f->name = newString("print");
+  f->location = asSourceLocation(sourceLocation("src/lita/lib/core.lita", 48, 3));
 
   Chunk *c = &f->chunk;
   initChunk(c);
@@ -642,8 +678,10 @@ static Value fn_print_18() {
 static Value fn__dot__19() {
   ObjFunction *f = newFunction();
   f->arity = 1;
+  f->variadic = 0;
   f->upvalueCount = 0;
   f->name = newString(".");
+  f->location = asSourceLocation(sourceLocation("src/lita/lib/core.lita", 49, 2));
 
   Chunk *c = &f->chunk;
   initChunk(c);
@@ -672,8 +710,10 @@ static Value fn__dot__19() {
 static Value fn_inspect_20() {
   ObjFunction *f = newFunction();
   f->arity = 0;
+  f->variadic = 0;
   f->upvalueCount = 0;
   f->name = newString("inspect");
+  f->location = asSourceLocation(sourceLocation("src/lita/lib/core.lita", 52, 3));
 
   Chunk *c = &f->chunk;
   initChunk(c);
@@ -701,8 +741,10 @@ static Value fn_inspect_20() {
 static Value fn_init_21() {
   ObjFunction *f = newFunction();
   f->arity = 3;
+  f->variadic = 0;
   f->upvalueCount = 0;
   f->name = newString("init");
+  f->location = asSourceLocation(sourceLocation("src/lita/lib/core.lita", 54, 7));
 
   Chunk *c = &f->chunk;
   initChunk(c);
@@ -742,8 +784,10 @@ static Value fn_init_21() {
 static Value fn_src_slash_lita_slash_lib_slash_core_dot_lita_0() {
   ObjFunction *f = newFunction();
   f->arity = 0;
+  f->variadic = 0;
   f->upvalueCount = 0;
   f->name = newString("src/lita/lib/core.lita");
+  f->location = asSourceLocation(sourceLocation("src/lita/lib/core.lita", 1, 1));
 
   Chunk *c = &f->chunk;
   initChunk(c);

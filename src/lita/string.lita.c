@@ -15,8 +15,10 @@
 static Value fn__slash__1() {
   ObjFunction *f = newFunction();
   f->arity = 1;
+  f->variadic = 0;
   f->upvalueCount = 0;
   f->name = newString("/");
+  f->location = asSourceLocation(sourceLocation("src/lita/string.lita", 2, 2));
 
   Chunk *c = &f->chunk;
   initChunk(c);
@@ -48,8 +50,10 @@ static Value fn__slash__1() {
 static Value fn_byte_2() {
   ObjFunction *f = newFunction();
   f->arity = 1;
+  f->variadic = 0;
   f->upvalueCount = 0;
   f->name = newString("byte");
+  f->location = asSourceLocation(sourceLocation("src/lita/string.lita", 3, 3));
 
   Chunk *c = &f->chunk;
   initChunk(c);
@@ -82,8 +86,10 @@ static Value fn_byte_2() {
 static Value fn_bold_3() {
   ObjFunction *f = newFunction();
   f->arity = 0;
+  f->variadic = 0;
   f->upvalueCount = 0;
   f->name = newString("bold");
+  f->location = asSourceLocation(sourceLocation("src/lita/string.lita", 5, 3));
 
   Chunk *c = &f->chunk;
   initChunk(c);
@@ -116,8 +122,10 @@ static Value fn_bold_3() {
 static Value fn_dim_4() {
   ObjFunction *f = newFunction();
   f->arity = 0;
+  f->variadic = 0;
   f->upvalueCount = 0;
   f->name = newString("dim");
+  f->location = asSourceLocation(sourceLocation("src/lita/string.lita", 6, 3));
 
   Chunk *c = &f->chunk;
   initChunk(c);
@@ -150,8 +158,10 @@ static Value fn_dim_4() {
 static Value fn_italic_5() {
   ObjFunction *f = newFunction();
   f->arity = 0;
+  f->variadic = 0;
   f->upvalueCount = 0;
   f->name = newString("italic");
+  f->location = asSourceLocation(sourceLocation("src/lita/string.lita", 7, 3));
 
   Chunk *c = &f->chunk;
   initChunk(c);
@@ -184,8 +194,10 @@ static Value fn_italic_5() {
 static Value fn_underline_6() {
   ObjFunction *f = newFunction();
   f->arity = 0;
+  f->variadic = 0;
   f->upvalueCount = 0;
   f->name = newString("underline");
+  f->location = asSourceLocation(sourceLocation("src/lita/string.lita", 8, 3));
 
   Chunk *c = &f->chunk;
   initChunk(c);
@@ -218,8 +230,10 @@ static Value fn_underline_6() {
 static Value fn_invert_7() {
   ObjFunction *f = newFunction();
   f->arity = 0;
+  f->variadic = 0;
   f->upvalueCount = 0;
   f->name = newString("invert");
+  f->location = asSourceLocation(sourceLocation("src/lita/string.lita", 9, 3));
 
   Chunk *c = &f->chunk;
   initChunk(c);
@@ -252,8 +266,10 @@ static Value fn_invert_7() {
 static Value fn_hide_8() {
   ObjFunction *f = newFunction();
   f->arity = 0;
+  f->variadic = 0;
   f->upvalueCount = 0;
   f->name = newString("hide");
+  f->location = asSourceLocation(sourceLocation("src/lita/string.lita", 10, 3));
 
   Chunk *c = &f->chunk;
   initChunk(c);
@@ -286,8 +302,10 @@ static Value fn_hide_8() {
 static Value fn_strike_9() {
   ObjFunction *f = newFunction();
   f->arity = 0;
+  f->variadic = 0;
   f->upvalueCount = 0;
   f->name = newString("strike");
+  f->location = asSourceLocation(sourceLocation("src/lita/string.lita", 11, 3));
 
   Chunk *c = &f->chunk;
   initChunk(c);
@@ -320,8 +338,10 @@ static Value fn_strike_9() {
 static Value fn_black_10() {
   ObjFunction *f = newFunction();
   f->arity = 0;
+  f->variadic = 0;
   f->upvalueCount = 0;
   f->name = newString("black");
+  f->location = asSourceLocation(sourceLocation("src/lita/string.lita", 13, 3));
 
   Chunk *c = &f->chunk;
   initChunk(c);
@@ -354,8 +374,10 @@ static Value fn_black_10() {
 static Value fn_red_11() {
   ObjFunction *f = newFunction();
   f->arity = 0;
+  f->variadic = 0;
   f->upvalueCount = 0;
   f->name = newString("red");
+  f->location = asSourceLocation(sourceLocation("src/lita/string.lita", 14, 3));
 
   Chunk *c = &f->chunk;
   initChunk(c);
@@ -388,8 +410,10 @@ static Value fn_red_11() {
 static Value fn_green_12() {
   ObjFunction *f = newFunction();
   f->arity = 0;
+  f->variadic = 0;
   f->upvalueCount = 0;
   f->name = newString("green");
+  f->location = asSourceLocation(sourceLocation("src/lita/string.lita", 15, 3));
 
   Chunk *c = &f->chunk;
   initChunk(c);
@@ -422,8 +446,10 @@ static Value fn_green_12() {
 static Value fn_yellow_13() {
   ObjFunction *f = newFunction();
   f->arity = 0;
+  f->variadic = 0;
   f->upvalueCount = 0;
   f->name = newString("yellow");
+  f->location = asSourceLocation(sourceLocation("src/lita/string.lita", 16, 3));
 
   Chunk *c = &f->chunk;
   initChunk(c);
@@ -456,8 +482,10 @@ static Value fn_yellow_13() {
 static Value fn_blue_14() {
   ObjFunction *f = newFunction();
   f->arity = 0;
+  f->variadic = 0;
   f->upvalueCount = 0;
   f->name = newString("blue");
+  f->location = asSourceLocation(sourceLocation("src/lita/string.lita", 17, 3));
 
   Chunk *c = &f->chunk;
   initChunk(c);
@@ -490,8 +518,10 @@ static Value fn_blue_14() {
 static Value fn_magenta_15() {
   ObjFunction *f = newFunction();
   f->arity = 0;
+  f->variadic = 0;
   f->upvalueCount = 0;
   f->name = newString("magenta");
+  f->location = asSourceLocation(sourceLocation("src/lita/string.lita", 18, 3));
 
   Chunk *c = &f->chunk;
   initChunk(c);
@@ -524,8 +554,10 @@ static Value fn_magenta_15() {
 static Value fn_cyan_16() {
   ObjFunction *f = newFunction();
   f->arity = 0;
+  f->variadic = 0;
   f->upvalueCount = 0;
   f->name = newString("cyan");
+  f->location = asSourceLocation(sourceLocation("src/lita/string.lita", 19, 3));
 
   Chunk *c = &f->chunk;
   initChunk(c);
@@ -558,8 +590,10 @@ static Value fn_cyan_16() {
 static Value fn_white_17() {
   ObjFunction *f = newFunction();
   f->arity = 0;
+  f->variadic = 0;
   f->upvalueCount = 0;
   f->name = newString("white");
+  f->location = asSourceLocation(sourceLocation("src/lita/string.lita", 20, 3));
 
   Chunk *c = &f->chunk;
   initChunk(c);
@@ -592,8 +626,10 @@ static Value fn_white_17() {
 static Value fn_bg_black_18() {
   ObjFunction *f = newFunction();
   f->arity = 0;
+  f->variadic = 0;
   f->upvalueCount = 0;
   f->name = newString("bg_black");
+  f->location = asSourceLocation(sourceLocation("src/lita/string.lita", 22, 3));
 
   Chunk *c = &f->chunk;
   initChunk(c);
@@ -626,8 +662,10 @@ static Value fn_bg_black_18() {
 static Value fn_bg_red_19() {
   ObjFunction *f = newFunction();
   f->arity = 0;
+  f->variadic = 0;
   f->upvalueCount = 0;
   f->name = newString("bg_red");
+  f->location = asSourceLocation(sourceLocation("src/lita/string.lita", 23, 3));
 
   Chunk *c = &f->chunk;
   initChunk(c);
@@ -660,8 +698,10 @@ static Value fn_bg_red_19() {
 static Value fn_bg_green_20() {
   ObjFunction *f = newFunction();
   f->arity = 0;
+  f->variadic = 0;
   f->upvalueCount = 0;
   f->name = newString("bg_green");
+  f->location = asSourceLocation(sourceLocation("src/lita/string.lita", 24, 3));
 
   Chunk *c = &f->chunk;
   initChunk(c);
@@ -694,8 +734,10 @@ static Value fn_bg_green_20() {
 static Value fn_bg_yellow_21() {
   ObjFunction *f = newFunction();
   f->arity = 0;
+  f->variadic = 0;
   f->upvalueCount = 0;
   f->name = newString("bg_yellow");
+  f->location = asSourceLocation(sourceLocation("src/lita/string.lita", 25, 3));
 
   Chunk *c = &f->chunk;
   initChunk(c);
@@ -728,8 +770,10 @@ static Value fn_bg_yellow_21() {
 static Value fn_bg_blue_22() {
   ObjFunction *f = newFunction();
   f->arity = 0;
+  f->variadic = 0;
   f->upvalueCount = 0;
   f->name = newString("bg_blue");
+  f->location = asSourceLocation(sourceLocation("src/lita/string.lita", 26, 3));
 
   Chunk *c = &f->chunk;
   initChunk(c);
@@ -762,8 +806,10 @@ static Value fn_bg_blue_22() {
 static Value fn_bg_magenta_23() {
   ObjFunction *f = newFunction();
   f->arity = 0;
+  f->variadic = 0;
   f->upvalueCount = 0;
   f->name = newString("bg_magenta");
+  f->location = asSourceLocation(sourceLocation("src/lita/string.lita", 27, 3));
 
   Chunk *c = &f->chunk;
   initChunk(c);
@@ -796,8 +842,10 @@ static Value fn_bg_magenta_23() {
 static Value fn_bg_cyan_24() {
   ObjFunction *f = newFunction();
   f->arity = 0;
+  f->variadic = 0;
   f->upvalueCount = 0;
   f->name = newString("bg_cyan");
+  f->location = asSourceLocation(sourceLocation("src/lita/string.lita", 28, 3));
 
   Chunk *c = &f->chunk;
   initChunk(c);
@@ -830,8 +878,10 @@ static Value fn_bg_cyan_24() {
 static Value fn_bg_white_25() {
   ObjFunction *f = newFunction();
   f->arity = 0;
+  f->variadic = 0;
   f->upvalueCount = 0;
   f->name = newString("bg_white");
+  f->location = asSourceLocation(sourceLocation("src/lita/string.lita", 29, 3));
 
   Chunk *c = &f->chunk;
   initChunk(c);
@@ -864,8 +914,10 @@ static Value fn_bg_white_25() {
 static Value fn_uppercase_26() {
   ObjFunction *f = newFunction();
   f->arity = 0;
+  f->variadic = 0;
   f->upvalueCount = 0;
   f->name = newString("uppercase");
+  f->location = asSourceLocation(sourceLocation("src/lita/string.lita", 31, 3));
 
   Chunk *c = &f->chunk;
   initChunk(c);
@@ -899,8 +951,10 @@ static Value fn_uppercase_26() {
 static Value fn_lowercase_27() {
   ObjFunction *f = newFunction();
   f->arity = 0;
+  f->variadic = 0;
   f->upvalueCount = 0;
   f->name = newString("lowercase");
+  f->location = asSourceLocation(sourceLocation("src/lita/string.lita", 32, 3));
 
   Chunk *c = &f->chunk;
   initChunk(c);
@@ -934,8 +988,10 @@ static Value fn_lowercase_27() {
 static Value fn_capitalize_28() {
   ObjFunction *f = newFunction();
   f->arity = 0;
+  f->variadic = 0;
   f->upvalueCount = 0;
   f->name = newString("capitalize");
+  f->location = asSourceLocation(sourceLocation("src/lita/string.lita", 33, 3));
 
   Chunk *c = &f->chunk;
   initChunk(c);
@@ -969,8 +1025,10 @@ static Value fn_capitalize_28() {
 static Value fn_decapitalize_29() {
   ObjFunction *f = newFunction();
   f->arity = 0;
+  f->variadic = 0;
   f->upvalueCount = 0;
   f->name = newString("decapitalize");
+  f->location = asSourceLocation(sourceLocation("src/lita/string.lita", 34, 3));
 
   Chunk *c = &f->chunk;
   initChunk(c);
@@ -1004,8 +1062,10 @@ static Value fn_decapitalize_29() {
 static Value fn_camelize_30() {
   ObjFunction *f = newFunction();
   f->arity = 0;
+  f->variadic = 0;
   f->upvalueCount = 0;
   f->name = newString("camelize");
+  f->location = asSourceLocation(sourceLocation("src/lita/string.lita", 35, 3));
 
   Chunk *c = &f->chunk;
   initChunk(c);
@@ -1039,8 +1099,10 @@ static Value fn_camelize_30() {
 static Value fn_underscore_31() {
   ObjFunction *f = newFunction();
   f->arity = 0;
+  f->variadic = 0;
   f->upvalueCount = 0;
   f->name = newString("underscore");
+  f->location = asSourceLocation(sourceLocation("src/lita/string.lita", 36, 3));
 
   Chunk *c = &f->chunk;
   initChunk(c);
@@ -1081,8 +1143,10 @@ static Value fn_underscore_31() {
 static Value fn_dasherize_32() {
   ObjFunction *f = newFunction();
   f->arity = 0;
+  f->variadic = 0;
   f->upvalueCount = 0;
   f->name = newString("dasherize");
+  f->location = asSourceLocation(sourceLocation("src/lita/string.lita", 37, 3));
 
   Chunk *c = &f->chunk;
   initChunk(c);
@@ -1117,8 +1181,10 @@ static Value fn_dasherize_32() {
 static Value fn_print_33() {
   ObjFunction *f = newFunction();
   f->arity = 1;
+  f->variadic = 0;
   f->upvalueCount = 0;
   f->name = newString("print");
+  f->location = asSourceLocation(sourceLocation("src/lita/string.lita", 39, 3));
 
   Chunk *c = &f->chunk;
   initChunk(c);
@@ -1148,8 +1214,10 @@ static Value fn_print_33() {
 static Value fn_src_slash_lita_slash_string_dot_lita_0() {
   ObjFunction *f = newFunction();
   f->arity = 0;
+  f->variadic = 0;
   f->upvalueCount = 0;
   f->name = newString("src/lita/string.lita");
+  f->location = asSourceLocation(sourceLocation("src/lita/string.lita", 1, 1));
 
   Chunk *c = &f->chunk;
   initChunk(c);

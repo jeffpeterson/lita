@@ -1,7 +1,6 @@
-#include <assert.h>
 
-#include "dump.h"
 #include "function.h"
+#include "dump.h"
 #include "lib.h"
 #include "memory.h"
 #include "native.h"

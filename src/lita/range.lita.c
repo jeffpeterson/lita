@@ -15,8 +15,10 @@
 static Value fn_string_1() {
   ObjFunction *f = newFunction();
   f->arity = 0;
+  f->variadic = 0;
   f->upvalueCount = 0;
   f->name = newString("string");
+  f->location = asSourceLocation(sourceLocation("src/lita/range.lita", 2, 3));
 
   Chunk *c = &f->chunk;
   initChunk(c);
@@ -55,8 +57,10 @@ static Value fn_string_1() {
 static Value fn_length_2() {
   ObjFunction *f = newFunction();
   f->arity = 0;
+  f->variadic = 0;
   f->upvalueCount = 0;
   f->name = newString("length");
+  f->location = asSourceLocation(sourceLocation("src/lita/range.lita", 3, 3));
 
   Chunk *c = &f->chunk;
   initChunk(c);
@@ -89,8 +93,10 @@ static Value fn_length_2() {
 static Value fn_map_3() {
   ObjFunction *f = newFunction();
   f->arity = 1;
+  f->variadic = 0;
   f->upvalueCount = 0;
   f->name = newString("map");
+  f->location = asSourceLocation(sourceLocation("src/lita/range.lita", 4, 3));
 
   Chunk *c = &f->chunk;
   initChunk(c);
@@ -127,8 +133,10 @@ static Value fn_map_3() {
 static Value fn_array_4() {
   ObjFunction *f = newFunction();
   f->arity = 0;
+  f->variadic = 0;
   f->upvalueCount = 0;
   f->name = newString("array");
+  f->location = asSourceLocation(sourceLocation("src/lita/range.lita", 5, 3));
 
   Chunk *c = &f->chunk;
   initChunk(c);
@@ -224,8 +232,10 @@ static Value fn_array_4() {
 static Value fn_sample_5() {
   ObjFunction *f = newFunction();
   f->arity = 0;
+  f->variadic = 0;
   f->upvalueCount = 0;
   f->name = newString("sample");
+  f->location = asSourceLocation(sourceLocation("src/lita/range.lita", 15, 3));
 
   Chunk *c = &f->chunk;
   initChunk(c);
@@ -261,8 +271,10 @@ static Value fn_sample_5() {
 static Value fn_src_slash_lita_slash_range_dot_lita_0() {
   ObjFunction *f = newFunction();
   f->arity = 0;
+  f->variadic = 0;
   f->upvalueCount = 0;
   f->name = newString("src/lita/range.lita");
+  f->location = asSourceLocation(sourceLocation("src/lita/range.lita", 1, 1));
 
   Chunk *c = &f->chunk;
   initChunk(c);

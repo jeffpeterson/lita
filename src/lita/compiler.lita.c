@@ -15,8 +15,10 @@
 static Value fn_compile_1() {
   ObjFunction *f = newFunction();
   f->arity = 2;
+  f->variadic = 0;
   f->upvalueCount = 0;
   f->name = newString("compile");
+  f->location = asSourceLocation(sourceLocation("src/lita/compiler.lita", 1, 4));
 
   Chunk *c = &f->chunk;
   initChunk(c);
@@ -41,8 +43,10 @@ static Value fn_compile_1() {
 static Value fn_markCompilerRoots_2() {
   ObjFunction *f = newFunction();
   f->arity = 0;
+  f->variadic = 0;
   f->upvalueCount = 0;
   f->name = newString("markCompilerRoots");
+  f->location = asSourceLocation(sourceLocation("src/lita/compiler.lita", 3, 4));
 
   Chunk *c = &f->chunk;
   initChunk(c);
@@ -67,8 +71,10 @@ static Value fn_markCompilerRoots_2() {
 static Value fn_src_slash_lita_slash_compiler_dot_lita_0() {
   ObjFunction *f = newFunction();
   f->arity = 0;
+  f->variadic = 0;
   f->upvalueCount = 0;
   f->name = newString("src/lita/compiler.lita");
+  f->location = asSourceLocation(sourceLocation("src/lita/compiler.lita", 1, 1));
 
   Chunk *c = &f->chunk;
   initChunk(c);

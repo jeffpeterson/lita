@@ -59,10 +59,17 @@ static int dumpFn(FILE *io, ObjFunction *fun) {
           "static Value fn_%s_%d() {\n"
           "  ObjFunction *f = newFunction();\n"
           "  f->arity = %d;\n"
+          "  f->variadic = %d;\n"
           "  f->upvalueCount = %d;\n"
           "  f->name = newString(\"%s\");\n",
           stringChars(fun->name), stringChars(name), id, fun->arity,
-          fun->upvalueCount, stringChars(fun->name));
+          fun->variadic, fun->upvalueCount, stringChars(fun->name));
+
+  if (fun->location) {
+    fprintf(io, "  f->location = asSourceLocation(");
+    dumpObject(io, (Obj *)fun->location);
+    fprintf(io, ");\n");
+  }
 
   fprintf(io,
           "\n"

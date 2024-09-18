@@ -15,8 +15,10 @@
 static Value fn_reset_scanner_1() {
   ObjFunction *f = newFunction();
   f->arity = 0;
+  f->variadic = 0;
   f->upvalueCount = 0;
   f->name = newString("reset_scanner");
+  f->location = asSourceLocation(sourceLocation("src/lita/scanner.lita", 3, 4));
 
   Chunk *c = &f->chunk;
   initChunk(c);
@@ -50,8 +52,10 @@ static Value fn_reset_scanner_1() {
 static Value fn_init_2() {
   ObjFunction *f = newFunction();
   f->arity = 4;
+  f->variadic = 0;
   f->upvalueCount = 0;
   f->name = newString("init");
+  f->location = asSourceLocation(sourceLocation("src/lita/scanner.lita", 6, 7));
 
   Chunk *c = &f->chunk;
   initChunk(c);
@@ -96,8 +100,10 @@ static Value fn_init_2() {
 static Value fn_previous_3() {
   ObjFunction *f = newFunction();
   f->arity = 0;
+  f->variadic = 0;
   f->upvalueCount = 0;
   f->name = newString("previous");
+  f->location = asSourceLocation(sourceLocation("src/lita/scanner.lita", 13, 15));
 
   Chunk *c = &f->chunk;
   initChunk(c);
@@ -124,8 +130,10 @@ static Value fn_previous_3() {
 static Value fn_current_4() {
   ObjFunction *f = newFunction();
   f->arity = 0;
+  f->variadic = 0;
   f->upvalueCount = 0;
   f->name = newString("current");
+  f->location = asSourceLocation(sourceLocation("src/lita/scanner.lita", 14, 14));
 
   Chunk *c = &f->chunk;
   initChunk(c);
@@ -152,8 +160,10 @@ static Value fn_current_4() {
 static Value fn_inside_5() {
   ObjFunction *f = newFunction();
   f->arity = 0;
+  f->variadic = 0;
   f->upvalueCount = 0;
   f->name = newString("inside");
+  f->location = asSourceLocation(sourceLocation("src/lita/scanner.lita", 15, 13));
 
   Chunk *c = &f->chunk;
   initChunk(c);
@@ -179,8 +189,10 @@ static Value fn_inside_5() {
 static Value fn_position_6() {
   ObjFunction *f = newFunction();
   f->arity = 0;
+  f->variadic = 0;
   f->upvalueCount = 0;
   f->name = newString("position");
+  f->location = asSourceLocation(sourceLocation("src/lita/scanner.lita", 19, 15));
 
   Chunk *c = &f->chunk;
   initChunk(c);
@@ -209,8 +221,10 @@ static Value fn_position_6() {
 static Value fn_line_7() {
   ObjFunction *f = newFunction();
   f->arity = 0;
+  f->variadic = 0;
   f->upvalueCount = 0;
   f->name = newString("line");
+  f->location = asSourceLocation(sourceLocation("src/lita/scanner.lita", 20, 11));
 
   Chunk *c = &f->chunk;
   initChunk(c);
@@ -237,8 +251,10 @@ static Value fn_line_7() {
 static Value fn_indent_8() {
   ObjFunction *f = newFunction();
   f->arity = 0;
+  f->variadic = 0;
   f->upvalueCount = 0;
   f->name = newString("indent");
+  f->location = asSourceLocation(sourceLocation("src/lita/scanner.lita", 21, 13));
 
   Chunk *c = &f->chunk;
   initChunk(c);
@@ -267,8 +283,10 @@ static Value fn_indent_8() {
 static Value fn_init_9() {
   ObjFunction *f = newFunction();
   f->arity = 1;
+  f->variadic = 0;
   f->upvalueCount = 0;
   f->name = newString("init");
+  f->location = asSourceLocation(sourceLocation("src/lita/scanner.lita", 24, 3));
 
   Chunk *c = &f->chunk;
   initChunk(c);
@@ -306,8 +324,10 @@ static Value fn_init_9() {
 static Value fn_current_10() {
   ObjFunction *f = newFunction();
   f->arity = 0;
+  f->variadic = 0;
   f->upvalueCount = 0;
   f->name = newString("current");
+  f->location = asSourceLocation(sourceLocation("src/lita/scanner.lita", 29, 3));
 
   Chunk *c = &f->chunk;
   initChunk(c);
@@ -344,8 +364,10 @@ static Value fn_current_10() {
 static Value fn_is_at_end_11() {
   ObjFunction *f = newFunction();
   f->arity = 0;
+  f->variadic = 0;
   f->upvalueCount = 0;
   f->name = newString("is_at_end");
+  f->location = asSourceLocation(sourceLocation("src/lita/scanner.lita", 30, 3));
 
   Chunk *c = &f->chunk;
   initChunk(c);
@@ -388,8 +410,10 @@ static Value fn_is_at_end_11() {
 static Value fn_isAlpha_12() {
   ObjFunction *f = newFunction();
   f->arity = 1;
+  f->variadic = 0;
   f->upvalueCount = 0;
   f->name = newString("isAlpha");
+  f->location = asSourceLocation(sourceLocation("src/lita/scanner.lita", 32, 4));
 
   Chunk *c = &f->chunk;
   initChunk(c);
@@ -441,8 +465,10 @@ static Value fn_isAlpha_12() {
 static Value fn_isDigit_13() {
   ObjFunction *f = newFunction();
   f->arity = 1;
+  f->variadic = 0;
   f->upvalueCount = 0;
   f->name = newString("isDigit");
+  f->location = asSourceLocation(sourceLocation("src/lita/scanner.lita", 33, 4));
 
   Chunk *c = &f->chunk;
   initChunk(c);
@@ -477,8 +503,10 @@ static Value fn_isDigit_13() {
 static Value fn_isSubscript_14() {
   ObjFunction *f = newFunction();
   f->arity = 1;
+  f->variadic = 0;
   f->upvalueCount = 0;
   f->name = newString("isSubscript");
+  f->location = asSourceLocation(sourceLocation("src/lita/scanner.lita", 34, 4));
 
   Chunk *c = &f->chunk;
   initChunk(c);
@@ -513,8 +541,10 @@ static Value fn_isSubscript_14() {
 static Value fn_src_slash_lita_slash_scanner_dot_lita_0() {
   ObjFunction *f = newFunction();
   f->arity = 0;
+  f->variadic = 0;
   f->upvalueCount = 0;
   f->name = newString("src/lita/scanner.lita");
+  f->location = asSourceLocation(sourceLocation("src/lita/scanner.lita", 1, 1));
 
   Chunk *c = &f->chunk;
   initChunk(c);

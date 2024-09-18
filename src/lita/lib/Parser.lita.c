@@ -15,8 +15,10 @@
 static Value fn_init_1() {
   ObjFunction *f = newFunction();
   f->arity = 1;
+  f->variadic = 0;
   f->upvalueCount = 0;
   f->name = newString("init");
+  f->location = asSourceLocation(sourceLocation("src/lita/lib/Parser.lita", 37, 2));
 
   Chunk *c = &f->chunk;
   initChunk(c);
@@ -46,8 +48,10 @@ static Value fn_init_1() {
 static Value fn_src_slash_lita_slash_lib_slash_Parser_dot_lita_0() {
   ObjFunction *f = newFunction();
   f->arity = 0;
+  f->variadic = 0;
   f->upvalueCount = 0;
   f->name = newString("src/lita/lib/Parser.lita");
+  f->location = asSourceLocation(sourceLocation("src/lita/lib/Parser.lita", 1, 1));
 
   Chunk *c = &f->chunk;
   initChunk(c);

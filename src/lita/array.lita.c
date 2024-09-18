@@ -15,8 +15,10 @@
 static Value fn__lt__lt__1() {
   ObjFunction *f = newFunction();
   f->arity = 1;
+  f->variadic = 0;
   f->upvalueCount = 0;
   f->name = newString("<<");
+  f->location = asSourceLocation(sourceLocation("src/lita/array.lita", 2, 2));
 
   Chunk *c = &f->chunk;
   initChunk(c);
@@ -46,8 +48,10 @@ static Value fn__lt__lt__1() {
 static Value fn__eq__eq__2() {
   ObjFunction *f = newFunction();
   f->arity = 1;
+  f->variadic = 0;
   f->upvalueCount = 0;
   f->name = newString("==");
+  f->location = asSourceLocation(sourceLocation("src/lita/array.lita", 4, 2));
 
   Chunk *c = &f->chunk;
   initChunk(c);
@@ -150,8 +154,10 @@ static Value fn__eq__eq__2() {
 static Value fn_each_3() {
   ObjFunction *f = newFunction();
   f->arity = 1;
+  f->variadic = 0;
   f->upvalueCount = 0;
   f->name = newString("each");
+  f->location = asSourceLocation(sourceLocation("src/lita/array.lita", 12, 3));
 
   Chunk *c = &f->chunk;
   initChunk(c);
@@ -212,8 +218,10 @@ static Value fn_each_3() {
 static Value fn_map_4() {
   ObjFunction *f = newFunction();
   f->arity = 1;
+  f->variadic = 0;
   f->upvalueCount = 0;
   f->name = newString("map");
+  f->location = asSourceLocation(sourceLocation("src/lita/array.lita", 17, 3));
 
   Chunk *c = &f->chunk;
   initChunk(c);
@@ -281,8 +289,10 @@ static Value fn_map_4() {
 static Value fn__dot_print_6() {
   ObjFunction *f = newFunction();
   f->arity = 1;
+  f->variadic = 0;
   f->upvalueCount = 1;
   f->name = newString(".print");
+  f->location = asSourceLocation(sourceLocation("src/lita/array.lita", 25, 9));
 
   Chunk *c = &f->chunk;
   initChunk(c);
@@ -310,8 +320,10 @@ static Value fn__dot_print_6() {
 static Value fn_print_5() {
   ObjFunction *f = newFunction();
   f->arity = 1;
+  f->variadic = 0;
   f->upvalueCount = 0;
   f->name = newString("print");
+  f->location = asSourceLocation(sourceLocation("src/lita/array.lita", 24, 3));
 
   Chunk *c = &f->chunk;
   initChunk(c);
@@ -345,8 +357,10 @@ static Value fn_print_5() {
 static Value fn_sample_7() {
   ObjFunction *f = newFunction();
   f->arity = 0;
+  f->variadic = 0;
   f->upvalueCount = 0;
   f->name = newString("sample");
+  f->location = asSourceLocation(sourceLocation("src/lita/array.lita", 27, 3));
 
   Chunk *c = &f->chunk;
   initChunk(c);
@@ -383,8 +397,10 @@ static Value fn_sample_7() {
 static Value fn_src_slash_lita_slash_array_dot_lita_0() {
   ObjFunction *f = newFunction();
   f->arity = 0;
+  f->variadic = 0;
   f->upvalueCount = 0;
   f->name = newString("src/lita/array.lita");
+  f->location = asSourceLocation(sourceLocation("src/lita/array.lita", 1, 1));
 
   Chunk *c = &f->chunk;
   initChunk(c);
