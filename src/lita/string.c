@@ -261,6 +261,20 @@ ObjString *stringFormat(const char *fmt, ...) {
   return str;
 }
 
+ObjString *replaceString(ObjString *subject, ObjString *search,
+                         ObjString *replacement) {
+  Buffer out = newBuffer(subject->length);
+
+  for (int i = 0; i < subject->length; i++) {
+    if (strncmp(subject->chars + i, search->chars, search->length) == 0) {
+      appendStrToBuffer(&out, replacement->chars, replacement->length);
+      i += search->length - 1;
+    } else appendCharToBuffer(&out, subject->chars[i]);
+  }
+
+  return bufferToString(&out);
+}
+
 int fstringFormat(FILE *io, const char *fmt, ...) {
   va_list args;
   va_start(args, fmt);
@@ -322,27 +336,15 @@ NATIVE_METHOD(String, slice, 2) {
   return OBJ_VAL(copyString(str->chars + start, length));
 }
 NATIVE_METHOD(String, replace, 2) {
-  ObjString *str = asString(this);
-  ObjString *to = asString(args[1]);
+  ObjString *subject = asString(this);
+  ObjString *replacement = asString(args[1]);
 
 #if ENABLE_REGEX
-  if (isRegex(args[0])) return OBJ_VAL(replaceRegex(str, asRegex(args[0]), to));
+  if (isRegex(args[0]))
+    return OBJ_VAL(replaceRegex(subject, asRegex(args[0]), replacement));
 
 #endif
-
-  ObjString *from = asString(args[0]);
-  Buffer out = newBuffer(str->length);
-
-  for (int i = 0; i < str->length; i++) {
-    if (strncmp(str->chars + i, from->chars, from->length) == 0) {
-      appendStrToBuffer(&out, to->chars, to->length);
-      i += from->length - 1;
-    } else {
-      appendCharToBuffer(&out, str->chars[i]);
-    }
-  }
-
-  return OBJ_VAL(bufferToString(&out));
+  return OBJ_VAL(replaceString(subject, asString(args[0]), replacement));
 }
 
 static int stringLength(Obj *obj) { return ((ObjString *)obj)->length; }

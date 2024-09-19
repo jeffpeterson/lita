@@ -906,6 +906,13 @@ void repl() {
   printf("\n");
 }
 
+NATIVE_FUNCTION(compile, 1) {
+  ObjString *path = asString(args[1]);
+  readFile(path);
+  char *source = asChars(args[0]);
+  return obj(compile(source, path));
+}
+
 ECS_COMPONENT_DECLARE(VM);
 
 void LitaImport(World *world) {
