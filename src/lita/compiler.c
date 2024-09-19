@@ -773,12 +773,21 @@ static u8 argumentList() {
   return argCount;
 }
 
+static bool selfRequired(OpCode op) {
+  switch (op) {
+  case OP_SET_PROPERTY:
+  case OP_GET_PROPERTY:
+  case OP_GET_VAR:
+  case OP_SET_VAR: return true;
+  default: return false;
+  }
+}
+
 /**
  * `binary` means the setOp and getOp require the current value
  * on the stack to function properly.
  */
-static bool assignment(Ctx *ctx, OpCode getOp, OpCode setOp, Long arg,
-                       bool binary) {
+static bool assignment(Ctx *ctx, OpCode getOp, OpCode setOp, Long arg) {
   if (!ctx->canAssign) return false;
 
   TokenType type = parser.current.type;
@@ -797,18 +806,18 @@ static bool assignment(Ctx *ctx, OpCode getOp, OpCode setOp, Long arg,
     // We need the last stack value to call get/set
     // Todo: implement assignment via ObjUpvalue?
     //       push the upvalue/value onto the stack. call OP_GET/OP_SET
-    if (binary) {            // [<inst>]
-      emitBytes(OP_PEEK, 0); // [<inst>][<inst>]
+    if (selfRequired(getOp)) { // [inst]
+      emitBytes(OP_PEEK, 0);   // [inst, inst]
       emitByte(getOp);
       emitLong(arg);
-      emitDefault(NUMBER_VAL(0)); // [<inst>][value ?? 0]
-      emitSwap(0, 1);             // [value][<inst>]
-      emitBytes(OP_PEEK, 1);      // [value][<inst>][value]
+      emitDefault(NUMBER_VAL(0)); // [inst, value ?? 0]
+      emitSwap(0, 1);             // [value, inst]
+      emitBytes(OP_PEEK, 1);      // [value, inst, value]
     } else {
       emitByte(getOp);
       emitLong(arg);
       emitDefault(NUMBER_VAL(0)); // [value ?? 0]
-      emitBytes(OP_PEEK, 0);      // [value][value]
+      emitBytes(OP_PEEK, 0);      // [value, value]
     }
 
     emitConstant(NUMBER_VAL(1));
@@ -824,7 +833,7 @@ static bool assignment(Ctx *ctx, OpCode getOp, OpCode setOp, Long arg,
   case TOKEN_STAR_EQUAL:
     advance();
 
-    if (binary) emitBytes(OP_PEEK, 0);
+    if (selfRequired(getOp)) emitBytes(OP_PEEK, 0);
 
     emitByte(getOp);
     emitLong(arg);
@@ -843,7 +852,7 @@ static bool assignment(Ctx *ctx, OpCode getOp, OpCode setOp, Long arg,
   default: break;
   }
 
-  // Could not assign.
+  // Did not assign.
   return false;
 }
 
@@ -926,14 +935,13 @@ static void tuple(Ctx *ctx) {
 static void dot(Ctx *ctx) {
   Long name = makeConstant(consumeIdent("Expect property name after '.'"));
 
-  if (assignment(ctx, OP_GET_PROPERTY, OP_SET_PROPERTY, name, true)) return;
-
-  else if (match(TOKEN_LEFT_PAREN)) {
+  if (match(TOKEN_LEFT_PAREN)) {
     u8 argCount = argumentList();
     emitByte(OP_INVOKE);
     emitLong(name);
     emitByte(argCount);
-  } else {
+  } else if (assignment(ctx, OP_GET_PROPERTY, OP_SET_PROPERTY, name)) return;
+  else {
     emitByte(OP_GET_PROPERTY);
     emitLong(name);
   }
@@ -1081,7 +1089,7 @@ static void namedVariable(Token name, Ctx *ctx) {
   // canAssign:
   // printf("namedVariable: %.*s: %d\n", name.length, name.start,
   // ctx->canAssign);
-  if (assignment(ctx, getOp, setOp, arg, false)) return;
+  if (assignment(ctx, getOp, setOp, arg)) return;
 
   emitByte(getOp);
   emitLong(arg);
@@ -1723,8 +1731,8 @@ ParseRule rules[] = {
     [TOKEN_DOT_DOT] = {NULL, binary, PREC_RANGE},
     // [TOKEN_ELLIPSIS] = {ellipsis, NULL, PREC_RANGE},
 
-    [TOKEN_PLUS_PLUS] = {prefix, postfix, PREC_PREFIX},
-    [TOKEN_MINUS_MINUS] = {prefix, postfix, PREC_PREFIX},
+    [TOKEN_PLUS_PLUS] = {prefix, NULL, PREC_PREFIX},
+    [TOKEN_MINUS_MINUS] = {prefix, NULL, PREC_PREFIX},
 
     [TOKEN_DOT] = {dotSugar, dot, PREC_DOT},
 
