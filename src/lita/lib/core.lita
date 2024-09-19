@@ -10,28 +10,9 @@ class Any < nil
 
 class Nil < Any
 	.string = ""
-	.dump = 'nil
 
 class Object < Any
-
-// class Bytes(str)
-// class Inspect(String)
-// class Literal(String)
-// class Point(x, y)
-
-let fn_id = 0
 class Function
-	// let id = fn_id++
-	.dump = "/*" name "*/fn" id "()"
-	.dump_global = \
-		"\n" \
-		"// " name "\n" \
-		"static ValueArray constants" id "() {\n" \
-		"  ValueArray vals;\n" \
-		"  initValueArray(&vals);\n" \
-		"  vals.count = vals.capacity = "  ";\n" \
-		"  Value values[] = {" \
-
 class Method < Function
 class NativeFunction < Function
 class Class < Function
@@ -39,12 +20,10 @@ class Class < Function
 class Bool
 	.string    = this ? 'true : 'false
 	.print(io) = io.write(string)
-	.dump      = this ? 'TRUE_VAL : 'FALSE_VAL
 
 class Number
 	.inc		= this + 1
 	.dec		= this - 1
-	.dump		= "NUMBER_VAL(" string ')
 	.print(io)	= io.write(string)
 	.(b)		= this * b
 

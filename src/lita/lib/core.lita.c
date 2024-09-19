@@ -283,155 +283,14 @@ static Value fn_string_8() {
   return obj(f);
 }
 
-             // dump
-static Value fn_dump_9() {
-  ObjFunction *f = newFunction();
-  f->arity = 0;
-  f->variadic = 0;
-  f->upvalueCount = 0;
-  f->name = newString("dump");
-  f->location = asSourceLocation(sourceLocation("src/lita/lib/core.lita", 13, 3));
-
-  Chunk *c = &f->chunk;
-  initChunk(c);
-  c->count = c->capacity = 5;
-  c->version = 1;
-  u8 code[] = {
-    OP_CONSTANT, 0,
-    OP_RETURN,
-    OP_NIL,
-    OP_RETURN,
-  };
-  int lines[] = { 13, 13, 13, 13, 13,};
-  c->code = cloneMemory(code, sizeof(code));
-  c->lines = cloneMemory(lines, sizeof(lines));
-
-  c->constants.count = c->constants.capacity = 1;
-  Value values[] = {
-    string("nil"),
-  };
-  c->constants.values = cloneMemory(values, sizeof(values));
-  return obj(f);
-}
-
-             // dump
-static Value fn_dump_10() {
-  ObjFunction *f = newFunction();
-  f->arity = 0;
-  f->variadic = 0;
-  f->upvalueCount = 0;
-  f->name = newString("dump");
-  f->location = asSourceLocation(sourceLocation("src/lita/lib/core.lita", 25, 3));
-
-  Chunk *c = &f->chunk;
-  initChunk(c);
-  c->count = c->capacity = 25;
-  c->version = 1;
-  u8 code[] = {
-    OP_CONSTANT, 0,
-    OP_GET_LOCAL, 0,
-    OP_GET_VAR, 1,
-    OP_CALL, 1,
-    OP_CONSTANT, 2,
-    OP_CALL, 1,
-    OP_GET_LOCAL, 0,
-    OP_GET_VAR, 3,
-    OP_CALL, 1,
-    OP_CONSTANT, 4,
-    OP_CALL, 1,
-    OP_RETURN,
-    OP_NIL,
-    OP_RETURN,
-  };
-  int lines[] = { 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25,};
-  c->code = cloneMemory(code, sizeof(code));
-  c->lines = cloneMemory(lines, sizeof(lines));
-
-  c->constants.count = c->constants.capacity = 5;
-  Value values[] = {
-    string("/*"),
-    string("name"),
-    string("*/fn"),
-    string("id"),
-    string("()"),
-  };
-  c->constants.values = cloneMemory(values, sizeof(values));
-  return obj(f);
-}
-
-             // dump_global
-static Value fn_dump_global_11() {
-  ObjFunction *f = newFunction();
-  f->arity = 0;
-  f->variadic = 0;
-  f->upvalueCount = 0;
-  f->name = newString("dump_global");
-  f->location = asSourceLocation(sourceLocation("src/lita/lib/core.lita", 26, 3));
-
-  Chunk *c = &f->chunk;
-  initChunk(c);
-  c->count = c->capacity = 53;
-  c->version = 1;
-  u8 code[] = {
-    OP_CONSTANT, 0,
-    OP_CONSTANT, 1,
-    OP_CALL, 1,
-    OP_GET_LOCAL, 0,
-    OP_GET_VAR, 2,
-    OP_CALL, 1,
-    OP_CONSTANT, 0,
-    OP_CALL, 1,
-    OP_CONSTANT, 3,
-    OP_CALL, 1,
-    OP_GET_LOCAL, 0,
-    OP_GET_VAR, 4,
-    OP_CALL, 1,
-    OP_CONSTANT, 5,
-    OP_CALL, 1,
-    OP_CONSTANT, 6,
-    OP_CALL, 1,
-    OP_CONSTANT, 7,
-    OP_CALL, 1,
-    OP_CONSTANT, 8,
-    OP_CALL, 1,
-    OP_CONSTANT, 9,
-    OP_CALL, 1,
-    OP_CONSTANT, 10,
-    OP_CALL, 1,
-    OP_RETURN,
-    OP_NIL,
-    OP_RETURN,
-  };
-  int lines[] = { 27, 27, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 30, 30, 30, 30, 31, 31, 31, 31, 32, 32, 32, 32, 32, 32, 32, 32, 33, 33, 33, 33, 33, 33, 33,};
-  c->code = cloneMemory(code, sizeof(code));
-  c->lines = cloneMemory(lines, sizeof(lines));
-
-  c->constants.count = c->constants.capacity = 11;
-  Value values[] = {
-    string("\n"),
-    string("// "),
-    string("name"),
-    string("static ValueArray constants"),
-    string("id"),
-    string("() {\n"),
-    string("  ValueArray vals;\n"),
-    string("  initValueArray(&vals);\n"),
-    string("  vals.count = vals.capacity = "),
-    string(";\n"),
-    string("  Value values[] = {"),
-  };
-  c->constants.values = cloneMemory(values, sizeof(values));
-  return obj(f);
-}
-
              // string
-static Value fn_string_12() {
+static Value fn_string_9() {
   ObjFunction *f = newFunction();
   f->arity = 0;
   f->variadic = 0;
   f->upvalueCount = 0;
   f->name = newString("string");
-  f->location = asSourceLocation(sourceLocation("src/lita/lib/core.lita", 40, 3));
+  f->location = asSourceLocation(sourceLocation("src/lita/lib/core.lita", 21, 3));
 
   Chunk *c = &f->chunk;
   initChunk(c);
@@ -449,7 +308,7 @@ static Value fn_string_12() {
     OP_NIL,
     OP_RETURN,
   };
-  int lines[] = { 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40,};
+  int lines[] = { 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21,};
   c->code = cloneMemory(code, sizeof(code));
   c->lines = cloneMemory(lines, sizeof(lines));
 
@@ -463,13 +322,13 @@ static Value fn_string_12() {
 }
 
              // print
-static Value fn_print_13() {
+static Value fn_print_10() {
   ObjFunction *f = newFunction();
   f->arity = 1;
   f->variadic = 0;
   f->upvalueCount = 0;
   f->name = newString("print");
-  f->location = asSourceLocation(sourceLocation("src/lita/lib/core.lita", 41, 3));
+  f->location = asSourceLocation(sourceLocation("src/lita/lib/core.lita", 22, 3));
 
   Chunk *c = &f->chunk;
   initChunk(c);
@@ -484,7 +343,7 @@ static Value fn_print_13() {
     OP_NIL,
     OP_RETURN,
   };
-  int lines[] = { 41, 41, 41, 41, 41, 41, 41, 41, 41, 41, 41, 41,};
+  int lines[] = { 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22,};
   c->code = cloneMemory(code, sizeof(code));
   c->lines = cloneMemory(lines, sizeof(lines));
 
@@ -497,52 +356,14 @@ static Value fn_print_13() {
   return obj(f);
 }
 
-             // dump
-static Value fn_dump_14() {
-  ObjFunction *f = newFunction();
-  f->arity = 0;
-  f->variadic = 0;
-  f->upvalueCount = 0;
-  f->name = newString("dump");
-  f->location = asSourceLocation(sourceLocation("src/lita/lib/core.lita", 42, 3));
-
-  Chunk *c = &f->chunk;
-  initChunk(c);
-  c->count = c->capacity = 17;
-  c->version = 1;
-  u8 code[] = {
-    OP_GET_LOCAL, 0,
-    OP_JUMP_IF_FALSE, 0, 6,
-    OP_POP,
-    OP_CONSTANT, 0,
-    OP_JUMP, 0, 3,
-    OP_POP,
-    OP_CONSTANT, 1,
-    OP_RETURN,
-    OP_NIL,
-    OP_RETURN,
-  };
-  int lines[] = { 42, 42, 42, 42, 42, 42, 42, 42, 42, 42, 42, 42, 42, 42, 42, 42, 42,};
-  c->code = cloneMemory(code, sizeof(code));
-  c->lines = cloneMemory(lines, sizeof(lines));
-
-  c->constants.count = c->constants.capacity = 2;
-  Value values[] = {
-    string("TRUE_VAL"),
-    string("FALSE_VAL"),
-  };
-  c->constants.values = cloneMemory(values, sizeof(values));
-  return obj(f);
-}
-
              // inc
-static Value fn_inc_15() {
+static Value fn_inc_11() {
   ObjFunction *f = newFunction();
   f->arity = 0;
   f->variadic = 0;
   f->upvalueCount = 0;
   f->name = newString("inc");
-  f->location = asSourceLocation(sourceLocation("src/lita/lib/core.lita", 45, 3));
+  f->location = asSourceLocation(sourceLocation("src/lita/lib/core.lita", 25, 3));
 
   Chunk *c = &f->chunk;
   initChunk(c);
@@ -556,7 +377,7 @@ static Value fn_inc_15() {
     OP_NIL,
     OP_RETURN,
   };
-  int lines[] = { 45, 45, 45, 45, 45, 45, 45, 45,};
+  int lines[] = { 25, 25, 25, 25, 25, 25, 25, 25,};
   c->code = cloneMemory(code, sizeof(code));
   c->lines = cloneMemory(lines, sizeof(lines));
 
@@ -569,13 +390,13 @@ static Value fn_inc_15() {
 }
 
              // dec
-static Value fn_dec_16() {
+static Value fn_dec_12() {
   ObjFunction *f = newFunction();
   f->arity = 0;
   f->variadic = 0;
   f->upvalueCount = 0;
   f->name = newString("dec");
-  f->location = asSourceLocation(sourceLocation("src/lita/lib/core.lita", 46, 3));
+  f->location = asSourceLocation(sourceLocation("src/lita/lib/core.lita", 26, 3));
 
   Chunk *c = &f->chunk;
   initChunk(c);
@@ -589,7 +410,7 @@ static Value fn_dec_16() {
     OP_NIL,
     OP_RETURN,
   };
-  int lines[] = { 46, 46, 46, 46, 46, 46, 46, 46,};
+  int lines[] = { 26, 26, 26, 26, 26, 26, 26, 26,};
   c->code = cloneMemory(code, sizeof(code));
   c->lines = cloneMemory(lines, sizeof(lines));
 
@@ -601,52 +422,14 @@ static Value fn_dec_16() {
   return obj(f);
 }
 
-             // dump
-static Value fn_dump_17() {
-  ObjFunction *f = newFunction();
-  f->arity = 0;
-  f->variadic = 0;
-  f->upvalueCount = 0;
-  f->name = newString("dump");
-  f->location = asSourceLocation(sourceLocation("src/lita/lib/core.lita", 47, 3));
-
-  Chunk *c = &f->chunk;
-  initChunk(c);
-  c->count = c->capacity = 15;
-  c->version = 1;
-  u8 code[] = {
-    OP_CONSTANT, 0,
-    OP_GET_LOCAL, 0,
-    OP_GET_VAR, 1,
-    OP_CALL, 1,
-    OP_CONSTANT, 2,
-    OP_CALL, 1,
-    OP_RETURN,
-    OP_NIL,
-    OP_RETURN,
-  };
-  int lines[] = { 47, 47, 47, 47, 47, 47, 47, 47, 47, 47, 47, 47, 47, 47, 47,};
-  c->code = cloneMemory(code, sizeof(code));
-  c->lines = cloneMemory(lines, sizeof(lines));
-
-  c->constants.count = c->constants.capacity = 3;
-  Value values[] = {
-    string("NUMBER_VAL("),
-    string("string"),
-    string(")"),
-  };
-  c->constants.values = cloneMemory(values, sizeof(values));
-  return obj(f);
-}
-
              // print
-static Value fn_print_18() {
+static Value fn_print_13() {
   ObjFunction *f = newFunction();
   f->arity = 1;
   f->variadic = 0;
   f->upvalueCount = 0;
   f->name = newString("print");
-  f->location = asSourceLocation(sourceLocation("src/lita/lib/core.lita", 48, 3));
+  f->location = asSourceLocation(sourceLocation("src/lita/lib/core.lita", 27, 3));
 
   Chunk *c = &f->chunk;
   initChunk(c);
@@ -661,7 +444,7 @@ static Value fn_print_18() {
     OP_NIL,
     OP_RETURN,
   };
-  int lines[] = { 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48,};
+  int lines[] = { 27, 27, 27, 27, 27, 27, 27, 27, 27, 27, 27, 27,};
   c->code = cloneMemory(code, sizeof(code));
   c->lines = cloneMemory(lines, sizeof(lines));
 
@@ -675,13 +458,13 @@ static Value fn_print_18() {
 }
 
              // .
-static Value fn__dot__19() {
+static Value fn__dot__14() {
   ObjFunction *f = newFunction();
   f->arity = 1;
   f->variadic = 0;
   f->upvalueCount = 0;
   f->name = newString(".");
-  f->location = asSourceLocation(sourceLocation("src/lita/lib/core.lita", 49, 2));
+  f->location = asSourceLocation(sourceLocation("src/lita/lib/core.lita", 28, 2));
 
   Chunk *c = &f->chunk;
   initChunk(c);
@@ -695,7 +478,7 @@ static Value fn__dot__19() {
     OP_NIL,
     OP_RETURN,
   };
-  int lines[] = { 49, 49, 49, 49, 49, 49, 49, 49,};
+  int lines[] = { 28, 28, 28, 28, 28, 28, 28, 28,};
   c->code = cloneMemory(code, sizeof(code));
   c->lines = cloneMemory(lines, sizeof(lines));
 
@@ -707,13 +490,13 @@ static Value fn__dot__19() {
 }
 
              // inspect
-static Value fn_inspect_20() {
+static Value fn_inspect_15() {
   ObjFunction *f = newFunction();
   f->arity = 0;
   f->variadic = 0;
   f->upvalueCount = 0;
   f->name = newString("inspect");
-  f->location = asSourceLocation(sourceLocation("src/lita/lib/core.lita", 52, 3));
+  f->location = asSourceLocation(sourceLocation("src/lita/lib/core.lita", 31, 3));
 
   Chunk *c = &f->chunk;
   initChunk(c);
@@ -725,7 +508,7 @@ static Value fn_inspect_20() {
     OP_NIL,
     OP_RETURN,
   };
-  int lines[] = { 52, 52, 52, 52, 52,};
+  int lines[] = { 31, 31, 31, 31, 31,};
   c->code = cloneMemory(code, sizeof(code));
   c->lines = cloneMemory(lines, sizeof(lines));
 
@@ -738,13 +521,13 @@ static Value fn_inspect_20() {
 }
 
              // init
-static Value fn_init_21() {
+static Value fn_init_16() {
   ObjFunction *f = newFunction();
   f->arity = 3;
   f->variadic = 0;
   f->upvalueCount = 0;
   f->name = newString("init");
-  f->location = asSourceLocation(sourceLocation("src/lita/lib/core.lita", 54, 7));
+  f->location = asSourceLocation(sourceLocation("src/lita/lib/core.lita", 33, 7));
 
   Chunk *c = &f->chunk;
   initChunk(c);
@@ -766,7 +549,7 @@ static Value fn_init_21() {
     OP_GET_LOCAL, 0,
     OP_RETURN,
   };
-  int lines[] = { 54, 54, 54, 54, 54, 54, 54, 54, 54, 54, 54, 54, 54, 54, 54, 54, 54, 54, 54, 54, 54, 54, 54, 54,};
+  int lines[] = { 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33,};
   c->code = cloneMemory(code, sizeof(code));
   c->lines = cloneMemory(lines, sizeof(lines));
 
@@ -791,7 +574,7 @@ static Value fn_src_slash_lita_slash_lib_slash_core_dot_lita_0() {
 
   Chunk *c = &f->chunk;
   initChunk(c);
-  c->count = c->capacity = 223;
+  c->count = c->capacity = 199;
   c->version = 1;
   u8 code[] = {
     OP_CLASS, 0, 0,
@@ -821,108 +604,96 @@ static Value fn_src_slash_lita_slash_lib_slash_core_dot_lita_0() {
     OP_SWAP, 1,
     OP_CONSTANT, 16,
     OP_METHOD, 5,
-    OP_CONSTANT, 18,
-    OP_METHOD, 17,
     OP_POP,
     OP_POP,
-    OP_CLASS, 19, 0,
+    OP_CLASS, 17, 0,
     OP_GET_LOCAL, 0,
     OP_GET_VAR, 0,
     OP_INHERIT,
     OP_SWAP, 1,
     OP_POP,
     OP_POP,
-    OP_CONSTANT, 21,
-    OP_DEFINE_GLOBAL, 20,
+    OP_CLASS, 18, 0,
+    OP_GET_LOCAL, 0,
+    OP_GET_VAR, 17,
+    OP_INHERIT,
+    OP_SWAP, 1,
+    OP_POP,
+    OP_POP,
+    OP_CLASS, 19, 0,
+    OP_GET_LOCAL, 0,
+    OP_GET_VAR, 18,
+    OP_INHERIT,
+    OP_SWAP, 1,
+    OP_POP,
+    OP_POP,
+    OP_CLASS, 20, 0,
+    OP_GET_LOCAL, 0,
+    OP_GET_VAR, 18,
+    OP_INHERIT,
+    OP_SWAP, 1,
+    OP_POP,
+    OP_POP,
+    OP_CLASS, 21, 0,
+    OP_GET_LOCAL, 0,
+    OP_GET_VAR, 18,
+    OP_INHERIT,
+    OP_SWAP, 1,
+    OP_POP,
+    OP_POP,
     OP_CLASS, 22, 0,
     OP_GET_LOCAL, 0,
-    OP_GET_VAR, 19,
+    OP_GET_VAR, 17,
     OP_INHERIT,
     OP_SWAP, 1,
     OP_CONSTANT, 23,
-    OP_METHOD, 17,
+    OP_METHOD, 5,
     OP_CONSTANT, 25,
     OP_METHOD, 24,
     OP_POP,
     OP_POP,
     OP_CLASS, 26, 0,
     OP_GET_LOCAL, 0,
-    OP_GET_VAR, 22,
+    OP_GET_VAR, 17,
     OP_INHERIT,
     OP_SWAP, 1,
-    OP_POP,
-    OP_POP,
-    OP_CLASS, 27, 0,
-    OP_GET_LOCAL, 0,
-    OP_GET_VAR, 22,
-    OP_INHERIT,
-    OP_SWAP, 1,
-    OP_POP,
-    OP_POP,
-    OP_CLASS, 28, 0,
-    OP_GET_LOCAL, 0,
-    OP_GET_VAR, 22,
-    OP_INHERIT,
-    OP_SWAP, 1,
-    OP_POP,
-    OP_POP,
-    OP_CLASS, 29, 0,
-    OP_GET_LOCAL, 0,
-    OP_GET_VAR, 19,
-    OP_INHERIT,
-    OP_SWAP, 1,
+    OP_CONSTANT, 28,
+    OP_METHOD, 27,
     OP_CONSTANT, 30,
-    OP_METHOD, 5,
-    OP_CONSTANT, 32,
-    OP_METHOD, 31,
+    OP_METHOD, 29,
+    OP_CONSTANT, 31,
+    OP_METHOD, 24,
     OP_CONSTANT, 33,
-    OP_METHOD, 17,
+    OP_METHOD, 32,
     OP_POP,
     OP_POP,
     OP_CLASS, 34, 0,
     OP_GET_LOCAL, 0,
-    OP_GET_VAR, 19,
+    OP_GET_VAR, 17,
     OP_INHERIT,
     OP_SWAP, 1,
     OP_CONSTANT, 36,
     OP_METHOD, 35,
+    OP_POP,
+    OP_POP,
+    OP_CLASS, 37, 0,
     OP_CONSTANT, 38,
-    OP_METHOD, 37,
-    OP_CONSTANT, 39,
-    OP_METHOD, 17,
-    OP_CONSTANT, 40,
-    OP_METHOD, 31,
-    OP_CONSTANT, 42,
-    OP_METHOD, 41,
-    OP_POP,
-    OP_POP,
-    OP_CLASS, 43, 0,
+    OP_METHOD, 39,
     OP_GET_LOCAL, 0,
-    OP_GET_VAR, 19,
-    OP_INHERIT,
-    OP_SWAP, 1,
-    OP_CONSTANT, 45,
-    OP_METHOD, 44,
-    OP_POP,
-    OP_POP,
-    OP_CLASS, 46, 0,
-    OP_CONSTANT, 47,
-    OP_METHOD, 48,
-    OP_GET_LOCAL, 0,
-    OP_GET_VAR, 19,
+    OP_GET_VAR, 17,
     OP_INHERIT,
     OP_SWAP, 1,
     OP_POP,
     OP_POP,
-    OP_GET_GLOBAL, 46,
-    OP_ASSERT_STACK, 49, 2,
+    OP_GET_GLOBAL, 37,
+    OP_ASSERT_STACK, 40, 2,
     OP_RETURN,
   };
-  int lines[] = { 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4, 6, 6, 6, 6, 7, 7, 7, 7, 8, 8, 8, 8, 9, 9, 9, 9, 9, 9, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 12, 12, 12, 12, 13, 13, 13, 13, 13, 13, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 22, 22, 22, 22, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 25, 25, 25, 25, 33, 33, 33, 33, 33, 33, 35, 35, 35, 35, 35, 35, 35, 35, 35, 35, 35, 35, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 36, 37, 37, 37, 37, 37, 37, 37, 37, 37, 37, 37, 37, 39, 39, 39, 39, 39, 39, 39, 39, 39, 39, 40, 40, 40, 40, 41, 41, 41, 41, 42, 42, 42, 42, 42, 42, 44, 44, 44, 44, 44, 44, 44, 44, 44, 44, 45, 45, 45, 45, 46, 46, 46, 46, 47, 47, 47, 47, 48, 48, 48, 48, 49, 49, 49, 49, 49, 49, 51, 51, 51, 51, 51, 51, 51, 51, 51, 51, 52, 52, 52, 52, 52, 52, 54, 54, 54, 54, 54, 54, 54, 54, 54, 54, 54, 54, 54, 54, 54, 54, 54, 54, 55, 55, 55, 55,};
+  int lines[] = { 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4, 6, 6, 6, 6, 7, 7, 7, 7, 8, 8, 8, 8, 9, 9, 9, 9, 9, 9, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 12, 12, 12, 12, 12, 12, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 21, 21, 21, 21, 22, 22, 22, 22, 22, 22, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24, 25, 25, 25, 25, 26, 26, 26, 26, 27, 27, 27, 27, 28, 28, 28, 28, 28, 28, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 31, 31, 31, 31, 31, 31, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 34, 34, 34, 34,};
   c->code = cloneMemory(code, sizeof(code));
   c->lines = cloneMemory(lines, sizeof(lines));
 
-  c->constants.count = c->constants.capacity = 50;
+  c->constants.count = c->constants.capacity = 41;
   Value values[] = {
     string("Any"),
     string("!="),
@@ -941,37 +712,28 @@ static Value fn_src_slash_lita_slash_lib_slash_core_dot_lita_0() {
     fn__gt__eq__7(),
     string("Nil"),
     fn_string_8(),
-    string("dump"),
-    fn_dump_9(),
     string("Object"),
-    string("fn_id"),
-    NUMBER_VAL(0.000000),
     string("Function"),
-    fn_dump_10(),
-    string("dump_global"),
-    fn_dump_global_11(),
     string("Method"),
     string("NativeFunction"),
     string("Class"),
     string("Bool"),
-    fn_string_12(),
+    fn_string_9(),
     string("print"),
-    fn_print_13(),
-    fn_dump_14(),
+    fn_print_10(),
     string("Number"),
     string("inc"),
-    fn_inc_15(),
+    fn_inc_11(),
     string("dec"),
-    fn_dec_16(),
-    fn_dump_17(),
-    fn_print_18(),
+    fn_dec_12(),
+    fn_print_13(),
     string(""),
-    fn__dot__19(),
+    fn__dot__14(),
     string("Table"),
     string("inspect"),
-    fn_inspect_20(),
+    fn_inspect_15(),
     string("Atom"),
-    fn_init_21(),
+    fn_init_16(),
     string("init"),
     string("script return value"),
   };
