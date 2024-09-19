@@ -97,6 +97,9 @@ assert 1 + 2 == 3
 assert a + b == 6
 assert 2(3) == 6
 assert 2b == 8
+assert 9.clamp(1, 5) == 5
+assert 3.clamp(4, 8) == 4
+assert 3.clamp(1, 5) == 3
 
 // Strings
 assert "Strings"

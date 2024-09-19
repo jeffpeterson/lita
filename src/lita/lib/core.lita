@@ -8,6 +8,12 @@ class Any < nil
 	<= (v) = this <=> v <= 0
 	>= (v) = this <=> v >= 0
 
+	// TODO: run inline tests
+	/// 9.clamp(1, 5) -> 5
+	/// 3.clamp(4, 8) -> 4
+	/// 3.clamp(1, 5) -> 3
+	.clamp(min, max) = this < min ? min : this > max ? max : this
+
 class Nil < Any
 	.string = ""
 
@@ -31,3 +37,6 @@ class Table
 	.inspect = "{}"
 
 class Atom(type, value, targets) // ...targets)
+
+// class Source < String
+// 	.compile()
