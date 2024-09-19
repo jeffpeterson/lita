@@ -156,9 +156,12 @@ static Value identifierValue(Token *name) {
   return OBJ_VAL(copyString(name->start, name->length));
 }
 
-static Value sourceSince(const char *start) {
-  return OBJ_VAL(copyString(start, parser.previous.start +
-                                       parser.previous.length - start));
+static ObjString *sourceOver(Token *start, Token *end) {
+  return copyString(start->start, end->start + end->length - start->start);
+}
+
+static ObjString *sourceSince(Token *start) {
+  return sourceOver(start, &parser.previous);
 }
 
 static void verrorAt(Token *token, const char *message, va_list args) {
@@ -682,6 +685,35 @@ static ParseRule *getRule(TokenType type) { return &rules[type]; }
 
 static bool parseAbove(Precedence precedence);
 
+static bool parseInfix(Ctx ctx) {
+  ParseRule *rule;
+  while ((rule = getRule(parser.current.type))) {
+    if (rule->precedence <= ctx.precedence)
+      break; // We are the LHS to the next token.
+
+    // if (rule->precedence >= PREC_TOUCHING && !isTouching()) break;
+
+    advance();
+    ParseFn *infix = rule->infix;
+    if (infix == NULL) {
+      error("Missing infix operator. Set precedence to PREC_NONE if this is "
+            "intentional.");
+      return false;
+    }
+    infix(&ctx);
+  }
+
+  if (ctx.canAssign && match(TOKEN_EQUAL)) {
+    error("Invalid assignment target.");
+    return false;
+  }
+
+  if (ctx.precedence <= PREC_ADJOINING && parser.previous.type != TOKEN_DEDENT)
+    while (parseAbove(PREC_ADJOINING)) emitBytes(OP_CALL, 1);
+
+  return false;
+}
+
 /**
  * Parse at this precedence or above.
  *
@@ -707,31 +739,7 @@ static bool parseAt(Precedence precedence) {
   ctx.precedence = precedence;
   ctx.canAssign = precedence <= PREC_ASSIGNMENT;
   prefix(&ctx);
-
-  while ((rule = getRule(parser.current.type))) {
-    if (rule->precedence <= precedence)
-      break; // We are the LHS to the next token.
-
-    // if (rule->precedence >= PREC_TOUCHING && !isTouching()) break;
-
-    advance();
-    ParseFn *infix = rule->infix;
-    if (infix == NULL) {
-      error("Missing infix operator. Set precedence to PREC_NONE if this is "
-            "intentional.");
-      return false;
-    }
-    infix(&ctx);
-  }
-
-  if (ctx.canAssign && match(TOKEN_EQUAL)) {
-    error("Invalid assignment target.");
-    return false;
-  }
-
-  if (ctx.precedence <= PREC_ADJOINING && parser.previous.type != TOKEN_DEDENT)
-    while (parseAbove(PREC_ADJOINING)) emitBytes(OP_CALL, 1);
-
+  parseInfix(ctx);
   return true;
 }
 
@@ -948,34 +956,19 @@ static void dot(Ctx *ctx) {
 }
 
 static void dotSugar(Ctx *ctx) {
-  Token dot = parser.previous;
-  let methodName = consumeIdent("Expect property name after '.'");
-  let fnName = sourceSince(dot.start);
-
   Compiler compiler;
+  Token self = syntheticToken("_");
+  initCompiler(&compiler, TYPE_FUNCTION,
+               sourceOver(&parser.previous, &parser.current));
+  current->fun->arity++;
 
-  initCompiler(&compiler, TYPE_FUNCTION, asString(fnName));
   beginScope();
 
-  Long nameConstant = makeConstant(methodName);
-  trace("dotSugar name const", NUMBER_VAL(nameConstant));
-
-  current->fun->arity++;
-  declareVariable();
+  addLocal(self);
   markDefined();
-
   emitBytes(OP_GET_LOCAL, 1);
-
-  if (match(TOKEN_LEFT_PAREN)) {
-    u8 argc = argumentList();
-    emitByte(OP_INVOKE);
-    emitLong(nameConstant);
-    emitByte(argc);
-  } else {
-    emitByte(OP_GET_PROPERTY);
-    emitLong(nameConstant);
-  }
-
+  dot(ctx);
+  parseInfix((Ctx){.precedence = PREC_DOT - 1});
   emitByte(OP_RETURN);
 
   endCompiler();
@@ -1196,11 +1189,9 @@ static void function(FunType type) {
       do {
         if (match(TOKEN_ELLIPSIS)) {
           compiler.fun->variadic = true;
-          Long constant = 0;
-          if (check(TOKEN_IDENTIFIER))
-            constant = parseVariable("Expect parameter name after \"...\".");
-          else declareVariable();
-          defineVariable(constant);
+          match(TOKEN_IDENTIFIER);
+          declareVariable();
+          markDefined();
           break;
         }
 
@@ -1208,8 +1199,8 @@ static void function(FunType type) {
         if (current->fun->arity > 255)
           errorAtCurrent("Can't have more than 255 parameters.");
 
-        Long constant = parseVariable("Expect parameter name.");
-        defineVariable(constant);
+        parseVariable("Expect parameter name.");
+        markDefined();
       } while (match(TOKEN_COMMA));
     }
 
@@ -1377,7 +1368,7 @@ static Long varDeclaration() {
 }
 
 static void assert_(Ctx *ctx) {
-  const char *start = parser.previous.start;
+  Token start = parser.previous;
 
   // TODO: parse above ==, etc. and parse LHS and RHS separately
   // Then emitBytes(OP_ASSERT, OP_EQUAL)
@@ -1387,7 +1378,7 @@ static void assert_(Ctx *ctx) {
     return error("Expect expression after assert.");
 
   emitByte(OP_ASSERT);
-  emitLong(makeConstant(sourceSince(start)));
+  emitLong(makeConstant(obj(sourceSince(&start))));
 }
 
 // for ;;i++:

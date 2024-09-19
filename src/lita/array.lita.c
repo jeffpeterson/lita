@@ -406,7 +406,7 @@ static Value fn__dot_print_7() {
   f->variadic = 0;
   f->upvalueCount = 1;
   f->name = newString(".print");
-  f->location = asSourceLocation(sourceLocation("src/lita/array.lita", 35, 9));
+  f->location = asSourceLocation(sourceLocation("src/lita/array.lita", 35, 8));
 
   Chunk *c = &f->chunk;
   initChunk(c);

@@ -52,6 +52,10 @@ assert add.arity	== 2 // Get the number of parameters
 assert add.byteCount == 8
 assert subtract.byteCount == 9
 
+assert ['aDc].map(.replace('D, 'b)) == ['abc]
+assert ['aDc].map(.replace('D, 'b).uppercase) == ['ABC]
+assert ['aDc].map(.replace('D, _)) == ['aaDcc]
+
 // Variadic Functions
 fn sum(...xs)
 	let n = 0

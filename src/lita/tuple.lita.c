@@ -228,7 +228,7 @@ static Value fn__dot_print_7() {
   f->variadic = 0;
   f->upvalueCount = 1;
   f->name = newString(".print");
-  f->location = asSourceLocation(sourceLocation("src/lita/tuple.lita", 13, 21));
+  f->location = asSourceLocation(sourceLocation("src/lita/tuple.lita", 13, 20));
 
   Chunk *c = &f->chunk;
   initChunk(c);
