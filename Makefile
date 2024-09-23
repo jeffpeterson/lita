@@ -129,6 +129,10 @@ pcg:
 	curl https://raw.githubusercontent.com/imneme/pcg-c-basic/master/pcg_basic.c > src/lita/pcg_basic.c
 	curl https://raw.githubusercontent.com/imneme/pcg-c-basic/master/pcg_basic.h > src/lita/pcg_basic.h
 
+xxhash:
+	curl https://raw.githubusercontent.com/Cyan4973/xxHash/refs/tags/v0.8.2/xxhash.h > src/lita/xxhash.h
+	curl https://raw.githubusercontent.com/Cyan4973/xxHash/refs/tags/v0.8.2/xxhash.c > src/lita/xxhash.c
+
 .PHONY: default all clean test db db/test lib prune
 .PRECIOUS: $(TARGET) %.c %.o
 .SUFFIXES: # disable crazy built-in rules that append .c
