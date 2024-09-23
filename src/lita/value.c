@@ -6,7 +6,6 @@
 #include "term.h"
 #include "value.h"
 #include "vm.h"
-#include "xxhash.h"
 
 bool isFalsey(Value value) { return isNil(value) || isFalse(value); }
 
@@ -40,6 +39,10 @@ void freeValueArray(ValueArray *array) {
 
 void copyValues(Value *source, Value *dest, usize count) {
   memcpy(dest, source, count * sizeof(Value));
+}
+
+int inspectHash(FILE *io, Value value) {
+  return inspectValue(io, value) + fprintf(io, " %llx\n", valueHash(value));
 }
 
 int inspectValue(FILE *io, Value val) {
@@ -118,15 +121,34 @@ int cmpValues(Value a, Value b) {
   return AS_NUMBER(a) - AS_NUMBER(b);
 }
 
-Hash hashBytes(const char *bytes, usize length) {
-  return XXH3_64bits(bytes, length);
+HashState *startHash() { return XXH64_createState(); }
+
+void updateHash(HashState *state, const void *data, usize length) {
+  if (!data || !length) return;
+  assert(!XXH64_update(state, data, length));
 }
 
-Hash hashValue(Value val) {
-  return isObject(val) ? AS_OBJ(val)->hash
-                       : hashBytes((char *)&val, sizeof(Value));
+Hash endHash(HashState *state) {
+  Hash hash = XXH64_digest(state);
+  XXH64_freeState(state);
+  return hash;
 }
 
-Hash hashValues(Value *vals, usize length) {
-  return hashBytes((char *)vals, length * sizeof(Value));
+void hashPointer(const void *ptr, HashState *state) {
+  if (!ptr) return;
+  updateHash(state, &ptr, sizeof(ptr));
+}
+
+void hashValue(Value value, HashState *state) {
+  updateHash(state, &value, sizeof(Value));
+}
+
+Hash valueHash(Value value) {
+  if (isObject(value)) {
+    Hash hash = AS_OBJ(value)->hash;
+    return ASSERT(hash);
+  }
+  HashState *state = startHash();
+  hashValue(value, state);
+  return endHash(state);
 }

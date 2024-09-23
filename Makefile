@@ -97,8 +97,8 @@ _build/%.wasm.o: src/%.c $(HEADERS)
 
 # This recipe creates the circular dependency between the lita library and the
 # lita compiler.
-%.lita.c: %.lita $(NON_LITA_C) $(HEADERS)
-	$(TARGET) -c $<
+# %.lita.c: %.lita $(NON_LITA_C) $(HEADERS)
+# 	$(TARGET) -c $<
 
 repl: $(DEV)
 	@$(DEV) -r $(FLAGS)

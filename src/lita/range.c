@@ -8,7 +8,7 @@ ObjRange *newRange(Value start, Value end) {
   ObjRange *range = allocateRange();
   range->start = start;
   range->end = end;
-  range->obj.hash = hashBytes((char *)&range->start, sizeof(Value) * 2);
+  internObject((Obj **)&range);
   return range;
 }
 
@@ -21,12 +21,6 @@ static void markRange(Obj *obj) {
   ObjRange *range = (ObjRange *)obj;
   markValue(range->start);
   markValue(range->end);
-}
-
-const char *rangeBytes(Obj *obj, int length) {
-  ObjRange *range = (ObjRange *)obj;
-  if (length != sizeof(Value) * 2) return NULL;
-  return (char *)&range->start;
 }
 
 static int inspectRange(Obj *obj, FILE *io) {
@@ -49,8 +43,7 @@ REGISTER_OBJECT_DEF(Range);
 const ObjDef Range = {
     .className = "Range",
     .size = sizeof(ObjRange),
-    .interned = true,
-    .bytes = rangeBytes,
+    .hash = hashObjectDefault,
     .mark = markRange,
     .inspect = inspectRange,
     .length = rangeLength,

@@ -4,86 +4,48 @@
 #include "lib.h"
 #include "memory.h"
 #include "native.h"
-#include "vm.h"
 
-/**
- * Allocate an ObjAtom for a series of values.
- */
-static ObjAtom *makeAtom(Value *vals, int length, Hash hash) {
-  ObjAtom *atom = allocateAtom();
-  initTable(atom->values);
-  for (int i = 0; i < length; i++) {
-    tableSet(atom->values, classOf(vals[i]), vals[i]);
-  }
-  atom->obj.hash = hash;
-  intern(OBJ_VAL(atom));
+ObjAtom *takeAtom(Value *values, int length) {
+  ObjAtom *atom = copyAtom(values, length);
+  FREE_ARRAY(Value, values, length);
   return atom;
 }
 
-ObjAtom *copy_atom(Value *values, uint8_t length) {
-  int size = length * sizeof(Value);
-  Hash hash;
-  ObjAtom *interned = (ObjAtom *)getInterned(&hash, (char *)values, size);
-
-  if (interned != NULL) return interned;
-
-  Value *heapVals = ALLOCATE(Value, length);
-  memcpy(heapVals, values, size);
-
-  return makeAtom(heapVals, length, hash);
+ObjAtom *copyAtom(Value *values, int length) {
+  ObjAtom *atom = allocateAtom();
+  initTable(&atom->values);
+  for (int i = 0; i < length; i++)
+    tableSet(&atom->values, classOf(values[i]), values[i]);
+  internObject((Obj **)&atom);
+  return atom;
 }
-
-ObjAtom *take_atom(Value *values, uint8_t length) {
-  Hash hash;
-  Obj *interned = getInterned(&hash, (char *)values, length * sizeof(Entry));
-
-  if (interned != NULL) {
-    FREE_ARRAY(Value, values, length);
-    return (ObjAtom *)interned;
-  }
-
-  return makeAtom(values, length, hash);
-}
-
-// # Natives
 
 NATIVE_METHOD(Atom, get, 1) {
   ObjAtom *atom = asAtom(this);
   let val;
-  tableGet(atom->values, args[0], &val);
+  tableGet(&atom->values, args[0], &val);
   return val;
 }
 
 static void freeAtom(Obj *obj) {
   ObjAtom *atom = (ObjAtom *)obj;
-  freeTable(atom->values);
+  freeTable(&atom->values);
 }
 
 static void markAtom(Obj *obj) {
   ObjAtom *atom = (ObjAtom *)obj;
-  markTable(atom->values);
-}
-
-static const char *atomBytes(Obj *obj, int length) {
-  ObjAtom *atom = (ObjAtom *)obj;
-  if (length != atom->values->len * sizeof(Value)) return NULL;
-  return (char *)atom->values;
-}
-
-static int atomLength(Obj *obj) {
-  ObjAtom *atom = (ObjAtom *)obj;
-  return atom->values->len;
+  markTable(&atom->values);
 }
 
 static int inspectAtom(Obj *obj, FILE *io) {
   ObjAtom *atom = (ObjAtom *)obj;
-  return fprintf(io, "{") + inspectTable(io, atom->values) + fprintf(io, "}");
+  return fprintf(io, "{") + inspectTable(io, &atom->values) + fprintf(io, "}");
 }
 
 static int dumpAtom(Obj *obj, FILE *io) {
   ObjAtom *atom = (ObjAtom *)obj;
-  ObjIterator *iter = iterateTable(atom->values);
-  int len = atomLength((Obj *)atom);
+  ObjIterator *iter = iterateTable(&atom->values);
+  int len = atom->values.len;
   int tot = fprintf(io, "atom(%d", len);
 
   while (iterateNext(iter)) {
@@ -100,13 +62,11 @@ const ObjDef Atom = {
     .size = sizeof(ObjAtom),
     .free = freeAtom,
     .mark = markAtom,
-    .bytes = atomBytes,
     .inspect = inspectAtom,
     .dump = dumpAtom,
-    .length = atomLength,
 };
 
-let atom(int len, let *vals) { return obj(copy_atom(vals, len)); }
+let atom(int len, let *values) { return obj(copyAtom(values, len)); }
 
 let atom2(let a, let b) { return atom(2, (let[]){a, b}); }
 let atom3(let a, let b, let c) { return atom(3, (let[]){a, b, c}); }

@@ -117,8 +117,8 @@ void initVM(World *world) {
   vm.world = world;
   vm.objects = NULL;
   vm.bytesAllocated = 0;
-  /** Start collecting after 100MB is allocated. */
-  vm.nextGC = 100 * 1024 * 1024;
+  /** Start collecting after ~100MB~ 1MB is allocated. */
+  vm.nextGC = 1 * 1024 * 1024;
 
   vm.grayCount = 0;
   vm.grayCapacity = 0;
@@ -128,8 +128,7 @@ void initVM(World *world) {
   initTable(&vm.interned);
   initTable(&vm.keep);
 
-  /** Start collecting after 1MB is allocated. */
-  vm.nextGC = 1024 * 1024;
+  ECS_IMPORT(vm.world, Lita);
 }
 
 static void registerDef(ObjDef *def) {
@@ -170,9 +169,6 @@ static InterpretResult defineNatives() {
 }
 
 InterpretResult bootVM() {
-  ECS_IMPORT(vm.world, Lita);
-
-  vm.str.init = newString("init");
   InterpretResult result = defineNatives();
 
   foreach_obj_def(def) registerDef(*def);
@@ -185,7 +181,6 @@ InterpretResult bootVM() {
 }
 
 void freeVM() {
-  vm.str.init = NULL;
   freeTable(&vm.interned);
   freeObjects();
 }
@@ -416,9 +411,13 @@ InterpretResult vmGetGlobal(Value name) {
 
   if (!tableGet(&vm.globals, name, &value)) {
     if (isNil(value = getEnv(name)))
-      if (!isString(name) || *asString(name)->chars != '$')
+      if (!isString(name) || *asString(name)->chars != '$') {
+        fprintf(stderr, "\nvm.globals(%d): { ", vm.globals.len);
+        inspectTable(stderr, &vm.globals);
+        fprintf(stderr, " }\n");
         return runtimeError("Cannot get undefined variable '%s'.",
                             asString(name)->chars);
+      }
   }
   push(value);
   return INTERPRET_OK;
@@ -860,17 +859,6 @@ InterpretResult runFunction(ObjFunction *fun) {
 
 InterpretResult interpret(const char *source, ObjString *name) {
   return runFunction(compile(source, name));
-}
-
-Value intern(Value val) {
-  push(val);
-  tableSet(&vm.interned, val, TRUE_VAL);
-  return pop();
-}
-
-Obj *getInterned(Hash *hash, const char *bytes, int length) {
-  *hash = hashBytes(bytes, length);
-  return tableFindObj(&vm.interned, bytes, length, *hash);
 }
 
 void repl() {

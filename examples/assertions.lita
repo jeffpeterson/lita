@@ -79,8 +79,8 @@ assert loop(10000, 0) == 10000 // Functions are tail-call optimized
 // Natives
 assert clock()
 assert (3; 4) == 3
-assert hash(1) == '0x65497e01
-assert hash(nil) == '0x85dfeebb
+assert hash(3) == hash(1 + 2)
+assert hash(nil) == '0x6b7c1092
 assert random()
 assert random(1) == 0
 assert random(1, 10)
@@ -115,7 +115,7 @@ assert "" nil == ""
 assert nil.string == ""
 assert "" 3 == "3"
 assert "" 3.5 == "3.5"
-assert "hi".hash == "0xd7ea6e9a"
+assert "hi".hash == ('h 'i).hash
 assert "abc" < "abz"
 
 assert "abcdef".slice(1, 2) == "bc"

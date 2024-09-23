@@ -5,6 +5,8 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#define XXH_VECTOR XXH_SCALAR
+
 // "Cram all Value types into 64-bits."
 #define NAN_BOXING 1
 
@@ -58,6 +60,7 @@ typedef uint32_t u32;
 typedef uint64_t u64;
 typedef __uint128_t u128;
 typedef size_t usize;
+typedef uintptr_t uptr;
 
 typedef enum InterpretResult {
   INTERPRET_OK,

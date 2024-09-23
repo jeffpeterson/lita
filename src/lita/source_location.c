@@ -13,6 +13,7 @@ ObjSourceLocation *newSourceLocation(ObjString *path, int line, int column) {
   sourceLocation->path = path;
   sourceLocation->line = line;
   sourceLocation->column = column;
+  internObject((Obj **)&sourceLocation);
   return sourceLocation;
 }
 
@@ -40,5 +41,5 @@ NATIVE_GETTER(SourceLocation, path, OBJ_VAL);
 NATIVE_GETTER(SourceLocation, line, NUMBER_VAL);
 NATIVE_GETTER(SourceLocation, column, NUMBER_VAL);
 DEFINE_OBJECT_TYPE(SourceLocation, .mark = markSourceLocation,
-                   .inspect = inspectSourceLocation,
+                   .hash = hashObjectDefault, .inspect = inspectSourceLocation,
                    .dump = dumpSourceLocation);

@@ -1,3 +1,5 @@
+#include <assert.h>
+
 #include <stdlib.h>
 #include <string.h>
 
@@ -23,8 +25,8 @@ void freeTable(Table *table) {
 }
 
 static Entry *findEntry(Entry *entries, int capacity, Value key) {
-  uint32_t index =
-      hashValue(key) & (capacity - 1); // Optimized `% capacity` when 2^n
+  u32 index =
+      valueHash(key) & (capacity - 1); // Optimized `% capacity` when 2^n
 
   /**
    * Track the first tombstone we find so we can insert into it.
@@ -41,10 +43,10 @@ static Entry *findEntry(Entry *entries, int capacity, Value key) {
       if (isNil(entry->value)) {
         // Return the tombstone if we had found one so the caller
         // is able to insert into it, saving space.
-        return tombstone != NULL ? tombstone : entry;
+        return tombstone ? tombstone : entry;
       } else {
         // Track the first tombstone we find.
-        if (tombstone == NULL) tombstone = entry;
+        if (!tombstone) tombstone = entry;
       }
     } else if (valuesEqual(entry->key, key)) {
       // We found an entry, return it.
@@ -56,6 +58,7 @@ static Entry *findEntry(Entry *entries, int capacity, Value key) {
 }
 
 static void adjustCapacity(Table *table, int capacity) {
+  assert(0 == (capacity & (capacity - 1))); // must be 2^n
   Entry *entries = ALLOCATE(Entry, capacity);
   for (int i = 0; i < capacity; i++) {
     entries[i].key = VOID_VAL;
@@ -186,11 +189,10 @@ ObjIterator *iterateTable(Table *table) {
   return iter;
 }
 
-// TODO: Obj *table_find_object_key(Table *table, ObjDef *def, Hash hash)
-Obj *tableFindObj(Table *table, const char *bytes, int length, Hash hash) {
+Obj *tableFindObj(Table *table, Hash hash) {
   if (table->total == 0) return NULL;
 
-  uint32_t index =
+  u32 index =
       hash & (table->capacity - 1); // Optimized `% table->capacity` when 2^n
 
   for (;;) {
@@ -198,11 +200,7 @@ Obj *tableFindObj(Table *table, const char *bytes, int length, Hash hash) {
     if (isObject(entry->key)) {
       Obj *obj = AS_OBJ(entry->key);
 
-      if (obj->hash == hash) {
-        const char *objBytes = objectBytes(obj, length);
-        if (objBytes != NULL && memcmp(bytes, objBytes, length) == 0)
-          return AS_OBJ(entry->key);
-      }
+      if (obj->hash == hash) return AS_OBJ(entry->key);
     } else {
       // Stop if we find an empty non-tombstone entry.
       if (isVoid(entry->key) && isNil(entry->value)) return NULL;
@@ -232,11 +230,6 @@ void markTable(Table *table) {
     markValue(entry->key);
     markValue(entry->value);
   }
-}
-
-char *tableBytes(Table *table, int length) {
-  if (length != table->len * sizeof(Entry)) return NULL;
-  return (char *)table->entries;
 }
 
 int inspectTable(FILE *io, Table *table) {
@@ -274,6 +267,10 @@ int fprintTableVerbose(FILE *io, Table *table) {
     }
   }
   return fprintf(io, "}") + out;
+}
+
+void hashTable(HashState *state, Table *table) {
+  updateHash(state, &table->entries, sizeof(Entry) * table->capacity);
 }
 
 ECS_COMPONENT_DECLARE(Table);

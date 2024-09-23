@@ -32,14 +32,14 @@ bool tableDelete(Table *table, Value key);
 void tableMerge(Table *from, Table *to);
 double tableInc(Table *table, Value key, double amt);
 
-Obj *tableFindObj(Table *table, const char *bytes, int length, Hash hash);
+Obj *tableFindObj(Table *table, Hash hash);
 
 ObjIterator *iterateTable(Table *table);
 
 void tableRemoveWhite(Table *table);
 void markTable(Table *table);
-char *tableBytes(Table *table, int length);
 int inspectTable(FILE *io, Table *table);
+void hashTable(HashState *state, Table *table);
 
 extern ECS_COMPONENT_DECLARE(Table);
 

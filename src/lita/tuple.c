@@ -1,13 +1,11 @@
-#include <assert.h>
-
+#include "tuple.h"
 #include "dump.h"
 #include "lib.h"
 #include "memory.h"
 #include "native.h"
-#include "tuple.h"
 #include "vm.h"
 
-let t(int len, let *vals) { return obj(copyTuple(vals, len)); }
+let t(int len, let *values) { return obj(copyTuple(values, len)); }
 
 let t2(let a, let b) { return t(2, (let[]){a, b}); }
 let t3(let a, let b, let c) { return t(3, (let[]){a, b, c}); }
@@ -22,41 +20,18 @@ let t7(let a, let b, let c, let d, let e, let f, let g) {
   return t(7, (let[]){a, b, c, d, e, f, g});
 }
 
-/**
- * Allocate an ObjTuple for a series of values.
- */
-static ObjTuple *newTuple(Value *vals, int length, Hash hash) {
+ObjTuple *takeTuple(Value *values, u8 length) {
   ObjTuple *tuple = allocateTuple();
   tuple->length = length;
-  tuple->values = vals;
-  tuple->obj.hash = hash;
-  intern(OBJ_VAL(tuple));
+  tuple->values = values;
+  internObject((Obj **)&tuple);
   return tuple;
 }
 
-ObjTuple *copyTuple(Value *values, uint8_t length) {
-  int size = length * sizeof(Value);
-  Hash hash;
-  ObjTuple *interned = (ObjTuple *)getInterned(&hash, (char *)values, size);
-
-  if (interned != NULL) return interned;
-
+ObjTuple *copyTuple(Value *values, u8 length) {
   Value *heapVals = ALLOCATE(Value, length);
-  memcpy(heapVals, values, size);
-
-  return newTuple(heapVals, length, hash);
-}
-
-ObjTuple *takeTuple(Value *values, uint8_t length) {
-  Hash hash;
-  Obj *interned = getInterned(&hash, (char *)values, length * sizeof(Value));
-
-  if (interned != NULL) {
-    FREE_ARRAY(Value, values, length);
-    return (ObjTuple *)interned;
-  }
-
-  return newTuple(values, length, hash);
+  copyValues(values, heapVals, length);
+  return takeTuple(heapVals, length);
 }
 
 ObjTuple *zipTuples(ObjTuple *a, ObjTuple *b, Value (*fn)(Value, Value)) {
@@ -65,10 +40,10 @@ ObjTuple *zipTuples(ObjTuple *a, ObjTuple *b, Value (*fn)(Value, Value)) {
     return NULL;
   }
 
-  uint8_t length = a->length;
+  u8 length = a->length;
   Value *values = ALLOCATE(Value, length);
 
-  for (uint8_t i = 0; i < length; i++) {
+  for (u8 i = 0; i < length; i++) {
     values[i] = fn(a->values[i], b->values[i]);
   }
 
@@ -116,10 +91,9 @@ static void freeTuple(Obj *obj) {
   FREE_ARRAY(Value, tuple->values, tuple->length);
 }
 
-static const char *tupleBytes(Obj *obj, int length) {
+static void hashTuple(Obj *obj, HashState *state) {
   ObjTuple *tuple = (ObjTuple *)obj;
-  if (length != tuple->length * sizeof(Value)) return NULL;
-  return (char *)tuple->values;
+  updateHash(state, tuple->values, tuple->length * sizeof(Value));
 }
 
 static int tupleLength(Obj *obj) { return ((ObjTuple *)obj)->length; }
@@ -153,10 +127,9 @@ REGISTER_OBJECT_DEF(Tuple);
 const ObjDef Tuple = {
     .className = "Tuple",
     .size = sizeof(ObjTuple),
-    .interned = true,
+    .hash = hashTuple,
     .free = freeTuple,
     .mark = markTuple,
-    .bytes = tupleBytes,
     .inspect = inspectTuple,
     .dump = dumpTuple,
     .length = tupleLength,

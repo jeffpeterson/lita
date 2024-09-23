@@ -1,30 +1,29 @@
 #include <assert.h>
 
+#include "string.h"
 #include "table.h"
 
+#define assertGetSet(key, value)                                               \
+  {                                                                            \
+    Value v;                                                                   \
+    tableSet(&table, key, value);                                              \
+    assert(tableGet(&table, key, &v));                                         \
+    assert(valuesEqual(v, value));                                             \
+  }
+
 void table_test() {
-  Value v;
-  Table a;
-  initTable(&a);
+  Table table;
+  initTable(&table);
 
-  assert(a.len == 0);
+  assert(table.len == 0);
 
-  assert(!tableGet(&a, number(5), &v));
-  assert(tableSet(&a, number(5), number(55)));
-  assert(tableGet(&a, number(5), &v));
-  assert(tableHas(&a, number(5)));
+  assertGetSet(number(5), number(55));
+  assertGetSet(number(5), number(555));
+  assert(table.len == 1);
 
-  assert(as_num(v) == 55);
-  assert(a.len == 1);
+  assertGetSet(number(5), string("55"));
+  assert(table.len == 1);
 
-  assert(!tableSet(&a, number(5), number(555)));
-  assert(tableGet(&a, number(5), &v));
-  assert(as_num(v) == 555);
-  assert(a.len == 1);
-
-  assert(tableSet(&a, number(6), number(66)));
-  assert(tableGet(&a, number(6), &v));
-  assert(tableHas(&a, number(6)));
-  assert(as_num(v) == 66);
-  assert(a.len == 2);
+  assertGetSet(string("foo"), string("bar"));
+  assert(table.len == 2);
 }

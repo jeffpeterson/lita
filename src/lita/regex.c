@@ -1,9 +1,6 @@
-#include <assert.h>
-
-#include "lib.h"
+#include "regex.h"
 #include "memory.h"
 #include "native.h"
-#include "regex.h"
 #include "vm.h"
 
 Value regex(const char *source) { return obj(makeRegex(newString(source))); }
@@ -29,9 +26,14 @@ ObjRegex *makeRegex(ObjString *source) {
   return regex;
 }
 
-static int regexLength(Obj *obj) {
+// static void walkRegex(Obj *obj, Walk *walk) {
+//   ObjRegex *regex = (ObjRegex *)obj;
+//   walk->object(walk, (Obj *)regex->source);
+// }
+
+static void hashRegex(Obj *obj, HashState *state) {
   ObjRegex *regex = (ObjRegex *)obj;
-  return regex->source->length;
+  hashObject(regex->source, state);
 }
 
 static void markRegex(Obj *obj) {
@@ -99,11 +101,11 @@ REGISTER_OBJECT_DEF(Regex);
 const ObjDef Regex = {
     .className = "Regex",
     .size = sizeof(ObjRegex),
+    .hash = hashRegex,
     .mark = markRegex,
     .free = freeRegex,
     .inspect = inspectRegex,
     .dump = dumpRegex,
-    .length = regexLength,
 };
 
 ECS_COMPONENT_DECLARE(RegexError);

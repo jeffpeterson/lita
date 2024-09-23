@@ -40,7 +40,7 @@ AT_VM_BOOT(setStartTime) {
 NATIVE_FUNCTION(clock, 0) { return number((double)clock() / CLOCKS_PER_SEC); }
 NATIVE_FUNCTION(time, 0) { return number((double)time(NULL)); }
 NATIVE_FUNCTION(elapsed, 0) { return number(elapsed()); }
-NATIVE_FUNCTION(hash, 1) { return OBJ_VAL(stringf("%#x", hashValue(args[0]))); }
+NATIVE_FUNCTION(hash, 1) { return OBJ_VAL(stringf("%#x", valueHash(args[0]))); }
 NATIVE_FUNCTION(pp, 1) { return argc > 1 ? pp(t(argc, args)) : pp(args[0]); }
 
 NATIVE_METHOD(Any, class, 0) { return classOf(this); }
@@ -49,7 +49,7 @@ NATIVE_METHOD(Any, object_id, 0) { return NUMBER_VAL((u64)AS_OBJ(this)); }
 NATIVE_METHOD_NAMED(Any, eql, "==", 1) {
   return BOOL_VAL(valuesEqual(this, args[0]));
 }
-NATIVE_METHOD(Any, hash, 0) { return OBJ_VAL(stringf("%#x", hashValue(this))); }
+NATIVE_METHOD(Any, hash, 0) { return OBJ_VAL(stringf("%#x", valueHash(this))); }
 
 NATIVE_METHOD(Object, etype, 0) {
   const ecs_type_t *type = ecs_get_type(vm.world, asObject(this)->eid);
@@ -104,6 +104,7 @@ REGISTER_OBJECT_DEF(Native);
 const ObjDef Native = {
     .className = "Native",
     .size = sizeof(ObjNative),
+    .hash = hashObjectDefault,
     .mark = markNative,
     .call = callNative,
     .inspect = inspectNative,

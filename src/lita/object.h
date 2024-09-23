@@ -31,27 +31,38 @@ typedef struct ObjIterator ObjIterator;
 
 typedef enum Ownership { UNOWNED, OWNED } Ownership;
 
+// typedef struct Walk {
+//   void *state;
+//   void (*value)(struct Walk *walk, Value val);
+//   void (*object)(struct Walk *walk, Obj *obj);
+//   void (*bytes)(struct Walk *walk, void *bytes, usize size);
+//   void (*table)(struct Walk *walk, Table *table);
+// } Walk;
+
+// void walkObject(Walk *walk, Obj *obj);
+// typedef void ObjWalkFn(Walk *walk, Obj *obj);
+
 typedef void ObjFn(Obj *obj);
 typedef int ObjIntFn(Obj *obj);
 typedef int ObjIOFn(Obj *obj, FILE *io);
 typedef InterpretResult ObjVMFn(Obj *obj, int argCount);
-typedef const char *ObjBytesFn(Obj *obj, int length);
 typedef ObjIterator *ObjIterateFn(Obj *obj);
+typedef void ObjHashFn(Obj *obj, HashState *state);
 
 typedef struct ObjDef {
   const char *className;
   const usize size;
-  const bool interned;
   ObjIntFn *length;
   ObjFn *alloc;
   ObjFn *free;
   ObjFn *mark;
+  ObjHashFn *hash;
+  // ObjWalkFn *walk;
   ObjVMFn *call;
   ObjIterateFn *iterate;
   ObjIOFn *inspect;
   ObjIOFn *dump;
   ObjIOFn *dumpGlobal;
-  ObjBytesFn *bytes;
 } ObjDef;
 
 extern const ObjDef Object;
@@ -76,22 +87,16 @@ struct Obj {
 // } ObjContinuation;
 
 Obj *allocateObject(const ObjDef *def);
+Obj *internObject(Obj **objp);
+void hashObjectDefault(Obj *obj, HashState *state);
+void hashObject(void *obj, HashState *state);
 Obj *asObjDef(const ObjDef *def, Value val);
 Obj *newInstance(ObjClass *klass);
-const char *objectBytes(Obj *obj, int length);
 int inspectObject(FILE *io, Obj *obj);
 int cmpObjects(Obj *a, Obj *b);
 
-// Value init_obj(Value klass, int argc, Value *args);
-
 static inline bool isObjDef(Value value, const ObjDef *def) {
   return isObject(value) && AS_OBJ(value)->def == def;
-}
-
-static inline bool isInterned(Value val) {
-  if (!isObject(val)) return true;
-  Obj *obj = AS_OBJ(val);
-  return obj->def->interned;
 }
 
 typedef struct ObjComponent {

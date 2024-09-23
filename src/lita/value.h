@@ -5,10 +5,11 @@
 #include <string.h>
 
 #include "common.h"
+#include "xxhash.h"
 
 typedef struct Obj Obj;
 
-typedef enum {
+typedef enum ValueType {
   VAL_VOID,
   VAL_NIL,
   VAL_BOOL,
@@ -23,12 +24,12 @@ typedef enum {
 // ^- sign bit  ^- Intel FP Indef.
 
 /** Set when a Value is not a number. */
-#define QNAN ((uint64_t)0x7ffc000000000000)
+#define QNAN ((u64)0x7ffc000000000000)
 
 /** Set only for objects. */
-#define SIGN_BIT ((uint64_t)0x8000000000000000)
-#define SPARE_BIT_1 ((uint64_t)0x800000000000)
-#define SPARE_BIT_2 ((uint64_t)0x400000000000)
+#define SIGN_BIT ((u64)0x8000000000000000)
+#define SPARE_BIT_1 ((u64)0x800000000000)
+#define SPARE_BIT_2 ((u64)0x400000000000)
 
 #define TAG_PTR SIGN_BIT
 #define TAG_OBJ (TAG_PTR | SPARE_BIT_1)
@@ -39,20 +40,20 @@ typedef enum {
 #define TAG_FALSE 4 // 100.
 #define TAG_TRUE 5  // 101.
 
-typedef uint64_t Value;
+typedef u64 Value;
 
 #define AS_BOOL(val) ((val) == TRUE_VAL)
 #define AS_NUMBER(val) valueToNum(val)
-#define AS_OBJ(val) ((Obj *)(uintptr_t)((val) & ~(TAG_OBJ | QNAN)))
+#define AS_OBJ(val) ((Obj *)(uptr)((val) & ~(TAG_OBJ | QNAN)))
 
 #define BOOL_VAL(b) ((b) ? TRUE_VAL : FALSE_VAL)
-#define FALSE_VAL ((Value)(uint64_t)(QNAN | TAG_FALSE))
-#define TRUE_VAL ((Value)(uint64_t)(QNAN | TAG_TRUE))
+#define FALSE_VAL ((Value)(u64)(QNAN | TAG_FALSE))
+#define TRUE_VAL ((Value)(u64)(QNAN | TAG_TRUE))
 #define NIL_VAL OBJ_VAL(NULL)
 /** Used internally. Not accessible from language. */
-#define VOID_VAL ((Value)(uint64_t)(QNAN | TAG_VOID))
+#define VOID_VAL ((Value)(u64)(QNAN | TAG_VOID))
 #define NUMBER_VAL(num) doubleToValue(num)
-#define OBJ_VAL(obj) (Value)(TAG_OBJ | QNAN | (uint64_t)(uintptr_t)(obj))
+#define OBJ_VAL(obj) (Value)(TAG_OBJ | QNAN | (u64)(uptr)(obj))
 
 #define isBool(val) (((val) | 1) == TRUE_VAL)
 #define isTrue(val) ((val) == TRUE_VAL)
@@ -139,6 +140,7 @@ void writeValueArray(ValueArray *array, Value value);
 void freeValueArray(ValueArray *array);
 
 int inspectValue(FILE *io, Value value);
+int inspectHash(FILE *io, Value value);
 int trace(const char *label, Value value);
 
 let inspect(let val);
@@ -146,10 +148,14 @@ const char *inspectc(let val);
 let pp(let val);
 
 typedef u64 Hash;
+typedef XXH64_state_t HashState;
 
-Hash hashBytes(const char *key, usize length);
-Hash hashValue(Value val);
-Hash hashValues(Value *vals, usize length);
+HashState *startHash();
+void updateHash(HashState *state, const void *data, usize length);
+Hash endHash(HashState *state);
+void hashPointer(const void *ptr, HashState *state);
+void hashValue(Value value, HashState *state);
+Hash valueHash(Value value);
 
 #define as_num(v) asNumber(v)
 double asNumber(Value v);

@@ -12,12 +12,13 @@
     checkmark();                                                               \
   }
 
+void flecs_test();
 void pcre2_test();
 void xxhash_test();
 
 void buffer_test();
 void chunk_test();
-void flecs_test();
+void hash_test();
 void string_test();
 void table_test();
 void tree_test();
@@ -32,10 +33,12 @@ int main(int argc, char *argv[]) {
   run(pcre2_test);
   run(xxhash_test);
   run(flecs_test);
+
   run(scanner_test);
   run(chunk_test);
+  run(hash_test);
 
-  fprintf(stderr, "  Booting VM");
+  fprintf(stderr, "  bootVM");
   bootVM();
   checkmark();
 

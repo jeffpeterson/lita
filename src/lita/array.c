@@ -107,7 +107,6 @@ REGISTER_OBJECT_DEF(Array);
 const ObjDef Array = {
     .className = "Array",
     .size = sizeof(ObjArray),
-    .interned = false,
     .alloc = allocArray,
     .free = freeArray,
     .mark = markArray,

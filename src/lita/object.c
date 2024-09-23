@@ -1,4 +1,3 @@
-#include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -10,14 +9,11 @@
 #include "vm.h"
 
 Obj *allocateObject(const ObjDef *def) {
-  usize size = def->size;
-  Obj *obj = (Obj *)reallocate(NULL, 0, size);
+  Obj *obj = (Obj *)reallocate(NULL, 0, def->size);
   obj->def = def;
   obj->klass = NULL;
   obj->isMarked = false;
-  // Todo: Only hash for non-interned objects.
-  Value val = OBJ_VAL(obj);
-  obj->hash = hashBytes((char *)&val, sizeof(Value));
+  obj->hash = 0;
   obj->next = vm.objects;
   vm.objects = obj;
   initTable(&obj->fields);
@@ -34,6 +30,38 @@ Obj *allocateObject(const ObjDef *def) {
   return obj;
 }
 
+Obj *internObject(Obj **objp) {
+  Obj *obj = *objp;
+  const ObjDef *def = obj->def;
+  HashState *state = startHash();
+
+  if (def->hash) {
+    hashPointer(obj->def, state);
+    hashPointer(obj->klass, state);
+    hashTable(state, &obj->fields);
+
+    def->hash(obj, state);
+    obj->hash = endHash(state);
+
+    Obj *existing = tableFindObj(&vm.interned, obj->hash);
+    if (existing) obj = *objp = existing;
+    else tableSet(&vm.interned, OBJ_VAL(obj), True);
+  } else {
+    updateHash(state, obj, sizeof(Obj *));
+    obj->hash = endHash(state);
+  }
+
+  return obj;
+}
+
+void hashObjectDefault(Obj *obj, HashState *state) {
+  updateHash(state, obj + 1, obj->def->size - sizeof(Obj));
+}
+
+void hashObject(void *obj, HashState *state) {
+  updateHash(state, &obj, sizeof(Obj *));
+}
+
 Obj *asObjDef(const ObjDef *def, Value val) {
   ASSERT(isObjDef(val, def));
   return AS_OBJ(val);
@@ -43,13 +71,6 @@ Obj *newInstance(ObjClass *klass) {
   Obj *obj = allocateObject(&Object);
   obj->klass = klass;
   return obj;
-}
-
-const char *objectBytes(Obj *obj, int length) {
-  if (obj->def->bytes) return obj->def->bytes(obj, length);
-
-  if (length != obj->def->size) return NULL;
-  return (char *)&obj->hash;
 }
 
 int inspectObject(FILE *io, Obj *obj) {
@@ -103,3 +124,34 @@ void ObjectsImport(World *world) {
 
   // ECS_SYSTEM(world, MarkRelationships, 0, ObjComponent, (*, ObjComponent));
 }
+
+// void walkValue(Value val, WalkState *state) {
+//   if (isObject(val)) walkObject(AS_OBJ(val), state);
+//   else walkBytes(&val, sizeof(Value), state);
+// }
+
+// void walkTable(Table *table, WalkState *state) {
+//   for (int i = 0; i < table->capacity; i++) {
+//     Entry *entry = &table->entries[i];
+//     if (entry->key) {
+//       walkValue(entry->key, state);
+//       walkValue(entry->value, state);
+//     }
+//   }
+// }
+
+// void walkObject(Obj *obj, WalkState *state) {
+//   if (obj->def->walk) obj->def->walk(obj, state);
+//   else walkTable(&obj->fields, state);
+// }
+
+// void hashObject(HashState *state, Obj *obj) {
+//   Walk walk = {
+//       .state = state,
+//       .value = walkValue,
+//       .object = walkObject,
+//       .table = hashTable,
+//       .bytes = hashBytes,
+//   };
+//   walkObject(&walk, obj);
+// }

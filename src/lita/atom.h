@@ -10,13 +10,13 @@
 
 typedef struct ObjAtom {
   Obj obj;
-  Table *values;
+  Table values;
 } ObjAtom;
 
 extern const ObjDef Atom;
 
-ObjAtom *copy_atom(Value *values, uint8_t length);
-ObjAtom *take_atom(Value *values, uint8_t length);
+ObjAtom *copyAtom(Value *values, int length);
+ObjAtom *takeAtom(Value *values, int length);
 
 let atom(int len, let *vals);
 let atom2(let a, let b);

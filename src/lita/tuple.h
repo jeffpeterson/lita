@@ -10,14 +10,14 @@
 
 typedef struct ObjTuple {
   Obj obj;
-  uint8_t length;
+  u8 length;
   Value *values;
 } ObjTuple;
 
 extern const ObjDef Tuple;
 
-ObjTuple *copyTuple(Value *values, uint8_t length);
-ObjTuple *takeTuple(Value *values, uint8_t length);
+ObjTuple *copyTuple(Value *values, u8 length);
+ObjTuple *takeTuple(Value *values, u8 length);
 ObjTuple *zipTuples(ObjTuple *a, ObjTuple *b, Value (*fn)(Value, Value));
 
 let t(int len, let *vals);

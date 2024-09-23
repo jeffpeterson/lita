@@ -1,7 +1,6 @@
 #ifndef lita_io_h
 #define lita_io_h
 
-#include "common.h"
 #include "object.h"
 #include "value.h"
 

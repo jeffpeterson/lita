@@ -46,7 +46,7 @@ static InterpretResult callClass(Obj *obj, int argc) {
   ObjClass *klass = (ObjClass *)obj;
   // Replace the class with a new instance.
   vm.stackTop[-argc - 1] = OBJ_VAL(newInstance(klass));
-  return vmInvoke(OBJ_VAL(vm.str.init), argc);
+  return vmInvoke(OBJ_VAL(string("init")), argc);
 }
 
 NATIVE_GETTER(Class, name, OBJ_VAL);

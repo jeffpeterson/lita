@@ -2,7 +2,6 @@
 #define lita_memory_h
 
 #include "common.h"
-#include "object.h"
 #include "value.h"
 
 #define ALLOCATE(type, count)                                                  \

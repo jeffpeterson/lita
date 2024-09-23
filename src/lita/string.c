@@ -23,13 +23,13 @@ char *stringChars(ObjString *string) {
 }
 
 /** Allocate an ObjString for a (null-terminated) char string. */
-static ObjString *makeString(char *chars, int length, Hash hash) {
+ObjString *takeString(char *chars, int length) {
+  if (chars == NULL) return NULL;
+  if (length == -1) length = strlen(chars);
   ObjString *string = allocateString();
   string->length = length;
   string->chars = chars;
-  string->obj.hash = hash;
-
-  intern(OBJ_VAL(string));
+  internObject((Obj **)&string);
   return string;
 }
 
@@ -42,40 +42,22 @@ ObjString *concatStrings(ObjString *a, ObjString *b) {
   return takeString(chars, length);
 }
 
-ObjString *newString(const char *chars) {
-  if (chars == NULL) return NULL;
-  return copyString(chars, strlen(chars));
-}
-
-ObjString *takeString(char *chars, int length) {
-  if (length == -1) length = strlen(chars);
-  Hash hash;
-  ObjString *interned = (ObjString *)getInterned(&hash, chars, length);
-
-  if (interned != NULL) {
-    FREE_ARRAY(char, chars, length + 1);
-    return interned;
-  }
-  return makeString(chars, length, hash);
-}
+ObjString *newString(const char *chars) { return copyString(chars, -1); }
 
 ObjString *copyString(const char *chars, usize length) {
-  Hash hash;
-  ObjString *interned = (ObjString *)getInterned(&hash, chars, length);
-
-  if (interned != NULL) return interned;
-
+  if (chars == NULL) return NULL;
+  if (length == -1) length = strlen(chars);
   char *heapChars = ALLOCATE(char, length + 1);
   memcpy(heapChars, chars, length);
   heapChars[length] = '\0';
-  return makeString(heapChars, length, hash);
+  return takeString(heapChars, length);
 }
 
 ObjString *bufferToString(Buffer *buf) {
   if (buf->count == 0 || buf->bytes[buf->count - 1] != '\0')
     appendCharToBuffer(buf, '\0');
   resizeBuffer(buf, buf->count);
-  return takeString((char *)buf->bytes, buf->count - 1);
+  return takeString(buf->chars, buf->count - 1);
 }
 
 ObjString *escapeString(ObjString *str) {
@@ -283,12 +265,6 @@ int fstringFormat(FILE *io, const char *fmt, ...) {
   return result;
 }
 
-static const char *stringBytes(Obj *obj, int length) {
-  ObjString *str = (ObjString *)obj;
-  if (length != str->length) return NULL;
-  return str->chars;
-}
-
 // # Natives
 COMPILED_SOURCE(string);
 NATIVE_METHOD(String, string, 0) { return this; }
@@ -354,7 +330,10 @@ void freeString(Obj *obj) {
   FREE_ARRAY(char, string->chars, string->length + 1);
 }
 
-void markString(Obj *obj) {}
+void hashString(Obj *obj, HashState *state) {
+  ObjString *string = (ObjString *)obj;
+  updateHash(state, string->chars, string->length);
+}
 
 int inspectString(Obj *obj, FILE *io) {
   ObjString *str = escapeString((ObjString *)obj);
@@ -370,10 +349,8 @@ REGISTER_OBJECT_DEF(String);
 const ObjDef String = {
     .className = "String",
     .size = sizeof(ObjString),
-    .interned = true,
-    .bytes = stringBytes,
+    .hash = hashString,
     .free = freeString,
-    .mark = markString,
     .inspect = inspectString,
     .dump = dumpString,
     .length = stringLength,

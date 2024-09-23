@@ -1,17 +1,10 @@
 #ifndef lita_lib_h
 #define lita_lib_h
 
-#include <stdio.h>
-
 #include "common.h"
-#include "native.h"
-#include "object.h"
-#include "string.h"
 #include "value.h"
 
 #define fmt(f, ...) obj(string_format(f, ...))
-
-typedef Value let;
 
 let memory(u8 *bytes, int length);
 let num(double num);

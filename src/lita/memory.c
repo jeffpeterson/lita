@@ -125,13 +125,8 @@ static void freeObject(Obj *obj) {
 
   freeTable(&obj->fields);
   if (obj->eid) ecs_delete(vm.world, obj->eid);
-
-  if (obj->def) {
-    if (obj->def->free) obj->def->free(obj);
-    reallocate(obj, obj->def->size, 0);
-  } else {
-    reallocate(obj, sizeof(Obj), 0);
-  }
+  if (obj->def->free) obj->def->free(obj);
+  reallocate(obj, obj->def->size, 0);
 }
 
 static void markRoots() {
@@ -149,7 +144,6 @@ static void markRoots() {
   markTable(&vm.globals);
   markTable(&vm.keep);
   markCompilerRoots();
-  markObject((Obj *)vm.str.init);
 }
 
 static void traceReferences() {

@@ -61,11 +61,6 @@ typedef struct VM {
   int grayCapacity;      // Capacity allocated for `grayStack`.
   size_t bytesAllocated; // Total memory we have allocated.
   size_t nextGC;         // Threshold to trigger the next GC.
-
-  /** Static strings. */
-  struct str {
-    ObjString *init;
-  } str;
 } VM;
 
 extern VM vm;
@@ -92,10 +87,6 @@ Value global(Value name);
 Value setGlobal(Value name, Value val);
 
 Value globalClass(const char *name);
-
-Value intern(Value val);
-Obj *getInterned(Hash *hash, const char *bytes, int length);
-
 ObjClass *valueClass(Value v);
 
 InterpretResult runtimeError(const char *format, ...);
@@ -107,7 +98,8 @@ let crash(const char *fmt, ...);
 #define ASSERT(x)                                                              \
   (x || crash("Assertion failed: " FG_CYAN "%s" FG_DEFAULT " in " FG_MAGENTA   \
               "%s" FG_DEFAULT " (" UNDERLINE "%s:%d" NO_UNDERLINE ")",         \
-              #x, __func__, __FILE__, __LINE__))
+              #x, __func__, __FILE__, __LINE__),                               \
+   x)
 
 InterpretResult callValue(Value callee, int argCount);
 
