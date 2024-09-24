@@ -66,8 +66,9 @@ typedef enum Precedence {
 } Precedence;      // Higher Precedence
 
 typedef struct Ctx {
-  Precedence precedence; // The current precedence.
-  bool canAssign;        // If we can parse assignments.
+  Precedence precedence;  // The current precedence.
+  bool canAssign;         // If we can parse assignments.
+  int indentedExpression; // How many indented expressions we're in.
 } Ctx;
 
 typedef void ParseFn(Ctx *ctx);
@@ -136,7 +137,8 @@ Compiler *current = NULL;
 ClassCompiler *currentClass = NULL;
 
 static Ctx newCtx() {
-  return (Ctx){.precedence = PREC_NONE, .canAssign = false};
+  return (Ctx){
+      .precedence = PREC_NONE, .canAssign = false, .indentedExpression = 0};
 }
 
 static void pushClassCompiler(ClassCompiler *comp) {
@@ -681,14 +683,22 @@ static void defineVariable(Long global) {
   emitLong(global);
 }
 
+static void allowLineBreak(Ctx *ctx) {
+  // if (match(TOKEN_INDENT)) {
+  //   fprintf(stderr, "INDENTED EXPRESSION\n");
+  //   ctx->indentedExpression++;
+  // } else
+  skipNewline();
+}
+
 static ParseRule *getRule(TokenType type) { return &rules[type]; }
 
 static bool parseAbove(Precedence precedence);
 
-static bool parseInfix(Ctx ctx) {
+static bool parseInfix(Ctx *ctx) {
   ParseRule *rule;
   while ((rule = getRule(parser.current.type))) {
-    if (rule->precedence <= ctx.precedence)
+    if (rule->precedence <= ctx->precedence)
       break; // We are the LHS to the next token.
 
     // if (rule->precedence >= PREC_TOUCHING && !isTouching()) break;
@@ -700,15 +710,16 @@ static bool parseInfix(Ctx ctx) {
             "intentional.");
       return false;
     }
-    infix(&ctx);
+    allowLineBreak(ctx);
+    infix(ctx);
   }
 
-  if (ctx.canAssign && match(TOKEN_EQUAL)) {
+  if (ctx->canAssign && match(TOKEN_EQUAL)) {
     error("Invalid assignment target.");
     return false;
   }
 
-  if (ctx.precedence <= PREC_ADJOINING && parser.previous.type != TOKEN_DEDENT)
+  if (ctx->precedence <= PREC_ADJOINING && parser.previous.type != TOKEN_DEDENT)
     while (parseAbove(PREC_ADJOINING)) emitBytes(OP_CALL, 1);
 
   return false;
@@ -739,7 +750,11 @@ static bool parseAt(Precedence precedence) {
   ctx.precedence = precedence;
   ctx.canAssign = precedence <= PREC_ASSIGNMENT;
   prefix(&ctx);
-  parseInfix(ctx);
+  parseInfix(&ctx);
+
+  // while (ctx.indentedExpression && match(TOKEN_DEDENT))
+  //   ctx.indentedExpression--;
+
   return true;
 }
 
@@ -968,7 +983,9 @@ static void dotSugar(Ctx *ctx) {
   markDefined();
   emitBytes(OP_GET_LOCAL, 1);
   dot(ctx);
-  parseInfix((Ctx){.precedence = PREC_DOT - 1});
+  Ctx subCtx = *ctx;
+  subCtx.precedence = PREC_DOT - 1;
+  parseInfix(&subCtx);
   emitByte(OP_RETURN);
 
   endCompiler();
@@ -989,6 +1006,8 @@ static void grouping(Ctx *ctx) {
   if (!expression(NULL)) emit(nil);
   consume(TOKEN_RIGHT_PAREN, "Expect ')' after expression.");
 }
+
+static void indent(Ctx *ctx) { ctx->indentedExpression++; }
 
 static void newline(Ctx *ctx) {
   error("newline");
@@ -1729,4 +1748,5 @@ ParseRule rules[] = {
 
     [TOKEN_LEFT_PAREN] = {grouping, call, PREC_CALL},
     [TOKEN_NEWLINE] = {NULL, newline, PREC_NEWLINE},
+    // [TOKEN_INDENT] = {NULL, indent, PREC_PRIMARY},
 };
