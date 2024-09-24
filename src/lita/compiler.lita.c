@@ -2,7 +2,6 @@
 // lita -c src/lita/compiler.lita
 #include "lita/chunk.h"
 #include "lita/common.h"
-#include "lita/lib.h"
 #include "lita/memory.h"
 #include "lita/string.h"
 #include "lita/vm.h"

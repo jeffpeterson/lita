@@ -101,6 +101,19 @@ let crash(const char *fmt, ...);
               #x, __func__, __FILE__, __LINE__),                               \
    x)
 
+#define ASSERT_MSG(x, msg)                                                     \
+  (x || crash("Assertion failed: " FG_CYAN "%s" FG_DEFAULT " in " FG_MAGENTA   \
+              "%s" FG_DEFAULT " (" UNDERLINE "%s:%d" NO_UNDERLINE ")\n\t\t%s", \
+              #x, __func__, __FILE__, __LINE__, msg),                          \
+   x)
+
+#define ASSERT_FMT(x, fmt, ...)                                                \
+  (x || crash("Assertion failed: " FG_CYAN "%s" FG_DEFAULT " in " FG_MAGENTA   \
+              "%s" FG_DEFAULT " (" UNDERLINE "%s:%d" NO_UNDERLINE              \
+              ")\n\t\t" fmt,                                                   \
+              #x, __func__, __FILE__, __LINE__, __VA_ARGS__),                  \
+   x)
+
 InterpretResult callValue(Value callee, int argCount);
 
 Value vmPeek(int i);

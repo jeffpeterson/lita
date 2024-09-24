@@ -1,10 +1,7 @@
-#include <assert.h>
-
 #include "example.h"
 #include "memory.h"
 #include "native.h"
 #include "string.h"
-#include "vm.h"
 
 Value example(const char *comment) {
   return obj(newExample(newString(comment)));
@@ -13,6 +10,7 @@ Value example(const char *comment) {
 ObjExample *newExample(ObjString *comment) {
   ObjExample *example = allocateExample();
   example->comment = comment;
+  internObject((Obj **)&example);
   return example;
 }
 
@@ -37,6 +35,7 @@ REGISTER_OBJECT_DEF(Example);
 const ObjDef Example = {
     .className = "Example",
     .size = sizeof(ObjExample),
+    .hash = hashObjectDefault,
     .mark = markExample,
     .inspect = inspectExample,
     .length = exampleLength,

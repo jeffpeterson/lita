@@ -121,6 +121,10 @@ int cmpValues(Value a, Value b) {
   return AS_NUMBER(a) - AS_NUMBER(b);
 }
 
+Hash hashBytes(const void *data, usize length) {
+  return XXH64(data, length, 0);
+}
+
 HashState *startHash() { return XXH64_createState(); }
 
 void updateHash(HashState *state, const void *data, usize length) {
@@ -146,7 +150,7 @@ void hashValue(Value value, HashState *state) {
 Hash valueHash(Value value) {
   if (isObject(value)) {
     Hash hash = AS_OBJ(value)->hash;
-    return ASSERT(hash);
+    return ASSERT_MSG(hash, inspectc(value));
   }
   HashState *state = startHash();
   hashValue(value, state);

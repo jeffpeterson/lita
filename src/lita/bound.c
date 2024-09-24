@@ -1,17 +1,18 @@
-#include <assert.h>
-
 #include "bound.h"
 #include "lib.h"
 #include "memory.h"
 #include "native.h"
 #include "vm.h"
 
-let bound(let receiver, let method) { return obj(newBound(receiver, method)); }
+Value bound(Value receiver, Value method) {
+  return obj(newBound(receiver, method));
+}
 
-ObjBound *newBound(let receiver, let method) {
+ObjBound *newBound(Value receiver, Value method) {
   ObjBound *bound = allocateBound();
   bound->receiver = receiver;
   bound->method = method;
+  internObject((Obj **)&bound);
   return bound;
 }
 
@@ -44,6 +45,7 @@ REGISTER_OBJECT_DEF(Bound);
 const ObjDef Bound = {
     .className = "Bound",
     .size = sizeof(ObjBound),
+    .hash = hashObjectDefault,
     .mark = markBound,
     .inspect = inspectBound,
     .length = boundLength,

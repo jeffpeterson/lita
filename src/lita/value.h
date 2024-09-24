@@ -150,6 +150,7 @@ let pp(let val);
 typedef u64 Hash;
 typedef XXH64_state_t HashState;
 
+Hash hashBytes(const void *data, usize length);
 HashState *startHash();
 void updateHash(HashState *state, const void *data, usize length);
 Hash endHash(HashState *state);

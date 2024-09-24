@@ -136,7 +136,6 @@ void dumpModule(FILE *io, ObjString *path, ObjFunction *fun) {
           "// lita -c %s\n"
           "#include \"lita/chunk.h\"\n"
           "#include \"lita/common.h\"\n"
-          "#include \"lita/lib.h\"\n"
           "#include \"lita/memory.h\"\n"
           "#include \"lita/string.h\"\n"
           "#include \"lita/vm.h\"\n"

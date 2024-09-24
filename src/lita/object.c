@@ -21,6 +21,7 @@ Obj *allocateObject(const ObjDef *def) {
   obj->eid = ecs_insert(vm.world, ecs_value(ObjComponent, {obj}));
 
   if (def->alloc) def->alloc(obj);
+  if (!def->hash) obj->hash = hashBytes(obj, def->size);
 
 #if DEBUG_LOG_MEM
   fprintf(stderr, "%p allocate %zub for ", (void *)obj, size);
@@ -33,23 +34,20 @@ Obj *allocateObject(const ObjDef *def) {
 Obj *internObject(Obj **objp) {
   Obj *obj = *objp;
   const ObjDef *def = obj->def;
+
+  ASSERT_MSG(def->hash, def->className);
+
   HashState *state = startHash();
+  hashPointer(obj->def, state);
+  hashPointer(obj->klass, state);
+  hashTable(state, &obj->fields);
 
-  if (def->hash) {
-    hashPointer(obj->def, state);
-    hashPointer(obj->klass, state);
-    hashTable(state, &obj->fields);
+  def->hash(obj, state);
+  obj->hash = endHash(state);
 
-    def->hash(obj, state);
-    obj->hash = endHash(state);
-
-    Obj *existing = tableFindObj(&vm.interned, obj->hash);
-    if (existing) obj = *objp = existing;
-    else tableSet(&vm.interned, OBJ_VAL(obj), True);
-  } else {
-    updateHash(state, obj, sizeof(Obj *));
-    obj->hash = endHash(state);
-  }
+  Obj *existing = tableFindObj(&vm.interned, obj->hash);
+  if (existing) obj = *objp = existing;
+  else tableSet(&vm.interned, OBJ_VAL(obj), True);
 
   return obj;
 }
@@ -63,7 +61,7 @@ void hashObject(void *obj, HashState *state) {
 }
 
 Obj *asObjDef(const ObjDef *def, Value val) {
-  ASSERT(isObjDef(val, def));
+  ASSERT_MSG(isObjDef(val, def), def->className);
   return AS_OBJ(val);
 }
 

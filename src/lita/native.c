@@ -17,6 +17,7 @@ ObjNative *newNative(ObjString *name, int arity, NativeFn fun) {
   native->arity = arity;
   native->fun = fun;
   native->name = name;
+  internObject((Obj **)&native);
   return native;
 }
 

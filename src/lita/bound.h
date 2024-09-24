@@ -12,13 +12,13 @@
 /** A closure bound to a receiver.  */
 typedef struct ObjBound {
   Obj obj;
-  let receiver; /** Bound `this` value. */
-  let method;   /** Method being bound. */
+  Value receiver; /** Bound `this` value. */
+  Value method;   /** Method being bound. */
 } ObjBound;
 
 extern const ObjDef Bound;
 
-ObjBound *newBound(let receiver, let method);
-let bound(let receiver, let method);
+ObjBound *newBound(Value receiver, Value method);
+Value bound(Value receiver, Value method);
 
 #endif

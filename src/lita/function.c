@@ -4,7 +4,6 @@
 #include "lib.h"
 #include "memory.h"
 #include "native.h"
-#include "source_location.h"
 #include "term.h"
 #include "vm.h"
 
