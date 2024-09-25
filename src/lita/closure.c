@@ -36,7 +36,7 @@ static void freeClosure(Obj *obj) {
   FREE_ARRAY(ObjUpvalue *, closure->upvalues, closure->upvalueCount);
 }
 
-static int inspectClosure(Obj *obj, FILE *io) {
+static int inspectClosure(Obj *obj, FILE *io, int depth) {
   ObjClosure *closure = (ObjClosure *)obj;
   return fprintf(io,
                  FG_MAGENTA "<closure %s" FG_DEFAULT "/" FG_MAGENTA

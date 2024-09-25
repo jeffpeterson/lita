@@ -37,9 +37,10 @@ static void markAtom(Obj *obj) {
   markTable(&atom->values);
 }
 
-static int inspectAtom(Obj *obj, FILE *io) {
+static int inspectAtom(Obj *obj, FILE *io, int depth) {
   ObjAtom *atom = (ObjAtom *)obj;
-  return fprintf(io, "{") + inspectTable(io, &atom->values) + fprintf(io, "}");
+  return fprintf(io, "{") + inspectTable(io, &atom->values, depth) +
+         fprintf(io, "}");
 }
 
 static int dumpAtom(Obj *obj, FILE *io) {

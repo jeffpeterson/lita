@@ -24,7 +24,7 @@ static void markExample(Obj *obj) {
   markObject((Obj *)example->comment);
 }
 
-static int inspectExample(Obj *obj, FILE *io) {
+static int inspectExample(Obj *obj, FILE *io, int depth) {
   ObjExample *example = (ObjExample *)obj;
   return fstringFormat(io, "Example({})", OBJ_VAL(example->comment));
 }

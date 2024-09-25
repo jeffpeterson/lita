@@ -38,7 +38,7 @@ ObjIterator *iterateTable(Table *table);
 
 void tableRemoveWhite(Table *table);
 void markTable(Table *table);
-int inspectTable(FILE *io, Table *table);
+int inspectTable(FILE *io, Table *table, int depth);
 void hashTable(HashState *state, Table *table);
 
 extern ECS_COMPONENT_DECLARE(Table);

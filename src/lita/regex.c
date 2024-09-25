@@ -46,7 +46,7 @@ static void freeRegex(Obj *obj) {
   pcre2_code_free(regex->re);
 }
 
-static int inspectRegex(Obj *obj, FILE *io) {
+static int inspectRegex(Obj *obj, FILE *io, int depth) {
   ObjRegex *regex = (ObjRegex *)obj;
   return fprintf(io, "`") + fprintf(io, "%s", regex->source->chars) +
          fprintf(io, "`");

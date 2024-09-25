@@ -11,7 +11,7 @@ ObjIO *makeIO(FILE *fp, Ownership ownership) {
   return io;
 }
 
-static int inspectIO(Obj *obj, FILE *fp) {
+static int inspectIO(Obj *obj, FILE *fp, int depth) {
   ObjIO *io = (ObjIO *)obj;
   return fprintf(fp, "<IO %p>", io->fp);
 }

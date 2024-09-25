@@ -36,10 +36,19 @@ static void freeClass(Obj *obj) {
   freeTable(&klass->methods);
 }
 
-static int inspectClass(Obj *obj, FILE *io) {
+static int inspectClass(Obj *obj, FILE *io, int depth) {
   ObjClass *klass = (ObjClass *)obj;
-  return fprintf(io, FG_MAGENTA "%s" FG_DEFAULT, stringChars(klass->name)) -
+  int sum = 0;
+  sum += fprintf(io, FG_MAGENTA "%s" FG_DEFAULT, stringChars(klass->name)) -
          FG_SIZE * 2;
+
+  if (!depth) {
+    sum += fprintf(io, " {\n\t");
+    sum += inspectTable(io, &klass->methods, depth);
+    sum += fprintf(io, "\n}");
+  }
+
+  return sum;
 }
 
 static InterpretResult callClass(Obj *obj, int argc) {

@@ -45,6 +45,7 @@ typedef enum Ownership { UNOWNED, OWNED } Ownership;
 typedef void ObjFn(Obj *obj);
 typedef int ObjIntFn(Obj *obj);
 typedef int ObjIOFn(Obj *obj, FILE *io);
+typedef int ObjInspectFn(Obj *obj, FILE *io, int depth);
 typedef InterpretResult ObjVMFn(Obj *obj, int argCount);
 typedef ObjIterator *ObjIterateFn(Obj *obj);
 typedef void ObjHashFn(Obj *obj, HashState *state);
@@ -60,7 +61,7 @@ typedef struct ObjDef {
   // ObjWalkFn *walk;
   ObjVMFn *call;
   ObjIterateFn *iterate;
-  ObjIOFn *inspect;
+  ObjInspectFn *inspect;
   ObjIOFn *dump;
   ObjIOFn *dumpGlobal;
 } ObjDef;
@@ -92,7 +93,7 @@ void hashObjectDefault(Obj *obj, HashState *state);
 void hashObject(void *obj, HashState *state);
 Obj *asObjDef(const ObjDef *def, Value val);
 Obj *newInstance(ObjClass *klass);
-int inspectObject(FILE *io, Obj *obj);
+int inspectObject(FILE *io, Obj *obj, int depth);
 int cmpObjects(Obj *a, Obj *b);
 
 static inline bool isObjDef(Value value, const ObjDef *def) {

@@ -232,41 +232,30 @@ void markTable(Table *table) {
   }
 }
 
-int inspectTable(FILE *io, Table *table) {
+int inspectTable(FILE *io, Table *table, int depth) {
   int out = 0;
   int idx = 0;
+
+  if (!depth) out += fprintf(io, "(%d entries)\n\t", table->len);
+
   for (int i = 0; i < table->capacity; i++) {
     Entry *entry = &table->entries[i];
 
     if (isVoid(entry->key)) continue;
 
     if (isString(entry->key)) {
-      out += (idx > 0 ? fputs(", ", io) : 0) +
-             fprintf(io, FG_GREEN "%s" FG_DEFAULT ": ",
-                     asString(entry->key)->chars) +
-             inspectValue(io, entry->value);
+      if (idx > 0) out += fprintf(io, ",%s", depth ? " " : "\n\t");
+
+      out += fprintf(io, FG_GREEN "%s" FG_DEFAULT ": ", asChars(entry->key));
+      out += inspectValue(io, entry->value, depth + 1);
     } else {
-      out += fprintf(io, " ") + inspectValue(io, entry->key) +
-             fprintf(io, " => ") + inspectValue(io, entry->value);
+      out += fprintf(io, " ") + inspectValue(io, entry->key, depth + 1) +
+             fprintf(io, " => ") + inspectValue(io, entry->value, depth + 1);
     }
     idx++;
   }
 
   return out;
-}
-
-int fprintTableVerbose(FILE *io, Table *table) {
-  int out = fprintf(io, " (%d entries) {\n", table->len);
-  for (int i = 0; i < table->capacity; i++) {
-    Entry *entry = &table->entries[i];
-
-    if (!isVoid(entry->key)) {
-      out += fprintf(io, "  ") + inspectValue(io, entry->key) +
-             fprintf(io, " => ") + inspectValue(io, entry->value) +
-             fprintf(io, "\n");
-    }
-  }
-  return fprintf(io, "}") + out;
 }
 
 void hashTable(HashState *state, Table *table) {

@@ -1,8 +1,6 @@
-#include <assert.h>
-
+#include "upvalue.h"
 #include "memory.h"
 #include "native.h"
-#include "upvalue.h"
 
 ObjUpvalue *newUpvalue(Value *slot) {
   ObjUpvalue *upvalue = allocateUpvalue();
@@ -14,10 +12,10 @@ ObjUpvalue *newUpvalue(Value *slot) {
 
 static void markUpvalue(Obj *obj) { markValue(((ObjUpvalue *)obj)->closed); }
 
-static int inspectUpvalue(Obj *obj, FILE *io) {
+static int inspectUpvalue(Obj *obj, FILE *io, int depth) {
   ObjUpvalue *upvalue = (ObjUpvalue *)obj;
   return fprintf(io, "<upvalue(%s) -> ", upvalue->closed ? "closed" : "open") +
-         inspectValue(io, *upvalue->location) + fprintf(io, ">");
+         inspectValue(io, *upvalue->location, depth) + fprintf(io, ">");
 }
 
 NATIVE_GETTER(Upvalue, closed, OBJ_VAL);

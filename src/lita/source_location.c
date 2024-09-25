@@ -22,7 +22,7 @@ static void markSourceLocation(Obj *obj) {
   markObject((Obj *)sourceLocation->path);
 }
 
-static int inspectSourceLocation(Obj *obj, FILE *io) {
+static int inspectSourceLocation(Obj *obj, FILE *io, int depth) {
   ObjSourceLocation *sourceLocation = (ObjSourceLocation *)obj;
   return fprintf(io, UNDERLINE "%s:%d:%d" NO_UNDERLINE,
                  stringChars(sourceLocation->path), sourceLocation->line,

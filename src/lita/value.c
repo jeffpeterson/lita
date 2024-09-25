@@ -42,10 +42,10 @@ void copyValues(Value *source, Value *dest, usize count) {
 }
 
 int inspectHash(FILE *io, Value value) {
-  return inspectValue(io, value) + fprintf(io, " %llx\n", valueHash(value));
+  return inspectValue(io, value, 1) + fprintf(io, " %llx\n", valueHash(value));
 }
 
-int inspectValue(FILE *io, Value val) {
+int inspectValue(FILE *io, Value val, int depth) {
   switch (val) {
   case True:
   case False:
@@ -60,7 +60,7 @@ int inspectValue(FILE *io, Value val) {
   if (isNumber(val))
     return fprintf(io, FG_BLUE "%g" FG_DEFAULT, AS_NUMBER(val)) - FG_SIZE * 2;
 
-  if (isObject(val)) return inspectObject(io, AS_OBJ(val));
+  if (isObject(val)) return inspectObject(io, AS_OBJ(val), depth);
   return 0;
 }
 
@@ -70,7 +70,7 @@ let inspect(let val) {
   char *str = NULL;
   size_t len = 0;
   FILE *io = open_memstream(&str, &len);
-  inspectValue(io, val);
+  inspectValue(io, val, 1);
   fclose(io);
   return OBJ_VAL(takeString(str, len));
 }
@@ -78,12 +78,12 @@ let inspect(let val) {
 int trace(const char *label, Value value) {
   if (config.tracing)
     return fprintf(stderr, "[TRACE] %s: ", label) +
-           inspectValue(stderr, value) + fprintf(stderr, "\n");
+           inspectValue(stderr, value, 0) + fprintf(stderr, "\n");
   else return 0;
 }
 
 let pp(let val) {
-  inspectValue(stderr, val);
+  inspectValue(stderr, val, 0);
   fputc('\n', stderr);
   return val;
 }

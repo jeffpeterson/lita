@@ -72,7 +72,7 @@ static void markNative(Obj *obj) {
   markObject((Obj *)native->name);
 }
 
-static int inspectNative(Obj *obj, FILE *io) {
+static int inspectNative(Obj *obj, FILE *io, int depth) {
   ObjNative *native = (ObjNative *)obj;
   return fprintf(io,
                  FG_MAGENTA "<native %s" FG_DEFAULT "/" FG_MAGENTA

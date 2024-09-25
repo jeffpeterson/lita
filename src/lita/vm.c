@@ -41,7 +41,7 @@ static void functionError(u8 *ip, ObjFunction *fun) {
     disassembleChunk(&fun->chunk, fun->name->chars, instruction + 1);
 
   fprintf(stderr, "[line %d] in ", line);
-  inspectObject(stderr, (Obj *)fun);
+  inspectObject(stderr, (Obj *)fun, 0);
   fprintf(stderr, "\n");
 }
 
@@ -56,7 +56,7 @@ static InterpretResult vruntimeError(const char *format, va_list args) {
     } else if (frame->obj->def == &Function) {
       ObjFunction *fun = (ObjFunction *)frame->obj;
       functionError(frame->ip, fun);
-    } else inspectObject(stderr, frame->obj);
+    } else inspectObject(stderr, frame->obj, 0);
   }
 
   fprintf(stderr, "\nStack:\t");
@@ -292,7 +292,7 @@ InterpretResult vmInvoke(Value name, int argCount) {
   if (config.tracing) {
     fprintf(stderr, "[TRACE] vmInvoke(%s, %d) on: ", asString(name)->chars,
             argCount),
-        inspectValue(stderr, receiver), fprintf(stderr, "\n");
+        inspectValue(stderr, receiver, 1), fprintf(stderr, "\n");
   }
 
   if (isObject(receiver)) {
@@ -308,12 +308,12 @@ InterpretResult vmInvoke(Value name, int argCount) {
   ObjClass *klass = valueClass(receiver);
 
   if (config.tracing)
-    fprintf(stderr, "[TRACE] invoking %s.%s()\n", klass->name->chars,
+    fprintf(stderr, "[TRACE] invoking %s.%s()\n", stringChars(klass->name),
             asChars(name));
 
   if (invokeFromClass(klass, asString(name), argCount)) {
     return runtimeError("Undefined method %s on %s.", asChars(inspect(name)),
-                        asChars(inspect(OBJ_VAL(klass))));
+                        inspectc(OBJ_VAL(klass)));
   }
 
   return INTERPRET_OK;
@@ -412,8 +412,8 @@ InterpretResult vmGetGlobal(Value name) {
   if (!tableGet(&vm.globals, name, &value)) {
     if (isNil(value = getEnv(name)))
       if (!isString(name) || *asString(name)->chars != '$') {
-        fprintf(stderr, "\nvm.globals(%d): { ", vm.globals.len);
-        inspectTable(stderr, &vm.globals);
+        fprintf(stderr, "\nvm.globals(%d): {\n\t", vm.globals.len);
+        inspectTable(stderr, &vm.globals, 0);
         fprintf(stderr, " }\n");
         return runtimeError("Cannot get undefined variable '%s'.",
                             asString(name)->chars);
@@ -880,7 +880,7 @@ void repl() {
     // TODO: Enqueue this as a request
     interpret(line, name);
     free(line);
-    inspectValue(stderr, vm.result);
+    inspectValue(stderr, vm.result, 0);
     fprintf(stderr, "\n");
 
     if (config.debug >= 2) {

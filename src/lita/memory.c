@@ -62,7 +62,7 @@ void markObject(Obj *obj) {
 
 #if DEBUG_LOG_GC
   fprintf(stderr, "%p mark gray ", (void *)obj);
-  inspectObject(stderr, obj);
+  inspectObject(stderr, obj, 1);
   fprintf(stderr, "\n");
 #endif
 
@@ -102,7 +102,7 @@ void markValueArray(ValueArray *array) {
 static void blackenObject(Obj *obj) {
 #if DEBUG_LOG_GC
   fprintf(stderr, "%p mark black ", (void *)obj);
-  inspectObject(stderr, obj);
+  inspectObject(stderr, obj, 1);
   fprintf(stderr, "\n");
 #endif
 
@@ -180,7 +180,7 @@ static void sweep() {
 #if DEBUG_LOG_GC
     fprintf(stderr, "%p free ", (void *)unreached);
     fprintf(stderr, " ");
-    inspectObject(stderr, unreached);
+    inspectObject(stderr, unreached, 1);
     fprintf(stderr, "\n");
 #endif
 

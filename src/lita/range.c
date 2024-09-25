@@ -23,10 +23,10 @@ static void markRange(Obj *obj) {
   markValue(range->end);
 }
 
-static int inspectRange(Obj *obj, FILE *io) {
+static int inspectRange(Obj *obj, FILE *io, int depth) {
   ObjRange *range = (ObjRange *)obj;
-  return inspectValue(io, range->start) + fprintf(io, "..") +
-         inspectValue(io, range->end);
+  return inspectValue(io, range->start, depth + 1) + fprintf(io, "..") +
+         inspectValue(io, range->end, depth + 1);
 }
 
 COMPILED_SOURCE(range);

@@ -64,16 +64,20 @@ ObjString *escapeString(ObjString *str) {
   char *out = NULL;
   usize size = 0;
   FILE *io = open_memstream(&out, &size);
-  fescapeString(io, str);
+  fescapeString(io, str, 0);
   fclose(io);
   return takeString(out, size);
 }
 
-int fescapeString(FILE *io, ObjString *str) {
+int fescapeString(FILE *io, ObjString *str, int depth) {
   int sum = 0;
+  int stop = str->length;
+  if (depth) stop = 100 / depth;
+  if (stop + 3 >= str->length) stop = str->length;
+
   sum += fputc('"', io);
 
-  for (int i = 0; i < str->length; i++) {
+  for (int i = 0; i < stop; i++) {
     u8 ch = str->chars[i];
 
     if (ch == '\\') sum += fputc(ch, io);
@@ -97,6 +101,8 @@ int fescapeString(FILE *io, ObjString *str) {
                                    : 'x';
     sum += fputc(ch, io);
   }
+
+  if (stop != str->length) sum += fputs("...", io);
 
   sum += fputc('"', io);
   return sum;
@@ -232,7 +238,7 @@ int vfstringFormat(FILE *io, const char *fmt, va_list args) {
         fmt += i + 2; // Skip the first and second bracket
         i = 0;
         Value v = va_arg(args, Value);
-        count += inspectValue(io, v);
+        count += inspectValue(io, v, 1);
         continue;
       }
 
@@ -343,9 +349,9 @@ void hashString(Obj *obj, HashState *state) {
   updateHash(state, string->chars, string->length);
 }
 
-int inspectString(Obj *obj, FILE *io) {
+int inspectString(Obj *obj, FILE *io, int depth) {
   ObjString *string = (ObjString *)obj;
-  return fprintf(io, FG_GREEN) + fescapeString(io, string) +
+  return fprintf(io, FG_GREEN) + fescapeString(io, string, depth) +
          fprintf(io, FG_DEFAULT) - 10;
 }
 

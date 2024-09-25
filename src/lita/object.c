@@ -71,12 +71,12 @@ Obj *newInstance(ObjClass *klass) {
   return obj;
 }
 
-int inspectObject(FILE *io, Obj *obj) {
+int inspectObject(FILE *io, Obj *obj, int depth) {
   if (!obj) return fprintf(io, "nil");
   ASSERT(obj->def);
-  if (obj->def->inspect) return obj->def->inspect(obj, io);
+  if (obj->def->inspect) return obj->def->inspect(obj, io, depth);
   return fprintf(io, "%s(", obj->klass->name->chars) +
-         inspectTable(io, &obj->fields) + fprintf(io, ")");
+         inspectTable(io, &obj->fields, depth) + fprintf(io, ")");
 }
 
 int cmpObjects(Obj *a, Obj *b) {

@@ -139,7 +139,7 @@ void initValueArray(ValueArray *array);
 void writeValueArray(ValueArray *array, Value value);
 void freeValueArray(ValueArray *array);
 
-int inspectValue(FILE *io, Value value);
+int inspectValue(FILE *io, Value value, int depth);
 int inspectHash(FILE *io, Value value);
 int trace(const char *label, Value value);
 

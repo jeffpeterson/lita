@@ -58,13 +58,19 @@ static void markArray(Obj *obj) {
 
 static int arrayLength(Obj *obj) { return ((ObjArray *)obj)->length; }
 
-static int inspectArray(Obj *obj, FILE *io) {
+static int inspectArray(Obj *obj, FILE *io, int depth) {
   ObjArray *arr = (ObjArray *)obj;
-  int tot = fprintf(io, "[");
-  for (int i = 0; i < arr->length; i++) {
-    if (i > 0) tot += fprintf(io, ", ");
-    tot += inspectValue(io, arr->values[i]);
+  int stop = arr->length;
+  if (depth) stop = 100 / depth;
+  if (stop + 3 >= arr->length) stop = arr->length;
+
+  int tot = fprintf(io, "[%s", depth ? "" : "\t");
+  for (int i = 0; i < stop; i++) {
+    if (i > 0) tot += fprintf(io, ",%s", depth ? " " : "\n\t");
+    tot += inspectValue(io, arr->values[i], depth + 1);
   }
+  if (stop != arr->length)
+    tot += fprintf(io, ", ...%d more", arr->length - stop);
   return fprintf(io, "]") + tot;
 }
 

@@ -27,7 +27,7 @@ static void markBound(Obj *obj) {
   markValue(bound->method);
 }
 
-static int inspectBound(Obj *obj, FILE *io) {
+static int inspectBound(Obj *obj, FILE *io, int depth) {
   ObjBound *bound = (ObjBound *)obj;
   return fstringFormat(io, "Bound({}, {})", bound->receiver, bound->method);
 }

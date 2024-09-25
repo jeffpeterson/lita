@@ -98,12 +98,12 @@ static void hashTuple(Obj *obj, HashState *state) {
 
 static int tupleLength(Obj *obj) { return ((ObjTuple *)obj)->length; }
 
-static int inspectTuple(Obj *obj, FILE *io) {
+static int inspectTuple(Obj *obj, FILE *io, int depth) {
   ObjTuple *tuple = (ObjTuple *)obj;
-  int tot = fprintf(io, "(");
+  int tot = fprintf(io, "(%s", depth ? "" : "\t");
   for (int i = 0; i < tuple->length; i++) {
-    if (i > 0) tot += fprintf(io, ", ");
-    tot += inspectValue(io, tuple->values[i]);
+    if (i > 0) tot += fprintf(io, ",%s", depth ? " " : "\n\t");
+    tot += inspectValue(io, tuple->values[i], depth + 1);
   }
   return fprintf(io, ")") + tot;
 }

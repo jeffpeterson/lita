@@ -1,4 +1,3 @@
-#include <stdarg.h>
 #include <stdio.h>
 
 #include "debug.h"
@@ -84,7 +83,7 @@ int disassembleInstruction(Chunk *chunk, int offset) {
     else offset += decodeLong(&constant, code + offset);
     longHex(constant);
     arrow();
-    inspectValue(stderr, chunk->constants.values[constant]);
+    inspectValue(stderr, chunk->constants.values[constant], 1);
     break;
   }
 
@@ -94,7 +93,7 @@ int disassembleInstruction(Chunk *chunk, int offset) {
     longHex(constant);
     byte(code[offset++]);
     arrow();
-    inspectValue(stderr, chunk->constants.values[constant]);
+    inspectValue(stderr, chunk->constants.values[constant], 1);
     break;
   }
 
@@ -104,7 +103,7 @@ int disassembleInstruction(Chunk *chunk, int offset) {
     longHex(constant);
     byte(argCount);
     arrow();
-    inspectValue(stderr, chunk->constants.values[constant]);
+    inspectValue(stderr, chunk->constants.values[constant], 1);
     fprintf(stderr, " (%d args)", argCount);
     break;
   }
@@ -150,7 +149,7 @@ int disassembleInstruction(Chunk *chunk, int offset) {
 
   if (chunk->comments && chunk->comments[offset - 1]) {
     fprintf(stderr, DIM "\t\t// ");
-    inspectValue(stderr, chunk->comments[offset - 1]);
+    inspectValue(stderr, chunk->comments[offset - 1], 1);
     fprintf(stderr, NO_DIM);
   }
 
@@ -216,7 +215,7 @@ static void debugValues(Value *start, int length) {
   int offsets[length];
   // int frameIndex = 0;
   for (int i = 0; i < length; i++) {
-    offsets[i] = fprintf(stderr, "[ ") + inspectValue(stderr, start[i]) +
+    offsets[i] = fprintf(stderr, "[ ") + inspectValue(stderr, start[i], 1) +
                  fprintf(stderr, " ]");
   }
 }
@@ -255,7 +254,7 @@ void debugExecution() {
     fprintf(stderr, "\n");
     for (int i = 0; i < vm.frameCount; i++) {
       fprintf(stderr, "[ ");
-      inspectObject(stderr, vm.frames[i].obj);
+      inspectObject(stderr, vm.frames[i].obj, 1);
       fprintf(stderr, " ]");
     }
   }
