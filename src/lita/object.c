@@ -24,8 +24,8 @@ Obj *allocateObject(const ObjDef *def) {
   if (!def->hash) obj->hash = hashBytes(obj, def->size);
 
 #if DEBUG_LOG_MEM
-  fprintf(stderr, "%p allocate %zub for ", (void *)obj, size);
-  // inspect_obj_type(stderr, type);
+  fprintf(stderr, "%p allocate %zub for %s", (void *)obj, def->size,
+          def->className);
   fprintf(stderr, "\n");
 #endif
   return obj;
@@ -73,6 +73,7 @@ Obj *newInstance(ObjClass *klass) {
 
 int inspectObject(FILE *io, Obj *obj) {
   if (!obj) return fprintf(io, "nil");
+  ASSERT(obj->def);
   if (obj->def->inspect) return obj->def->inspect(obj, io);
   return fprintf(io, "%s(", obj->klass->name->chars) +
          inspectTable(io, &obj->fields) + fprintf(io, ")");

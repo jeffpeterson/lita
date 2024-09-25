@@ -187,22 +187,24 @@ void debugTokens() {
 
     switch (token.type) {
     case TOKEN_NEWLINE:
-      fg(color);
+      fg(stderr, color);
       fprintf(stderr, "[newline]\n");
       printIndents(indent);
       break;
     case TOKEN_DEDENT:
-      fg(color);
+      fg(stderr, color);
       fputs("[dedent]\n", stderr);
       printIndents(--indent);
       break;
     case TOKEN_ERROR:
-      fg(color);
+      fg(stderr, color);
       fprintf(stderr, "[error: %.*s]\n", token.length, token.start);
       printIndents(indent);
       break;
     case TOKEN_EOF: fputs("[EOF]\n", stderr); break;
-    default: fg(color); fprintf(stderr, "%.*s ", token.length, token.start);
+    default:
+      fg(stderr, color);
+      fprintf(stderr, "%.*s ", token.length, token.start);
     }
 
   } while (token.type != TOKEN_EOF);

@@ -35,3 +35,9 @@ class Array
 		each(.print(io))
 
 	.sample = get(random(length))
+
+	.find(f)
+		let i = 0
+		let value
+		while i < length
+			if f(value = get(i++)): return value

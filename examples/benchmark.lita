@@ -1,6 +1,19 @@
-// 0..999
-fn upto(end)
+fn benchmark(fun, setup)
+	let total = 0
 	let i = 0
-	while pp(i++) <= end
 
-upto(10)
+	while i < 100
+		let data = setup()
+		let start = clock()
+		fun(data)
+		let end = clock()
+		total += end - start
+		i++
+
+	print(total / 100)
+
+fn setup = (0..999).array
+
+fn find_99(data) = data.find(fn (v) = v == 99)
+
+benchmark(find_99, setup)

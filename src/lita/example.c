@@ -26,7 +26,7 @@ static void markExample(Obj *obj) {
 
 static int inspectExample(Obj *obj, FILE *io) {
   ObjExample *example = (ObjExample *)obj;
-  return fstringFormat(io, "Example({})", obj(example->comment));
+  return fstringFormat(io, "Example({})", OBJ_VAL(example->comment));
 }
 
 NATIVE_GETTER(Example, comment, OBJ_VAL);

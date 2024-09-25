@@ -43,6 +43,7 @@ ObjString *bufferToString(Buffer *buf);
 ObjString *stringf(const char *fmt, ...);
 ObjString *stringToCIdent(ObjString *str);
 
+int fescapeString(FILE *io, ObjString *str);
 ObjString *escapeString(ObjString *str);
 ObjString *unescapeString(ObjString *str);
 

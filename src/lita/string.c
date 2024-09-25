@@ -61,20 +61,29 @@ ObjString *bufferToString(Buffer *buf) {
 }
 
 ObjString *escapeString(ObjString *str) {
-  Buffer out = newBuffer(str->length + 3);
-  appendCharToBuffer(&out, '"');
+  char *out = NULL;
+  usize size = 0;
+  FILE *io = open_memstream(&out, &size);
+  fescapeString(io, str);
+  fclose(io);
+  return takeString(out, size);
+}
+
+int fescapeString(FILE *io, ObjString *str) {
+  int sum = 0;
+  sum += fputc('"', io);
 
   for (int i = 0; i < str->length; i++) {
     u8 ch = str->chars[i];
 
-    if (ch == '\\') appendCharToBuffer(&out, ch);
+    if (ch == '\\') sum += fputc(ch, io);
 
     if (isprint(ch) || ch > 127) {
-      appendCharToBuffer(&out, ch);
+      sum += fputc(ch, io);
       continue;
     }
 
-    appendCharToBuffer(&out, '\\');
+    sum += fputc('\\', io);
 
     ch = ch >= '\0' && ch <= '\6'  ? ch + '0'
          : ch == '\a'              ? 'a'
@@ -86,12 +95,11 @@ ObjString *escapeString(ObjString *str) {
          : ch == '\t'              ? 't'
          : ch == '\\' || ch == '"' ? ch
                                    : 'x';
-    appendCharToBuffer(&out, ch);
+    sum += fputc(ch, io);
   }
 
-  appendCharToBuffer(&out, '"');
-
-  return bufferToString(&out);
+  sum += fputc('"', io);
+  return sum;
 }
 
 ObjString *unescapeString(ObjString *str) {
@@ -336,8 +344,9 @@ void hashString(Obj *obj, HashState *state) {
 }
 
 int inspectString(Obj *obj, FILE *io) {
-  ObjString *str = escapeString((ObjString *)obj);
-  return fprintf(io, FG_GREEN "%s" FG_DEFAULT, str->chars) - 10;
+  ObjString *string = (ObjString *)obj;
+  return fprintf(io, FG_GREEN) + fescapeString(io, string) +
+         fprintf(io, FG_DEFAULT) - 10;
 }
 
 int dumpString(Obj *obj, FILE *io) {

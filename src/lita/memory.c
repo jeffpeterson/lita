@@ -62,7 +62,7 @@ void markObject(Obj *obj) {
 
 #if DEBUG_LOG_GC
   fprintf(stderr, "%p mark gray ", (void *)obj);
-  inspect_value(stderr, OBJ_VAL(obj));
+  inspectObject(stderr, obj);
   fprintf(stderr, "\n");
 #endif
 
@@ -102,7 +102,7 @@ void markValueArray(ValueArray *array) {
 static void blackenObject(Obj *obj) {
 #if DEBUG_LOG_GC
   fprintf(stderr, "%p mark black ", (void *)obj);
-  inspect_value(stderr, OBJ_VAL(obj));
+  inspectObject(stderr, obj);
   fprintf(stderr, "\n");
 #endif
 
@@ -116,10 +116,8 @@ static void blackenObject(Obj *obj) {
 
 static void freeObject(Obj *obj) {
 #if DEBUG_LOG_MEM
-  fprintf(stderr, "%p free ", (void *)obj);
-  // inspect_obj_type(stderr, obj->type);
-  fprintf(stderr, " ");
-  inspect_obj(stderr, obj);
+  fprintf(stderr, "%p free %s ", (void *)obj, obj->def->className);
+  inspectObject(stderr, obj);
   fprintf(stderr, "\n");
 #endif
 
@@ -181,9 +179,8 @@ static void sweep() {
 
 #if DEBUG_LOG_GC
     fprintf(stderr, "%p free ", (void *)unreached);
-    // inspect_obj_type(stderr, unreached->type);
     fprintf(stderr, " ");
-    inspect_obj(stderr, unreached);
+    inspectObject(stderr, unreached);
     fprintf(stderr, "\n");
 #endif
 
@@ -197,21 +194,25 @@ void collectGarbage() {
   fprintf(stderr, "-- gc begin\n");
   fprintf(stderr, "-- mark roots\n");
 #endif
+
   markRoots();
 
 #if DEBUG_LOG_GC
   fprintf(stderr, "-- trace references\n");
 #endif
+
   traceReferences();
 
 #if DEBUG_LOG_GC
   fprintf(stderr, "-- remove white interned values\n");
 #endif
+
   tableRemoveWhite(&vm.interned);
 
 #if DEBUG_LOG_GC
   fprintf(stderr, "-- sweep\n");
 #endif
+
   sweep();
 
   vm.nextGC = vm.bytesAllocated * GC_HEAP_GROW_FACTOR;

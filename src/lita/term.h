@@ -1,6 +1,8 @@
 #ifndef lita_term_h
 #define lita_term_h
 
+#include <stdio.h>
+
 #define RESET "\e[0m"
 #define BOLD "\e[1m"
 #define DIM "\e[2m"
@@ -63,7 +65,7 @@ typedef enum Color {
   DEFAULT
 } Color;
 
-void fg(Color color);
-void bg(Color color);
+int fg(FILE *io, Color color);
+int bg(FILE *io, Color color);
 
 #endif
