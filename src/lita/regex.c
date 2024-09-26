@@ -33,7 +33,7 @@ ObjRegex *makeRegex(ObjString *source) {
 
 static void hashRegex(Obj *obj, HashState *state) {
   ObjRegex *regex = (ObjRegex *)obj;
-  hashObject(regex->source, state);
+  hashPointer(regex->source, state);
 }
 
 static void markRegex(Obj *obj) {

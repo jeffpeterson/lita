@@ -1,5 +1,3 @@
-#include <assert.h>
-
 #include "closure.h"
 #include "memory.h"
 #include "native.h"

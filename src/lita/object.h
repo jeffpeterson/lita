@@ -90,7 +90,6 @@ struct Obj {
 Obj *allocateObject(const ObjDef *def);
 Obj *internObject(Obj **objp);
 void hashObjectDefault(Obj *obj, HashState *state);
-void hashObject(void *obj, HashState *state);
 Obj *asObjDef(const ObjDef *def, Value val);
 Obj *newInstance(ObjClass *klass);
 int inspectObject(FILE *io, Obj *obj, int depth);

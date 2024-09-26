@@ -1,3 +1,4 @@
+#include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -114,11 +115,11 @@ static void blackenObject(Obj *obj) {
   if (obj->def->mark) return obj->def->mark(obj);
 }
 
-static void freeObject(Obj *obj) {
+void freeObject(Obj *obj) {
+  assert(!obj->next);
+
 #if DEBUG_LOG_MEM
-  fprintf(stderr, "%p free %s ", (void *)obj, obj->def->className);
-  inspectObject(stderr, obj);
-  fprintf(stderr, "\n");
+  fprintf(stderr, "%p free %s\n", obj, obj->def->className);
 #endif
 
   freeTable(&obj->fields);
@@ -171,15 +172,11 @@ static void sweep() {
     // Collect the unreachable object.
     Obj *unreached = obj;
     obj = obj->next;
-    if (prev != NULL) {
-      prev->next = obj;
-    } else {
-      vm.objects = obj;
-    }
+    if (prev) prev->next = obj;
+    else vm.objects = obj;
 
 #if DEBUG_LOG_GC
-    fprintf(stderr, "%p free ", (void *)unreached);
-    fprintf(stderr, " ");
+    fprintf(stderr, "sweep %p %s: ", unreached, unreached->def->className);
     inspectObject(stderr, unreached, 1);
     fprintf(stderr, "\n");
 #endif
@@ -228,6 +225,7 @@ void freeObjects() {
   Obj *object = vm.objects;
   while (object != NULL) {
     Obj *next = object->next;
+    object->next = NULL;
     freeObject(object);
     object = next;
   }
