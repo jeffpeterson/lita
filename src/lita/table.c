@@ -65,7 +65,6 @@ static void adjustCapacity(Table *table, int capacity) {
     entries[i].value = NIL_VAL;
   }
 
-  table->total = 0;
   for (int i = 0; i < table->capacity; i++) {
     Entry *entry = &table->entries[i];
     if (isVoid(entry->key)) continue;
@@ -73,12 +72,12 @@ static void adjustCapacity(Table *table, int capacity) {
     Entry *dest = findEntry(entries, capacity, entry->key);
     dest->key = entry->key;
     dest->value = entry->value;
-    table->total++;
   }
 
   FREE_ARRAY(Entry, table->entries, table->capacity);
   table->entries = entries;
   table->capacity = capacity;
+  table->total = table->len;
 }
 
 bool tableHas(Table *table, Value key) {
@@ -247,15 +246,10 @@ int inspectTable(FILE *io, Table *table, int depth) {
 
     if (isVoid(entry->key)) continue;
 
-    if (isString(entry->key)) {
-      if (idx > 0) out += fprintf(io, ",%s", depth ? " " : "\n\t");
+    if (idx > 0) out += fprintf(io, ",%s", depth ? " " : "\n\t");
 
-      out += fprintf(io, FG_GREEN "%s" FG_DEFAULT ": ", asChars(entry->key));
-      out += inspectValue(io, entry->value, depth + 1);
-    } else {
-      out += fprintf(io, " ") + inspectValue(io, entry->key, depth + 1) +
-             fprintf(io, " => ") + inspectValue(io, entry->value, depth + 1);
-    }
+    out += fprintf(io, " ") + inspectValue(io, entry->key, depth + 2) +
+           fprintf(io, " => ") + inspectValue(io, entry->value, depth + 1);
     idx++;
   }
 

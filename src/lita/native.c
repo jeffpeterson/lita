@@ -74,9 +74,7 @@ static void markNative(Obj *obj) {
 
 static int inspectNative(Obj *obj, FILE *io, int depth) {
   ObjNative *native = (ObjNative *)obj;
-  return fprintf(io,
-                 FG_MAGENTA "<native %s" FG_DEFAULT "/" FG_MAGENTA
-                            "%d>" FG_DEFAULT,
+  return fprintf(io, FG_MAGENTA "<native %s/%d>" FG_DEFAULT,
                  native->name->chars, native->arity) -
          FG_SIZE * 4;
 }

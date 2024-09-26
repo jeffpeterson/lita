@@ -2,15 +2,14 @@ fn benchmark(fun, setup)
 	let total = 0
 	let i = 0
 
-	while total < 1
+	while total < 0.5
 		let data = setup()
 		let start = clock()
 		fun(data)
-		let end = clock()
-		total += end - start
+		total += clock() - start
 		i++
 
-	print("i: " i ", total: " total)
+	print("i: " i ", total: " total "s, avg: " (i / total) "/s")
 
 fn setup = (0..999).array
 

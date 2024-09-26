@@ -213,10 +213,16 @@ void debugTokens() {
 
 static void debugValues(Value *start, int length) {
   int offsets[length];
-  // int frameIndex = 0;
+  CallFrame *frame = vm.frames;
   for (int i = 0; i < length; i++) {
-    offsets[i] = fprintf(stderr, "[ ") + inspectValue(stderr, start[i], 1) +
-                 fprintf(stderr, " ]");
+    while (frame < vm.frames + vm.frameCount && frame->slots < start + i)
+      frame++;
+
+    offsets[i] = 0;
+    if (vm.frameCount && frame->slots == start + i)
+      offsets[i] += fprintf(stderr, "‸");
+    offsets[i] += fprintf(stderr, "[ ") + inspectValue(stderr, start[i], 1) +
+                  fprintf(stderr, " ]");
   }
 }
 
@@ -229,6 +235,15 @@ void debugStack() {
 }
 
 static CallFrame *prev_frame;
+
+void debugFrames() {
+  for (int i = 0; i < vm.frameCount; i++) {
+    CallFrame *frame = &vm.frames[i];
+    fprintf(stderr, "[ ");
+    inspectObject(stderr, frame->obj, 1);
+    fprintf(stderr, " ]");
+  }
+}
 
 void debugExecution() {
   fprintf(stderr, RESET "║" DIM "      -->" NO_DIM);
@@ -252,11 +267,7 @@ void debugExecution() {
 
   if (frame != prev_frame) {
     fprintf(stderr, "\n");
-    for (int i = 0; i < vm.frameCount; i++) {
-      fprintf(stderr, "[ ");
-      inspectObject(stderr, vm.frames[i].obj, 1);
-      fprintf(stderr, " ]");
-    }
+    debugFrames();
   }
 
   fprintf(stderr, DIM "\n");

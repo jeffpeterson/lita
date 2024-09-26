@@ -6,6 +6,7 @@
 void disassembleChunk(Chunk *chunk, const char *name, int until);
 int disassembleInstruction(Chunk *chunk, int offset);
 
+void debugFrames();
 void debugExecution();
 void debugStack();
 void debugTokens();

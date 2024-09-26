@@ -37,16 +37,15 @@ Obj *allocateObject(const ObjDef *def) {
 
 Obj *internObject(Obj **objp) {
   Obj *obj = *objp;
-  const ObjDef *def = obj->def;
 
-  assert(def->hash);
+  assert(obj->def->hash);
 
   HashState *state = startHash();
   hashPointer(obj->def, state);
   hashPointer(obj->klass, state);
   hashTable(state, &obj->fields);
 
-  def->hash(obj, state);
+  obj->def->hash(obj, state);
   obj->hash = endHash(state);
 
   Obj *existing = tableFindObj(&vm.interned, obj->hash);
