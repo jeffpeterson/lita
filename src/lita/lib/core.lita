@@ -2,6 +2,7 @@ class Any < nil
 	!= (v) = !(this == v)
 	.self = this
 	.string = inspect
+	.is?(v) = this == v
 
 	< (v)  = this <=> v < 0
 	> (v)  = this <=> v > 0
