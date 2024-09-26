@@ -49,6 +49,7 @@ typedef enum {
   TOKEN_PLUS_EQUAL,
   TOKEN_SLASH_EQUAL,
   TOKEN_STAR_EQUAL,
+  TOKEN_PERCENT_EQUAL,
 
   // One or two character tokens.
   TOKEN_EQUAL,
@@ -77,6 +78,7 @@ typedef enum {
   TOKEN_PLUS,
   TOKEN_SLASH,
   TOKEN_STAR,
+  TOKEN_PERCENT,
   TOKEN_MINUS_MINUS,
   TOKEN_PLUS_PLUS,
 

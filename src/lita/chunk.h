@@ -73,6 +73,7 @@ typedef enum OpCode {
   OP_DEBUG_STACK,   // (tag) Logs the stack.
   OP_ASSERT_STACK,  // (size) Asserts the stack is the expected size.
   OP_THROW,         // (source_location) [value] -> []
+  OP_MODULO,        // [a, b] -> [a%b]
 
   OP_LAST,
 } OpCode;

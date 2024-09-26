@@ -39,7 +39,7 @@ Obj *internObject(Obj **objp) {
   Obj *obj = *objp;
   const ObjDef *def = obj->def;
 
-  ASSERT_MSG(def->hash, def->className);
+  assert(def->hash);
 
   HashState *state = startHash();
   hashPointer(obj->def, state);

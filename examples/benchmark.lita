@@ -2,7 +2,7 @@ fn benchmark(fun, setup)
 	let total = 0
 	let i = 0
 
-	while i < 100
+	while total < 1
 		let data = setup()
 		let start = clock()
 		fun(data)
@@ -10,7 +10,7 @@ fn benchmark(fun, setup)
 		total += end - start
 		i++
 
-	print(total / 100)
+	print("i: " i ", total: " total)
 
 fn setup = (0..999).array
 

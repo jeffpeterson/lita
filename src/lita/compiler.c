@@ -854,6 +854,7 @@ static bool assignment(Ctx *ctx, OpCode getOp, OpCode setOp, Long arg) {
   case TOKEN_MINUS_EQUAL:
   case TOKEN_SLASH_EQUAL:
   case TOKEN_STAR_EQUAL:
+  case TOKEN_PERCENT_EQUAL:
     advance();
 
     if (selfRequired(getOp)) emitBytes(OP_PEEK, 0);
@@ -863,10 +864,11 @@ static bool assignment(Ctx *ctx, OpCode getOp, OpCode setOp, Long arg) {
     emitDefault(NUMBER_VAL(0));
     expression("Expect expression after assignment.");
 
-    emitByte(type == TOKEN_PLUS_EQUAL    ? OP_ADD
-             : type == TOKEN_MINUS_EQUAL ? OP_SUBTRACT
-             : type == TOKEN_SLASH_EQUAL ? OP_DIVIDE
-                                         : OP_MULTIPLY);
+    emitByte(type == TOKEN_PLUS_EQUAL      ? OP_ADD
+             : type == TOKEN_MINUS_EQUAL   ? OP_SUBTRACT
+             : type == TOKEN_SLASH_EQUAL   ? OP_DIVIDE
+             : type == TOKEN_PERCENT_EQUAL ? OP_MODULO
+                                           : OP_MULTIPLY);
 
     emitByte(setOp);
     emitLong(arg);
@@ -923,6 +925,7 @@ static void binary(Ctx *ctx) {
   case TOKEN_MINUS: emitByte(OP_SUBTRACT); break;
   case TOKEN_STAR: emitByte(OP_MULTIPLY); break;
   case TOKEN_SLASH: emitByte(OP_DIVIDE); break;
+  case TOKEN_PERCENT: emitByte(OP_MODULO); break;
   default: {
     Long name =
         makeConstant(OBJ_VAL(copyString(operator.start, operator.length)));
@@ -1720,6 +1723,7 @@ ParseRule rules[] = {
     [TOKEN_PLUS_EQUAL] = {NULL, NULL, PREC_ASSIGNMENT},
     [TOKEN_SLASH_EQUAL] = {NULL, NULL, PREC_ASSIGNMENT},
     [TOKEN_STAR_EQUAL] = {NULL, NULL, PREC_ASSIGNMENT},
+    [TOKEN_PERCENT_EQUAL] = {NULL, NULL, PREC_ASSIGNMENT},
 
     [TOKEN_BANG_EQUAL] = {NULL, binary, PREC_EQUALITY},
     [TOKEN_EQUAL_EQUAL] = {NULL, binary, PREC_EQUALITY},
@@ -1737,6 +1741,7 @@ ParseRule rules[] = {
 
     [TOKEN_SLASH] = {NULL, binary, PREC_FACTOR},
     [TOKEN_STAR] = {NULL, binary, PREC_FACTOR},
+    [TOKEN_PERCENT] = {NULL, binary, PREC_FACTOR},
 
     [TOKEN_DOT_DOT] = {NULL, binary, PREC_RANGE},
     // [TOKEN_ELLIPSIS] = {ellipsis, NULL, PREC_RANGE},

@@ -412,6 +412,7 @@ Token scanToken() {
                                   : TOKEN_PLUS);
   case '/': return makeToken(match('=') ? TOKEN_SLASH_EQUAL : TOKEN_SLASH);
   case '*': return makeToken(match('=') ? TOKEN_STAR_EQUAL : TOKEN_STAR);
+  case '%': return makeToken(match('=') ? TOKEN_PERCENT_EQUAL : TOKEN_PERCENT);
   case '!': return makeToken(match('=') ? TOKEN_BANG_EQUAL : TOKEN_BANG);
   case '=':
     return makeToken(match('>')   ? TOKEN_FAT_ARROW

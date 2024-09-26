@@ -1,3 +1,4 @@
+#include <math.h>
 #include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -675,6 +676,16 @@ static InterpretResult vmRun() {
     case OP_DIVIDE: BINARY_OP(NUMBER_VAL, /); break;
     case OP_SUBTRACT: BINARY_OP(NUMBER_VAL, -); break;
     case OP_MULTIPLY: BINARY_OP(NUMBER_VAL, *); break;
+    case OP_MODULO:
+      if (isNumber(peek(0)) && isNumber(peek(1))) {
+        double b = AS_NUMBER(pop());
+        double a = AS_NUMBER(pop());
+        push(NUMBER_VAL(fmod(a, b)));
+      } else {
+        if ((err = vmInvoke(string("%"), 1))) return err;
+        SYNC_FRAME();
+      }
+      break;
     case OP_NOT: push(BOOL_VAL(isFalsey(pop()))); break;
     case OP_NEGATE:
       if (!isNumber(peek(0))) {

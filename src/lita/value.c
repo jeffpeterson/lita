@@ -1,3 +1,4 @@
+#include <assert.h>
 #include <string.h>
 
 #include "memory.h"
@@ -149,8 +150,10 @@ void hashValue(Value value, HashState *state) {
 
 Hash valueHash(Value value) {
   if (isObject(value)) {
-    Hash hash = AS_OBJ(value)->hash;
-    return ASSERT_MSG(hash, inspectc(value));
+    Obj *obj = AS_OBJ(value);
+    Hash hash = obj->hash;
+    assert(hash);
+    return hash;
   }
   HashState *state = startHash();
   hashValue(value, state);

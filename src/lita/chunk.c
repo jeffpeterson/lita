@@ -101,6 +101,7 @@ OpInfo opInfo[] = {
     [OP_SUBTRACT] = {"OP_SUBTRACT", SIMPLE, 2, 1},
     [OP_MULTIPLY] = {"OP_MULTIPLY", SIMPLE, 2, 1},
     [OP_DIVIDE] = {"OP_DIVIDE", SIMPLE, 2, 1},
+    [OP_MODULO] = {"OP_MODULO", SIMPLE, 2, 1},
 
     [OP_EQUAL] = {"OP_EQUAL", SIMPLE, 2, 1},
     [OP_GREATER] = {"OP_GREATER", SIMPLE, 2, 1},

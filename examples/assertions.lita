@@ -180,6 +180,7 @@ assert [1, 2].map(inc) == [2, 3]
 assert [1, 2].map(.string) == ['1, '2]
 assert [1, 2, 3].sample
 assert [1, 2] < [1, 2, 3]
+assert [1, 2, 3].find(.even?) == 2
 
 // Instances
 class Point(x, y)
