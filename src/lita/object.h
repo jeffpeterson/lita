@@ -11,7 +11,6 @@ typedef struct ObjIterator ObjIterator;
 #define getDef(val) (as_obj(val)->def)
 #define as(def, val) ((Obj##def *)asObjDef(&def, val))
 #define ALLOCATE_OBJ(def) ((Obj##def *)allocateObject(&def))
-#define asObject(val) ((Obj *)asObjDef(&Object, val))
 
 #define foreach_obj_def(var) section_foreach_entry(defs, ObjDef *, var)
 #define REGISTER_OBJECT_DEF(def) const SECTION(defs) ObjDef *def##_def = &def;
@@ -94,6 +93,11 @@ Obj *asObjDef(const ObjDef *def, Value val);
 Obj *newInstance(ObjClass *klass);
 int inspectObject(FILE *io, Obj *obj, int depth);
 int cmpObjects(Obj *a, Obj *b);
+
+static inline Obj *asObject(Value val) {
+  assert(isObject(val));
+  return AS_OBJ(val);
+}
 
 static inline bool isObjDef(Value value, const ObjDef *def) {
   return isObject(value) && AS_OBJ(value)->def == def;

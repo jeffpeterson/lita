@@ -216,9 +216,13 @@ Obj *tableFindObj(Table *table, Hash hash) {
 void tableRemoveWhite(Table *table) {
   for (int i = 0; i < table->capacity; i++) {
     Entry *entry = &table->entries[i];
-    if (isNil(entry->key) || !isObject(entry->key)) continue;
+    if (isVoid(entry->key)) continue;
+    Obj *obj = asObject(entry->key);
 
-    if (!AS_OBJ(entry->key)->isMarked) {
+    if (!obj->isMarked) {
+#if DEBUG_LOG_GC
+      fprintf(stderr, "remove white %p %s\n", obj, obj->def->className);
+#endif
       tableDelete(table, entry->key);
     }
   }

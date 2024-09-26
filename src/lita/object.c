@@ -80,10 +80,11 @@ Obj *newInstance(ObjClass *klass) {
 }
 
 int inspectObject(FILE *io, Obj *obj, int depth) {
+  if (depth > 10) return fprintf(io, "...");
   if (!obj) return fprintf(io, "nil");
-  ASSERT(obj->def);
+  assert(obj->def);
   if (obj->def->inspect) return obj->def->inspect(obj, io, depth);
-  return fprintf(io, "%s(", obj->klass->name->chars) +
+  return fprintf(io, "%s(", stringChars(obj->klass->name)) +
          inspectTable(io, &obj->fields, depth) + fprintf(io, ")");
 }
 

@@ -14,6 +14,7 @@ void allocFunction(Obj *obj) {
   function->arity = 0;
   function->upvalueCount = 0;
   function->name = NULL;
+  function->location = NULL;
   initChunk(&function->chunk);
 }
 
@@ -25,6 +26,7 @@ static int functionLength(Obj *obj) {
 static void markFunction(Obj *obj) {
   ObjFunction *function = (ObjFunction *)obj;
   markObject((Obj *)function->name);
+  markObject((Obj *)function->location);
   markChunk(&function->chunk);
 }
 
