@@ -42,7 +42,7 @@ void copyValues(Value *source, Value *dest, usize count) {
 }
 
 int inspectHash(FILE *io, Value value) {
-  return inspectValue(io, value) + fprintf(io, " %llx\n", valueHash(value));
+  return inspectValue(io, value) + fprintf(io, " %lx\n", valueHash(value));
 }
 
 int inspectValue(FILE *io, Value val) {
