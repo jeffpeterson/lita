@@ -142,6 +142,10 @@ static void registerDef(ObjDef *def) {
 ObjFunction *core_lita();
 
 static InterpretResult defineNatives() {
+  // Declare linker-provided section symbols
+  extern NativeMethod __start_natives;
+  extern NativeMethod __stop_natives;
+  
   foreach_native(native) {
     let fun = fn(native->name, native->arity, native->fun);
     trace(native->className, fun);
@@ -155,6 +159,10 @@ static InterpretResult defineNatives() {
   }
 
   runFunction(core_lita());
+
+  // Declare linker-provided section symbols
+  extern BootFunction __start_boot_functions;
+  extern BootFunction __stop_boot_functions;
 
   foreach_boot_function(boot) {
     ObjFunction *fun = boot->fun();
@@ -170,6 +178,10 @@ static InterpretResult defineNatives() {
 
 InterpretResult bootVM() {
   InterpretResult result = defineNatives();
+
+  // Declare linker-provided section symbols 
+  extern ObjDef* __start_defs;
+  extern ObjDef* __stop_defs;
 
   foreach_obj_def(def) registerDef(*def);
 
