@@ -52,8 +52,11 @@ steps:
       rm -f test_deps test_deps.c
       echo "Core dependencies verification complete"
       
-      # Note: readline may need to be installed separately in some environments
-      # Install with: sudo apt-get install libreadline-dev
+  - name: "Validate setup"
+    run: |
+      # Run comprehensive validation
+      chmod +x validate-setup.sh
+      ./validate-setup.sh
 
 environment:
   CC: clang
@@ -86,6 +89,21 @@ development_commands:
   clean: "make clean"
   debug: "./build-linux.sh db/test"
   
+quick_start: |
+  After running the setup steps, you can quickly get started:
+  
+  1. Validate the environment:
+     ./validate-setup.sh
+     
+  2. Build the project:
+     ./build-linux.sh
+     
+  3. Clean build artifacts:
+     make clean
+     
+  The setup includes helper scripts optimized for Linux development
+  to work around the macOS-specific library paths in the original Makefile.
+
 notes: |
   This setup configures a complete C development environment for the Lita language.
   The project uses:
