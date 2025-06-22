@@ -137,6 +137,13 @@ xxhash:
 	curl https://raw.githubusercontent.com/Cyan4973/xxHash/refs/tags/v0.8.2/xxhash.h > src/lita/xxhash.h
 	curl https://raw.githubusercontent.com/Cyan4973/xxHash/refs/tags/v0.8.2/xxhash.c > src/lita/xxhash.c
 
-.PHONY: default all clean test db db/test lib prune
+# Force regeneration of all .lita.c files (requires lita binary)
+regen-lita: $(TARGET)
+	@for file in $(LITA_SRC); do \
+		echo "Regenerating $${file%.lita}.lita.c"; \
+		$(TARGET) -c $$file; \
+	done
+
+.PHONY: default all clean test db db/test lib prune regen-lita
 .PRECIOUS: $(TARGET) %.c %.o
 .SUFFIXES: # disable crazy built-in rules that append .c
