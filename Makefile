@@ -1,8 +1,11 @@
 CC = clang
-FLAGS := # -t
-SHELL := /bin/bash
-WARN_ERRORS := -Werror -Wno-error=unused-variable -Wno-unused-function -Wno-unused-command-line-argument
-CFLAGS := -g -Isrc -I/opt/homebrew/include -L/opt/homebrew/lib -lpcre2-8 -lreadline -Wall $(WARN_ERRORS)
+FLAGS        := # -t
+SHELL        := /bin/bash
+KERNEL       := $(shell uname -s)
+WARN_ERRORS  := -Werror -Wno-error=unused-variable -Wno-unused-function -Wno-unused-command-line-argument
+Darwin_FLAGS := -I/opt/homebrew/include -L/opt/homebrew/lib
+Linux_FLAGS  :=
+CFLAGS       := -g -Isrc $($(KERNEL)_FLAGS) -lpcre2-8 -lreadline -Wall $(WARN_ERRORS)
 
 TARGET := .bin/lita
 DEV := .bin/lita-dev
