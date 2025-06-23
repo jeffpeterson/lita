@@ -2,7 +2,6 @@
 #define lita_buffer_h
 
 #include "common.h"
-#include "ecs.h"
 
 typedef struct {
   usize count;
@@ -24,9 +23,5 @@ usize writeBuffer(Buffer *buf, usize offset, u8 *bytes, usize count);
 usize appendBuffer(Buffer *buf, u8 *bytes, usize count);
 usize appendCharToBuffer(Buffer *buf, char ch);
 usize appendStrToBuffer(Buffer *buf, char *str, usize length);
-
-extern ECS_COMPONENT_DECLARE(Buffer);
-
-void BuffersImport(World *world);
 
 #endif

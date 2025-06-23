@@ -60,7 +60,7 @@ $(TARGET).wasm $(TARGET).js $(TARGET).html: $(TARGET_O:%.o=%.wasm.o)
 	$(eval CFLAGS := -g -DNO_READLINE -DENABLE_REGEX=0 -Isrc -I/opt/homebrew/include -L/opt/homebrew/lib -Wall $(WARN_ERRORS))
 	emcc -lc $(CFLAGS) -o $(TARGET).html $^
 
-$(TARGET).zig.wasm: $(filter-out src/flecs/%,$(TARGET_C))
+$(TARGET).zig.wasm: $(TARGET_C)
 	@mkdir -p $(dir $@)
 	zig cc $(CFLAGS) --shared -D_WASI_EMULATED_PROCESS_CLOCKS -lwasi-emulated-process-clocks --target=wasm32-wasi $(TARGET).zig.wasm $^
 
@@ -120,10 +120,6 @@ tmp/pruned: | $(PRUNABLES)
 	@echo $^ | tee /dev/tty | xargs rm
 	@echo "After pruning: $$(du -sh .bin)"
 	@touch $@
-
-flecs:
-	curl https://raw.githubusercontent.com/SanderMertens/flecs/v4.0.1/flecs.c > src/lita/flecs.c
-	curl https://raw.githubusercontent.com/SanderMertens/flecs/v4.0.1/flecs.h > src/lita/flecs.h
 
 pcg:
 	curl https://raw.githubusercontent.com/imneme/pcg-c-basic/master/pcg_basic.c > src/lita/pcg_basic.c

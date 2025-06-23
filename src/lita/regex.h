@@ -5,7 +5,6 @@
 
 #include <pcre2.h>
 
-#include "ecs.h"
 #include "object.h"
 #include "string.h"
 #include "value.h"
@@ -39,11 +38,4 @@ ObjString *replaceRegex(ObjString *subject, ObjRegex *regex,
                         ObjString *replacement);
 
 extern const ObjDef Regex;
-
-extern ECS_COMPONENT_DECLARE(RegexError);
-extern ECS_COMPONENT_DECLARE(Regex2);
-extern ECS_TAG_DECLARE(RegexSource);
-
-void RegexesImport(World *world);
-
 #endif

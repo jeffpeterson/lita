@@ -5,8 +5,6 @@
 - [ ] Control-flow expressions
 - [ ] OrderedSet
 - [ ] Intern ranges
-- [ ] ECS inside-out fields
-- [ ] Integrate flecs
 - [ ] Multi-methods
 - [ ] Pattern Matching
 - [ ] ~~Remove `fn` keyword~~

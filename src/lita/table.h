@@ -1,7 +1,6 @@
 #ifndef lita_table_h
 #define lita_table_h
 
-#include "ecs.h"
 #include "value.h"
 
 typedef struct ObjIterator ObjIterator;
@@ -40,9 +39,5 @@ void tableRemoveWhite(Table *table);
 void markTable(Table *table);
 int inspectTable(FILE *io, Table *table, int depth);
 void hashTable(HashState *state, Table *table);
-
-extern ECS_COMPONENT_DECLARE(Table);
-
-void TablesImport(World *world);
 
 #endif

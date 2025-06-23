@@ -6,12 +6,14 @@
 
 #include "array.h"
 #include "class.h"
+#include "closure.h"
 #include "common.h"
 #include "compiler.h"
 #include "debug.h"
 #include "io.h"
 #include "lib.h"
 #include "memory.h"
+#include "native.h"
 #include "object.h"
 #include "range.h"
 #include "readline.h"
@@ -112,10 +114,9 @@ Value globalClass(const char *name) {
   return klass;
 }
 
-void initVM(World *world) {
+void initVM() {
   resetStack();
 
-  vm.world = world;
   vm.objects = NULL;
   vm.bytesAllocated = 0;
   /** Start collecting after ~100MB~ 1MB is allocated. */
@@ -128,8 +129,6 @@ void initVM(World *world) {
   initTable(&vm.globals);
   initTable(&vm.interned);
   initTable(&vm.keep);
-
-  ECS_IMPORT(vm.world, Lita);
 }
 
 static void registerDef(ObjDef *def) {
@@ -872,8 +871,6 @@ InterpretResult interpret(const char *source, ObjString *name) {
 }
 
 void repl() {
-  // ecs_singleton_set(vm.world, EcsRest, {0});
-
   ObjString *name = newString("REPL");
   ObjString *history =
       concatStrings(newString(getenv("HOME")), newString("/.lita_history"));
@@ -897,8 +894,6 @@ void repl() {
       debugStack();
       fprintf(stderr, "\n");
     }
-
-    // ecs_progress(vm.world, 0);
   }
 
   printf("\n");
@@ -909,19 +904,4 @@ NATIVE_FUNCTION(compile, 1) {
   readFile(path);
   char *source = asChars(args[0]);
   return obj(compile(source, path));
-}
-
-ECS_COMPONENT_DECLARE(VM);
-
-void LitaImport(World *world) {
-  ECS_MODULE(world, Lita);
-
-  ECS_IMPORT(world, Buffers);
-  ECS_IMPORT(world, Objects);
-#if ENABLE_REGEX
-  ECS_IMPORT(world, Regexes);
-#endif
-  ECS_IMPORT(world, Tables);
-
-  ECS_COMPONENT_DEFINE(world, VM);
 }

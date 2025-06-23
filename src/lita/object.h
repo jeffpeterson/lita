@@ -4,6 +4,8 @@
 typedef struct ObjDef ObjDef;
 typedef struct ObjIterator ObjIterator;
 
+#include <assert.h>
+
 #include "common.h"
 #include "table.h"
 #include "value.h"
@@ -70,7 +72,6 @@ extern const ObjDef Object;
 typedef struct ObjClass ObjClass;
 
 struct Obj {
-  EntityId eid;
   const ObjDef *def;
   bool isMarked;    // Is marked by GC in the current mark cycle.
   struct Obj *next; // Linked list of objects used for GC.
@@ -106,10 +107,5 @@ static inline bool isObjDef(Value value, const ObjDef *def) {
 typedef struct ObjComponent {
   Obj *obj;
 } ObjComponent;
-
-extern ECS_COMPONENT_DECLARE(ObjComponent);
-// ECS_SYSTEM_DECLARE(MarkRelationships);
-
-void ObjectsImport(World *world);
 
 #endif

@@ -259,10 +259,3 @@ int inspectTable(FILE *io, Table *table, int depth) {
 void hashTable(HashState *state, Table *table) {
   updateHash(state, &table->entries, sizeof(Entry) * table->capacity);
 }
-
-ECS_COMPONENT_DECLARE(Table);
-
-void TablesImport(World *world) {
-  ECS_MODULE(world, Tables);
-  ECS_COMPONENT_DEFINE(world, Table);
-}

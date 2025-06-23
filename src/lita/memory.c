@@ -110,8 +110,6 @@ static void blackenObject(Obj *obj) {
   markObject((Obj *)obj->klass);
   markTable(&obj->fields);
 
-  // ecs_run(vm.world, MarkRelationships, 0);
-
   if (obj->def->mark) return obj->def->mark(obj);
 }
 
@@ -123,7 +121,6 @@ void freeObject(Obj *obj) {
 #endif
 
   freeTable(&obj->fields);
-  if (obj->eid) ecs_delete(vm.world, obj->eid);
   if (obj->def->free) obj->def->free(obj);
   reallocate(obj, obj->def->size, 0);
 }

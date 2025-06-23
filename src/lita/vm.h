@@ -1,10 +1,7 @@
 #ifndef lita_vm_h
 #define lita_vm_h
 
-#include "closure.h"
-#include "ecs.h"
 #include "function.h"
-#include "native.h"
 #include "object.h"
 #include "table.h"
 #include "term.h"
@@ -41,8 +38,6 @@ typedef struct VM {
   Table interned; /** Interned object table. */
   Table keep;     /** Exempt objects from GC. */
 
-  World *world; /** ECS world. */
-
   ObjUpvalue *openUpvalues; /** Unclosed upvalues. */
   Obj *objects;             /** A chain of allocated objects. */
 
@@ -65,7 +60,7 @@ typedef struct VM {
 
 extern VM vm;
 
-void initVM(World *world);
+void initVM();
 void freeVM();
 InterpretResult bootVM();
 InterpretResult runFunction(ObjFunction *fun);
@@ -131,8 +126,5 @@ void vmArray(u32 length);
 void vmTuple(u8 length);
 
 void repl();
-
-extern ECS_COMPONENT_DECLARE(VM);
-void LitaImport(World *world);
 
 #endif

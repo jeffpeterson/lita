@@ -1,14 +1,12 @@
 #include <assert.h>
 #include <string.h>
 
-#include "array.h"
 #include "bound.h"
 #include "class.h"
+#include "closure.h"
 #include "lib.h"
-#include "memory.h"
+#include "native.h"
 #include "string.h"
-#include "term.h"
-#include "tuple.h"
 #include "vm.h"
 
 let memory(u8 *bytes, int length) {

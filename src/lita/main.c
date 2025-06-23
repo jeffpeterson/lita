@@ -30,19 +30,8 @@ static void usage(int argc, char *argv[]) {
 }
 
 int main(int argc, char *argv[]) {
-  World *world = ecs_init_w_args(argc, argv);
-
-  initVM(world);
+  initVM();
   assertOkResult(bootVM());
-
-  // ECS_IMPORT(world, FlecsRest);
-  // ecs_set(world, EcsWorld, EcsRest, {.ipaddr = "127.0.0.1"});
-
-  // return ecs_app_run(world, &(ecs_app_desc_t){
-  //                               .enable_stats = true,
-  //                               .target_fps = 240,
-  //                           });
-
   int opt;
   bool start_repl = false;
   bool evaled = false;

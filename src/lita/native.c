@@ -57,11 +57,6 @@ NATIVE_METHOD_NAMED(Any, eql, "==", 1) {
 }
 NATIVE_METHOD(Any, hash, 0) { return OBJ_VAL(stringf("%#x", valueHash(this))); }
 
-NATIVE_METHOD(Object, etype, 0) {
-  const ecs_type_t *type = ecs_get_type(vm.world, asObject(this)->eid);
-  char *type_str = ecs_type_str(vm.world, type);
-  return OBJ_VAL(takeString(type_str, -1));
-}
 NATIVE_METHOD_NAMED(Number, spaceship, "<=>", 1) {
   return asNumber(this) - asNumber(args[0]);
 }

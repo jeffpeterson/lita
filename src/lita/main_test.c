@@ -12,7 +12,6 @@
     checkmark();                                                               \
   }
 
-void flecs_test();
 void pcre2_test();
 void xxhash_test();
 
@@ -26,13 +25,11 @@ void scanner_test();
 void vm_test();
 
 int main(int argc, char *argv[]) {
-  World *world = ecs_init_w_args(argc, argv);
-  initVM(world);
+  initVM();
 
   fprintf(stderr, "\n");
   run(pcre2_test);
   run(xxhash_test);
-  run(flecs_test);
 
   run(scanner_test);
   run(chunk_test);
@@ -49,6 +46,5 @@ int main(int argc, char *argv[]) {
   run(vm_test);
   fprintf(stderr, FG_GREEN "\nTests passed.\n\n" FG_DEFAULT);
   freeVM();
-  ecs_fini(world);
   return 0;
 }

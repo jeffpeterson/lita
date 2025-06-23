@@ -23,8 +23,6 @@ Obj *allocateObject(const ObjDef *def) {
   obj->isMarked = false;
   initTable(&obj->fields);
 
-  obj->eid = ecs_insert(vm.world, ecs_value(ObjComponent, {obj}));
-
   if (def->alloc) def->alloc(obj);
 
 #if DEBUG_LOG_MEM
@@ -114,23 +112,6 @@ const ObjDef Object = {
     .className = "Object",
     .size = sizeof(Obj),
 };
-
-ECS_COMPONENT_DECLARE(ObjComponent);
-
-void markRelationships(World *world, EntityId eid){
-    // ecs_query_t *q = ecs_query(
-    //     world, {.terms = {{.first.id = EcsWildcard, .second.name =
-    //     "$target"},
-    //                       {ecs_id(ObjComponent), .src.name = "$target"}}});
-};
-
-void ObjectsImport(World *world) {
-  ECS_MODULE(world, Objects);
-
-  ECS_COMPONENT_DEFINE(world, ObjComponent);
-
-  // ECS_SYSTEM(world, MarkRelationships, 0, ObjComponent, (*, ObjComponent));
-}
 
 // void walkValue(Value val, WalkState *state) {
 //   if (isObject(val)) walkObject(AS_OBJ(val), state);
