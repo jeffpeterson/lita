@@ -36,9 +36,7 @@ static void freeClosure(Obj *obj) {
 
 static int inspectClosure(Obj *obj, FILE *io, int depth) {
   ObjClosure *closure = (ObjClosure *)obj;
-  return fprintf(io,
-                 FG_MAGENTA "<closure %s" FG_DEFAULT "/" FG_MAGENTA
-                            "%d>" FG_DEFAULT,
+  return fprintf(io, FG_MAGENTA "<closure %s/%d>" FG_DEFAULT,
                  stringChars(closure->function->name),
                  closure->function->arity) -
          FG_SIZE * 4;

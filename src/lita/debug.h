@@ -10,5 +10,7 @@ void debugFrames();
 void debugExecution();
 void debugStack();
 void debugTokens();
+int debugValue(Value value);
+int debugObject(Obj *obj);
 
 #endif

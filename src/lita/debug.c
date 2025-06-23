@@ -221,8 +221,9 @@ static void debugValues(Value *start, int length) {
     offsets[i] = 0;
     if (vm.frameCount && frame->slots == start + i)
       offsets[i] += fprintf(stderr, "‸");
-    offsets[i] += fprintf(stderr, "[ ") + inspectValue(stderr, start[i], 1) +
-                  fprintf(stderr, " ]");
+    offsets[i] += fprintf(stderr, "[ ");
+    offsets[i] += inspectValue(stderr, start[i], 1);
+    offsets[i] += fprintf(stderr, " ]");
   }
 }
 
@@ -246,7 +247,7 @@ void debugFrames() {
 }
 
 void debugExecution() {
-  fprintf(stderr, RESET "║" DIM "      -->" NO_DIM);
+  fprintf(stderr, RESET "║" DIM "      -->" NO_DIM); // ►
   debugStack();
   // int frameSizes[vm.frameCount];
 
@@ -277,4 +278,31 @@ void debugExecution() {
         (int)(frame->ip - toFunction(frame->obj)->chunk.code));
   fprintf(stderr, NO_DIM);
   prev_frame = frame;
+}
+
+int debugValue(Value value) {
+  int sum = 0;
+  sum +=
+      fprintf(stderr, "Value(int: %lld, float: %g, ", value, valueToNum(value));
+  sum += fprintf(stderr, "hash: %llx, ", valueHash(value));
+  if (isNumber(value)) sum += fprintf(stderr, "number");
+  if (isBool(value))
+    sum += fprintf(stderr, "bool: %s", AS_BOOL(value) ? "true" : "false");
+  if (isNil(value)) sum += fprintf(stderr, "nil");
+  if (isVoid(value)) sum += fprintf(stderr, "void");
+  if (isObject(value)) sum += fprintf(stderr, "obj: %p", asObject(value));
+  if (isObject(value)) {
+    sum += fprintf(stderr, ", ");
+    sum += debugObject(asObject(value));
+  }
+  sum += fprintf(stderr, ")");
+  return sum;
+}
+
+int debugObject(Obj *obj) {
+  int sum = 0;
+  sum += fprintf(stderr, "Obj(def: %p", obj->def);
+  sum += fprintf(stderr, ", className: %s) ", obj->def->className);
+  sum += inspectObject(stderr, obj, 0);
+  return sum;
 }

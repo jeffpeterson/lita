@@ -37,10 +37,8 @@ static void freeFunction(Obj *obj) {
 
 static int inspectFunction(Obj *obj, FILE *io, int depth) {
   ObjFunction *function = (ObjFunction *)obj;
-  return fprintf(io,
-                 FG_MAGENTA "<function %s" FG_DEFAULT "/" FG_BLUE
-                            "%d" FG_MAGENTA " (" FG_DEFAULT,
-                 function->name->chars, function->arity) +
+  return fprintf(io, FG_MAGENTA "<function %s/%d (" FG_DEFAULT,
+                 stringChars(function->name), function->arity) +
          inspectObject(io, (Obj *)function->location, depth + 1) +
          fprintf(io, FG_MAGENTA ")>" FG_DEFAULT) - FG_SIZE * 7;
 }

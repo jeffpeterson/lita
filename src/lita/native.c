@@ -9,6 +9,11 @@
 #include "vm.h"
 
 Value fn(const char *name, int arity, NativeFn fun) {
+  // TODO: This doesn't work with the GC. The string can be collected when the
+  // native is allocated. Perhaps we should have some kind of simple ticking
+  // generation system wherein we can allocate objects into a temporary pool
+  // until the next instruction is processed, at which point we copy them into
+  // the main object pool and reset the temporary pool.
   return obj(newNative(newString(name), arity, fun));
 }
 
@@ -75,7 +80,7 @@ static void markNative(Obj *obj) {
 static int inspectNative(Obj *obj, FILE *io, int depth) {
   ObjNative *native = (ObjNative *)obj;
   return fprintf(io, FG_MAGENTA "<native %s/%d>" FG_DEFAULT,
-                 native->name->chars, native->arity) -
+                 stringChars(native->name), native->arity) -
          FG_SIZE * 4;
 }
 

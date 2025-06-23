@@ -108,8 +108,8 @@ Value global(Value name) {
 Value globalClass(const char *name) {
   let vname = string(name);
   let klass = global(vname);
-  if (isClass(klass)) return klass;
-  return setGlobal(vname, class(name));
+  if (!isClass(klass)) klass = setGlobal(vname, class(name));
+  return klass;
 }
 
 void initVM(World *world) {
@@ -151,7 +151,6 @@ static InterpretResult defineNatives() {
       let klass = globalClass(native->className);
       if (native->is_static) static_method(klass, fun);
       else method(klass, fun);
-
     } else setGlobal(string(native->name), fun);
   }
 
