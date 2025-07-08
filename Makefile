@@ -105,7 +105,7 @@ _build/%.wasm.o: src/%.c $(HEADERS)
 # lita compiler.
 %.lita.c: %.lita $(NON_LITA_C) $(HEADERS)
 ifeq (,$(wildcard $(TARGET)))
-	echo "Skipping $< until $(TARGET) exists."
+	@echo "Skipping $< until $(TARGET) exists."
 else
 	$(TARGET) -c $<
 endif
