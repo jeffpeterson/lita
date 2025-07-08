@@ -10,4 +10,6 @@ Fix other problems that come up as you find them. The codebase should be left be
 
 Try your best to make code readable without comments, but add comments where necessary, especially if something is unintuitive.
 
+Use lldb to debug segmentation faults.
+
 Update AGENTS.md with any general feedback you receive.

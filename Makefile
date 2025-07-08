@@ -37,7 +37,10 @@ default: $(TARGET_GIT) test assertions $(TARGET) prune
 zig: $(TARGET).zig.wasm
 
 docker:
-	docker build .
+	docker build . --tag=lita
+
+docker/%: docker
+	docker run -it lita make $*
 
 # WASM
 js: $(TARGET).js
