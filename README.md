@@ -1,6 +1,17 @@
 # Lita Lang
 
-Someday this may be useful to someone. But for now, it's a mostly broken playground for learning.
+An object-oriented language with python and ruby vibes.
+
+Everything is an object. White-space significant.
+
+See [[examples/assertions.lita]] for examples.
+
+Someday this may be useful to someone. But for now, it's a playground for learning.
+
+## Getting started
+
+Run `make` to compile the `lita` and `lita-test` binaries, run the C tests,
+and run the lita assertions.
 
 ## Debugger
 

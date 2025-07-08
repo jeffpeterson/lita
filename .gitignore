@@ -1,6 +1,7 @@
 *.o
-_build/
-.bin/
-tmp/
-!tmp/.keep
+/_build/*
+/.bin/*
+/tmp/*
 .DS_Store
+
+!.keep

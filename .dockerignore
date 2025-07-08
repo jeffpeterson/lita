@@ -1,3 +1,7 @@
-_build
-.bin
-tmp
+*.o
+/_build/*
+/.bin/*
+/tmp/*
+.DS_Store
+
+!.keep
