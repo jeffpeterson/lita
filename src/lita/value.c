@@ -127,7 +127,11 @@ Hash hashBytes(const void *data, usize length) {
   return XXH64(data, length, 0);
 }
 
-HashState *startHash() { return XXH64_createState(); }
+HashState *startHash() {
+  HashState *state = XXH64_createState();
+  XXH64_reset(state, 0);
+  return state;
+}
 
 void updateHash(HashState *state, const void *data, usize length) {
   if (!data || !length) return;
