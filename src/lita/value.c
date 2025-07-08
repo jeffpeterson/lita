@@ -43,7 +43,8 @@ void copyValues(Value *source, Value *dest, usize count) {
 }
 
 int inspectHash(FILE *io, Value value) {
-  return inspectValue(io, value, 1) + fprintf(io, " %llx\n", valueHash(value));
+  return inspectValue(io, value, 1) +
+         fprintf(io, " %" PRIx64 "\n", valueHash(value));
 }
 
 int inspectValue(FILE *io, Value val, int depth) {

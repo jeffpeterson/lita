@@ -22,6 +22,7 @@ void string_test();
 void table_test();
 void tree_test();
 void scanner_test();
+void value_test();
 void vm_test();
 
 int main(int argc, char *argv[]) {
@@ -31,6 +32,7 @@ int main(int argc, char *argv[]) {
   run(pcre2_test);
   run(xxhash_test);
 
+  run(value_test);
   run(scanner_test);
   run(chunk_test);
   run(hash_test);

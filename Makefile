@@ -5,7 +5,7 @@ KERNEL       := $(shell uname -s)
 WARN_ERRORS  := -Werror -Wno-error=unused-variable -Wno-unused-function -Wno-unused-command-line-argument
 Darwin_FLAGS := -I/opt/homebrew/include -L/opt/homebrew/lib
 Linux_FLAGS  :=
-CFLAGS       := -g -Isrc $($(KERNEL)_FLAGS) -lpcre2-8 -lreadline -Wall $(WARN_ERRORS)
+CFLAGS       := -g -Isrc $($(KERNEL)_FLAGS) -lm -lpcre2-8 -lreadline -Wall $(WARN_ERRORS)
 
 TARGET := .bin/lita
 DEV := .bin/lita-dev

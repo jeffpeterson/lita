@@ -1642,7 +1642,7 @@ XXH_PUBLIC_API XXH_PUREF XXH128_hash_t XXH128(XXH_NOESCAPE const void* data, siz
  *             argv[2], strlen(argv[2]),
  *             secret, sizeof(secret)
  *        );
- *        printf("%016llx\n", (unsigned long long) h);
+ *        printf("%016" PRIx64 "\n", (unsigned long long) h);
  *    }
  * @endcode
  */

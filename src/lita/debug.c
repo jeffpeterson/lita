@@ -282,9 +282,9 @@ void debugExecution() {
 
 int debugValue(Value value) {
   int sum = 0;
-  sum +=
-      fprintf(stderr, "Value(int: %lld, float: %g, ", value, valueToNum(value));
-  sum += fprintf(stderr, "hash: %llx, ", valueHash(value));
+  sum += fprintf(stderr, "Value(int: %" PRId64 ", float: %g, ", value,
+                 valueToNum(value));
+  sum += fprintf(stderr, "hash: %" PRIx64 ", ", valueHash(value));
   if (isNumber(value)) sum += fprintf(stderr, "number");
   if (isBool(value))
     sum += fprintf(stderr, "bool: %s", AS_BOOL(value) ? "true" : "false");

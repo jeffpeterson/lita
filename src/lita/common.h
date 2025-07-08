@@ -1,6 +1,7 @@
 #ifndef lita_common_h
 #define lita_common_h
 
+#include <inttypes.h>
 #include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
@@ -102,8 +103,10 @@ extern Config config;
 #define SECTION_STOP(name) __stop_##name
 
 #define section_foreach_entry(section_name, type_t, elem)                      \
-  for (type_t *elem = &__start_##section_name; elem < &__stop_##section_name;  \
-       elem++)
+  extern type_t SECTION_START(section_name);                                   \
+  extern type_t SECTION_STOP(section_name);                                    \
+  for (type_t *elem = &SECTION_START(section_name);                            \
+       elem < &SECTION_STOP(section_name); elem++)
 #endif
 
 #endif
