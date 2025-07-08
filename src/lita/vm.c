@@ -221,9 +221,9 @@ void vmSwap(u8 a, u8 b) {
  *     receiver-^               ^-stackTop
  */
 CallFrame *newFrame(Obj *obj, usize slots) {
-  CallFrame *existingFrame = CURRENT_FRAME;
+  CallFrame *existingFrame = vm.frameCount ? CURRENT_FRAME : NULL;
 
-  if (existingFrame->obj == obj && existingFrame->ip &&
+  if (existingFrame && existingFrame->obj == obj && existingFrame->ip &&
       *(existingFrame->ip) == OP_RETURN) {
     // Tail-call optimization.
     copyValues(vm.stackTop - slots, existingFrame->slots, slots);
@@ -859,6 +859,9 @@ static InterpretResult runClosure(ObjClosure *closure) {
 
 InterpretResult runFunction(ObjFunction *fun) {
   if (fun == NULL) return INTERPRET_COMPILE_ERROR;
+
+  // Ensure we start with a clean stack.
+  resetStack();
 
   push(OBJ_VAL(fun));
   ObjClosure *closure = newClosure(fun);
