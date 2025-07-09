@@ -13,9 +13,8 @@ jobs:
       - uses: actions/checkout@v4
       - name: Install dependencies
         run: |
-          sudo apt update
-          sudo apt-get update && \
-            DEBIAN_FRONTEND=noninteractive apt-get install -y \
+          sudo apt-get update
+          DEBIAN_FRONTEND=noninteractive sudo apt-get install -y \
             git curl \
             clang make lldb \
             libpcre2-dev libreadline-dev
