@@ -46,7 +46,7 @@ int main(int argc, char *argv[]) {
   run(table_test);
   run(tree_test);
   run(vm_test);
-  fprintf(stderr, FG_GREEN "\nTests passed.\n\n" FG_DEFAULT);
   freeVM();
+  fprintf(stderr, FG_GREEN "\nTests passed.\n\n" FG_DEFAULT);
   return 0;
 }
