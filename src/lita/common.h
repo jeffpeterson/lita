@@ -44,9 +44,6 @@
 // "Enable garbage collection logging."
 #define DEBUG_LOG_GC 0
 
-// "Causes GC to be run as often as possible."
-#define DEBUG_STRESS_GC 0
-
 #define UINT8_COUNT (UINT8_MAX + 1)
 
 typedef int8_t i8;
@@ -71,6 +68,7 @@ typedef enum InterpretResult {
 
 typedef struct Config {
   bool tracing;
+  bool stress_gc; // Run GC as often as possible.
   u8 debug;
 } Config;
 

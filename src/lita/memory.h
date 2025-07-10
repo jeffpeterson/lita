@@ -26,8 +26,11 @@ void *cloneMemory(void *src, usize size);
 void markObject(Obj *obj);
 void markValueArray(ValueArray *array);
 void markValue(Value value);
-void collectGarbage();
+
 void freeObject(Obj *obj);
 void freeObjects();
+
+void request_gc();
+void collectGarbage();
 
 #endif

@@ -1,4 +1,6 @@
+#include <getopt.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 #include "term.h"
 #include "vm.h"
@@ -25,7 +27,31 @@ void scanner_test();
 void value_test();
 void vm_test();
 
+static void usage(int argc, char *argv[]) {
+  printf("Usage:\n"
+         "  %s [options]\n"
+         "\n"
+         "Options:\n"
+         "  -G \t\tCollect garbage on every allocation.\n"
+         "  -d \t\tEnable debug output on errors.\n"
+         "  -dd \t\tShow VM stack between REPL lines.\n"
+         "  -ddd \t\tShow VM state between each executed op-code.\n"
+         "  -dddd \tShow debug info as each token is parsed.\n"
+         "  -h \t\tPrint this help.\n",
+         argv[0]);
+}
+
 int main(int argc, char *argv[]) {
+  int opt;
+  while ((opt = getopt(argc, argv, "Gdh")) != -1) {
+    switch (opt) {
+    case 'G': config.stress_gc = true; break;
+    case 'd': config.debug++; break;
+    case 'h': usage(argc, argv); exit(0);
+    case '?': usage(argc, argv); exit(1);
+    }
+  }
+
   initVM();
 
   fprintf(stderr, "\n");

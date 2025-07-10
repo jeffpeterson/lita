@@ -11,6 +11,7 @@
 #define FRAMES_MAX 64
 #define STACK_MAX (FRAMES_MAX * UINT8_COUNT)
 #define CURRENT_FRAME (&vm.frames[vm.frameCount - 1])
+#define push_obj(obj) push(OBJ_VAL(obj));
 
 typedef struct CallFrame {
   Obj *obj;         // Object being executed.
@@ -56,6 +57,7 @@ typedef struct VM {
   int grayCapacity;      // Capacity allocated for `grayStack`.
   size_t bytesAllocated; // Total memory we have allocated.
   size_t nextGC;         // Threshold to trigger the next GC.
+  int gc_requested;      // GC has been requested.
 } VM;
 
 extern VM vm;

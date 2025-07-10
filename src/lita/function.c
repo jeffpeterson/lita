@@ -9,7 +9,7 @@
 
 ObjFunction *newFunction() { return allocateFunction(); }
 
-void allocFunction(Obj *obj) {
+static void allocFunction(Obj *obj) {
   ObjFunction *function = (ObjFunction *)obj;
   function->arity = 0;
   function->upvalueCount = 0;

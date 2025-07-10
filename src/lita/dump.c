@@ -108,9 +108,8 @@ static int dumpFn(FILE *io, ObjFunction *fun) {
   }
 
   fprintf(io, "  };\n"
-              "  c->constants.values = cloneMemory(values, sizeof(values));\n");
-
-  fprintf(io, "  return obj(f);\n"
+              "  c->constants.values = cloneMemory(values, sizeof(values));\n"
+              "  return obj(f);\n"
               "}\n");
 
   return id;

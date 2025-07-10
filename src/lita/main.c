@@ -20,6 +20,7 @@ static void usage(int argc, char *argv[]) {
       "  -r \t\tStart the REPL.\n"
       "  -t \t\tEnable some tracing logs.\n"
       "  -e <code> \tEvaluate the given code.\n"
+      "  -G \t\tCollect garbage on every allocation.\n"
       "  -d \t\tEnable debug output on errors.\n"
       "  -dd \t\tShow VM stack between REPL lines.\n"
       "  -ddd \t\tShow VM state between each executed op-code.\n"
@@ -37,12 +38,13 @@ int main(int argc, char *argv[]) {
   bool evaled = false;
   enum { COMPILE, INTERPRET } mode = INTERPRET;
 
-  while ((opt = getopt(argc, argv, "hcirtde:")) != -1) {
+  while ((opt = getopt(argc, argv, "Ghcirtde:")) != -1) {
     switch (opt) {
     case 'c': mode = COMPILE; break;
     case 'i': mode = INTERPRET; break;
     case 'r': start_repl = true; break;
     case 't': config.tracing = true; break;
+    case 'G': config.stress_gc = true; break;
     case 'd': config.debug++; break;
     // TODO: enqueue this as a request to interpret
     case 'e':

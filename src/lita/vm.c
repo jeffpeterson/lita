@@ -62,7 +62,7 @@ static InterpretResult vruntimeError(const char *format, va_list args) {
     } else inspectObject(stderr, frame->obj, 0);
   }
 
-  fprintf(stderr, "\nStack:\t");
+  fprintf(stderr, "\nStack(%ld):\t", vm.stackTop - vm.stack);
   debugStack();
 
   fputs(FG_RED "\n\nRUNTIME ERROR: " FG_DEFAULT, stderr);
@@ -119,7 +119,7 @@ void initVM() {
 
   vm.objects = NULL;
   vm.bytesAllocated = 0;
-  /** Start collecting after ~100MB~ 1MB is allocated. */
+  /** Start collecting after ~~100MB~~ 1MB is allocated. */
   vm.nextGC = 1 * 1024 * 1024;
 
   vm.grayCount = 0;
@@ -544,6 +544,8 @@ static InterpretResult vmRun() {
     if (DEBUG_TRACE_EXECUTION || config.debug >= 3) debugExecution();
 
     vm.stackHigh = vm.stackTop;
+
+    if (vm.gc_requested) collectGarbage();
 
     // TODO: move this to SYNC_FRAME or similar? Only need to check if
     // the frame has changed.

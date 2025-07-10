@@ -31,10 +31,7 @@ void *reallocate(void *pointer, size_t oldSize, size_t newSize) {
   // interleaved periodically during program execution—often at function
   // call boundaries or when a backward jump occurs.
   if (newSize > oldSize) {
-#if DEBUG_STRESS_GC
-    collectGarbage();
-#endif
-    if (vm.bytesAllocated > vm.nextGC) collectGarbage();
+    if (config.stress_gc || vm.bytesAllocated > vm.nextGC) request_gc();
   }
 
   if (newSize == 0) {
@@ -184,13 +181,22 @@ static void sweep() {
   }
 }
 
+void request_gc() {
+  vm.gc_requested = true;
+
+#if DEBUG_LOG_GC
+  fprintf(stderr, "-- gc requested\n");
+#endif
+}
+
 void collectGarbage() {
 #if DEBUG_LOG_GC
-  size_t before = vm.bytesAllocated;
   fprintf(stderr, "-- gc begin\n");
   fprintf(stderr, "-- mark roots\n");
 #endif
 
+  size_t before = vm.bytesAllocated;
+  vm.gc_requested = false;
   markRoots();
 
 #if DEBUG_LOG_GC
@@ -208,6 +214,9 @@ void collectGarbage() {
 #if DEBUG_LOG_GC
   fprintf(stderr, "-- sweep\n");
 #endif
+
+  // We must not allocate during garbage collection.
+  assert(before >= vm.bytesAllocated);
 
   sweep();
 
