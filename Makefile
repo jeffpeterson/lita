@@ -1,32 +1,33 @@
-CC = clang
-FLAGS        := # -t
-SHELL        := /bin/bash
-KERNEL       := $(shell uname -s)
-WARN_ERRORS  := -Werror -Wno-error=unused-variable -Wno-unused-function -Wno-unused-command-line-argument
-Darwin_FLAGS := -I/opt/homebrew/include -L/opt/homebrew/lib
-Linux_FLAGS  :=
-CFLAGS       := -g -Isrc $($(KERNEL)_FLAGS) -lm -lpcre2-8 -lreadline -Wall $(WARN_ERRORS)
+FLAGS       = # -t
+SHELL       = /bin/bash
+WARN_ERRORS = -Werror -Wno-error=unused-variable -Wno-unused-function -Wno-unused-command-line-argument
 
-TARGET := .bin/lita
-DEV := .bin/lita-dev
-TEST := $(TARGET)-test
-LITA_LIB := _build/lita.so
+CC       = clang
+LDFLAGS  = -L/opt/homebrew/lib
+LDLIBS   = -lm -lpcre2-8 -lreadline
+CPPFLAGS = -Isrc -I/opt/homebrew/include
+CFLAGS   = -g -Wall $(WARN_ERRORS)
+
+TARGET   = .bin/lita
+DEV      = .bin/lita-dev
+TEST     = $(TARGET)-test
+LITA_LIB = _build/lita.so
 
 SOURCES := $(shell find src -name "*.c")
 HEADERS := $(shell find src -name "*.h")
-OBJECTS := $(patsubst src/%.c,_build/%.o, $(SOURCES))
+OBJECTS  = $(patsubst src/%.c,_build/%.o, $(SOURCES))
 
 LITA_SRC := $(shell find src/lita -name "*.lita" -not -path "*/ideas/*")
-LITA_C   := $(LITA_SRC:.lita=.lita.c)
-LITA_O   := $(LITA_C:src/%.c=_build/%.o)
+LITA_C    = $(LITA_SRC:.lita=.lita.c)
+LITA_O    = $(LITA_C:src/%.c=_build/%.o)
 # LITA_EXISTING_C := $(shell find src/lita/lib -name "*.c")
 
-TARGET_C := $(filter-out %_test.c,$(SOURCES))
-NON_LITA_C := $(filter-out %.lita.c,$(TARGET_C))
+TARGET_C   = $(filter-out %_test.c,$(SOURCES))
+NON_LITA_C = $(filter-out %.lita.c,$(TARGET_C))
 
-TARGET_O  := $(TARGET_C:src/%.c=_build/%.o)
+TARGET_O   = $(TARGET_C:src/%.c=_build/%.o)
 # TARGET_O  := $(filter-out %.lita.o,$(TARGET_O))
-TEST_O  := $(filter-out %/main.o,$(OBJECTS))
+TEST_O   = $(filter-out %/main.o,$(OBJECTS))
 TARGET_GIT := $(TARGET)@$(shell git rev-parse --short HEAD)
 
 PRUNABLES := $(shell find .bin -name 'lita-*' -mtime +14 | tail -n +30)
@@ -66,8 +67,8 @@ test: $(TEST)
 
 $(TARGET).wasm $(TARGET).js $(TARGET).html: $(TARGET_O:%.o=%.wasm.o)
 	@mkdir -p $(dir $@)
-	$(eval CFLAGS := -g -DNO_READLINE -DENABLE_REGEX=0 -Isrc -I/opt/homebrew/include -L/opt/homebrew/lib -Wall $(WARN_ERRORS))
-	emcc -lc $(CFLAGS) -o $(TARGET).html $^
+	CFLAGS += -DNO_READLINE -DENABLE_REGEX=0
+	emcc -lc $(LDFLAGS) $(LDLIBS) -o $(TARGET).html $^
 
 $(TARGET).zig.wasm: $(TARGET_C)
 	@mkdir -p $(dir $@)
@@ -79,7 +80,7 @@ $(TARGET).zig.wasm: $(TARGET_C)
 
 $(DEV): $(TARGET_O) | test
 	@mkdir -p $(dir $@)
-	$(CC) $(CFLAGS) -o $@ $^
+	$(CC) $(LDFLAGS) $(LDLIBS) -o $@ $^
 
 $(TARGET)@%: $(DEV)
 	@git diff --exit-code --quiet && cp $< $@ || true
@@ -90,19 +91,19 @@ $(TARGET): $(DEV) | assertions
 
 $(TEST): $(TEST_O)
 	@mkdir -p $(dir $@)
-	$(CC) $(CFLAGS) -o $@ $^
+	$(CC) $(LDFLAGS) $(LDLIBS) -o $@ $^
 
 $(LITA_LIB): $(LITA_O) $(TARGET_O) | test
 	@mkdir -p $(dir $@)
-	$(CC) $(CFLAGS) -shared -o $@ $^
+	$(CC) $(CPPFLAGS) $(CFLAGS) -shared -o $@ $^
 
 _build/%.o: src/%.c $(HEADERS)
 	@mkdir -p $(dir $@)
-	$(CC) $(CFLAGS) -c -o $@ $<
+	$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
 
 _build/%.wasm.o: src/%.c $(HEADERS)
 	@mkdir -p $(dir $@)
-	emcc $(CFLAGS) -c -o $@ $<
+	emcc $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
 
 # This recipe creates the circular dependency between the lita library and the
 # lita compiler.
