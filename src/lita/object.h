@@ -52,19 +52,19 @@ typedef ObjIterator *ObjIterateFn(Obj *obj);
 typedef void ObjHashFn(Obj *obj, HashState *state);
 
 typedef struct ObjDef {
-  const char *className;
-  const usize size;
-  ObjIntFn *length;
-  ObjFn *alloc;
-  ObjFn *free;
-  ObjFn *mark;
-  ObjHashFn *hash;
-  // ObjWalkFn *walk;
-  ObjVMFn *call;
-  ObjIterateFn *iterate;
-  ObjInspectFn *inspect;
-  ObjIOFn *dump;
-  ObjIOFn *dumpGlobal;
+  const char *className; // Name of global class backing this object.
+  const usize size;      // Size in bytes.
+  ObjIntFn *length;      // Length of collections. Or arity.
+  ObjFn *alloc;          // Allocate extra memory during construction.
+  ObjFn *free;           // Free extra allocated memory.
+  ObjFn *mark;           // Mark child objects during gc.
+  ObjHashFn *hash;       // Defaults to hashing the pointer.
+  ObjVMFn *call;         // Implement calling.
+  ObjIterateFn *iterate; // Iterate over collections.
+  ObjInspectFn *inspect; // Inspect this object.
+  ObjIOFn *dump;         // Dump this object as a C expression.
+  ObjIOFn *dumpGlobal;   // Dump top-level C statements for this object.
+  // ObjWalkFn *walk;       // Visit the object and its children.
 } ObjDef;
 
 extern const ObjDef Object;

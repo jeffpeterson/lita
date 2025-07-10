@@ -25,21 +25,21 @@ typedef struct CallFrame {
 } CallFrame;
 
 typedef struct VM {
-  CallFrame frames[FRAMES_MAX]; /** Our function call stack. */
-  int frameCount;               /** Current depth of the function call stack. */
+  CallFrame frames[FRAMES_MAX]; // Our function call stack.
+  int frameCount;               // Current depth of the function call stack.
 
-  Value stack[STACK_MAX]; /** Stack of values referenced by our call frames. */
-  Value *stackTop;        /** Pointer to the top of the value stack. */
-  Value *stackHigh;    /** The highest point the stack has been this cycle. */
-  Value *stackSinceGC; /** The highest point the stack has been since GC. */
+  Value stack[STACK_MAX]; // Stack of values referenced by our call frames.
+  Value *stackTop;        // Pointer to the top of the value stack.
+  Value *stackHigh;       // The highest point the stack has been this cycle.
+  Value *stackSinceGC;    // The highest point the stack has been since GC.
 
-  Value result;   /** Result of the last script. */
-  Table globals;  /** Global variables hashed by name. */
-  Table interned; /** Interned object table. */
-  Table keep;     /** Exempt objects from GC. */
+  Value result;   // Result of the last script.
+  Table globals;  // Global variables hashed by name.
+  Table interned; // Interned object table.
+  Table keep;     // Exempt objects from GC.
 
-  ObjUpvalue *openUpvalues; /** Unclosed upvalues. */
-  Obj *objects;             /** A chain of allocated objects. */
+  ObjUpvalue *openUpvalues; // Unclosed upvalues.
+  Obj *objects;             // Chain of allocated objects.
 
   /**
    * Stack of objects marked "gray".
@@ -73,7 +73,7 @@ ObjFunction *toFunction(Obj *obj);
 Value push(Value value);
 /** Pop a value off the stack and return it. */
 Value pop();
-/** pop() but returns the given value. */
+/** pop() but returns the given value. (pop + expression) */
 Value pope(Value val);
 /** pop() n values off the stack. */
 Value *popn(u8 n);
