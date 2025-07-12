@@ -288,7 +288,9 @@ static Value consumeIdent(const char *message) {
  * Whether the stack should have the last expression removed.
  * The last expression of a script is left for the repl.
  */
-static bool shouldCleanStack() { return !check(TOKEN_EOF); }
+static bool shouldCleanStack() {
+  return !check(TOKEN_EOF) && !check(TOKEN_ELSE);
+}
 
 #define emitLong(size) emitLong_(size, "At " __FILE__ ":" STRINGIFY(__LINE__))
 static void emitLong_(Long value, const char *comment) {
@@ -1464,17 +1466,15 @@ static void ifStatement() {
   if (!check(TOKEN_INDENT))
     consume(TOKEN_COLON, "Expect ':' or block after condition.");
 
-  int thenJump =
-      emitJump(OP_JUMP_IF_FALSE); // Jump to else if condition is false.
-  emitByte(OP_POP);               // [] pop condition
-  statement();                    // Then branch.
+  int jump_to_else = emitJump(OP_JUMP_IF_FALSE); // Jump to else if false.
+  emitByte(OP_POP);                              // [] pop condition
+  statement();                                   // Then block.
+  int jump_over_else = emitJump(OP_JUMP);        // Jump over else branch.
 
-  int elseJump = emitJump(OP_JUMP); // Jump over else branch.
-  landJump(thenJump);               // End of then branch. Start of else branch.
-
+  landJump(jump_to_else);             // Start of else branch.
   emitByte(OP_POP);                   // [] pop condition
-  if (match(TOKEN_ELSE)) statement(); // Else branch.
-  landJump(elseJump);                 // End of else branch.
+  if (match(TOKEN_ELSE)) statement(); // Else block.
+  landJump(jump_over_else);           // End of else branch.
 }
 
 static void match_() {

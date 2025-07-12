@@ -1,11 +1,10 @@
 #include "test.h"
 #include "vm.h"
 
-#define assertOK(code) assert(interpret(code, path) == INTERPRET_OK)
+#define PATH stringf("%s:L%d", __FILE__, __LINE__)
+#define assertOK(code) assert(interpret(code, PATH) == INTERPRET_OK)
 
 void vm_test() {
-  ObjString *path = newString(__FILE__);
-
   assertOK("1 + 2");
   assertEqual(vm.result, number(3));
 
@@ -18,5 +17,5 @@ void vm_test() {
 
   assertOK("if true: 1");
   assertOK("if false: 1 else 2");
-  // assertOK("if true: 1 else 2");
+  assertOK("if true: 1 else 2");
 }
