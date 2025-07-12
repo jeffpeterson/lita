@@ -37,10 +37,12 @@ default: $(TARGET_GIT) test assertions $(TARGET) prune
 # zig not working yet
 zig: $(TARGET).zig.wasm
 
-docker:
+docker: docker/assertions
+
+docker/build:
 	docker build . --tag=lita
 
-docker/%: docker
+docker/%: docker/build
 	docker run -it lita make $*
 
 # WASM

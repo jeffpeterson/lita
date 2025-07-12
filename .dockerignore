@@ -1,7 +1,6 @@
-*.o
-/_build/*
-/.bin/*
-/tmp/*
-.DS_Store
+*
 
+!/Makefile
+!/compile_flags.txt
+!/src/lita
 !.keep

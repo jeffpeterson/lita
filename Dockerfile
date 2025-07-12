@@ -16,5 +16,7 @@ WORKDIR /lita
 # Copy the project files
 COPY . .
 
+RUN make .bin/lita-test
+
 # Default command: run the REPL
 CMD ["make"]
