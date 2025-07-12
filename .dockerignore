@@ -3,4 +3,5 @@
 !/Makefile
 !/compile_flags.txt
 !/src/lita
+!/examples
 !.keep
