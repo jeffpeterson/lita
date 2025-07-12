@@ -80,7 +80,7 @@ assert loop(10000, 0) == 10000 // Functions are tail-call optimized
 assert clock()
 assert (3; 4) == 3
 assert hash(3) == hash(1 + 2)
-assert hash(nil) == '0x6b7c1092
+assert hash(nil) == '0x4ab250db
 assert random()
 assert random(1) == 0
 assert random(1, 10)

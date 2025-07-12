@@ -19,8 +19,9 @@ typedef enum ValueType {
 
 #if NAN_BOXING
 
-//      quiet -v v- 50 mantisa bits -v
-// ?11111111111xx????????????...??????
+// v-- ptr tag   vv-- spare bit 1 and 2
+// ?11111111111qi?????????????????????????????????????????????????? QNAN
+// |  quiet ---^|^---------- 50 mantisa bits ---------------------^
 // ^- sign bit  ^- Intel FP Indef.
 
 /** Set when a Value is not a number. */
@@ -28,8 +29,8 @@ typedef enum ValueType {
 
 /** Set only for objects. */
 #define SIGN_BIT ((u64)0x8000000000000000)
-#define SPARE_BIT_1 ((u64)0x800000000000)
-#define SPARE_BIT_2 ((u64)0x400000000000)
+#define SPARE_BIT_1 ((u64)0x2000000000000)
+#define SPARE_BIT_2 ((u64)0x1000000000000)
 
 #define TAG_PTR SIGN_BIT
 #define TAG_OBJ (TAG_PTR | SPARE_BIT_1)
