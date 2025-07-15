@@ -1,6 +1,7 @@
 FLAGS       = # -t
 SHELL       = /bin/bash
 WARN_ERRORS = -Werror -Wno-error=unused-variable -Wno-unused-function -Wno-unused-command-line-argument
+GIT        := $(shell [ -d .git ] && echo git || echo :)
 
 CC       = clang
 LDFLAGS  = -L/opt/homebrew/lib
@@ -28,7 +29,7 @@ NON_LITA_C = $(filter-out %.lita.c,$(TARGET_C))
 TARGET_O   = $(TARGET_C:src/%.c=_build/%.o)
 # TARGET_O  := $(filter-out %.lita.o,$(TARGET_O))
 TEST_O   = $(filter-out %/main.o,$(OBJECTS))
-TARGET_GIT := $(TARGET)@$(shell git rev-parse --short HEAD)
+TARGET_GIT = $(TARGET)@$(shell $(GIT) rev-parse --short HEAD)
 
 PRUNABLES := $(shell find .bin -name 'lita-*' -mtime +14 | tail -n +30)
 
@@ -43,7 +44,7 @@ docker/build:
 	docker build . --tag=lita
 
 docker/%: docker/build
-	docker run -it lita make $*
+	docker run -it lita make $* FLAGS=$(FLAGS)
 
 # WASM
 js: $(TARGET).js
@@ -60,12 +61,12 @@ db/%: $(DEV)
 
 %: examples/%.lita $(DEV)
 	$(DEV) $(FLAGS) $<
-	@git diff --quiet && git notes --ref=$@ add -fm OK 2>/dev/null || true
+	@$(GIT) diff --quiet && $(GIT) notes --ref=$@ add -fm OK 2>/dev/null || true
 
 lib: $(LITA_LIB)
 test: $(TEST)
 	$(TEST) $(FLAGS)
-	@git diff --quiet && git notes --ref=test add -fm OK 2>/dev/null || true
+	@$(GIT) diff --quiet && $(GIT) notes --ref=test add -fm OK 2>/dev/null || true
 
 $(TARGET).wasm $(TARGET).js $(TARGET).html: $(TARGET_O:%.o=%.wasm.o)
 	@mkdir -p $(dir $@)
@@ -85,7 +86,7 @@ $(DEV): $(TARGET_O) | test
 	$(CC) $(LDFLAGS) $(LDLIBS) -o $@ $^
 
 $(TARGET)@%: $(DEV)
-	@git diff --exit-code --quiet && cp $< $@ || true
+	@$(GIT) diff --quiet && cp $< $@ || true
 
 $(TARGET): $(DEV) | assertions
 	-cp $@ $@-$(shell date -r $@ "+%Y-%m-%d-%H_%M_%S")
