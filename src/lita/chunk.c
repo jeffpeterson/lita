@@ -70,9 +70,7 @@ int addConstant(Chunk *chunk, Value value) {
     if (valuesEqual(value, chunk->constants.values[i])) return i;
   }
 
-  push(value);
   writeValueArray(&chunk->constants, value);
-  pop();
   return chunk->constants.count - 1;
 }
 

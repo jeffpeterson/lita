@@ -98,8 +98,7 @@ let crash(const char *fmt, ...) {
 }
 
 Value setGlobal(Value name, Value val) {
-  tableSet(&vm.globals, push(name), push(val));
-  popn(2);
+  tableSet(&vm.globals, name, val);
   return val;
 }
 
@@ -865,9 +864,7 @@ InterpretResult runFunction(ObjFunction *fun) {
   // Ensure we start with a clean stack.
   resetStack();
 
-  push(OBJ_VAL(fun));
   ObjClosure *closure = newClosure(fun);
-  pop();
   return runClosure(closure);
 }
 

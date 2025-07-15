@@ -12,6 +12,7 @@ ObjFunction *newFunction() { return allocateFunction(); }
 static void allocFunction(Obj *obj) {
   ObjFunction *function = (ObjFunction *)obj;
   function->arity = 0;
+  function->variadic = false;
   function->upvalueCount = 0;
   function->name = NULL;
   function->location = NULL;
