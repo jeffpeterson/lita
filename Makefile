@@ -134,7 +134,7 @@ prune: tmp/pruned
 # TODO: this doesn't work because the prunables are older than the tmp/pruned file
 tmp/pruned: | $(PRUNABLES)
 	@echo "Before pruning: $$(du -sh .bin)"
-	@echo $^ | tee /dev/tty | xargs rm
+	@echo $^ | tee /dev/tty | xargs -r rm
 	@echo "After pruning: $$(du -sh .bin)"
 	@touch $@
 
