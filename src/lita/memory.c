@@ -177,6 +177,7 @@ static void sweep() {
     // fprintf(stderr, "\n");
 #endif
 
+    tableDelete(&vm.interned, OBJ_VAL(obj));
     freeObject(unreached);
   }
 }
