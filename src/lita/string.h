@@ -47,6 +47,8 @@ int fescapeString(FILE *io, ObjString *str, int depth);
 ObjString *escapeString(ObjString *str);
 ObjString *unescapeString(ObjString *str);
 
+ObjString *stringBasename(ObjString *str);
+
 ObjString *vstringFormat(const char *fmt, va_list args);
 ObjString *stringFormat(const char *fmt, ...);
 

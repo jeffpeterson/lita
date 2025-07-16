@@ -142,6 +142,17 @@ ObjString *unescapeString(ObjString *str) {
   return takeString(GROW_ARRAY(char, out, str->length + 1, len + 1), len);
 }
 
+ObjString *stringBasename(ObjString *str) {
+  char *start = str->chars;
+  char *end = str->chars + str->length;
+
+  for (char *cur = start; cur < end; cur++) {
+    if (*cur == '/') start = cur + 1;
+  }
+
+  return copyString(start, end - start);
+}
+
 ObjString *stringToCIdent(ObjString *str) {
   char *out = NULL;
   usize size = 0;

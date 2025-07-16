@@ -118,7 +118,7 @@ static int dumpFn(FILE *io, ObjFunction *fun) {
 void dumpModule(FILE *io, ObjString *path, ObjFunction *fun) {
   initTable(&ids);
 
-  ObjString *name = stringToCIdent(newString(basename(path->chars)));
+  ObjString *name = stringToCIdent(stringBasename(path));
 
   fprintf(io,
           "// clang-format off\n"
