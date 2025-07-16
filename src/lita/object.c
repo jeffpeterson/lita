@@ -12,16 +12,17 @@ Obj *allocateObject(const ObjDef *def) {
   Obj *obj = (Obj *)reallocate(NULL, 0, def->size);
   obj->def = def;
   obj->klass = NULL;
-  if (def->hash) {
-    obj->next = NULL;
-    obj->hash = 0;
-  } else {
+  obj->next = NULL;
+  obj->hash = 0;
+  obj->isMarked = false;
+
+  initTable(&obj->fields);
+
+  if (!def->hash) {
     obj->next = vm.objects;
     vm.objects = obj;
     obj->hash = hashBytes(obj, def->size);
   }
-  obj->isMarked = false;
-  initTable(&obj->fields);
 
   if (def->alloc) def->alloc(obj);
 

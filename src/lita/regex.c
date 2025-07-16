@@ -7,8 +7,6 @@ Value regex(const char *source) { return obj(makeRegex(newString(source))); }
 static u32 defaultOptions = PCRE2_UTF | PCRE2_UCP;
 
 ObjRegex *makeRegex(ObjString *source) {
-  // Obj *obj = new_instance(global_class("Regex"));
-
   ObjRegex *regex = allocateRegex();
   u32 options = defaultOptions;
   regex->obj.def = &Regex;
@@ -22,6 +20,8 @@ ObjRegex *makeRegex(ObjString *source) {
                             sizeof(regex->error_message));
     crash("pcre2_compile: %s", (char *)regex->error_message);
   }
+
+  // internObject((Obj **)&regex);
   return regex;
 }
 

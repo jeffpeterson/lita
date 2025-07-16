@@ -112,6 +112,7 @@ static void blackenObject(Obj *obj) {
 
 void freeObject(Obj *obj) {
   assert(!obj->next);
+  assert(obj->hash);
 
 #if DEBUG_LOG_MEM
   fprintf(stderr, "%p free %s\n", obj, obj->def->className);
