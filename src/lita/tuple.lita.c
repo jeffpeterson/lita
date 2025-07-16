@@ -347,6 +347,6 @@ static Value fn_src_slash_lita_slash_tuple_dot_lita_0() {
   return obj(f);
 }
 
-ObjFunction *tuple_lita() {
+ObjFunction *tuple_dot_lita() {
   return asFunction(fn_src_slash_lita_slash_tuple_dot_lita_0());
 }

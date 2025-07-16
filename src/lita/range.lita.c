@@ -325,6 +325,6 @@ static Value fn_src_slash_lita_slash_range_dot_lita_0() {
   return obj(f);
 }
 
-ObjFunction *range_lita() {
+ObjFunction *range_dot_lita() {
   return asFunction(fn_src_slash_lita_slash_range_dot_lita_0());
 }

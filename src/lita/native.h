@@ -102,9 +102,9 @@ typedef struct BootFunction {
   STATIC_METHOD_NAMED(klass, attr, #attr, arity)
 
 #define COMPILED_SOURCE(name)                                                  \
-  extern ObjFunction *name##_lita();                                           \
+  extern ObjFunction *name##_dot_lita();                                       \
   static BootFunction SECTION(boot_functions)                                  \
-      name##_lita_boot = {#name, name##_lita};
+      name##_lita_boot = {#name, name##_dot_lita};
 
 #define AT_VM_BOOT(name)                                                       \
   ObjFunction *name();                                                         \

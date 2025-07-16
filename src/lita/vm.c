@@ -138,7 +138,7 @@ static void registerDef(ObjDef *def) {
   asClass(klass)->instance_def = def;
 }
 
-ObjFunction *core_lita();
+ObjFunction *core_dot_lita();
 
 static InterpretResult defineNatives() {
   foreach_native(native) {
@@ -152,7 +152,7 @@ static InterpretResult defineNatives() {
     } else setGlobal(string(native->name), fun);
   }
 
-  runFunction(core_lita());
+  runFunction(core_dot_lita());
 
   foreach_boot_function(boot) {
     ObjFunction *fun = boot->fun();

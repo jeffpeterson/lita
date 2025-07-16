@@ -86,6 +86,6 @@ static Value fn_src_slash_lita_slash_lib_slash_Parser_dot_lita_0() {
   return obj(f);
 }
 
-ObjFunction *Parser_lita() {
+ObjFunction *Parser_dot_lita() {
   return asFunction(fn_src_slash_lita_slash_lib_slash_Parser_dot_lita_0());
 }

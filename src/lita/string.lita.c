@@ -1380,6 +1380,6 @@ static Value fn_src_slash_lita_slash_string_dot_lita_0() {
   return obj(f);
 }
 
-ObjFunction *string_lita() {
+ObjFunction *string_dot_lita() {
   return asFunction(fn_src_slash_lita_slash_string_dot_lita_0());
 }

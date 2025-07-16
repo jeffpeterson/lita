@@ -115,20 +115,10 @@ static int dumpFn(FILE *io, ObjFunction *fun) {
   return id;
 }
 
-static char *parameterize(char *str) {
-  for (int i = 0; str[i] != '\0'; i++) {
-    char c = str[i];
-    if (isAlpha(c) || isDigit(c)) {
-    } else str[i] = '_';
-  }
-
-  return str;
-}
-
 void dumpModule(FILE *io, ObjString *path, ObjFunction *fun) {
   initTable(&ids);
 
-  ObjString *name = newString(parameterize(basename(path->chars)));
+  ObjString *name = stringToCIdent(newString(basename(path->chars)));
 
   fprintf(io,
           "// clang-format off\n"
