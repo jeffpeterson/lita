@@ -55,4 +55,6 @@ ObjString *stringFormat(const char *fmt, ...);
 int vfstringFormat(FILE *io, const char *fmt, va_list args);
 int fstringFormat(FILE *io, const char *fmt, ...);
 
+int fpad(FILE *io, int *max, int len);
+
 #endif

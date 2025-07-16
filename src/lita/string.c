@@ -75,19 +75,19 @@ int fescapeString(FILE *io, ObjString *str, int depth) {
   if (depth) stop = 100 / depth;
   if (stop + 3 >= str->length) stop = str->length;
 
-  sum += fputc('"', io);
+  sum++, fputc('"', io);
 
   for (int i = 0; i < stop; i++) {
     u8 ch = str->chars[i];
 
-    if (ch == '\\') sum += fputc(ch, io);
+    if (ch == '\\') sum++, fputc(ch, io);
 
     if (isprint(ch) || ch > 127) {
-      sum += fputc(ch, io);
+      sum++, fputc(ch, io);
       continue;
     }
 
-    sum += fputc('\\', io);
+    sum++, fputc('\\', io);
 
     ch = ch >= '\0' && ch <= '\6'  ? ch + '0'
          : ch == '\a'              ? 'a'
@@ -99,12 +99,12 @@ int fescapeString(FILE *io, ObjString *str, int depth) {
          : ch == '\t'              ? 't'
          : ch == '\\' || ch == '"' ? ch
                                    : 'x';
-    sum += fputc(ch, io);
+    sum++, fputc(ch, io);
   }
 
   if (stop != str->length) sum += fputs("...", io);
 
-  sum += fputc('"', io);
+  sum++, fputc('"', io);
   return sum;
 }
 
@@ -290,6 +290,11 @@ int fstringFormat(FILE *io, const char *fmt, ...) {
   return result;
 }
 
+int fpad(FILE *io, int *max, int len) {
+  if (len > *max) *max = len;
+  return len + fprintf(io, "%*s", *max - len, "");
+}
+
 // # Natives
 COMPILED_SOURCE(string);
 NATIVE_METHOD(String, string, 0) { return this; }
@@ -363,7 +368,7 @@ void hashString(Obj *obj, HashState *state) {
 int inspectString(Obj *obj, FILE *io, int depth) {
   ObjString *string = (ObjString *)obj;
   return fprintf(io, FG_GREEN) + fescapeString(io, string, depth) +
-         fprintf(io, FG_DEFAULT) - 10;
+         fprintf(io, FG_DEFAULT) - FG_SIZE * 2;
 }
 
 int dumpString(Obj *obj, FILE *io) {

@@ -1,5 +1,4 @@
 #include <assert.h>
-
 #include <stdlib.h>
 #include <string.h>
 
@@ -8,7 +7,6 @@
 #include "object.h"
 #include "string.h"
 #include "table.h"
-#include "term.h"
 
 #define TABLE_MAX_LOAD 0.75
 
@@ -236,8 +234,8 @@ void markTable(Table *table) {
 }
 
 int inspectTable(FILE *io, Table *table, int depth) {
-  int out = 0;
-  int idx = 0;
+  int out = 0, idx = 0;
+  int max_key = 0;
 
   if (!depth) out += fprintf(io, "(%d entries)\n\t", table->len);
 
@@ -248,7 +246,7 @@ int inspectTable(FILE *io, Table *table, int depth) {
 
     if (idx > 0) out += fprintf(io, ",%s", depth ? " " : "\n\t");
 
-    out += fprintf(io, " ") + inspectValue(io, entry->key, depth + 2) +
+    out += fpad(io, &max_key, inspectValue(io, entry->key, depth + 2)) +
            fprintf(io, " => ") + inspectValue(io, entry->value, depth + 1);
     idx++;
   }

@@ -410,7 +410,7 @@ InterpretResult vmGetGlobal(Value name) {
   if (!tableGet(&vm.globals, name, &value)) {
     if (isNil(value = getEnv(name)))
       if (!isString(name) || *asString(name)->chars != '$') {
-        fprintf(stderr, "\nvm.globals(%d): {\n\t", vm.globals.len);
+        fprintf(stderr, "\nvm.globals = {\n\t");
         inspectTable(stderr, &vm.globals, 0);
         fprintf(stderr, " }\n");
         return runtimeError("Cannot get undefined variable '%s'.",
