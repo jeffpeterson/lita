@@ -1,3 +1,4 @@
+#include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -12,18 +13,17 @@ Obj *allocateObject(const ObjDef *def) {
   Obj *obj = (Obj *)reallocate(NULL, 0, def->size);
   obj->def = def;
   obj->klass = NULL;
-  obj->next = NULL;
   obj->hash = 0;
   obj->isMarked = false;
+  obj->next = vm.objects;
+  vm.objects = obj;
 
   initTable(&obj->fields);
 
   if (!def->hash) {
-    obj->next = vm.objects;
-    vm.objects = obj;
     obj->hash = hashBytes(obj, def->size);
+    assert(obj->hash);
   }
-
   if (def->alloc) def->alloc(obj);
 
 #if DEBUG_LOG_MEM
@@ -46,18 +46,12 @@ Obj *internObject(Obj **objp) {
 
   obj->def->hash(obj, state);
   obj->hash = endHash(state);
+  assert(obj->hash);
 
   Obj *existing = tableFindObj(&vm.interned, obj->hash);
-  if (existing) {
-    obj = *objp = existing;
-    if (!obj->next) freeObject(obj);
-  } else {
-    if (obj->next == NULL) {
-      obj->next = vm.objects;
-      vm.objects = obj;
-    }
-    tableSet(&vm.interned, OBJ_VAL(obj), True);
-  }
+
+  if (existing) obj = *objp = existing;
+  else tableSet(&vm.interned, OBJ_VAL(obj), True);
 
   return obj;
 }

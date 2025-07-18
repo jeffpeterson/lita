@@ -155,6 +155,8 @@ Hash hashBytes(const void *data, usize length);
 HashState *startHash();
 void updateHash(HashState *state, const void *data, usize length);
 Hash endHash(HashState *state);
+
+/** Hashes the pointer address itself. */
 void hashPointer(const void *ptr, HashState *state);
 void hashValue(Value value, HashState *state);
 Hash valueHash(Value value);
