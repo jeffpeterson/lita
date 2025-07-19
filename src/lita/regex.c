@@ -21,7 +21,7 @@ ObjRegex *makeRegex(ObjString *source) {
     crash("pcre2_compile: %s", (char *)regex->error_message);
   }
 
-  // internObject((Obj **)&regex);
+  internObject((Obj **)&regex);
   return regex;
 }
 
