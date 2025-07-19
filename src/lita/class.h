@@ -21,5 +21,6 @@ extern const ObjDef Class;
 
 ObjClass *newClass(ObjString *name);
 Value class(const char *name);
+Value get_method(ObjClass *klass, ObjString *name);
 
 #endif

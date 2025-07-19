@@ -77,6 +77,7 @@ int main(int argc, char *argv[]) {
 
       setGlobal(string("$0"), OBJ_VAL(path));
       setGlobal(string("ARGV"), OBJ_VAL(args));
+      setGlobal(string("ARGS"), OBJ_VAL(args));
 
       runFile(path);
     } else if (!evaled) repl();

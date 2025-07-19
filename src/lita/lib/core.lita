@@ -4,8 +4,8 @@ class Any < nil
 	.string = inspect
 	.is?(v) = this == v
 
-	< (v)  = this <=> v < 0
-	> (v)  = this <=> v > 0
+	<  (v) = this <=> v < 0
+	>  (v) = this <=> v > 0
 	<= (v) = this <=> v <= 0
 	>= (v) = this <=> v >= 0
 

@@ -58,8 +58,21 @@ static InterpretResult callClass(Obj *obj, int argc) {
   return vmInvoke(string("init"), argc);
 }
 
+Value get_method(ObjClass *klass, ObjString *name) {
+  Value method;
+  if (tableGet(&klass->methods, OBJ_VAL(name), &method)) return method;
+
+  if (klass->parent) return get_method(klass->parent, name);
+
+  return NIL_VAL;
+}
+
 NATIVE_GETTER(Class, name, OBJ_VAL);
 NATIVE_GETTER(Class, parent, OBJ_VAL);
+
+NATIVE_METHOD(Class, method, 1) {
+  return get_method(asClass(this), asString(args[0]));
+}
 
 REGISTER_OBJECT_DEF(Class);
 const ObjDef Class = {

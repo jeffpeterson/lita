@@ -273,13 +273,10 @@ InterpretResult callValue(Value callee, int argc) {
 
 static InterpretResult invokeFromClass(ObjClass *klass, ObjString *name,
                                        int argCount) {
-  Value method;
-
-  if (!tableGet(&klass->methods, OBJ_VAL(name), &method)) {
-    if (klass->parent) return invokeFromClass(klass->parent, name, argCount);
-    else return INTERPRET_RUNTIME_ERROR;
-  }
-
+  Value method = get_method(klass, name);
+  if (isNil(method))
+    return runtimeError("Undefined method %s on %s.", inspectc(OBJ_VAL(name)),
+                        inspectc(OBJ_VAL(klass)));
   return callValue(method, argCount);
 }
 
@@ -311,12 +308,7 @@ InterpretResult vmInvoke(Value name, int argCount) {
     fprintf(stderr, "[TRACE] invoking %s.%s()\n", stringChars(klass->name),
             asChars(name));
 
-  if (invokeFromClass(klass, asString(name), argCount)) {
-    return runtimeError("Undefined method %s on %s.", asChars(inspect(name)),
-                        inspectc(OBJ_VAL(klass)));
-  }
-
-  return INTERPRET_OK;
+  return invokeFromClass(klass, asString(name), argCount);
 }
 
 static bool bindMethod(ObjClass *klass, ObjString *name) {
@@ -763,9 +755,8 @@ static InterpretResult vmRun() {
     case OP_SUPER_INVOKE: {
       ObjClass *superclass = asClass(pop());
 
-      if (!invokeFromClass(superclass, READ_STRING(), READ_BYTE()))
-        return INTERPRET_RUNTIME_ERROR;
-
+      if ((err = invokeFromClass(superclass, READ_STRING(), READ_BYTE())))
+        return err;
       SYNC_FRAME();
       break;
     }
