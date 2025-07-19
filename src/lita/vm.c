@@ -179,7 +179,9 @@ InterpretResult bootVM() {
 }
 
 void freeVM() {
+  freeTable(&vm.globals);
   freeTable(&vm.interned);
+  freeTable(&vm.keep);
   freeObjects();
 }
 

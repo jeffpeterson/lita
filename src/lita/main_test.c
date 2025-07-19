@@ -37,16 +37,18 @@ static void usage(int argc, char *argv[]) {
          "  -dd \t\tShow VM stack between REPL lines.\n"
          "  -ddd \t\tShow VM state between each executed op-code.\n"
          "  -dddd \tShow debug info as each token is parsed.\n"
+         "  -t \t\tEnable some tracing logs.\n"
          "  -h \t\tPrint this help.\n",
          argv[0]);
 }
 
 int main(int argc, char *argv[]) {
   int opt;
-  while ((opt = getopt(argc, argv, "Gdh")) != -1) {
+  while ((opt = getopt(argc, argv, "Gdth")) != -1) {
     switch (opt) {
     case 'G': config.stress_gc = true; break;
     case 'd': config.debug++; break;
+    case 't': config.tracing = true; break;
     case 'h': usage(argc, argv); exit(0);
     case '?': usage(argc, argv); exit(1);
     }
