@@ -91,6 +91,7 @@ $(TARGET)@%: $(DEV)
 $(TARGET): $(DEV) | assertions
 	-cp $@ $@-$(shell date -r $@ "+%Y-%m-%d-%H_%M_%S")
 	cp $< $@
+	cp $< $(TARGET)-ok
 
 $(TEST): $(TEST_O)
 	@mkdir -p $(dir $@)
@@ -111,10 +112,10 @@ _build/%.wasm.o: src/%.c $(HEADERS)
 # This recipe creates the circular dependency between the lita library and the
 # lita compiler.
 %.lita.c: %.lita $(NON_LITA_C) $(HEADERS)
-ifeq (,$(wildcard $(TARGET)))
-	@echo "Skipping $< until $(TARGET) exists."
+ifeq (,$(wildcard $(TARGET)-ok))
+	@echo "Skipping $< until $(TARGET)-ok exists."
 else
-	$(TARGET) -c $<
+	$(TARGET)-ok -c $<
 endif
 
 repl: $(DEV)
@@ -127,7 +128,7 @@ serve: html
 	python -m http.server 8000 --directory .bin
 
 clean:
-	-rm -f $(DEV) $(TEST) $(shell find _build -name "*.o")
+	-rm -f $(TARGET)-ok $(DEV) $(TEST) $(shell find _build -name "*.o")
 
 prune: tmp/pruned
 
