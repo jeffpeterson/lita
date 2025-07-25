@@ -31,6 +31,6 @@ void freeObject(Obj *obj);
 void freeObjects();
 
 void request_gc();
-void collectGarbage();
+int collect_garbage();
 
 #endif

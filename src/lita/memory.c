@@ -124,10 +124,7 @@ void freeObject(Obj *obj) {
 }
 
 static void markRoots() {
-  for (Value *slot = vm.stack; slot < vm.stackHigh; slot++) {
-    markValue(*slot);
-  }
-
+  for (Value *slot = vm.stack; slot < vm.stackHigh; slot++) markValue(*slot);
   for (int i = 0; i < vm.frameCount; i++) markObject((Obj *)vm.frames[i].obj);
 
   for (ObjUpvalue *upvalue = vm.openUpvalues; upvalue != NULL;
@@ -191,7 +188,7 @@ void request_gc() {
 #endif
 }
 
-void collectGarbage() {
+int collect_garbage() {
 #if DEBUG_LOG_GC
   fprintf(stderr, "-- gc begin\n");
   fprintf(stderr, "-- mark roots\n");
@@ -223,12 +220,15 @@ void collectGarbage() {
   sweep();
 
   vm.nextGC = vm.bytesAllocated * GC_HEAP_GROW_FACTOR;
+  int collected = before - vm.bytesAllocated;
 
 #if DEBUG_LOG_GC
   fprintf(stderr, "-- gc end\n");
   fprintf(stderr, "   collected %zu bytes (from %zu to %zu) next at %zu\n",
-          before - vm.bytesAllocated, before, vm.bytesAllocated, vm.nextGC);
+          collected, before, vm.bytesAllocated, vm.nextGC);
 #endif
+
+  return collected;
 }
 
 void freeObjects() {

@@ -43,6 +43,7 @@ NATIVE_FUNCTION(time, 0) { return number((double)time(NULL)); }
 NATIVE_FUNCTION(elapsed, 0) { return number(elapsed()); }
 NATIVE_FUNCTION(hash, 1) { return OBJ_VAL(stringf("%#x", valueHash(args[0]))); }
 NATIVE_FUNCTION(pp, 1) { return argc > 1 ? pp(t(argc, args)) : pp(args[0]); }
+NATIVE_FUNCTION(gc, 0) { return number(collect_garbage()); }
 
 NATIVE_METHOD(Any, class, 0) { return classOf(this); }
 NATIVE_METHOD(Any, inspect, 0) { return inspect(this); }
@@ -71,7 +72,7 @@ static int inspectNative(Obj *obj, FILE *io, int depth) {
   ObjNative *native = (ObjNative *)obj;
   return fprintf(io, FG_MAGENTA "<native %s/%d>" FG_DEFAULT,
                  stringChars(native->name), native->arity) -
-         FG_SIZE * 4;
+         FG_SIZE * 2;
 }
 
 static int nativeLength(Obj *obj) {
