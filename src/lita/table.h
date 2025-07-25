@@ -31,11 +31,10 @@ bool tableDelete(Table *table, Value key);
 void tableMerge(Table *from, Table *to);
 double tableInc(Table *table, Value key, double amt);
 
-Obj *tableFindObj(Table *table, Hash hash);
+Obj *table_find_hash(Table *table, Hash hash);
 
 ObjIterator *iterateTable(Table *table);
 
-void tableRemoveWhite(Table *table);
 void markTable(Table *table);
 int inspectTable(FILE *io, Table *table, int depth);
 void hashTable(HashState *state, Table *table);

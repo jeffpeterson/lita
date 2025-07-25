@@ -48,7 +48,7 @@ Obj *internObject(Obj **objp) {
   obj->hash = endHash(state);
   assert(obj->hash);
 
-  Obj *existing = tableFindObj(&vm.interned, obj->hash);
+  Obj *existing = table_find_hash(&vm.interned, obj->hash);
 
   if (existing) obj = *objp = existing;
   else tableSet(&vm.interned, OBJ_VAL(obj), True);

@@ -107,7 +107,7 @@ Value global(Value name) {
 }
 
 Value globalClass(const char *name) {
-  let vname = string(name);
+  let vname = keep(string(name));
   let klass = global(vname);
   if (!isClass(klass)) klass = setGlobal(vname, class(name));
   return klass;
@@ -284,11 +284,8 @@ static InterpretResult invokeFromClass(ObjClass *klass, ObjString *name,
 InterpretResult vmInvoke(Value name, int argCount) {
   Value receiver = peek(argCount);
 
-  // if (config.tracing) fstringFormat(stderr, "[TRACE] invoke: {} on ", name);
-
   if (config.tracing) {
-    fprintf(stderr, "[TRACE] vmInvoke(%s, %d) on: ", asString(name)->chars,
-            argCount),
+    fprintf(stderr, "[TRACE] vmInvoke(%s, %d) on: ", asChars(name), argCount),
         inspectValue(stderr, receiver, 1), fprintf(stderr, "\n");
   }
 
@@ -534,11 +531,10 @@ static InterpretResult vmRun() {
   } while (false)
 
   for (;;) {
+    if (vm.gc_requested) collect_garbage();
     if (DEBUG_TRACE_EXECUTION || config.debug >= 3) debugExecution();
 
     vm.stackHigh = vm.stackTop;
-
-    if (vm.gc_requested) collectGarbage();
 
     // TODO: move this to SYNC_FRAME or similar? Only need to check if
     // the frame has changed.

@@ -208,8 +208,6 @@ int collect_garbage() {
   fprintf(stderr, "-- remove white interned values\n");
 #endif
 
-  tableRemoveWhite(&vm.interned);
-
 #if DEBUG_LOG_GC
   fprintf(stderr, "-- sweep\n");
 #endif

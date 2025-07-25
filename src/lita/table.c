@@ -186,7 +186,7 @@ ObjIterator *iterateTable(Table *table) {
   return iter;
 }
 
-Obj *tableFindObj(Table *table, Hash hash) {
+Obj *table_find_hash(Table *table, Hash hash) {
   if (table->total == 0) return NULL;
 
   u32 index =
@@ -207,21 +207,6 @@ Obj *tableFindObj(Table *table, Hash hash) {
 
     index = (index + 1) &
             (table->capacity - 1); // Optimized `% table->capacity` when 2^n
-  }
-}
-
-void tableRemoveWhite(Table *table) {
-  for (int i = 0; i < table->capacity; i++) {
-    Entry *entry = &table->entries[i];
-    if (isVoid(entry->key)) continue;
-    Obj *obj = asObject(entry->key);
-
-    if (!obj->isMarked) {
-#if DEBUG_LOG_GC
-      fprintf(stderr, "remove white %p %s\n", obj, obj->def->className);
-#endif
-      tableDelete(table, entry->key);
-    }
   }
 }
 
