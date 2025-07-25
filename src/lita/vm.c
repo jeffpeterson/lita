@@ -179,10 +179,10 @@ InterpretResult bootVM() {
 }
 
 void freeVM() {
+  freeObjects();
   freeTable(&vm.globals);
   freeTable(&vm.interned);
   freeTable(&vm.keep);
-  freeObjects();
 }
 
 Value push(Value value) {
@@ -594,16 +594,14 @@ static InterpretResult vmRun() {
       vmSwap(args & 0x0f, args >> 4);
       break;
     }
-    case OP_DEFAULT:
+    case OP_DEFAULT: {
+      let constant = READ_CONSTANT();
       if (isNil(peek(0))) {
         pop();
-        push(READ_CONSTANT());
-      } else {
-        // Skip constant byte.
-        frame->ip++;
+        push(constant);
       }
       break;
-
+    }
     case OP_RANGE: vmRange(); break;
     case OP_ARRAY: vmArray(as_num(READ_CONSTANT())); break;
     case OP_TUPLE: vmTuple(READ_BYTE()); break;

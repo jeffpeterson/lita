@@ -75,7 +75,10 @@ int inspectObject(FILE *io, Obj *obj, int depth) {
   if (depth > 10) return fprintf(io, "...");
   if (!obj) return fprintf(io, "nil");
   assert(obj->def);
+
   if (obj->def->inspect) return obj->def->inspect(obj, io, depth);
+  // + fprintf(io, "(%p, %llu)", obj, obj->hash);
+
   return fprintf(io, "%s(", stringChars(obj->klass->name)) +
          inspectTable(io, &obj->fields, depth) + fprintf(io, ")");
 }
