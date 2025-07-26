@@ -47,8 +47,8 @@ static void freeRegex(Obj *obj) {
 
 static int inspectRegex(Obj *obj, FILE *io, int depth) {
   ObjRegex *regex = (ObjRegex *)obj;
-  return fprintf(io, "`") + fprintf(io, "%s", regex->source->chars) +
-         fprintf(io, "`");
+  return fprintf(io, FG_RED "`") + fprintf(io, "%s", regex->source->chars) +
+         fprintf(io, "`" FG_DEFAULT) - FG_SIZE * 2;
 }
 
 static int dumpRegex(Obj *obj, FILE *io) {

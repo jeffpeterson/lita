@@ -12,9 +12,9 @@ typedef struct Entry {
 } Entry;
 
 typedef struct Table {
-  int len;      /** Number of entries stored. */
-  int total;    /** Total number of used entries, including tombstones. */
-  int capacity; /** Number of entries allocated. */
+  int len;      // Number of values stored.
+  int total;    // Total number of used entries, including tombstones.
+  int capacity; // Number of entries allocated.
   Entry *entries;
 } Table;
 

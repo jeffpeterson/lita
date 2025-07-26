@@ -47,6 +47,7 @@
 #define BG_WHITE "\e[47m"
 #define BG_SET "\e[48m"
 #define BG_DEFAULT "\e[49m"
+#define BG_SIZE sizeof(BG_DEFAULT)
 
 #define LINK(name, url) "\e]8;;" url "\e\\" name "\e]8;;\e\\"
 

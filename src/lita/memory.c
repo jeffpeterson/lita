@@ -189,13 +189,14 @@ void request_gc() {
 }
 
 int collect_garbage() {
+  usize before = vm.bytesAllocated;
+  vm.gc_requested = false;
+
 #if DEBUG_LOG_GC
   fprintf(stderr, "-- gc begin\n");
   fprintf(stderr, "-- mark roots\n");
 #endif
 
-  size_t before = vm.bytesAllocated;
-  vm.gc_requested = false;
   markRoots();
 
 #if DEBUG_LOG_GC
@@ -222,7 +223,7 @@ int collect_garbage() {
 
 #if DEBUG_LOG_GC
   fprintf(stderr, "-- gc end\n");
-  fprintf(stderr, "   collected %zu bytes (from %zu to %zu) next at %zu\n",
+  fprintf(stderr, "-- collected %i bytes (from %zu to %zu) next at %zu\n",
           collected, before, vm.bytesAllocated, vm.nextGC);
 #endif
 

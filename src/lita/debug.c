@@ -1,3 +1,4 @@
+#include <inttypes.h>
 #include <stdio.h>
 
 #include "debug.h"
@@ -305,4 +306,41 @@ int debugObject(Obj *obj) {
   sum += fprintf(stderr, ", className: %s) ", obj->def->className);
   sum += inspectObject(stderr, obj, 0);
   return sum;
+}
+
+int debugTable(Table *table) {
+  int out = 0;
+
+  out += fprintf(stderr, "Table(capacity: %d, len: %d)\n", table->capacity,
+                 table->len);
+  out += fprintf(stderr, "Entries:\n");
+
+  for (int i = 0; i < table->capacity; i++) {
+    Entry *entry = &table->entries[i];
+    out += fprintf(stderr, "[%d] ", i);
+    out += inspectValue(stderr, entry->key, 1);
+    out += fprintf(stderr, " => ");
+    out += inspectValue(stderr, entry->value, 1);
+
+    if (isVoid(entry->key)) {
+      if (isNil(entry->value)) out += fprintf(stderr, " (empty)");
+      else out += fprintf(stderr, " (tombstone)");
+    }
+
+    out += fprintf(stderr, "\n");
+  }
+
+  return out;
+}
+
+int debugValueTable() {
+  return fprintf(stderr,
+                 "VOID_VAL  =  %" PRId64 "\n"
+                 "FALSE_VAL =  %" PRId64 "\n"
+                 "TRUE_VAL  =  %" PRId64 "\n"
+                 "NIL_VAL   = %" PRId64 "\n"
+                 "OBJ_VAL   | %" PRId64 "\n"
+                 "AS_OBJ    &  %" PRId64 "\n",
+                 VOID_VAL, FALSE_VAL, TRUE_VAL, NIL_VAL, TAG_OBJ | QNAN,
+                 ~(TAG_OBJ | QNAN));
 }

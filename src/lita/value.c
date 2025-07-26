@@ -54,7 +54,7 @@ int inspectValue(FILE *io, Value val, int depth) {
     return fprintf(io, FG_YELLOW "%s" FG_DEFAULT,
                    AS_BOOL(val) ? "true" : "false") -
            FG_SIZE * 2;
-  case VOID: return fprintf(io, FG_RED "void" FG_DEFAULT) - FG_SIZE * 2;
+  case VOID: return fprintf(io, BG_MAGENTA "VOID" BG_DEFAULT) - BG_SIZE * 2;
   case nil: return fprintf(io, FG_MAGENTA "nil" FG_DEFAULT) - FG_SIZE * 2;
   default: break;
   }

@@ -274,4 +274,9 @@ foo.x = 5
 assert foo.x == 5
 // assert foo.x' == 2
 
+let i = 0
+while i < 10000
+	i += 1
+	assert "x"i == "x"i
+
 write "Assertions passed!\n".green

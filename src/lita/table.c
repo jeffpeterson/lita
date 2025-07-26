@@ -94,18 +94,25 @@ bool tableGet(Table *table, Value key, Value *value) {
 }
 
 bool tableSet(Table *table, Value key, Value value) {
-  if (table->total + 1 > table->capacity * TABLE_MAX_LOAD) {
-    int capacity = GROW_CAPACITY(table->capacity);
+  // We use ->total to also consider tombstones. Tombstones cause slowdown and
+  // adjustCapacity() removes them.
+  int capacity = table->capacity;
+  if (table->total + 1 > capacity * TABLE_MAX_LOAD) {
+    if (table->len + 1 > capacity * TABLE_MAX_LOAD)
+      capacity = GROW_CAPACITY(capacity);
     adjustCapacity(table, capacity);
   }
 
   Entry *entry = findEntry(table->entries, table->capacity, key);
-  bool isNewKey = isVoid(entry->key);
-  if (isNewKey && isNil(entry->value)) table->total++, table->len++;
+  bool is_new_key = isVoid(entry->key);
+  if (is_new_key) {
+    table->len++;
+    if (isNil(entry->value)) table->total++;
+  }
 
   entry->key = key;
   entry->value = value;
-  return isNewKey;
+  return is_new_key;
 }
 
 /** Increment the value at `key` by `amt`. */
@@ -222,7 +229,7 @@ int inspectTable(FILE *io, Table *table, int depth) {
   int out = 0, idx = 0;
   int max_key = 0;
 
-  if (!depth) out += fprintf(io, "(%d entries)\n\t", table->len);
+  if (!depth) out += fprintf(io, "(%d values)\n\t", table->len);
 
   for (int i = 0; i < table->capacity; i++) {
     Entry *entry = &table->entries[i];

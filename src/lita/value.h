@@ -19,18 +19,20 @@ typedef enum ValueType {
 
 #if NAN_BOXING
 
+typedef i64 Value;
+
 // v-- ptr tag   vv-- spare bit 1 and 2
 // ?11111111111qi?????????????????????????????????????????????????? QNAN
 // |  quiet ---^|^---------- 50 mantisa bits ---------------------^
 // ^- sign bit  ^- Intel FP Indef.
 
 /** Set when a Value is not a number. */
-#define QNAN ((u64)0x7ffc000000000000)
+#define QNAN ((Value)0x7ffc000000000000)
 
 /** Set only for objects. */
-#define SIGN_BIT ((u64)0x8000000000000000)
-#define SPARE_BIT_1 ((u64)0x2000000000000)
-#define SPARE_BIT_2 ((u64)0x1000000000000)
+#define SIGN_BIT ((Value)0x8000000000000000)
+#define SPARE_BIT_1 ((Value)0x2000000000000)
+#define SPARE_BIT_2 ((Value)0x1000000000000)
 
 #define TAG_PTR SIGN_BIT
 #define TAG_OBJ (TAG_PTR | SPARE_BIT_1)
@@ -41,20 +43,18 @@ typedef enum ValueType {
 #define TAG_FALSE 4 // 100.
 #define TAG_TRUE 5  // 101.
 
-typedef u64 Value;
-
 #define AS_BOOL(val) ((val) == TRUE_VAL)
 #define AS_NUMBER(val) valueToNum(val)
 #define AS_OBJ(val) ((Obj *)(uptr)((val) & ~(TAG_OBJ | QNAN)))
 
 #define BOOL_VAL(b) ((b) ? TRUE_VAL : FALSE_VAL)
-#define FALSE_VAL ((Value)(u64)(QNAN | TAG_FALSE))
-#define TRUE_VAL ((Value)(u64)(QNAN | TAG_TRUE))
+#define FALSE_VAL ((Value)(QNAN | TAG_FALSE))
+#define TRUE_VAL ((Value)(QNAN | TAG_TRUE))
 #define NIL_VAL OBJ_VAL(NULL)
 /** Used internally. Not accessible from language. */
-#define VOID_VAL ((Value)(u64)(QNAN | TAG_VOID))
+#define VOID_VAL ((Value)(QNAN | TAG_VOID))
 #define NUMBER_VAL(num) doubleToValue(num)
-#define OBJ_VAL(obj) (Value)(TAG_OBJ | QNAN | (u64)(uptr)(obj))
+#define OBJ_VAL(obj) (Value)(TAG_OBJ | QNAN | (Value)(uptr)(obj))
 
 #define isBool(val) (((val) | 1) == TRUE_VAL)
 #define isTrue(val) ((val) == TRUE_VAL)
