@@ -295,7 +295,7 @@ int fpad(FILE *io, int *max, int len) {
   return len + fprintf(io, "%*s", *max - len, "");
 }
 
-ObjString *string_inc(ObjString *str) {
+ObjString *incString(ObjString *str) {
   if (str->length == 0) return str;
 
   char *out = ALLOCATE(char, str->length + 1);
@@ -315,7 +315,7 @@ ObjString *string_inc(ObjString *str) {
   return takeString(out, str->length);
 }
 
-ObjString *string_dec(ObjString *str) {
+ObjString *decString(ObjString *str) {
   if (str->length == 0) return str;
 
   char *out = ALLOCATE(char, str->length + 1);
@@ -367,8 +367,8 @@ NATIVE_METHOD(String, codePointSize, 0) {
   if (str->length == 0) return NIL_VAL;
   return NUMBER_VAL(utfBytes(str->chars));
 }
-NATIVE_METHOD(String, inc, 0) { return OBJ_VAL(string_inc(asString(this))); }
-NATIVE_METHOD(String, dec, 0) { return OBJ_VAL(string_dec(asString(this))); }
+NATIVE_METHOD(String, inc, 0) { return OBJ_VAL(incString(asString(this))); }
+NATIVE_METHOD(String, dec, 0) { return OBJ_VAL(decString(asString(this))); }
 NATIVE_METHOD(String, slice, 2) {
   ObjString *str = asString(this);
   int start = asInt(args[0]);
