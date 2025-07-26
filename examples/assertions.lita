@@ -103,6 +103,8 @@ assert 2b == 8
 assert 9.clamp(1, 5) == 5
 assert 3.clamp(4, 8) == 4
 assert 3.clamp(1, 5) == 3
+assert 3.inc == 4
+assert 3.dec == 2
 
 // Strings
 assert "Strings"

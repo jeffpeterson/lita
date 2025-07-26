@@ -53,6 +53,9 @@ NATIVE_METHOD_NAMED(Any, eql, "==", 1) {
 }
 NATIVE_METHOD(Any, hash, 0) { return OBJ_VAL(stringf("%#x", valueHash(this))); }
 
+NATIVE_METHOD(Number, inc, 0) { return NUMBER_VAL(asNumber(this) + 1); }
+NATIVE_METHOD(Number, dec, 0) { return NUMBER_VAL(asNumber(this) - 1); }
+
 NATIVE_METHOD_NAMED(Number, spaceship, "<=>", 1) {
   return asNumber(this) - asNumber(args[0]);
 }
