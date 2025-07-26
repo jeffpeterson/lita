@@ -7,17 +7,17 @@
 #define isIterator(val) isObjDef(val, &Iterator)
 #define asIterator(val) as(Iterator, val)
 
+typedef void IteratorNext(struct ObjIterator *iter);
+
 typedef struct ObjIterator {
   Obj obj;
-
-  Value state; /** Internal state for the iterator. */
-  void (*next)(struct ObjIterator *iter); /** Advance the iterator. */
-
-  Value *current; /** Current iterated set of values. */
-  int size;       /** Size of the current set of values. */
-  int index;      /** Which iteration is this? Starting at 0 */
-  int total;      /** Total number of iterations. -1 if unknown. */
-  bool done;      /** True if the iteration is ended. */
+  Value state;        // Internal state for the iterator.
+  IteratorNext *next; // Advance the iterator.
+  Value *current;     // Current iterated set of values.
+  int size;           // Size of the current set of values.
+  int index;          // Which iteration is this? Starting at 0
+  int length;         // Total number of iterations. -1 if unknown.
+  bool done;          // True if the iteration is ended.
 } ObjIterator;
 
 extern const ObjDef Iterator;

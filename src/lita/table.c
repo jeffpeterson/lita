@@ -156,7 +156,7 @@ static ObjIterator *iterateTableEntries(Table *table) {
   ObjIterator *iter = allocateIterator();
 
   iter->size = 2;
-  iter->total = table->capacity;
+  iter->length = table->capacity;
   iter->current = (Value *)table->entries;
   iter->next = iterateTableEntriesNext;
   iter->done = table->capacity == 0;
@@ -185,7 +185,7 @@ ObjIterator *iterateTable(Table *table) {
 
   iter->state = OBJ_VAL(entries);
   iter->size = 2;
-  iter->total = table->len;
+  iter->length = table->len;
   iter->current = (Value *)table->entries;
   iter->next = iterateTableNext;
   iter->done = table->len == 0;

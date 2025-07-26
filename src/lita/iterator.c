@@ -1,6 +1,17 @@
 #include "iterator.h"
 #include "memory.h"
 
+bool iterateNext(ObjIterator *iter) {
+  if (iter->done) return false;
+
+  if (++iter->index > 0) {
+    if (iter->length < 0 || iter->index < iter->length) iter->next(iter);
+    else iter->done = true;
+  }
+
+  return !iter->done;
+}
+
 static void freeIterator(Obj *obj) {
   ObjIterator *iter = (ObjIterator *)obj;
   iter->done = true;
@@ -16,26 +27,15 @@ static void markIterator(Obj *obj) {
 
 static int iteratorLength(Obj *obj) { return ((ObjIterator *)obj)->size; }
 
-void allocIterator(Obj *obj) {
+static void allocIterator(Obj *obj) {
   ObjIterator *iter = (ObjIterator *)obj;
   iter->state = NIL_VAL;
   iter->next = NULL;
   iter->current = NULL;
   iter->size = 0;
   iter->index = 0;
-  iter->total = -1;
+  iter->length = -1;
   iter->done = true;
-}
-
-bool iterateNext(ObjIterator *iter) {
-  if (iter->done) return false;
-
-  if (++iter->index > 0) {
-    if (iter->total < 0 || iter->index < iter->total) iter->next(iter);
-    else iter->done = true;
-  }
-
-  return !iter->done;
 }
 
 REGISTER_OBJECT_DEF(Iterator);
