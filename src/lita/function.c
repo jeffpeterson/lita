@@ -50,7 +50,7 @@ static int dumpFunction(Obj *obj, FILE *io) {
 
   if (tableGet(&ids, OBJ_VAL(obj), &id))
     return fprintf(io, "fn_%s_%g()", stringToCIdent(fun->name)->chars,
-                   as_num(id));
+                   asNumber(id));
   else return fprintf(io, "crash(\"Could not find fn %s\")", fun->name->chars);
 }
 

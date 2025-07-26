@@ -603,7 +603,7 @@ static InterpretResult vmRun() {
       break;
     }
     case OP_RANGE: vmRange(); break;
-    case OP_ARRAY: vmArray(as_num(READ_CONSTANT())); break;
+    case OP_ARRAY: vmArray(asNumber(READ_CONSTANT())); break;
     case OP_TUPLE: vmTuple(READ_BYTE()); break;
 
     case OP_DEFINE_GLOBAL: tableSet(&vm.globals, READ_CONSTANT(), pop()); break;

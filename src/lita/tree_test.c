@@ -13,12 +13,12 @@ void tree_test() {
 
   assert(treeSet(&a, number(5), number(55)));
   assert(treeGet(&a, number(5), &v));
-  assert(as_num(v) == 55);
+  assert(asNumber(v) == 55);
   assert(a.count == 1);
 
   assert(!treeSet(&a, number(5), number(555)));
   assert(treeGet(&a, number(5), &v));
-  assert(as_num(v) == 555);
+  assert(asNumber(v) == 555);
   assert(a.count == 1);
 
   // assert(treeSet(&a, num(6), num(66)));

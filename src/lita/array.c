@@ -76,12 +76,12 @@ static int inspectArray(Obj *obj, FILE *io, int depth) {
 
 // NATIVE_METHOD(Array, init, 0) {
 //   ObjArray *arr = asArray(this);
-//   for (int i = 0; i < argc; i++) append_array(arr, args[i]);
+//   for (int i = 0; i < argc; i++) appendArray(arr, args[i]);
 //   return this;
 // }
 NATIVE_METHOD(Array, get, 1) {
   ObjArray *arr = asArray(this);
-  u32 idx = as_num(args[0]);
+  u32 idx = asNumber(args[0]);
   if (idx >= arr->length) return nil;
 
   return arr->values[idx];
@@ -103,8 +103,8 @@ NATIVE_METHOD(Array, push, 0) {
 }
 NATIVE_METHOD(Array, slice, 0) {
   ObjArray *arr = asArray(this);
-  int start = argc > 0 ? as_num(args[0]) : 0;
-  int len = argc > 1 ? as_num(args[1]) : arr->length - start;
+  int start = argc > 0 ? asNumber(args[0]) : 0;
+  int len = argc > 1 ? asNumber(args[1]) : arr->length - start;
   return OBJ_VAL(copyArray(arr->values + start, len));
 }
 

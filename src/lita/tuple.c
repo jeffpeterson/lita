@@ -57,7 +57,7 @@ NATIVE_METHOD_NAMED(Tuple, add, "+", 1) {
 
 NATIVE_METHOD(Tuple, get, 1) {
   ObjTuple *tuple = asTuple(this);
-  u32 idx = as_num(args[0]);
+  u32 idx = asNumber(args[0]);
   if (idx >= tuple->length) return nil;
   return tuple->values[idx];
 }

@@ -161,7 +161,6 @@ void hashPointer(const void *ptr, HashState *state);
 void hashValue(Value value, HashState *state);
 Hash valueHash(Value value);
 
-#define as_num(v) asNumber(v)
 double asNumber(Value v);
 static inline int asInt(Value v) { return AS_NUMBER(v); }
 static inline bool isInt(Value v) {
