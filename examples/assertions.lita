@@ -151,6 +151,12 @@ assert "HTTP".underscore		== "http"
 assert "HTTPMethod".underscore	== "http_method"
 assert "CamelCase".dasherize	== "camel-case"
 
+assert "abc".inc == "abd"
+assert "XYZ".inc == "XZA"
+assert  "19".inc == "20"
+// assert  pp("99".inc) == "100"
+assert "abc".dec == "abb"
+
 // Regular Expressions
 assert `[a-z]`
 

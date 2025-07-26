@@ -295,6 +295,46 @@ int fpad(FILE *io, int *max, int len) {
   return len + fprintf(io, "%*s", *max - len, "");
 }
 
+ObjString *string_inc(ObjString *str) {
+  if (str->length == 0) return str;
+
+  char *out = ALLOCATE(char, str->length + 1);
+  memcpy(out, str->chars, str->length);
+  out[str->length] = '\0';
+
+  for (int i = str->length - 1; i >= 0; i--) {
+    if (out[i] == 'z') out[i] = 'a';
+    else if (out[i] == 'Z') out[i] = 'A';
+    else if (out[i] == '9') out[i] = '0';
+    else {
+      out[i]++;
+      break;
+    }
+  }
+
+  return takeString(out, str->length);
+}
+
+ObjString *string_dec(ObjString *str) {
+  if (str->length == 0) return str;
+
+  char *out = ALLOCATE(char, str->length + 1);
+  memcpy(out, str->chars, str->length);
+  out[str->length] = '\0';
+
+  for (int i = str->length - 1; i >= 0; i--) {
+    if (out[i] == 'a') out[i] = 'z';
+    else if (out[i] == 'A') out[i] = 'Z';
+    else if (out[i] == '0') out[i] = '9';
+    else {
+      out[i]--;
+      break;
+    }
+  }
+
+  return takeString(out, str->length);
+}
+
 // # Natives
 COMPILED_SOURCE(string);
 NATIVE_METHOD(String, string, 0) { return this; }
@@ -327,6 +367,8 @@ NATIVE_METHOD(String, codePointSize, 0) {
   if (str->length == 0) return NIL_VAL;
   return NUMBER_VAL(utfBytes(str->chars));
 }
+NATIVE_METHOD(String, inc, 0) { return OBJ_VAL(string_inc(asString(this))); }
+NATIVE_METHOD(String, dec, 0) { return OBJ_VAL(string_dec(asString(this))); }
 NATIVE_METHOD(String, slice, 2) {
   ObjString *str = asString(this);
   int start = asInt(args[0]);
