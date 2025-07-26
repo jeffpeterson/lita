@@ -187,7 +187,7 @@ ObjString *stringToCIdent(ObjString *str) {
     case '`': fputs("_backtick_", io); break;
     case '.': fputs("_dot_", io); break;
     case ':': fputs("_colon_", io); break;
-    case '#': fputs("_bang_", io); break;
+    case '#': fputs("_hash_", io); break;
     case ';': fputs("_semi_", io); break;
     case '?': fputs("_question_", io); break;
 
