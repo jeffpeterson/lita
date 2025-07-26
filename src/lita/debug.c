@@ -312,7 +312,7 @@ int debugTable(Table *table) {
   int out = 0;
 
   out += fprintf(stderr, "Table(capacity: %d, len: %d)\n", table->capacity,
-                 table->len);
+                 table->length);
   out += fprintf(stderr, "Entries:\n");
 
   for (int i = 0; i < table->capacity; i++) {

@@ -11,7 +11,7 @@
 #define TABLE_MAX_LOAD 0.75
 
 void initTable(Table *table) {
-  table->len = 0;
+  table->length = 0;
   table->total = 0;
   table->capacity = 0;
   table->entries = NULL;
@@ -75,7 +75,7 @@ static void adjustCapacity(Table *table, int capacity) {
   FREE_ARRAY(Entry, table->entries, table->capacity);
   table->entries = entries;
   table->capacity = capacity;
-  table->total = table->len;
+  table->total = table->length;
 }
 
 bool tableHas(Table *table, Value key) {
@@ -84,7 +84,7 @@ bool tableHas(Table *table, Value key) {
 }
 
 bool tableGet(Table *table, Value key, Value *value) {
-  if (table->len == 0) return false;
+  if (table->length == 0) return false;
 
   Entry *entry = findEntry(table->entries, table->capacity, key);
   if (isVoid(entry->key)) return false;
@@ -98,7 +98,7 @@ bool tableSet(Table *table, Value key, Value value) {
   // adjustCapacity() removes them.
   int capacity = table->capacity;
   if (table->total + 1 > capacity * TABLE_MAX_LOAD) {
-    if (table->len + 1 > capacity * TABLE_MAX_LOAD)
+    if (table->length + 1 > capacity * TABLE_MAX_LOAD)
       capacity = GROW_CAPACITY(capacity);
     adjustCapacity(table, capacity);
   }
@@ -106,7 +106,7 @@ bool tableSet(Table *table, Value key, Value value) {
   Entry *entry = findEntry(table->entries, table->capacity, key);
   bool is_new_key = isVoid(entry->key);
   if (is_new_key) {
-    table->len++;
+    table->length++;
     if (isNil(entry->value)) table->total++;
   }
 
@@ -126,7 +126,7 @@ double tableInc(Table *table, Value key, double amt) {
 }
 
 bool tableDelete(Table *table, Value key) {
-  if (table->len == 0) return false;
+  if (table->length == 0) return false;
 
   // Find the entry.
   Entry *entry = findEntry(table->entries, table->capacity, key);
@@ -135,7 +135,7 @@ bool tableDelete(Table *table, Value key) {
   // Place a tombstone in the entry.
   entry->key = VOID_VAL;
   entry->value = BOOL_VAL(true);
-  table->len--;
+  table->length--;
   return true;
 }
 
@@ -185,10 +185,10 @@ ObjIterator *iterateTable(Table *table) {
 
   iter->state = OBJ_VAL(entries);
   iter->size = 2;
-  iter->length = table->len;
+  iter->length = table->length;
   iter->current = (Value *)table->entries;
   iter->next = iterateTableNext;
-  iter->done = table->len == 0;
+  iter->done = table->length == 0;
 
   return iter;
 }
@@ -229,7 +229,7 @@ int inspectTable(FILE *io, Table *table, int depth) {
   int out = 0, idx = 0;
   int max_key = 0;
 
-  if (!depth) out += fprintf(io, "(%d values)\n\t", table->len);
+  if (!depth) out += fprintf(io, "(%d values)\n\t", table->length);
 
   for (int i = 0; i < table->capacity; i++) {
     Entry *entry = &table->entries[i];

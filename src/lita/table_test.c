@@ -15,15 +15,15 @@ void table_test() {
   Table table;
   initTable(&table);
 
-  assert(table.len == 0);
+  assert(table.length == 0);
 
   assertGetSet(number(5), number(55));
   assertGetSet(number(5), number(555));
-  assert(table.len == 1);
+  assert(table.length == 1);
 
   assertGetSet(number(5), string("55"));
-  assert(table.len == 1);
+  assert(table.length == 1);
 
   assertGetSet(string("foo"), string("bar"));
-  assert(table.len == 2);
+  assert(table.length == 2);
 }

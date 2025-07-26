@@ -46,7 +46,7 @@ static int inspectAtom(Obj *obj, FILE *io, int depth) {
 static int dumpAtom(Obj *obj, FILE *io) {
   ObjAtom *atom = (ObjAtom *)obj;
   ObjIterator *iter = iterateTable(&atom->values);
-  int len = atom->values.len;
+  int len = atom->values.length;
   int tot = fprintf(io, "atom(%d", len);
 
   while (iterateNext(iter)) {
