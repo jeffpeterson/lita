@@ -499,7 +499,7 @@ ObjFunction *toFunction(Obj *obj) {
   return NULL;
 }
 
-static InterpretResult vmRun() {
+static InterpretResult runVM() {
   if (vm.frameCount == 0) return runtimeError("No function to run.");
   if (vm.frameCount > 1) return runtimeError("VM already running.");
 
@@ -531,7 +531,7 @@ static InterpretResult vmRun() {
   } while (false)
 
   for (;;) {
-    if (vm.gc_requested) collect_garbage();
+    if (vm.requestedGC) collect_garbage();
     if (DEBUG_TRACE_EXECUTION || config.debug >= 3) debugExecution();
 
     vm.stackHigh = vm.stackTop;
@@ -583,8 +583,8 @@ static InterpretResult vmRun() {
     case OP_CONSTANT: push(READ_CONSTANT()); break;
 
     case OP_NIL: push(NIL_VAL); break;
-    case OP_TRUE: push(BOOL_VAL(true)); break;
-    case OP_FALSE: push(BOOL_VAL(false)); break;
+    case OP_TRUE: push(TRUE_VAL); break;
+    case OP_FALSE: push(FALSE_VAL); break;
 
     case OP_PEEK: push(peek(READ_BYTE())); break;
     case OP_POP: pop(); break;
@@ -842,7 +842,7 @@ static InterpretResult vmRun() {
 
 static InterpretResult runClosure(ObjClosure *closure) {
   push(OBJ_VAL(closure));
-  return vmCall(0) || vmRun();
+  return vmCall(0) || runVM();
 }
 
 InterpretResult runFunction(ObjFunction *fun) {

@@ -56,7 +56,7 @@ typedef struct VM {
   int grayCapacity;      // Capacity allocated for `grayStack`.
   size_t bytesAllocated; // Total memory we have allocated.
   size_t nextGC;         // Threshold to trigger the next GC.
-  int gc_requested;      // GC has been requested.
+  int requestedGC;       // GC has been requested.
 } VM;
 
 extern VM vm;

@@ -181,7 +181,7 @@ static void sweep() {
 }
 
 void request_gc() {
-  vm.gc_requested = true;
+  vm.requestedGC = true;
 
 #if DEBUG_LOG_GC
   fprintf(stderr, "-- gc requested\n");
@@ -190,7 +190,7 @@ void request_gc() {
 
 int collect_garbage() {
   usize before = vm.bytesAllocated;
-  vm.gc_requested = false;
+  vm.requestedGC = false;
 
 #if DEBUG_LOG_GC
   fprintf(stderr, "-- gc begin\n");
