@@ -28,7 +28,7 @@ let method(let klass, let fun) {
   return fun;
 }
 
-let static_method(let klass, let fun) {
+let staticMethod(let klass, let fun) {
   assert(isClass(klass));
   let key = name(fun);
   set(klass, key, fun);
@@ -80,7 +80,10 @@ let find(let self, let key) {
 
 bool has(let self, let key) { return !isNil(find(self, key)); }
 let get(let self, let key) { return bindFn(self, find(self, key)); }
-let set(let self, let key, let value) { return crash("Not implemented."); }
+let set(let self, let key, let value) {
+  tableSet(&asObject(self)->fields, key, value);
+  return self;
+}
 
 let name(let fn) {
   return isClass(fn)      ? obj(asClass(fn)->name)

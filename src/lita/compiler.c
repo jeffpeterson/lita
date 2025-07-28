@@ -1068,12 +1068,15 @@ static void string_(Ctx *ctx) {
   emitConstant(OBJ_VAL(str));
 }
 
-static void symbol(Ctx *ctx) {
-  advance();
-  Token token = parser.previous;
+static void emitTokenLiteral(Token token) {
   ObjString *str = copyString(token.start, token.length);
   if (token.escaped) str = unescapeString(str);
   emitConstant(OBJ_VAL(str));
+}
+
+static void symbol(Ctx *ctx) {
+  advance();
+  emitTokenLiteral(parser.previous);
 }
 
 /**
@@ -1316,6 +1319,31 @@ static void method() {
 //   block();
 //   endScope();
 // }
+
+static void objectLiteral(Ctx *ctx) {
+  namedVariable(syntheticToken("Object"), ctx);
+  int pairs = 0;
+  do {
+    if (check(TOKEN_RIGHT_BRACE)) break;
+    Token key = parser.current;
+    if (match(TOKEN_IDENTIFIER) && match(TOKEN_COLON)) {
+      emitTokenLiteral(key);
+    } else {
+      if (!parseAbove(PREC_COMMA))
+        error("Expect expression as key in object literal.");
+      consume(TOKEN_FAT_ARROW, "Expect '=>' after key in object literal.");
+    }
+
+    if (!parseAbove(PREC_COMMA))
+      error("Expect expression as value in object literal.");
+    pairs++;
+  } while (match(TOKEN_COMMA));
+
+  consume(TOKEN_RIGHT_BRACE, "Expect '}' after object literal.");
+  emitByte(OP_INVOKE);
+  emitLong(makeConstant(string("literal")));
+  emitByte(pairs * 2);
+}
 
 static void classDeclaration(Ctx *ctx) {
   Value name = consumeIdent("Expect class name.");
@@ -1752,6 +1780,7 @@ ParseRule rules[] = {
 
     [TOKEN_DOT] = {dotSugar, dot, PREC_DOT},
 
+    [TOKEN_LEFT_BRACE] = {objectLiteral, NULL, PREC_CALL},
     [TOKEN_LEFT_PAREN] = {grouping, call, PREC_CALL},
     [TOKEN_NEWLINE] = {NULL, newline, PREC_NEWLINE},
     // [TOKEN_INDENT] = {NULL, indent, PREC_PRIMARY},

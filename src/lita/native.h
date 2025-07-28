@@ -33,7 +33,7 @@ typedef struct NativeMethod {
   const char *name;
   int arity;
   NativeFn *fun;
-  bool is_static;
+  bool isStatic;
 } NativeMethod;
 
 typedef struct BootFunction {
@@ -92,11 +92,11 @@ typedef struct BootFunction {
   }
 
 #define STATIC_METHOD_NAMED(klass, attr, name, arity)                          \
-  static Value klass_static##_##attr(Value this, int argc, Value *args);       \
-  static NativeMethod SECTION(natives) klass##_##attr##_native = {             \
-      #klass, name, arity, klass##_##attr, true,                               \
+  static Value klass##_static_##attr(Value this, int argc, Value *args);       \
+  static NativeMethod SECTION(natives) klass##_static_##attr##_native = {      \
+      #klass, name, arity, klass##_static_##attr, true,                        \
   };                                                                           \
-  static Value klass_static##_##attr(Value this, int argc, Value *args)
+  static Value klass##_static_##attr(Value this, int argc, Value *args)
 
 #define STATIC_METHOD(klass, attr, arity)                                      \
   STATIC_METHOD_NAMED(klass, attr, #attr, arity)

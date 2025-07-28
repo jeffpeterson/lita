@@ -195,6 +195,9 @@ assert [1, 2, 3].sample
 assert [1, 2] < [1, 2, 3]
 assert [1, 2, 3].find(.even?) == 2
 
+// Objects
+assert {a: 1, b: 2}
+
 // Instances
 class Point(x, y)
 	fn magnitude = (x + y)

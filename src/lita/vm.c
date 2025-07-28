@@ -147,7 +147,7 @@ static InterpretResult defineNatives() {
 
     if (native->className) {
       let klass = globalClass(native->className);
-      if (native->is_static) static_method(klass, fun);
+      if (native->isStatic) staticMethod(klass, fun);
       else method(klass, fun);
     } else setGlobal(string(native->name), fun);
   }

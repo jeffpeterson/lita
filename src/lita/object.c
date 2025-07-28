@@ -5,6 +5,7 @@
 
 #include "class.h"
 #include "memory.h"
+#include "native.h"
 #include "object.h"
 #include "table.h"
 #include "vm.h"
@@ -94,6 +95,15 @@ int cmpObjects(Obj *a, Obj *b) {
   return a - b;
 }
 
+STATIC_METHOD(Object, literal, 0) {
+  Obj *obj = newInstance(asClass(globalClass("Object")));
+  for (int i = 0; i < argc; i++) {
+    let key = args[i++];
+    tableSet(&obj->fields, key, args[i]);
+  }
+  return OBJ_VAL(obj);
+}
+
 // Value init_obj(Value klass, int argc, Value *args) {
 //   if (!isClass(klass)) return NIL_VAL;
 
@@ -106,6 +116,7 @@ int cmpObjects(Obj *a, Obj *b) {
 //   return call(init, obj, argc, args);
 // }
 
+REGISTER_OBJECT_DEF(Object);
 const ObjDef Object = {
     .className = "Object",
     .size = sizeof(Obj),

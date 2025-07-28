@@ -24,6 +24,6 @@ let set(let self, let key, let value);
 let name(let fn);
 
 let method(let klass, let fun);
-let static_method(let klass, let fun);
+let staticMethod(let klass, let fun);
 
 #endif
