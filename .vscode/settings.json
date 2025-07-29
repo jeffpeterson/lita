@@ -1,5 +1,5 @@
 {
-  "C_Cpp.default.includePath": ["src"],
+  "C_Cpp.default.includePath": ["src", "include", "include/hamt"],
   "C_Cpp.default.compilerArgs": ["-Wall", "-Werror"],
   "C_Cpp.errorSquiggles": "enabled",
   "C_Cpp.loggingLevel": "Warning",

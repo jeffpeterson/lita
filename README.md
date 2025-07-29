@@ -26,3 +26,9 @@ Start the debugger with: `make db/<example>` E.g. `make db/basics`
 | `v`   | `var`   | Show variables in current frame. |
 | `p`   | `print` | Evaluate an expression.          |
 | `q`   | `quit`  | Quit the debugger.               |
+
+
+## Links
+
+- [HAMT](https://github.com/mkirchner/hamt)
+- [Boehm-Demers-Weiser garbage collector](https://www.hboehm.info/gc/)

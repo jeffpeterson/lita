@@ -16,6 +16,7 @@
 
 void pcre2_test();
 void xxhash_test();
+void hamt_test();
 
 void buffer_test();
 void chunk_test();
@@ -59,6 +60,7 @@ int main(int argc, char *argv[]) {
   fprintf(stderr, "\n");
   run(pcre2_test);
   run(xxhash_test);
+  run(hamt_test);
 
   run(value_test);
   run(scanner_test);

@@ -59,6 +59,9 @@ db/test: $(TEST)
 db/%: $(DEV)
 	@lldb -- $(DEV) $(FLAGS) examples/$*.lita
 
+%/:
+	@mkdir -p $@
+
 %: examples/%.lita $(DEV)
 	$(DEV) $(FLAGS) $<
 	@$(GIT) diff --quiet && $(GIT) notes --ref=$@ add -fm OK 2>/dev/null || true
@@ -147,6 +150,14 @@ xxhash:
 	curl https://raw.githubusercontent.com/Cyan4973/xxHash/refs/tags/v0.8.2/xxhash.h > src/lita/xxhash.h
 	curl https://raw.githubusercontent.com/Cyan4973/xxHash/refs/tags/v0.8.2/xxhash.c > src/lita/xxhash.c
 
-.PHONY: default all clean test db db/test lib prune docker
+
+HAMT := https://raw.githubusercontent.com/mkirchner/hamt/refs/heads/main
+hamt:
+	mkdir -p src/hamt
+	curl $(HAMT)/src/hamt.c           > src/hamt/hamt.c
+	curl $(HAMT)/src/internal_types.h > src/hamt/internal_types.h
+	curl $(HAMT)/include/hamt.h       > src/hamt/hamt.h
+
+.PHONY: default all clean test db db/test lib prune docker hamt
 .PRECIOUS: $(TARGET) %.c %.o
 .SUFFIXES: # disable crazy built-in rules that append .c
