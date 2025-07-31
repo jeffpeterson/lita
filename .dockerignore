@@ -3,5 +3,6 @@
 !/Makefile
 !/compile_flags.txt
 !/src/lita
+!/src/hamt
 !/examples
 !.keep
