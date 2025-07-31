@@ -1,28 +1,30 @@
 #include <assert.h>
 
+#include "debug.h"
+#include "string.h"
 #include "tree.h"
 
 void tree_test() {
-  Value v;
-  Tree a;
-  initTree(&a);
+  ObjTree *t = newTree();
 
-  assert(a.count == 0);
+  assert(t->count == 0);
 
-  assert(!treeGet(&a, number(5), &v));
+  assert(!treeHas(t, number(5)));
 
-  assert(treeSet(&a, number(5), number(55)));
-  assert(treeGet(&a, number(5), &v));
-  assert(asNumber(v) == 55);
-  assert(a.count == 1);
+  assert(treeAdd(t, number(5)));
+  assert(t->count == 1);
 
-  assert(!treeSet(&a, number(5), number(555)));
-  assert(treeGet(&a, number(5), &v));
-  assert(asNumber(v) == 555);
-  assert(a.count == 1);
+  assert(treeAdd(t, number(4)));
+  assert(treeAdd(t, number(0. / 0.)));  // NaN
+  assert(treeAdd(t, number(1. / 0.)));  // inf
+  assert(treeAdd(t, number(-1. / 0.))); // -inf
+  assert(treeAdd(t, True));
+  assert(treeAdd(t, False));
+  assert(treeAdd(t, nil));
+  assert(treeAdd(t, VOID));
+  assert(treeAdd(t, string("5")));
+  assert(treeAdd(t, number(1)));
 
-  // assert(treeSet(&a, num(6), num(66)));
-  // assert(treeGet(&a, num(6), &v));
-  // assert(v == num(66));
-  // assert(a.count == 2);
+  // debugValue(obj(t));
+  assert(treeGet(t, number(5)) == number(5));
 }

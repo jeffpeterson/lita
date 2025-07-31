@@ -8,7 +8,7 @@ Value example(const char *comment) {
 }
 
 ObjExample *newExample(ObjString *comment) {
-  ObjExample *example = allocateExample();
+  ObjExample *example = allocate(Example);
   example->comment = comment;
   internObject((Obj **)&example);
   return example;

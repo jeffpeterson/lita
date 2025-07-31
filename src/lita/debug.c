@@ -283,19 +283,23 @@ void debugExecution() {
 
 int debugValue(Value value) {
   int sum = 0;
-  sum += fprintf(stderr, "Value(int: %" PRId64 ", float: %g, ", value,
-                 valueToNum(value));
-  sum += fprintf(stderr, "hash: %" PRIx64 ", ", valueHash(value));
+
+  sum += fprintf(stderr, "Value(");
+
   if (isNumber(value)) sum += fprintf(stderr, "number");
   if (isBool(value))
     sum += fprintf(stderr, "bool: %s", AS_BOOL(value) ? "true" : "false");
   if (isNil(value)) sum += fprintf(stderr, "nil");
-  if (isVoid(value)) sum += fprintf(stderr, "void");
+  if (isVoid(value)) sum += fprintf(stderr, "VOID");
   if (isObject(value)) sum += fprintf(stderr, "obj: %p", asObject(value));
+
+  sum += fprintf(stderr, ", int: %" PRId64 ", float: %g, ", value,
+                 valueToNum(value));
+  sum += fprintf(stderr, "hash: %" PRIx64 ", ", valueHash(value));
+
   if (isObject(value)) {
-    sum += fprintf(stderr, ", ");
     sum += debugObject(asObject(value));
-  }
+  } else inspectValue(stderr, value, 0);
   sum += fprintf(stderr, ")");
   return sum;
 }

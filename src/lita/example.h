@@ -5,7 +5,6 @@
 #include "string.h"
 #include "value.h"
 
-#define allocateExample() ALLOCATE_OBJ(Example)
 #define isExample(val) isObjDef(val, &Example)
 #define asExample(val) as(Example, val)
 
@@ -14,9 +13,9 @@ typedef struct ObjExample {
   ObjString *comment;
 } ObjExample;
 
-extern const ObjDef Example;
-
 ObjExample *newExample(ObjString *comment);
 Value example(const char *comment);
+
+extern const ObjDef Example;
 
 #endif

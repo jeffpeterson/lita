@@ -1,6 +1,7 @@
 #include <assert.h>
 #include <string.h>
 
+#include "debug.h"
 #include "memory.h"
 #include "object.h"
 #include "string.h"
@@ -90,6 +91,18 @@ let pp(let val) {
   return val;
 }
 
+ValueType valueType(Value v) {
+#if NAN_BOXING
+  if (isNumber(v)) return AS_NUMBER(v) == AS_NUMBER(v) ? VAL_NUMBER : VAL_NAN;
+  if (isObject(v)) return VAL_OBJ;
+  if (isBool(v)) return VAL_BOOL;
+  if (isNil(v)) return VAL_NIL;
+  return VAL_VOID;
+#else
+  return value.type;
+#endif
+}
+
 bool valuesEqual(Value a, Value b) {
 #if NAN_BOXING
   if (isNumber(a)) return isNumber(b) && AS_NUMBER(a) == AS_NUMBER(b);
@@ -107,20 +120,23 @@ bool valuesEqual(Value a, Value b) {
 #endif
 }
 
-// OBJ > NUMBER > BOOL > NIL > VOID
+// VOID < NIL < BOOL < NaN < NUMBER < OBJ
 int cmpValues(Value a, Value b) {
-  if (isObject(a)) {
-    return isObject(b) ? cmpObjects(AS_OBJ(a), AS_OBJ(b)) : -1;
-  } else if (isNumber(a)) {
-    if (isNumber(b)) {
-      double aa = AS_NUMBER(a);
-      double bb = AS_NUMBER(b);
-      return aa > bb ? 1 : bb > aa ? -1 : 0;
-    }
-  }
+  ValueType aType = valueType(a);
+  ValueType bType = valueType(b);
 
-  // return a > b ? 1 : b > a ? -1 : 0;
-  return AS_NUMBER(a) - AS_NUMBER(b);
+  if (aType != bType) return aType - bType;
+
+  switch (aType) {
+  case VAL_OBJ: return cmpObjects(AS_OBJ(a), AS_OBJ(b));
+  case VAL_BOOL: return a - b;
+  case VAL_NUMBER: {
+    double aa = AS_NUMBER(a);
+    double bb = AS_NUMBER(b);
+    return aa > bb ? 1 : bb > aa ? -1 : 0;
+  }
+  default: return 0;
+  }
 }
 
 Hash hashBytes(const void *data, usize length) {

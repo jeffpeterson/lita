@@ -13,6 +13,7 @@ typedef struct ObjIterator ObjIterator;
 #define getDef(val) (as_obj(val)->def)
 #define as(def, val) ((Obj##def *)asObjDef(&def, val))
 #define ALLOCATE_OBJ(def) ((Obj##def *)allocateObject(&def))
+#define allocate ALLOCATE_OBJ
 
 #define foreach_obj_def(var) section_foreach_entry(defs, ObjDef *, var)
 #define REGISTER_OBJECT_DEF(def) const SECTION(defs) ObjDef *def##_def = &def;
@@ -45,6 +46,7 @@ typedef enum Ownership { UNOWNED, OWNED } Ownership;
 
 typedef void ObjFn(Obj *obj);
 typedef int ObjIntFn(Obj *obj);
+typedef int ObjCmpFn(Obj *a, Obj *b);
 typedef int ObjIOFn(Obj *obj, FILE *io);
 typedef int ObjInspectFn(Obj *obj, FILE *io, int depth);
 typedef InterpretResult ObjVMFn(Obj *obj, int argCount);
@@ -55,6 +57,7 @@ typedef struct ObjDef {
   const char *className; // Name of global class backing this object.
   const usize size;      // Size in bytes.
   ObjIntFn *length;      // Length of collections. Or arity.
+  ObjCmpFn *cmp;         // Compare two objects.
   ObjFn *alloc;          // Allocate extra memory during construction.
   ObjFn *free;           // Free extra allocated memory.
   ObjFn *mark;           // Mark child objects during gc.

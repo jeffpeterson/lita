@@ -85,13 +85,9 @@ int inspectObject(FILE *io, Obj *obj, int depth) {
 }
 
 int cmpObjects(Obj *a, Obj *b) {
-  int td = a->def - b->def;
-
-  if (td != 0) return td;
-
   if (a == b) return 0;
-
-  // Todo: finish
+  if (a->def != b->def) return strcmp(a->def->className, b->def->className);
+  if (a->def->cmp) return a->def->cmp(a, b);
   return a - b;
 }
 

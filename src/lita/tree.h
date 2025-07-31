@@ -2,25 +2,36 @@
 #define lita_tree_h
 
 #include "common.h"
+#include "object.h"
 #include "value.h"
 
-typedef struct Tree {
-  int count;
-  Value key;
+typedef struct ObjTreeNode {
+  Obj obj;
   Value value;
-  struct Tree *left;
-  struct Tree *right;
-} Tree;
+  struct ObjTreeNode *left;
+  struct ObjTreeNode *right;
+} ObjTreeNode;
 
-void initTree(Tree *tree);
-bool treeGet(Tree *tree, Value key, Value *value);
+typedef struct ObjTree {
+  Obj obj;
+  u64 count;
+  ObjTreeNode *root;
+} ObjTree;
+
+ObjTree *newTree();
+
+bool treeHas(ObjTree *tree, Value key);
+Value treeGet(ObjTree *tree, Value key);
+bool treeAdd(ObjTree *tree, Value key);
 
 /** Returns whether key is new. */
-bool treeSet(Tree *tree, Value key, Value value);
-// bool treeDelete(Tree *tree, Value key);
-// void treeAddAll(Tree *from, Tree *to);
-// void treeRemoveWhite(Tree *tree);
-// void markTree(Tree *tree);
-// void fprintTree(FILE *io, Tree *tree);
+// bool treeDelete(ObjTree *tree, Value key);
+// void treeAddAll(ObjTree *from, ObjTree *to);
+// void treeRemoveWhite(ObjTree *tree);
+// void markObjTree(ObjTree *tree);
+// void fprintObjTree(FILE *io, ObjTree *tree);
+
+extern const ObjDef TreeNode;
+extern const ObjDef Tree;
 
 #endif

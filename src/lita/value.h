@@ -11,6 +11,7 @@ typedef struct Obj Obj;
 
 typedef enum ValueType {
   VAL_VOID,
+  VAL_NAN,
   VAL_NIL,
   VAL_BOOL,
   VAL_NUMBER,
@@ -21,13 +22,14 @@ typedef enum ValueType {
 
 typedef i64 Value;
 
-// v-- ptr tag   vv-- spare bit 1 and 2
-// ?11111111111qi?????????????????????????????????????????????????? QNAN
-// |  quiet ---^|^---------- 50 mantisa bits ---------------------^
-// ^- sign bit  ^- Intel FP Indef.
+// v-- ptr tag      vv-- spare bit 1 and 2
+// ?111.1111 1111.qi?? ???????????????????????????????????????????????? QNAN
+// |     quiet ---^|^---------- 50 mantisa bits ---------------------^
+// ^- sign bit     ^- Intel FP Indef.
 
 /** Set when a Value is not a number. */
 #define QNAN ((Value)0x7ffc000000000000)
+// 0111.1111 1111.1100
 
 /** Set only for objects. */
 #define SIGN_BIT ((Value)0x8000000000000000)
@@ -132,6 +134,7 @@ typedef struct {
 } ValueArray;
 
 bool isFalsey(Value value);
+ValueType valueType(Value value);
 bool valuesEqual(Value a, Value b);
 int cmpValues(Value a, Value b);
 void copyValues(Value *source, Value *dest, usize count);
