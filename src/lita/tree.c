@@ -1,87 +1,55 @@
 #include "tree.h"
 #include "memory.h"
 
-ObjTree *newTree() {
+ObjTree *newTree(Value key) {
   ObjTree *tree = allocate(Tree);
-  tree->count = 0;
-  tree->root = NULL;
+  tree->count = notVoid(key);
+  tree->key = key;
+  tree->left = NULL;
+  tree->right = NULL;
   return tree;
 }
 
-static ObjTreeNode *newNode(Value value) {
-  ObjTreeNode *node = allocate(TreeNode);
-  node->value = value;
-  return node;
+static ObjTree *findNode(ObjTree *tree, Value key) {
+  if (!tree) return NULL;
+  int cmp = cmpValues(key, tree->key);
+  if (cmp == 0) return tree;
+  return findNode(cmp < 0 ? tree->left : tree->right, key);
 }
 
-static ObjTreeNode *findTreeNode(ObjTree *tree, Value key) {
-  ObjTreeNode *node = tree->root;
-
-  while (node) {
-    int cmp = cmpValues(key, node->value);
-    if (cmp == 0) return node;
-    else if (cmp < 0) node = node->left;
-    else node = node->right;
-  }
-
-  return NULL;
-}
-
-bool treeHas(ObjTree *tree, Value value) {
-  return findTreeNode(tree, value) != NULL;
-}
+bool treeHas(ObjTree *tree, Value key) { return findNode(tree, key) != NULL; }
 
 Value treeGet(ObjTree *tree, Value key) {
-  ObjTreeNode *node = findTreeNode(tree, key);
-  return node ? node->value : VOID;
+  ObjTree *node = findNode(tree, key);
+  return node ? node->key : VOID;
 }
 
-static bool nodeAdd(ObjTreeNode **node_p, Value key) {
-  ObjTreeNode *node = *node_p;
-  if (!node) {
-    *node_p = newNode(key);
-    return true;
-  }
+bool nodeAdd(ObjTree **node_p, Value key) {
+  ObjTree *tree = *node_p;
 
-  int cmp = cmpValues(key, node->value);
+  if (!tree) return *node_p = newTree(key);
+
+  int cmp = cmpValues(key, tree->key);
   if (cmp == 0) return false;
-  return nodeAdd(cmp < 0 ? &node->left : &node->right, key);
+  if (nodeAdd(cmp < 0 ? &tree->left : &tree->right, key)) return ++tree->count;
+  return false;
 }
 
 bool treeAdd(ObjTree *tree, Value key) {
-  bool isNewValue = nodeAdd(&tree->root, key);
-  if (isNewValue) tree->count++;
-  return isNewValue;
+  if (isVoid(key)) return false;
+  if (isVoid(tree->key)) {
+    tree->key = key;
+    tree->count++;
+    return true;
+  }
+  return nodeAdd(&tree, key);
 }
-
-static void markNode(Obj *obj) {
-  ObjTreeNode *node = (ObjTreeNode *)obj;
-  markObject((Obj *)node->left);
-  markValue(node->value);
-  markObject((Obj *)node->right);
-}
-static int inspectNode(Obj *obj, FILE *io, int depth) {
-  ObjTreeNode *node = (ObjTreeNode *)obj;
-  if (!node) return 0;
-
-  return inspectNode((Obj *)node->left, io, depth + 1) +
-         fprintf(io, "\n%*s", depth, "") +
-         inspectValue(io, node->value, depth) +
-         inspectNode((Obj *)node->right, io, depth + 1);
-}
-
-REGISTER_OBJECT_DEF(TreeNode);
-const ObjDef TreeNode = {
-    .className = "TreeNode",
-    .size = sizeof(ObjTreeNode),
-    .mark = markNode,
-    .inspect = inspectNode,
-    // .length = nodeLength,
-};
 
 static void markTree(Obj *obj) {
   ObjTree *tree = (ObjTree *)obj;
-  markObject((Obj *)tree->root);
+  markObject((Obj *)tree->left);
+  markValue(tree->key);
+  markObject((Obj *)tree->right);
 }
 
 static int treeLength(Obj *obj) {
@@ -89,10 +57,17 @@ static int treeLength(Obj *obj) {
   return tree->count;
 }
 
+static int inspectNode(ObjTree *tree, FILE *io, int depth) {
+  if (!tree) return 0;
+
+  return inspectNode(tree->left, io, depth + 1) +
+         fprintf(io, "\n%*s", depth, "") + inspectValue(io, tree->key, depth) +
+         inspectNode(tree->right, io, depth + 1);
+}
+
 static int inspectTree(Obj *obj, FILE *io, int depth) {
   ObjTree *tree = (ObjTree *)obj;
-  if (!tree->root) return fprintf(io, "Tree {}");
-  return fprintf(io, "Tree {") + inspectNode((Obj *)tree->root, io, depth) +
+  return fprintf(io, "Tree {") + inspectNode(tree, io, depth) +
          fprintf(io, "\n}");
 }
 

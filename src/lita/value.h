@@ -11,9 +11,9 @@ typedef struct Obj Obj;
 
 typedef enum ValueType {
   VAL_VOID,
-  VAL_NAN,
   VAL_NIL,
   VAL_BOOL,
+  VAL_NAN,
   VAL_NUMBER,
   VAL_OBJ,
 } ValueType;

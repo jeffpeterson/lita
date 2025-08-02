@@ -5,7 +5,7 @@
 #include "tree.h"
 
 void tree_test() {
-  ObjTree *t = newTree();
+  ObjTree *t = newTree(VOID);
 
   assert(t->count == 0);
 
@@ -21,7 +21,7 @@ void tree_test() {
   assert(treeAdd(t, True));
   assert(treeAdd(t, False));
   assert(treeAdd(t, nil));
-  assert(treeAdd(t, VOID));
+  assert(!treeAdd(t, VOID));
   assert(treeAdd(t, string("5")));
   assert(treeAdd(t, number(1)));
 
