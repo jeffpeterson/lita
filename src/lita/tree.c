@@ -120,7 +120,7 @@ static int inspectNode(ObjTree *tree, FILE *io, int depth) {
   if (!tree) return 0;
 
   return inspectNode(tree->left, io, depth + 1) +
-         fprintf(io, "\n%*s(%lli) ", depth, "", tree->count) +
+         fprintf(io, "\n%*s(%" PRId64 ") ", depth, "", tree->count) +
          inspectValue(io, tree->key, depth) +
          inspectNode(tree->right, io, depth + 1);
 }
