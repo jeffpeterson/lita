@@ -24,14 +24,73 @@ Value treeGet(ObjTree *tree, Value key) {
   return node ? node->key : VOID;
 }
 
+static void swapValues(Value *a, Value *b) {
+  let temp = *a;
+  *a = *b;
+  *b = temp;
+}
+
+static u64 count(ObjTree *tree) { return tree ? tree->count : 0; }
+
+static u64 recount(ObjTree *tree) {
+  if (isVoid(tree->key)) return 0;
+  return tree->count = count(tree->left) + 1 + count(tree->right);
+}
+
+static bool rotateLeft(ObjTree *root) {
+  if (!root->right) return false;
+  ObjTree *pivot = root->right;
+
+  swapValues(&pivot->key, &root->key);
+
+  root->right = pivot->right;
+  pivot->right = pivot->left;
+  pivot->left = root->left;
+  root->left = pivot;
+  recount(pivot);
+  recount(root);
+  return true;
+}
+
+static bool rotateRight(ObjTree *root) {
+  if (!root->left) return false;
+  ObjTree *pivot = root->left;
+
+  swapValues(&pivot->key, &root->key);
+
+  root->left = pivot->left;
+  pivot->left = pivot->right;
+  pivot->right = root->right;
+  root->right = pivot;
+  recount(pivot);
+  recount(root);
+  return true;
+}
+
+/** Returns true if balancing took place. */
+static bool balance(ObjTree *tree) {
+  u64 left = count(tree->left), right = count(tree->right);
+
+  if (left > right + 1) return rotateRight(tree);
+  else if (right > left + 1) return rotateLeft(tree);
+  return false;
+}
+
 bool nodeAdd(ObjTree **node_p, Value key) {
   ObjTree *tree = *node_p;
 
-  if (!tree) return *node_p = newTree(key);
+  if (!tree) {
+    *node_p = newTree(key);
+    return true;
+  }
 
   int cmp = cmpValues(key, tree->key);
   if (cmp == 0) return false;
-  if (nodeAdd(cmp < 0 ? &tree->left : &tree->right, key)) return ++tree->count;
+  if (nodeAdd(cmp < 0 ? &tree->left : &tree->right, key)) {
+    recount(tree);
+    balance(tree);
+    return true;
+  }
   return false;
 }
 
@@ -61,7 +120,8 @@ static int inspectNode(ObjTree *tree, FILE *io, int depth) {
   if (!tree) return 0;
 
   return inspectNode(tree->left, io, depth + 1) +
-         fprintf(io, "\n%*s", depth, "") + inspectValue(io, tree->key, depth) +
+         fprintf(io, "\n%*s(%lli) ", depth, "", tree->count) +
+         inspectValue(io, tree->key, depth) +
          inspectNode(tree->right, io, depth + 1);
 }
 

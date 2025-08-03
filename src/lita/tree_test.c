@@ -25,6 +25,17 @@ void tree_test() {
   assert(treeAdd(t, string("5")));
   assert(treeAdd(t, number(1)));
 
+  ObjTree *t2 = newTree(number(1));
+  assert(treeAdd(t2, number(2)));
+  assert(treeAdd(t2, number(3)));
+  assert(treeAdd(t2, number(4)));
+  assert(treeAdd(t2, number(5)));
+  assert(treeAdd(t2, number(6)));
+  assert(treeAdd(t2, number(7)));
+  assert(treeAdd(t2, number(8)));
+
   // debugValue(obj(t));
+  // debugValue(obj(t2));
+
   assert(treeGet(t, number(5)) == number(5));
 }
