@@ -1,7 +1,6 @@
 #include "example.h"
 #include "memory.h"
 #include "native.h"
-#include "string.h"
 
 Value example(const char *comment) {
   return obj(newExample(newString(comment)));
@@ -26,7 +25,7 @@ static void markExample(Obj *obj) {
 
 static int inspectExample(Obj *obj, FILE *io, int depth) {
   ObjExample *example = (ObjExample *)obj;
-  return fstringFormat(io, "Example({})", OBJ_VAL(example->comment));
+  return fprintf(io, "Example(%s)", inspectc(OBJ_VAL(example->comment)));
 }
 
 NATIVE_GETTER(Example, comment, OBJ_VAL);
