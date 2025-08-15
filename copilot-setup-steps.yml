@@ -1,0 +1,129 @@
+# Copilot Environment Setup for Lita Lang
+# This file configures the development environment with necessary tooling
+
+steps:
+  - name: "Update package manager"
+    run: |
+      sudo apt-get update -y
+
+  - name: "Install C/C++ development tools"
+    run: |
+      sudo apt-get install -y \
+        build-essential \
+        clang \
+        make \
+        pkg-config
+
+  - name: "Install project dependencies"
+    run: |
+      sudo apt-get install -y \
+        libpcre2-dev \
+        libreadline-dev
+
+  - name: "Verify installation"
+    run: |
+      clang --version
+      pkg-config --version
+      pkg-config --cflags --libs libpcre2-8
+      echo "Dependencies installed successfully"
+
+  - name: "Configure build environment"
+    run: |
+      # Create build directories
+      mkdir -p _build
+      mkdir -p .bin
+      # Set up Linux-specific library paths (vs. macOS homebrew paths)
+      export CFLAGS="-g -Isrc $(pkg-config --cflags libpcre2-8) $(pkg-config --libs libpcre2-8) -lreadline -Wall -Werror -Wno-error=unused-variable -Wno-unused-function -Wno-unused-command-line-argument"
+      echo "Build environment configured for Linux"
+      # Make build helper executable
+      chmod +x build-linux.sh
+      # Verify Makefile can find dependencies
+      make --version
+
+  - name: "Test build system"
+    run: |
+      # Try to compile a simple test with PCRE2 (core dependency)
+      echo '#define PCRE2_CODE_UNIT_WIDTH 8' > test_deps.c
+      echo '#include <stdio.h>' >> test_deps.c
+      echo '#include <pcre2.h>' >> test_deps.c
+      echo 'int main() { return 0; }' >> test_deps.c
+      clang -Isrc $(pkg-config --cflags --libs libpcre2-8) test_deps.c -o test_deps
+      ./test_deps
+      rm -f test_deps test_deps.c
+      echo "Core dependencies verification complete"
+      
+  - name: "Validate setup"
+    run: |
+      # Run comprehensive validation
+      chmod +x validate-setup.sh
+      ./validate-setup.sh
+
+environment:
+  CC: clang
+  CFLAGS: "-g -Isrc $(shell pkg-config --cflags libpcre2-8) $(shell pkg-config --libs libpcre2-8) -lreadline -Wall -Werror -Wno-error=unused-variable -Wno-unused-function -Wno-unused-command-line-argument"
+
+tooling:
+  - name: "C Language Server"
+    description: "clangd for C/C++ language support"
+    install: |
+      sudo apt-get install -y clangd
+    
+  - name: "Code Formatting"
+    description: "clang-format for code formatting"
+    install: |
+      sudo apt-get install -y clang-format
+    
+  - name: "Build System"
+    description: "GNU Make for building the project"
+    verify: |
+      make --version
+      
+  - name: "Debugging"
+    description: "GDB and LLDB for debugging"
+    install: |
+      sudo apt-get install -y gdb lldb
+
+development_commands:
+  build: "./build-linux.sh"
+  test: "./build-linux.sh test"
+  clean: "make clean"
+  debug: "./build-linux.sh db/test"
+  
+quick_start: |
+  After running the setup steps, you can quickly get started:
+  
+  1. Validate the environment:
+     ./validate-setup.sh
+     
+  2. Build the project:
+     ./build-linux.sh
+     
+  3. Clean build artifacts:
+     make clean
+     
+  The setup includes helper scripts optimized for Linux development
+  to work around the macOS-specific library paths in the original Makefile.
+
+notes: |
+  This setup configures a complete C development environment for the Lita language.
+  The project uses:
+  - Clang compiler with strict warnings
+  - PCRE2 for regular expression support
+  - Readline for interactive REPL functionality (may need separate installation)
+  - Custom build system with Makefile
+  
+  The original Makefile is configured for macOS with Homebrew paths.
+  For Linux development, use the build-linux.sh helper script which sets
+  the appropriate library paths using pkg-config.
+  
+  After setup, you can:
+  - Build the project: ./build-linux.sh
+  - Run tests: ./build-linux.sh test
+  - Debug: ./build-linux.sh db/test
+  - Clean: make clean
+  
+  Note: If readline is not available, install with:
+  sudo apt-get install libreadline-dev
+  
+  The project may have a bootstrap issue where it needs itself to compile
+  some .lita files. In that case, build the core components first.
