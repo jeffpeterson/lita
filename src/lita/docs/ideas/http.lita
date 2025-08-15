@@ -1,4 +1,4 @@
-class Method
+class Method(String)
 	-> Get
 	-> Post
 	-> Put
@@ -10,9 +10,6 @@ class Method
 	str <- String
 		Method.(str.downcase.capitalize)
 
-class Body
-	<- String
-	<- Table
-
-class Request
-	let method
+class Headers(Table)
+class Body(String)
+class Request(Method, Headers, Body)

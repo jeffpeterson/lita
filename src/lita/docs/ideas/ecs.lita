@@ -2,8 +2,8 @@
 crypto.randomUUID()
 
 class Point(x, y)
-class Position < Point
-class Velocity < Point
+class Position(Point)
+class Velocity(Point)
 
 // a system is a function and a query describing the entities and
 // components thereof that it operates on. this includes describing mutations.
@@ -32,7 +32,7 @@ fn inertia_low_level({ position(&x, &y), velocity(dx, dy) })
 eating: &hunger, holding(food)
 	hunger -= food
 
-drinking: &thirst, holding(water))
+drinking: &thirst, holding(water)
 	thirst -= water
 
 starvation: &health, hunger
