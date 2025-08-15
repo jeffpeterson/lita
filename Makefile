@@ -5,7 +5,7 @@ GIT        := $(shell [ -d .git ] && echo git || echo :)
 
 CC       = clang
 LDFLAGS  = -L/opt/homebrew/lib
-LDLIBS   = -lm -lpcre2-8 -lreadline
+LDLIBS   = -lm -lpcre2-8 -lreadline -lffi
 CPPFLAGS = -Isrc -I/opt/homebrew/include
 CFLAGS   = -g -Wall $(WARN_ERRORS)
 

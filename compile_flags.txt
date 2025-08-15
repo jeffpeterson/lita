@@ -3,6 +3,7 @@
 -I/opt/homebrew/include
 -L/opt/homebrew/lib
 -lpcre2-8
+-lffi
 -lreadline
 -Wall
 -Werror
